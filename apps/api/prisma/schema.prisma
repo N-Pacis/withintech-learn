@@ -25,6 +25,7 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   otpCodes     OtpCode[]
+  courses      Course[]
 }
 
 model OtpCode {
@@ -36,4 +37,93 @@ model OtpCode {
   expiresAt DateTime
   usedAt    DateTime?
   createdAt DateTime  @default(now())
+}
+
+enum BlockType {
+  text
+  image
+}
+
+model Course {
+  id           String    @id @default(uuid())
+  title        String
+  slug         String    @unique
+  description  String?
+  thumbnailKey String?
+  isPublished  Boolean   @default(false)
+  createdById  String
+  createdBy    User      @relation(fields: [createdById], references: [id])
+  modules      Module[]
+  quiz         Quiz?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Module {
+  id         String        @id @default(uuid())
+  courseId   String
+  course     Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title      String
+  orderIndex Int
+  blocks     ModuleBlock[]
+  quiz       Quiz?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@unique([courseId, orderIndex])
+}
+
+model ModuleBlock {
+  id         String    @id @default(uuid())
+  moduleId   String
+  module     Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  type       BlockType
+  content    String?
+  storageKey String?
+  caption    String?
+  orderIndex Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([moduleId, orderIndex])
+}
+
+model Quiz {
+  id           String     @id @default(uuid())
+  moduleId     String?    @unique
+  module       Module?    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  courseId     String?    @unique
+  course       Course?    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title        String
+  passingScore Int
+  maxAttempts  Int        @default(3)
+  questions    Question[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Question {
+  id         String           @id @default(uuid())
+  quizId     String
+  quiz       Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  text       String
+  orderIndex Int
+  options    QuestionOption[]
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([quizId, orderIndex])
+}
+
+model QuestionOption {
+  id         String   @id @default(uuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  text       String
+  isCorrect  Boolean
+  orderIndex Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([questionId, orderIndex])
 }
