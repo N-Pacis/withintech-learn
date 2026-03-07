@@ -1,0 +1,12 @@
+{
+  "name": "withintech-learn",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel -r dev",
+    "build": "pnpm --parallel -r build",
+    "lint": "pnpm --parallel -r lint"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
