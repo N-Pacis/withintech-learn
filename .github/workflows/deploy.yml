@@ -20,19 +20,14 @@ jobs:
           script_stop: true
           script: |
             APP_DIR="$HOME/withintech-learn"
-            REPO_URL="https://N-Pacis:${{ secrets.GH_PAT }}@github.com/N-Pacis/withintech-learn.git"
-            echo "HOME=$HOME"
-            echo "APP_DIR=$APP_DIR"
-            echo "$REPO_URL" | sed 's/:.*@/:TOKEN@/'
-            ls -la "$HOME"
+            TOKEN="${{ secrets.GH_PAT }}"
+            git config --global url."https://$TOKEN@github.com/".insteadOf "https://github.com/"
             if [ -d "$APP_DIR/.git" ]; then
               cd "$APP_DIR"
-              git remote set-url origin "$REPO_URL"
               git fetch origin main
               git reset --hard origin/main
             else
-              echo "Cloning repository..."
-              git clone "$REPO_URL" "$APP_DIR"
+              git clone https://github.com/N-Pacis/withintech-learn.git "$APP_DIR"
             fi
 
       # ── 2. Write .env from secrets ───────────────────────────────────────────
