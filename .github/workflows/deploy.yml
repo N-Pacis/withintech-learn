@@ -19,12 +19,16 @@ jobs:
           port: 222
           script_stop: true
           script: |
+            set -e
+            set -x
             REPO_URL="https://N-Pacis:${{ secrets.GH_PAT }}@github.com/N-Pacis/withintech-learn.git"
             if [ ! -d ~/withintech-learn/.git ]; then
               git clone "$REPO_URL" ~/withintech-learn
             else
-              git -C ~/withintech-learn remote set-url origin "$REPO_URL"
-              git -C ~/withintech-learn pull origin main
+              cd ~/withintech-learn
+              git remote set-url origin "$REPO_URL"
+              git fetch origin main
+              git reset --hard origin/main
             fi
 
       # ── 2. Write .env from secrets ───────────────────────────────────────────
