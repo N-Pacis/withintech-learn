@@ -94,6 +94,7 @@ jobs:
           script_stop: true
           script: |
             COMPOSE="docker-compose -f $HOME/withintech-learn/docker-compose.yml"
+            docker system prune -f
             $COMPOSE down
             $COMPOSE up --build -d
 
@@ -107,14 +108,13 @@ jobs:
           port: 222
           script_stop: true
           script: |
-            COMPOSE="docker-compose -f $HOME/withintech-learn/docker-compose.yml"
             echo "Waiting for API to finish migrations..."
             for i in $(seq 1 12); do
-              $COMPOSE exec -T api echo "ready" 2>/dev/null && break
+              docker exec withintech-learn_api echo "ready" 2>/dev/null && break
               echo "  attempt $i/12..."
               sleep 5
             done
-            $COMPOSE exec -T api pnpm seed
+            docker exec withintech-learn_api node dist/scripts/seed.js
 
       # ── 6. Clean up old images ───────────────────────────────────────────────
       - name: Clean up old images
