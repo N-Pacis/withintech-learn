@@ -19,21 +19,17 @@ jobs:
           port: 222
           script_stop: true
           script: |
-            set -e
-            set -x
             APP_DIR="$HOME/withintech-learn"
             REPO_URL="https://N-Pacis:${{ secrets.GH_PAT }}@github.com/N-Pacis/withintech-learn.git"
-            if test -d "$APP_DIR"; then
+            echo "APP_DIR=$APP_DIR"
+            ls -la "$HOME"
+            if [ -d "$APP_DIR/.git" ]; then
               cd "$APP_DIR"
-              if test -d ".git"; then
-                git remote set-url origin "$REPO_URL"
-                git fetch origin main
-                git reset --hard origin/main
-              else
-                rm -rf "$APP_DIR"
-                git clone "$REPO_URL" "$APP_DIR"
-              fi
+              git remote set-url origin "$REPO_URL"
+              git fetch origin main
+              git reset --hard origin/main
             else
+              rm -rf "$APP_DIR"
               git clone "$REPO_URL" "$APP_DIR"
             fi
 
