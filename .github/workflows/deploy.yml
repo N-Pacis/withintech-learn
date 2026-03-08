@@ -23,18 +23,18 @@ jobs:
             set -x
             APP_DIR="$HOME/withintech-learn"
             REPO_URL="https://N-Pacis:${{ secrets.GH_PAT }}@github.com/N-Pacis/withintech-learn.git"
-            if [ ! -d "$APP_DIR" ]; then
-              git clone "$REPO_URL" "$APP_DIR"
-            else
+            if test -d "$APP_DIR"; then
               cd "$APP_DIR"
-              if [ ! -d ".git" ]; then
-                rm -rf *
-                git clone "$REPO_URL" .
-              else
+              if test -d ".git"; then
                 git remote set-url origin "$REPO_URL"
                 git fetch origin main
                 git reset --hard origin/main
+              else
+                rm -rf "$APP_DIR"
+                git clone "$REPO_URL" "$APP_DIR"
               fi
+            else
+              git clone "$REPO_URL" "$APP_DIR"
             fi
 
       # ── 2. Write .env from secrets ───────────────────────────────────────────
