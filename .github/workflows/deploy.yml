@@ -57,17 +57,17 @@ jobs:
             } > .env
 
             # Rebuild images and restart all services
-            docker compose up --build -d
+            docker-compose up --build -d
 
             # Wait for the API container to be running, then run migrations
             echo "Waiting for API container..."
             for i in $(seq 1 12); do
-              docker compose exec -T api echo "ready" 2>/dev/null && break
+              docker-compose exec -T api echo "ready" 2>/dev/null && break
               echo "  attempt $i/12..."
               sleep 5
             done
-            docker compose exec -T api npx prisma migrate deploy
-            docker compose exec -T api pnpm seed
+            docker-compose exec -T api npx prisma migrate deploy
+            docker-compose exec -T api pnpm seed
 
             # Remove dangling images to free up disk space
             docker image prune -f
