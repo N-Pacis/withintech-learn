@@ -6,7 +6,7 @@
     "description": "REST API for the WithinTech-Learn LMS platform."
   },
   "servers": [
-    { "url": "http://localhost:3001/api", "description": "Local" }
+    { "url": "/api", "description": "Current host" }
   ],
   "components": {
     "securitySchemes": {
