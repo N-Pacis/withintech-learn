@@ -21,11 +21,14 @@ jobs:
           script: |
             set -e
             set -x
+            echo "HOME=$HOME"
+            ls -la $HOME
+            APP_DIR="$HOME/withintech-learn"
             REPO_URL="https://N-Pacis:${{ secrets.GH_PAT }}@github.com/N-Pacis/withintech-learn.git"
-            if [ ! -d ~/withintech-learn/.git ]; then
-              git clone "$REPO_URL" ~/withintech-learn
+            if [ ! -d "$APP_DIR/.git" ]; then
+              git clone "$REPO_URL" "$APP_DIR"
             else
-              cd ~/withintech-learn
+              cd "$APP_DIR"
               git remote set-url origin "$REPO_URL"
               git fetch origin main
               git reset --hard origin/main
@@ -66,7 +69,7 @@ jobs:
               printf 'POSTGRES_USER=%s\n'          "$POSTGRES_USER"
               printf 'POSTGRES_PASSWORD=%s\n'      "$POSTGRES_PASSWORD"
               printf 'BCRYPT_ROUNDS=%s\n'          "${BCRYPT_ROUNDS:-12}"
-            } > ~/withintech-learn/.env
+            } > $HOME/withintech-learn/.env
         env:
           DATABASE_URL:           ${{ secrets.DATABASE_URL }}
           JWT_ACCESS_SECRET:      ${{ secrets.JWT_ACCESS_SECRET }}
@@ -102,7 +105,7 @@ jobs:
           port: 222
           script_stop: true
           script: |
-            cd ~/withintech-learn
+            cd $HOME/withintech-learn
             docker-compose up --build -d
 
       # ── 4. Run database migrations ───────────────────────────────────────────
@@ -121,7 +124,7 @@ jobs:
               echo "  attempt $i/12..."
               sleep 5
             done
-            docker-compose -f ~/withintech-learn/docker-compose.yml exec -T api npx prisma migrate deploy
+            docker-compose -f $HOME/withintech-learn/docker-compose.yml exec -T api npx prisma migrate deploy
 
       # ── 5. Seed database ─────────────────────────────────────────────────────
       - name: Seed database
@@ -133,7 +136,7 @@ jobs:
           port: 222
           script_stop: true
           script: |
-            docker-compose -f ~/withintech-learn/docker-compose.yml exec -T api pnpm seed
+            docker-compose -f $HOME/withintech-learn/docker-compose.yml exec -T api pnpm seed
 
       # ── 6. Clean up old images ───────────────────────────────────────────────
       - name: Clean up old images
