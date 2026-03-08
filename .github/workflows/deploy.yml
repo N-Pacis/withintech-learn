@@ -18,17 +18,14 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 222
           script_stop: true
-          envs: GH_PAT
           script: |
-            REPO_URL="https://N-Pacis:${GH_PAT}@github.com/N-Pacis/withintech-learn.git"
+            REPO_URL="https://N-Pacis:${{ secrets.GH_PAT }}@github.com/N-Pacis/withintech-learn.git"
             if [ ! -d ~/withintech-learn/.git ]; then
               git clone "$REPO_URL" ~/withintech-learn
             else
               git -C ~/withintech-learn remote set-url origin "$REPO_URL"
               git -C ~/withintech-learn pull origin main
             fi
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
 
       # ── 2. Write .env from secrets ───────────────────────────────────────────
       - name: Write .env
