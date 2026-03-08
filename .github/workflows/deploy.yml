@@ -93,8 +93,9 @@ jobs:
           port: 222
           script_stop: true
           script: |
-            cd $HOME/withintech-learn
-            docker-compose up --build -d
+            COMPOSE="docker-compose -f $HOME/withintech-learn/docker-compose.yml"
+            $COMPOSE down
+            $COMPOSE up --build -d
 
       # ── 4. Run database migrations ───────────────────────────────────────────
       - name: Run database migrations
