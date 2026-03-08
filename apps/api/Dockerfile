@@ -7,8 +7,11 @@ COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY packages/ ./packages/
 COPY apps/api/ ./apps/api/
 
-# Install all deps (triggers prisma generate via postinstall)
+# Install all deps
 RUN pnpm install --frozen-lockfile
+
+# Generate Prisma client explicitly
+RUN cd apps/api && npx prisma generate
 
 # Build TypeScript
 RUN cd apps/api && pnpm build
