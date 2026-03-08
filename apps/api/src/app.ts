@@ -16,6 +16,7 @@ const app = express();
 app.use(helmet({
   strictTransportSecurity: false,
   originAgentCluster: false,
+  crossOriginOpenerPolicy: false,
 }));
 app.use(cors({ origin: process.env.APP_URL }));
 app.use(express.json());
