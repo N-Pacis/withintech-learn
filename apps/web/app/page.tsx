@@ -280,52 +280,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 5. Platform in Plain Words ──────────────────────────────────────── */}
-      <section id="how-it-works" className="bg-[#FAFAFA] py-20 lg:py-28">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <p className="font-heading text-xs tracking-widest uppercase text-[#3D006B] font-bold mb-16">
-            The platform
-          </p>
-
-          {[
-            {
-              n: "01",
-              title: "What it is",
-              copy: "Modules, quizzes, certificates. No filler, no distractions.",
-            },
-            {
-              n: "02",
-              title: "Who it is for",
-              copy: "Students where connections are slow and devices are basic. If it loads on a phone, it works here.",
-            },
-            {
-              n: "03",
-              title: "How it works",
-              copy: "Your instructor enrolls you. You study, take the quiz, and download your certificate.",
-            },
-          ].map(({ n, title, copy }) => (
-            <div
-              key={n}
-              className="border-t border-[#E5E7EB] py-12 flex flex-col md:flex-row gap-8 md:gap-20"
-            >
-              <div className="flex-shrink-0 md:w-52">
-                <span className="font-heading font-black text-8xl text-[#3D006B] leading-none">
-                  {n}
-                </span>
-                <h3 className="font-heading font-bold text-xl text-[#0F0F0F] mt-3">
-                  {title}
-                </h3>
-              </div>
-              <div className="flex-1 flex md:items-center">
-                <p className="font-body text-lg text-[#6B7280] leading-relaxed">
-                  {copy}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ── 4. Features — Broken Grid ───────────────────────────────────────── */}
       <section className="bg-white py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
@@ -340,10 +294,10 @@ export default function Home() {
                 <IconBook />
               </div>
               <h3 className="font-heading font-bold text-xl text-[#0F0F0F] mb-3">
-                Modules that load on any connection
+                Rich modules, clear and focused
               </h3>
               <p className="font-body text-base text-[#6B7280]">
-                Text and images. No streaming, no buffering, no excuses.
+                Text and images, structured for learning.
               </p>
             </div>
 
@@ -419,7 +373,7 @@ export default function Home() {
       </section>
 
       {/* ── 6. Steps — How It Works ─────────────────────────────────────────── */}
-      <section className="bg-white py-20 lg:py-28">
+      <section id="how-it-works" className="bg-white py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <p className="font-heading text-xs tracking-widest uppercase text-[#3D006B] font-bold mb-4">
             How it works
@@ -435,10 +389,10 @@ export default function Home() {
                 <span className="font-heading text-white font-bold text-lg">1</span>
               </div>
               <h3 className="font-heading font-bold text-xl text-[#0F0F0F] mb-2">
-                Get enrolled
+                Get access
               </h3>
               <p className="font-body text-base text-[#6B7280] max-w-[200px]">
-                Your instructor adds you and assigns your courses.
+                Sign in and find your courses ready to go.
               </p>
             </div>
 
@@ -478,7 +432,7 @@ export default function Home() {
           {/* Mobile: vertical with left border accent */}
           <div className="md:hidden flex flex-col gap-0">
             {[
-              { n: "1", title: "Get enrolled",         desc: "Your instructor adds you and assigns your courses." },
+              { n: "1", title: "Get access",            desc: "Sign in and find your courses ready to go." },
               { n: "2", title: "Study your modules",   desc: "Work at your own pace, on any device, anywhere." },
               { n: "3", title: "Earn your certificate",desc: "Pass the quiz and download your certificate instantly." },
             ].map(({ n, title, desc }) => (
@@ -518,9 +472,6 @@ export default function Home() {
             </Link>
           </div>
 
-          <p className="font-body text-sm text-[#9CA3AF]">
-            No setup needed. Your instructor handles everything.
-          </p>
         </div>
       </section>
 

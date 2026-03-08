@@ -1,4 +1,3 @@
-# TODO: CI/CD pipeline — Day 7
 name: Deploy
 
 on:
@@ -9,5 +8,83 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      # TODO: build, test, SSH deploy
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script_stop: true
+          # List every env var to forward to the remote script
+          envs: DATABASE_URL,JWT_ACCESS_SECRET,JWT_REFRESH_SECRET,JWT_ACCESS_EXPIRES_IN,JWT_REFRESH_EXPIRES_IN,STORAGE_PROVIDER,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,S3_BUCKET_NAME,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,EMAIL_FROM,NEXT_PUBLIC_API_URL,APP_URL,NODE_ENV,PORT,ADMIN_SEED_EMAIL,POSTGRES_USER,POSTGRES_PASSWORD,BCRYPT_ROUNDS
+          script: |
+            set -e
+            cd ~/withintech-learn
+            git pull origin main
+
+            # Write .env from GitHub Secrets
+            {
+              printf 'DATABASE_URL=%s\n'           "$DATABASE_URL"
+              printf 'JWT_ACCESS_SECRET=%s\n'      "$JWT_ACCESS_SECRET"
+              printf 'JWT_REFRESH_SECRET=%s\n'     "$JWT_REFRESH_SECRET"
+              printf 'JWT_ACCESS_EXPIRES_IN=%s\n'  "${JWT_ACCESS_EXPIRES_IN:-24h}"
+              printf 'JWT_REFRESH_EXPIRES_IN=%s\n' "${JWT_REFRESH_EXPIRES_IN:-7d}"
+              printf 'STORAGE_PROVIDER=%s\n'       "${STORAGE_PROVIDER:-s3}"
+              printf 'AWS_REGION=%s\n'             "$AWS_REGION"
+              printf 'AWS_ACCESS_KEY_ID=%s\n'      "$AWS_ACCESS_KEY_ID"
+              printf 'AWS_SECRET_ACCESS_KEY=%s\n'  "$AWS_SECRET_ACCESS_KEY"
+              printf 'S3_BUCKET_NAME=%s\n'         "$S3_BUCKET_NAME"
+              printf 'SMTP_HOST=%s\n'              "$SMTP_HOST"
+              printf 'SMTP_PORT=%s\n'              "$SMTP_PORT"
+              printf 'SMTP_USER=%s\n'              "$SMTP_USER"
+              printf 'SMTP_PASS=%s\n'              "$SMTP_PASS"
+              printf 'EMAIL_FROM=%s\n'             "$EMAIL_FROM"
+              printf 'NEXT_PUBLIC_API_URL=%s\n'    "$NEXT_PUBLIC_API_URL"
+              printf 'APP_URL=%s\n'                "$APP_URL"
+              printf 'NODE_ENV=%s\n'               "${NODE_ENV:-production}"
+              printf 'PORT=%s\n'                   "${PORT:-3001}"
+              printf 'ADMIN_SEED_EMAIL=%s\n'       "$ADMIN_SEED_EMAIL"
+              printf 'POSTGRES_USER=%s\n'          "$POSTGRES_USER"
+              printf 'POSTGRES_PASSWORD=%s\n'      "$POSTGRES_PASSWORD"
+              printf 'BCRYPT_ROUNDS=%s\n'          "${BCRYPT_ROUNDS:-12}"
+            } > .env
+
+            # Rebuild images and restart all services
+            docker compose up --build -d
+
+            # Wait for the API container to be running, then run migrations
+            echo "Waiting for API container..."
+            for i in $(seq 1 12); do
+              docker compose exec -T api echo "ready" 2>/dev/null && break
+              echo "  attempt $i/12..."
+              sleep 5
+            done
+            docker compose exec -T api npx prisma migrate deploy
+            docker compose exec -T api pnpm seed
+
+            # Remove dangling images to free up disk space
+            docker image prune -f
+        env:
+          DATABASE_URL:           ${{ secrets.DATABASE_URL }}
+          JWT_ACCESS_SECRET:      ${{ secrets.JWT_ACCESS_SECRET }}
+          JWT_REFRESH_SECRET:     ${{ secrets.JWT_REFRESH_SECRET }}
+          JWT_ACCESS_EXPIRES_IN:  ${{ secrets.JWT_ACCESS_EXPIRES_IN }}
+          JWT_REFRESH_EXPIRES_IN: ${{ secrets.JWT_REFRESH_EXPIRES_IN }}
+          STORAGE_PROVIDER:       ${{ secrets.STORAGE_PROVIDER }}
+          AWS_REGION:             ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID:      ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          S3_BUCKET_NAME:         ${{ secrets.S3_BUCKET_NAME }}
+          SMTP_HOST:              ${{ secrets.SMTP_HOST }}
+          SMTP_PORT:              ${{ secrets.SMTP_PORT }}
+          SMTP_USER:              ${{ secrets.SMTP_USER }}
+          SMTP_PASS:              ${{ secrets.SMTP_PASS }}
+          EMAIL_FROM:             ${{ secrets.EMAIL_FROM }}
+          NEXT_PUBLIC_API_URL:    ${{ secrets.NEXT_PUBLIC_API_URL }}
+          APP_URL:                ${{ secrets.APP_URL }}
+          NODE_ENV:               ${{ secrets.NODE_ENV }}
+          PORT:                   ${{ secrets.PORT }}
+          ADMIN_SEED_EMAIL:       ${{ secrets.ADMIN_SEED_EMAIL }}
+          POSTGRES_USER:          ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD:      ${{ secrets.POSTGRES_PASSWORD }}
+          BCRYPT_ROUNDS:          ${{ secrets.BCRYPT_ROUNDS }}

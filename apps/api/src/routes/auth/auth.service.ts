@@ -38,11 +38,11 @@ export const logout = async ({ userId: _userId }: { userId: string }) => {
 };
 
 export const adminSeed = async () => {
-  const existing = await prisma.user.findFirst({ where: { role: { name: 'admin' } }, include: { role: true } });
-  if (existing) throw conflict('Admin already seeded');
-
   await prisma.role.upsert({ where: { name: 'admin' }, update: {}, create: { name: 'admin' } });
   await prisma.role.upsert({ where: { name: 'student' }, update: {}, create: { name: 'student' } });
+
+  const existing = await prisma.user.findFirst({ where: { role: { name: 'admin' } } });
+  if (existing) return { skipped: true as const, email: existing.email };
 
   const adminRole = await prisma.role.findUniqueOrThrow({ where: { name: 'admin' } });
   const password = crypto.randomBytes(12).toString('base64').slice(0, 16);
@@ -59,7 +59,7 @@ export const adminSeed = async () => {
     },
   });
 
-  return { email: process.env.ADMIN_SEED_EMAIL, password };
+  return { skipped: false as const, email: process.env.ADMIN_SEED_EMAIL, password };
 };
 
 export const registerUser = async ({ firstName, lastName, email }: { firstName: string; lastName: string; email: string }) => {
