@@ -22,10 +22,13 @@ app.use(cors({ origin: process.env.APP_URL }));
 app.use(express.json());
 app.use(compression());
 
-app.use('/docs', (_req, res, next) => {
+app.use('/api/docs', (_req, res, next) => {
   res.removeHeader('Content-Security-Policy');
   next();
-}, swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+}, swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+  swaggerOptions: { url: '/api/docs-json' },
+}));
+app.get('/docs-json', (_req, res) => res.json(swaggerDocument));
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 app.use(router);
 
