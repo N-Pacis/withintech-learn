@@ -12,6 +12,12 @@ import router from './routes';
 import { AppError } from './utils/errors';
 
 const app = express();
+const options = {
+  customPath: '/api/docs',
+  swaggerOptions: {
+    url: '/api/docs-json',
+  }
+}
 
 app.use(helmet({
   strictTransportSecurity: false,
@@ -22,12 +28,8 @@ app.use(cors({ origin: process.env.APP_URL }));
 app.use(express.json());
 app.use(compression());
 
-app.use('/api/docs', (_req, res, next) => {
-  res.removeHeader('Content-Security-Policy');
-  next();
-}, swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
-  swaggerOptions: { url: '/api/docs-json' },
-}));
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
+
 app.get('/docs-json', (_req, res) => res.json(swaggerDocument));
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 app.use(router);
