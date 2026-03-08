@@ -106,13 +106,14 @@ jobs:
           port: 222
           script_stop: true
           script: |
+            COMPOSE="docker-compose -f $HOME/withintech-learn/docker-compose.yml"
             echo "Waiting for API container..."
             for i in $(seq 1 12); do
-              docker-compose exec -T api echo "ready" 2>/dev/null && break
+              $COMPOSE exec -T api echo "ready" 2>/dev/null && break
               echo "  attempt $i/12..."
               sleep 5
             done
-            docker-compose -f $HOME/withintech-learn/docker-compose.yml exec -T api npx prisma migrate deploy
+            $COMPOSE exec -T api npx prisma migrate deploy
 
       # ── 5. Seed database ─────────────────────────────────────────────────────
       - name: Seed database
