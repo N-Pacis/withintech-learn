@@ -17,13 +17,13 @@ jobs:
           port: 222
           script_stop: true
           # List every env var to forward to the remote script
-          envs: DATABASE_URL,JWT_ACCESS_SECRET,JWT_REFRESH_SECRET,JWT_ACCESS_EXPIRES_IN,JWT_REFRESH_EXPIRES_IN,STORAGE_PROVIDER,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,S3_BUCKET_NAME,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,EMAIL_FROM,NEXT_PUBLIC_API_URL,APP_URL,NODE_ENV,PORT,ADMIN_SEED_EMAIL,POSTGRES_USER,POSTGRES_PASSWORD,BCRYPT_ROUNDS,GITHUB_TOKEN,GITHUB_REPOSITORY
+          envs: DATABASE_URL,JWT_ACCESS_SECRET,JWT_REFRESH_SECRET,JWT_ACCESS_EXPIRES_IN,JWT_REFRESH_EXPIRES_IN,STORAGE_PROVIDER,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,S3_BUCKET_NAME,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,EMAIL_FROM,NEXT_PUBLIC_API_URL,APP_URL,NODE_ENV,PORT,ADMIN_SEED_EMAIL,POSTGRES_USER,POSTGRES_PASSWORD,BCRYPT_ROUNDS,GH_PAT,GITHUB_REPOSITORY
           script: |
             set -e
 
             # Clone on first deploy, pull on subsequent ones
             if [ ! -d ~/withintech-learn ]; then
-              git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ~/withintech-learn
+              git clone "https://x-access-token:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git" ~/withintech-learn
             fi
 
             cd ~/withintech-learn
@@ -95,5 +95,5 @@ jobs:
           POSTGRES_USER:          ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD:      ${{ secrets.POSTGRES_PASSWORD }}
           BCRYPT_ROUNDS:          ${{ secrets.BCRYPT_ROUNDS }}
-          GITHUB_TOKEN:           ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT:           ${{ secrets.GH_PAT }}
           GITHUB_REPOSITORY:      ${{ github.repository }}
