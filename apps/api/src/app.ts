@@ -23,6 +23,7 @@ app.use(express.json());
 app.use(compression());
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 app.use('/api', router);
 
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
