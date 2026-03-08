@@ -13,7 +13,10 @@ import { AppError } from './utils/errors';
 
 const app = express();
 
-app.use(helmet());
+app.use(helmet({
+  strictTransportSecurity: false,
+  originAgentCluster: false,
+}));
 app.use(cors({ origin: process.env.APP_URL }));
 app.use(express.json());
 app.use(compression());
