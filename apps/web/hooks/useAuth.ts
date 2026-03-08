@@ -1,2 +1,1 @@
-// TODO
-export {};
+export { useAuth } from '@/context/AuthContext';

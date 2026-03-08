@@ -4,49 +4,6 @@ import Navbar from "@/components/landing/Navbar";
 import Ticker from "@/components/landing/Ticker";
 import CertificateCard from "@/components/landing/CertificateCard";
 
-// ─── Inline SVG icons ─────────────────────────────────────────────────────────
-
-function IconBook() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-      <line x1="9" y1="7" x2="15" y2="7" />
-      <line x1="9" y1="11" x2="13" y2="11" />
-    </svg>
-  );
-}
-
-function IconCheck() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="9 12 11 14 15 10" />
-    </svg>
-  );
-}
-
-function IconCert() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="9" y1="13" x2="15" y2="13" />
-      <line x1="9" y1="17" x2="12" y2="17" />
-    </svg>
-  );
-}
-
-function IconProgress() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="20" x2="18" y2="10" />
-      <line x1="12" y1="20" x2="12" y2="4" />
-      <line x1="6" y1="20" x2="6" y2="14" />
-    </svg>
-  );
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Home() {
@@ -280,69 +237,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 4. Features — Broken Grid ───────────────────────────────────────── */}
-      <section className="bg-white py-20 lg:py-28">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <p className="font-heading text-xs tracking-widest uppercase text-[#3D006B] font-bold mb-14">
-            What you get
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-5 border border-[#E5E7EB]">
-            {/* Feature 1 — 60% */}
-            <div className="md:col-span-3 p-10 md:border-r border-b md:border-b-0 border-[#E5E7EB]">
-              <div className="text-[#3D006B] mb-5">
-                <IconBook />
-              </div>
-              <h3 className="font-heading font-bold text-xl text-[#0F0F0F] mb-3">
-                Rich modules, clear and focused
-              </h3>
-              <p className="font-body text-base text-[#6B7280]">
-                Text and images, structured for learning.
-              </p>
-            </div>
-
-            {/* Feature 2 — 40% */}
-            <div className="md:col-span-2 p-10 border-b md:border-b-0 border-[#E5E7EB]">
-              <div className="text-[#3D006B] mb-5">
-                <IconCheck />
-              </div>
-              <h3 className="font-heading font-bold text-xl text-[#0F0F0F] mb-3">
-                Quizzes on your terms
-              </h3>
-              <p className="font-body text-base text-[#6B7280]">
-                Take the quiz when you are ready. Instant feedback.
-              </p>
-            </div>
-
-            {/* Feature 3 — 40% */}
-            <div className="md:col-span-2 p-10 md:border-r border-b md:border-b-0 border-t border-[#E5E7EB]">
-              <div className="text-[#3D006B] mb-5">
-                <IconCert />
-              </div>
-              <h3 className="font-heading font-bold text-xl text-[#0F0F0F] mb-3">
-                A real certificate, instantly
-              </h3>
-              <p className="font-body text-base text-[#6B7280]">
-                Finish the course. Download your certificate in seconds.
-              </p>
-            </div>
-
-            {/* Feature 4 — 60% */}
-            <div className="md:col-span-3 p-10 border-t border-[#E5E7EB]">
-              <div className="text-[#3D006B] mb-5">
-                <IconProgress />
-              </div>
-              <h3 className="font-heading font-bold text-xl text-[#0F0F0F] mb-3">
-                Progress you can see
-              </h3>
-              <p className="font-body text-base text-[#6B7280]">
-                Always know what is done and what is next.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ── 5. Certificate Moment ───────────────────────────────────────────── */}
       <section className="bg-[#3D006B] py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
@@ -451,27 +345,47 @@ export default function Home() {
       </section>
 
       {/* ── 7. Final CTA ────────────────────────────────────────────────────── */}
-      <section className="bg-white border-t border-[#E5E7EB] py-24 lg:py-32">
+      <section className="bg-white border-t border-[#E5E7EB] py-24 lg:py-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <h2 className="font-heading font-black text-4xl lg:text-5xl text-[#0F0F0F] tracking-tight mb-10 max-w-lg">
-            Ready to start learning?
-          </h2>
+          <div className="flex flex-col lg:flex-row lg:items-center gap-16">
 
-          <div className="flex flex-wrap gap-4 mb-6">
-            <Link
-              href="/sign-in"
-              className="font-body font-medium bg-[#3D006B] text-white px-7 py-3.5 rounded-md hover:bg-[#2A004A] transition-colors text-base"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="#how-it-works"
-              className="font-body font-medium text-[#3D006B] border border-[#3D006B] px-7 py-3.5 rounded-md hover:bg-[#F3E8FF] transition-colors text-base"
-            >
-              Learn More
-            </Link>
+            {/* Left: copy + buttons */}
+            <div className="lg:w-1/2">
+              <h2 className="font-heading font-black text-4xl lg:text-5xl text-[#0F0F0F] tracking-tight mb-10 max-w-lg">
+                Ready to start learning?
+              </h2>
+
+              <div className="flex flex-wrap gap-4">
+                <Link
+                  href="/sign-in"
+                  className="font-body font-medium bg-[#3D006B] text-white px-7 py-3.5 rounded-md hover:bg-[#2A004A] transition-colors text-base"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="#how-it-works"
+                  className="font-body font-medium text-[#3D006B] border border-[#3D006B] px-7 py-3.5 rounded-md hover:bg-[#F3E8FF] transition-colors text-base"
+                >
+                  Learn More
+                </Link>
+              </div>
+            </div>
+
+            {/* Right: illustration */}
+            <div className="lg:w-1/2 flex justify-center lg:justify-end">
+              <div className="rounded-xl overflow-hidden shadow-lg ring-1 ring-purple-100 w-full max-w-md">
+                <Image
+                  src="https://placehold.co/600x400/3D006B/F3E8FF?text=Start+Learning"
+                  alt="Start learning illustration"
+                  width={600}
+                  height={400}
+                  loading="lazy"
+                  className="w-full h-auto block"
+                />
+              </div>
+            </div>
+
           </div>
-
         </div>
       </section>
 
@@ -488,7 +402,7 @@ export default function Home() {
               <p className="font-body text-sm text-[#6B7280] mb-4">
                 Learn. Prove it. Move forward.
               </p>
-              <p className="font-body text-xs text-[#9CA3AF]">© 2025 WithinTech</p>
+              <p className="font-body text-xs text-[#9CA3AF]" suppressHydrationWarning>© {new Date().getFullYear()} WithinTech</p>
             </div>
 
             <div>

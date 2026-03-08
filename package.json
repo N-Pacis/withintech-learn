@@ -4,7 +4,9 @@
   "scripts": {
     "dev": "pnpm --parallel -r dev",
     "build": "pnpm --parallel -r build",
-    "lint": "pnpm --parallel -r lint"
+    "lint": "pnpm --parallel -r lint",
+    "backend": "pnpm --filter @withintech-learn/api dev",
+    "frontend": "pnpm --filter @withintech-learn/web dev"
   },
   "devDependencies": {
     "typescript": "^5.4.0"
