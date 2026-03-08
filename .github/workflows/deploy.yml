@@ -8,7 +8,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy via SSH
+
+      # ── 1. Pull latest code ──────────────────────────────────────────────────
+      - name: Pull latest code
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -16,20 +18,28 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 222
           script_stop: true
-          # List every env var to forward to the remote script
-          envs: DATABASE_URL,JWT_ACCESS_SECRET,JWT_REFRESH_SECRET,JWT_ACCESS_EXPIRES_IN,JWT_REFRESH_EXPIRES_IN,STORAGE_PROVIDER,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,S3_BUCKET_NAME,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,EMAIL_FROM,NEXT_PUBLIC_API_URL,APP_URL,NODE_ENV,PORT,ADMIN_SEED_EMAIL,POSTGRES_USER,POSTGRES_PASSWORD,BCRYPT_ROUNDS,GH_PAT,GITHUB_REPOSITORY
+          envs: GH_PAT
           script: |
-            set -e
-
-            # Clone on first deploy, pull on subsequent ones
+            REPO_URL="https://N-Pacis:${GH_PAT}@github.com/N-Pacis/withintech-learn.git"
             if [ ! -d ~/withintech-learn ]; then
-              git clone "https://x-access-token:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git" ~/withintech-learn
+              git clone "$REPO_URL" ~/withintech-learn
+            else
+              git -C ~/withintech-learn pull "$REPO_URL" main
             fi
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
 
-            cd ~/withintech-learn
-            git pull origin main
-
-            # Write .env from GitHub Secrets
+      # ── 2. Write .env from secrets ───────────────────────────────────────────
+      - name: Write .env
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 222
+          script_stop: true
+          envs: DATABASE_URL,JWT_ACCESS_SECRET,JWT_REFRESH_SECRET,JWT_ACCESS_EXPIRES_IN,JWT_REFRESH_EXPIRES_IN,STORAGE_PROVIDER,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,S3_BUCKET_NAME,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,EMAIL_FROM,NEXT_PUBLIC_API_URL,APP_URL,NODE_ENV,PORT,ADMIN_SEED_EMAIL,POSTGRES_USER,POSTGRES_PASSWORD,BCRYPT_ROUNDS
+          script: |
             {
               printf 'DATABASE_URL=%s\n'           "$DATABASE_URL"
               printf 'JWT_ACCESS_SECRET=%s\n'      "$JWT_ACCESS_SECRET"
@@ -54,23 +64,7 @@ jobs:
               printf 'POSTGRES_USER=%s\n'          "$POSTGRES_USER"
               printf 'POSTGRES_PASSWORD=%s\n'      "$POSTGRES_PASSWORD"
               printf 'BCRYPT_ROUNDS=%s\n'          "${BCRYPT_ROUNDS:-12}"
-            } > .env
-
-            # Rebuild images and restart all services
-            docker-compose up --build -d
-
-            # Wait for the API container to be running, then run migrations
-            echo "Waiting for API container..."
-            for i in $(seq 1 12); do
-              docker-compose exec -T api echo "ready" 2>/dev/null && break
-              echo "  attempt $i/12..."
-              sleep 5
-            done
-            docker-compose exec -T api npx prisma migrate deploy
-            docker-compose exec -T api pnpm seed
-
-            # Remove dangling images to free up disk space
-            docker image prune -f
+            } > ~/withintech-learn/.env
         env:
           DATABASE_URL:           ${{ secrets.DATABASE_URL }}
           JWT_ACCESS_SECRET:      ${{ secrets.JWT_ACCESS_SECRET }}
@@ -95,5 +89,57 @@ jobs:
           POSTGRES_USER:          ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD:      ${{ secrets.POSTGRES_PASSWORD }}
           BCRYPT_ROUNDS:          ${{ secrets.BCRYPT_ROUNDS }}
-          GH_PAT:           ${{ secrets.GH_PAT }}
-          GITHUB_REPOSITORY:      ${{ github.repository }}
+
+      # ── 3. Build images & start services ────────────────────────────────────
+      - name: Build & start services
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 222
+          script_stop: true
+          script: |
+            cd ~/withintech-learn
+            docker-compose up --build -d
+
+      # ── 4. Run database migrations ───────────────────────────────────────────
+      - name: Run database migrations
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 222
+          script_stop: true
+          script: |
+            echo "Waiting for API container..."
+            for i in $(seq 1 12); do
+              docker-compose exec -T api echo "ready" 2>/dev/null && break
+              echo "  attempt $i/12..."
+              sleep 5
+            done
+            docker-compose -f ~/withintech-learn/docker-compose.yml exec -T api npx prisma migrate deploy
+
+      # ── 5. Seed database ─────────────────────────────────────────────────────
+      - name: Seed database
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 222
+          script_stop: true
+          script: |
+            docker-compose -f ~/withintech-learn/docker-compose.yml exec -T api pnpm seed
+
+      # ── 6. Clean up old images ───────────────────────────────────────────────
+      - name: Clean up old images
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 222
+          script: |
+            docker image prune -f
