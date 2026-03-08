@@ -21,10 +21,11 @@ jobs:
           envs: GH_PAT
           script: |
             REPO_URL="https://N-Pacis:${GH_PAT}@github.com/N-Pacis/withintech-learn.git"
-            if [ ! -d ~/withintech-learn ]; then
+            if [ ! -d ~/withintech-learn/.git ]; then
               git clone "$REPO_URL" ~/withintech-learn
             else
-              git -C ~/withintech-learn pull "$REPO_URL" main
+              git -C ~/withintech-learn remote set-url origin "$REPO_URL"
+              git -C ~/withintech-learn pull origin main
             fi
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
