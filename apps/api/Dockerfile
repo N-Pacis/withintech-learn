@@ -17,6 +17,9 @@ RUN cd apps/api && npx prisma generate
 # Build TypeScript
 RUN cd apps/api && pnpm build
 
+# Copy non-TS assets that tsc doesn't emit
+RUN cp apps/api/swagger.json apps/api/dist/swagger.json
+
 EXPOSE 3001
 WORKDIR /app/apps/api
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/index.js"]
