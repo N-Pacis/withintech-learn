@@ -96,6 +96,8 @@ jobs:
             COMPOSE="docker-compose -f $HOME/withintech-learn/docker-compose.yml"
             docker system prune -f
             $COMPOSE down
+            # Kill anything holding port 80 or 443 (e.g. stale nginx, apache, system services)
+            sudo fuser -k 80/tcp 443/tcp 2>/dev/null || true
             $COMPOSE up --build -d
 
       # ── 4. Seed database ─────────────────────────────────────────────────────
