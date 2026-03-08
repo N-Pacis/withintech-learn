@@ -108,13 +108,15 @@ jobs:
           port: 222
           script_stop: true
           script: |
+            echo "Waiting for system to settle..."
+            sleep 15
             echo "Waiting for API to finish migrations..."
             for i in $(seq 1 12); do
               docker exec withintech-learn_api echo "ready" 2>/dev/null && break
               echo "  attempt $i/12..."
               sleep 5
             done
-            docker exec withintech-learn_api node dist/scripts/seed.js
+            docker exec withintech-learn_api node --max-old-space-size=512 dist/scripts/seed.js
 
       # ── 6. Clean up old images ───────────────────────────────────────────────
       - name: Clean up old images
