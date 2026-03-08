@@ -97,26 +97,7 @@ jobs:
             $COMPOSE down
             $COMPOSE up --build -d
 
-      # ── 4. Run database migrations ───────────────────────────────────────────
-      - name: Run database migrations
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 222
-          script_stop: true
-          script: |
-            COMPOSE="docker-compose -f $HOME/withintech-learn/docker-compose.yml"
-            echo "Waiting for API container..."
-            for i in $(seq 1 12); do
-              $COMPOSE exec -T api echo "ready" 2>/dev/null && break
-              echo "  attempt $i/12..."
-              sleep 5
-            done
-            $COMPOSE exec -T api npx prisma migrate deploy
-
-      # ── 5. Seed database ─────────────────────────────────────────────────────
+      # ── 4. Seed database ─────────────────────────────────────────────────────
       - name: Seed database
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -126,7 +107,14 @@ jobs:
           port: 222
           script_stop: true
           script: |
-            docker-compose -f $HOME/withintech-learn/docker-compose.yml exec -T api pnpm seed
+            COMPOSE="docker-compose -f $HOME/withintech-learn/docker-compose.yml"
+            echo "Waiting for API to finish migrations..."
+            for i in $(seq 1 12); do
+              $COMPOSE exec -T api echo "ready" 2>/dev/null && break
+              echo "  attempt $i/12..."
+              sleep 5
+            done
+            $COMPOSE exec -T api pnpm seed
 
       # ── 6. Clean up old images ───────────────────────────────────────────────
       - name: Clean up old images
