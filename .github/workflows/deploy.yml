@@ -19,16 +19,8 @@ jobs:
           port: 222
           script_stop: true
           script: |
-            APP_DIR="$HOME/withintech-learn"
-            TOKEN="${{ secrets.GH_PAT }}"
-            git config --global url."https://$TOKEN@github.com/".insteadOf "https://github.com/"
-            if [ -d "$APP_DIR/.git" ]; then
-              cd "$APP_DIR"
-              git fetch origin main
-              git reset --hard origin/main
-            else
-              git clone https://github.com/N-Pacis/withintech-learn.git "$APP_DIR"
-            fi
+            rm -rf $HOME/withintech-learn
+            git clone https://N-Pacis:${{ secrets.GH_PAT }}@github.com/N-Pacis/withintech-learn.git $HOME/withintech-learn
 
       # ── 2. Write .env from secrets ───────────────────────────────────────────
       - name: Write .env
