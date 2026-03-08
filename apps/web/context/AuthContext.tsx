@@ -1,69 +1,33 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { apiFetch } from '@/lib/api';
-import { clearTokens, setTokens } from '@/lib/auth';
+import { createContext, useContext } from 'react';
+import { useProfile, useLogin, useLogout } from '@/hooks/queries/auth';
 import type { User } from '@/lib/auth';
 
 interface AuthContextValue {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ error?: string }>;
-  logout: () => Promise<void>;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Always load profile from the server — never from stored user data.
-  // This means a tampered token in localStorage will be rejected by the API,
-  // and the user will be treated as unauthenticated.
-  const loadProfile = useCallback(async () => {
-    try {
-      const res = await apiFetch<User>('/auth/profile');
-      setUser(res.success && res.data ? res.data : null);
-    } catch {
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
+  const { data: user = null, isLoading } = useProfile();
+  const loginMutation = useLogin();
+  const logoutMutation = useLogout();
 
   const login = async (email: string, password: string): Promise<{ error?: string }> => {
     try {
-      const res = await apiFetch<{ accessToken: string; refreshToken: string; user: User }>(
-        '/auth/login',
-        { method: 'POST', body: JSON.stringify({ email, password }) },
-      );
-
-      if (!res.success || !res.data) {
-        return { error: res.message ?? 'Login failed' };
-      }
-
-      setTokens(res.data.accessToken, res.data.refreshToken);
-      setUser(res.data.user);
+      await loginMutation.mutateAsync({ email, password });
       return {};
-    } catch {
-      return { error: 'Something went wrong. Please try again.' };
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : 'Login failed' };
     }
   };
 
-  const logout = async () => {
-    try {
-      await apiFetch('/auth/logout', { method: 'POST' });
-    } finally {
-      clearTokens();
-      setUser(null);
-      window.location.href = '/sign-in';
-    }
-  };
+  const logout = () => logoutMutation.mutate();
 
   return (
     <AuthContext.Provider value={{ user, isLoading, login, logout }}>
