@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/src/index.js",
     "lint": "eslint src",
-    "seed": "ts-node-dev --transpile-only scripts/seed.ts",
+    "seed": "node dist/scripts/seed.js",
     "migrate": "ts-node-dev --transpile-only scripts/migrate.ts"
   },
   "dependencies": {

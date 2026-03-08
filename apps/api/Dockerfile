@@ -19,4 +19,4 @@ RUN cd apps/api && pnpm build
 
 EXPOSE 3001
 WORKDIR /app/apps/api
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/index.js"]
