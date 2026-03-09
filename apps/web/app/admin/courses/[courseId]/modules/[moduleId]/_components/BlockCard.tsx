@@ -3,9 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useUpdateBlock, useUploadBlockImage, type Block } from '@/hooks/queries/modules';
-import { Button, Badge, Textarea, FormField, Input, FileUpload } from '@/components/ui';
+import { Button, Badge, Textarea, FormField, Input, FileUpload, CodeEditor, CodeLanguage } from '@/components/ui';
 import { cn } from '@/lib/utils';
-
 const IMAGE_ACCEPT = ['image/jpeg', 'image/png', 'image/webp'];
 
 // ─── Text block display ───────────────────────────────────────────────────────
@@ -115,6 +114,55 @@ function EditImageBlock({ block, moduleId, onDone }: { block: Block; moduleId: s
   );
 }
 
+// ─── Code block display ───────────────────────────────────────────────────────
+
+function CodeBlockView({ block }: { block: Block }) {
+  return (
+    <CodeEditor
+      value={block.content ?? ''}
+      language={(block.language ?? 'javascript') as CodeLanguage}
+      onValueChange={() => {}}
+      onLanguageChange={() => {}}
+      readOnly
+    />
+  );
+}
+
+// ─── Inline code editor ───────────────────────────────────────────────────────
+
+function EditCodeBlock({ block, moduleId, onDone }: { block: Block; moduleId: string; onDone: () => void }) {
+  const [content, setContent] = useState(block.content ?? '');
+  const [language, setLanguage] = useState<CodeLanguage>((block.language ?? 'javascript') as CodeLanguage);
+  const [error, setError] = useState('');
+  const { mutateAsync: updateBlock, isPending } = useUpdateBlock(moduleId);
+
+  async function handleSave() {
+    if (!content.trim()) { setError('Content cannot be empty.'); return; }
+    try {
+      await updateBlock({ id: block.id, content: content.trim(), language });
+      onDone();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save.');
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-3 pt-2">
+      <CodeEditor
+        value={content}
+        language={language}
+        onValueChange={setContent}
+        onLanguageChange={setLanguage}
+      />
+      {error && <p className="font-body text-xs text-red-500">{error}</p>}
+      <div className="flex gap-2 justify-end">
+        <Button variant="ghost" size="sm" onClick={onDone}>Cancel</Button>
+        <Button size="sm" loading={isPending} disabled={!content.trim()} onClick={handleSave}>Save</Button>
+      </div>
+    </div>
+  );
+}
+
 // ─── Block card ───────────────────────────────────────────────────────────────
 
 export interface BlockCardProps {
@@ -129,26 +177,14 @@ export interface BlockCardProps {
   onDelete: () => void;
   onConfirmDelete: () => void;
   onCancelDelete: () => void;
-  onDragStart: () => void;
-  onDragEnd: () => void;
-  onDragOver: (e: React.DragEvent) => void;
-  onDragLeave: () => void;
-  onDrop: () => void;
 }
 
 export function BlockCard({
   block, moduleId, isEditing, isDeleting, isDragging, isDragOver,
   onEdit, onCancelEdit, onDelete, onConfirmDelete, onCancelDelete,
-  onDragStart, onDragEnd, onDragOver, onDragLeave, onDrop,
 }: BlockCardProps) {
   return (
     <div
-      draggable
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
       className={cn(
         'flex gap-3 p-4 border-b border-[#E5E7EB] last:border-0 transition-all group',
         isDragging && 'opacity-40 bg-[#F3E8FF]/30',
@@ -171,8 +207,8 @@ export function BlockCard({
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-2">
-          <Badge variant={block.type === 'text' ? 'gray' : 'purple'} size="sm">
-            {block.type === 'text' ? 'Text' : 'Image'}
+          <Badge variant={block.type === 'text' ? 'gray' : block.type === 'image' ? 'purple' : 'success'} size="sm">
+            {block.type === 'text' ? 'Text' : block.type === 'image' ? 'Image' : 'Code'}
           </Badge>
           {!isEditing && !isDeleting && (
             <div className="ml-auto flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -187,7 +223,9 @@ export function BlockCard({
         {isEditing ? (
           block.type === 'text'
             ? <EditTextBlock block={block} moduleId={moduleId} onDone={onCancelEdit} />
-            : <EditImageBlock block={block} moduleId={moduleId} onDone={onCancelEdit} />
+            : block.type === 'image'
+              ? <EditImageBlock block={block} moduleId={moduleId} onDone={onCancelEdit} />
+              : <EditCodeBlock block={block} moduleId={moduleId} onDone={onCancelEdit} />
         ) : isDeleting ? (
           <div className="flex items-center gap-2 py-1">
             <p className="font-body text-xs text-[#6B7280] flex-1">Delete this block?</p>
@@ -195,7 +233,11 @@ export function BlockCard({
             <Button variant="ghost" size="sm" onClick={onCancelDelete}>Cancel</Button>
           </div>
         ) : (
-          block.type === 'text' ? <TextBlockView block={block} /> : <ImageBlockView block={block} />
+          block.type === 'text'
+            ? <TextBlockView block={block} />
+            : block.type === 'image'
+              ? <ImageBlockView block={block} />
+              : <CodeBlockView block={block} />
         )}
       </div>
     </div>

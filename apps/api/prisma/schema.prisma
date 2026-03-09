@@ -43,6 +43,7 @@ model OtpCode {
 enum BlockType {
   text
   image
+  code
 }
 
 model Course {
@@ -82,6 +83,7 @@ model ModuleBlock {
   content    String?
   storageKey String?
   caption    String?
+  language   String?
   orderIndex Int
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt

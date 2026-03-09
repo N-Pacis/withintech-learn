@@ -60,7 +60,7 @@ export const reorderModules = async (courseId: string, items: { id: string; orde
   });
 };
 
-export const addBlock = async (moduleId: string, data: { type: 'text' | 'image'; content?: string; caption?: string; orderIndex: number }) => {
+export const addBlock = async (moduleId: string, data: { type: 'text' | 'image' | 'code'; content?: string; caption?: string; language?: string; orderIndex: number }) => {
   const mod = await prisma.module.findUnique({ where: { id: moduleId } });
   if (!mod) throw notFound('Module not found');
   try {

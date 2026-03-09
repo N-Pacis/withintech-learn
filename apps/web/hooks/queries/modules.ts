@@ -16,11 +16,12 @@ export interface Module {
 export interface Block {
   id: string;
   moduleId: string;
-  type: 'text' | 'image';
+  type: 'text' | 'image' | 'code';
   content: string | null;
   storageKey: string | null;
   url: string | null;
   caption: string | null;
+  language: string | null;
   orderIndex: number;
   createdAt: string;
   updatedAt: string;
@@ -161,7 +162,8 @@ export function useAddBlock(moduleId: string) {
     mutationFn: async (
       data:
         | { type: 'text'; content: string; orderIndex: number }
-        | { type: 'image'; caption?: string; orderIndex: number },
+        | { type: 'image'; caption?: string; orderIndex: number }
+        | { type: 'code'; content: string; language: string; orderIndex: number },
     ): Promise<Block> => {
       const res = await apiFetch<Block>(`/admin/modules/${moduleId}/blocks`, {
         method: 'POST',
@@ -184,14 +186,16 @@ export function useUpdateBlock(moduleId: string) {
       id,
       content,
       caption,
+      language,
     }: {
       id: string;
       content?: string;
       caption?: string;
+      language?: string;
     }): Promise<Block> => {
       const res = await apiFetch<Block>(`/admin/modules/${moduleId}/blocks/${id}`, {
         method: 'PATCH',
-        body: JSON.stringify({ content, caption }),
+        body: JSON.stringify({ content, caption, language }),
       });
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;

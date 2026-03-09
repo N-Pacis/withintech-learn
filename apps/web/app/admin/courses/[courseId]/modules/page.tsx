@@ -5,97 +5,71 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useCourse } from '@/hooks/queries/courses';
 import { useModules, useDeleteModule, useReorderModules, type Module } from '@/hooks/queries/modules';
-import { Button, Card, PageLoader, Spinner } from '@/components/ui';
+import { Button, Card, PageLoader, ReorderableList } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
-function ModuleList({
-  modules, courseId, onDelete, onReorder, reordering,
+function ModuleRow({
+  mod,
+  courseId,
+  reordering,
+  isDragging,
+  isDragOver,
+  onDelete,
 }: {
-  modules: Module[];
+  mod: Module;
   courseId: string;
-  onDelete: (id: string) => void;
-  onReorder: (items: { id: string; orderIndex: number }[]) => void;
   reordering: boolean;
+  isDragging: boolean;
+  isDragOver: boolean;
+  onDelete: (id: string) => void;
 }) {
-  const [dragId, setDragId] = useState<string | null>(null);
-  const [dragOverId, setDragOverId] = useState<string | null>(null);
-  const [confirmingId, setConfirmingId] = useState<string | null>(null);
-
-  function handleDrop(targetId: string) {
-    if (!dragId || dragId === targetId) { setDragId(null); setDragOverId(null); return; }
-    const drag = modules.find(m => m.id === dragId);
-    const target = modules.find(m => m.id === targetId);
-    if (!drag || !target) return;
-    onReorder(modules.map(m => {
-      if (m.id === dragId) return { id: m.id, orderIndex: target.orderIndex };
-      if (m.id === targetId) return { id: m.id, orderIndex: drag.orderIndex };
-      return { id: m.id, orderIndex: m.orderIndex };
-    }));
-    setDragId(null); setDragOverId(null);
-  }
+  const [confirming, setConfirming] = useState(false);
 
   return (
-    <Card>
-      {modules.map((mod) => {
-        const isDragging = dragId === mod.id;
-        const isOver = dragOverId === mod.id && dragId !== mod.id;
-        const confirming = confirmingId === mod.id;
+    <div
+      className={cn(
+        'flex items-center gap-3 px-4 py-4 border-b border-[#E5E7EB] last:border-0 transition-all group',
+        isDragging && 'bg-[#F3E8FF]/30',
+        isDragOver && 'bg-[#F3E8FF]/50 border-l-2 border-l-[#3D006B]',
+        !isDragging && !isDragOver && 'hover:bg-[#FAFAFA]',
+      )}
+    >
+      {/* Drag handle */}
+      <span className={cn('shrink-0 text-[#D1D5DB] group-hover:text-[#9CA3AF] transition-colors', reordering ? 'cursor-wait' : 'cursor-grab active:cursor-grabbing')}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="9" cy="5" r="1.5" /><circle cx="15" cy="5" r="1.5" />
+          <circle cx="9" cy="12" r="1.5" /><circle cx="15" cy="12" r="1.5" />
+          <circle cx="9" cy="19" r="1.5" /><circle cx="15" cy="19" r="1.5" />
+        </svg>
+      </span>
 
-        return (
-          <div
-            key={mod.id}
-            draggable
-            onDragStart={() => setDragId(mod.id)}
-            onDragEnd={() => { setDragId(null); setDragOverId(null); }}
-            onDragOver={(e) => { e.preventDefault(); setDragOverId(mod.id); }}
-            onDragLeave={() => setDragOverId(null)}
-            onDrop={() => handleDrop(mod.id)}
-            className={cn(
-              'flex items-center gap-3 px-4 py-4 border-b border-[#E5E7EB] last:border-0 transition-all group',
-              isDragging && 'opacity-40 bg-[#F3E8FF]/30',
-              isOver && 'bg-[#F3E8FF]/50 border-l-2 border-l-[#3D006B]',
-              !isDragging && !isOver && 'hover:bg-[#FAFAFA]',
-            )}
-          >
-            {/* Drag handle */}
-            <span className={cn('shrink-0 text-[#D1D5DB] group-hover:text-[#9CA3AF] transition-colors', reordering ? 'cursor-wait' : 'cursor-grab active:cursor-grabbing')}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="9" cy="5" r="1.5" /><circle cx="15" cy="5" r="1.5" />
-                <circle cx="9" cy="12" r="1.5" /><circle cx="15" cy="12" r="1.5" />
-                <circle cx="9" cy="19" r="1.5" /><circle cx="15" cy="19" r="1.5" />
-              </svg>
-            </span>
+      {/* Order badge */}
+      <span className="w-6 h-6 rounded-full bg-[#F3E8FF] flex items-center justify-center shrink-0">
+        <span className="font-heading font-bold text-xs text-[#3D006B]">{mod.orderIndex}</span>
+      </span>
 
-            {/* Order badge */}
-            <span className="w-6 h-6 rounded-full bg-[#F3E8FF] flex items-center justify-center shrink-0">
-              <span className="font-heading font-bold text-xs text-[#3D006B]">{mod.orderIndex}</span>
-            </span>
+      {/* Title */}
+      <Link
+        href={`/admin/courses/${courseId}/modules/${mod.id}`}
+        className="flex-1 font-body text-sm text-[#0F0F0F] truncate hover:text-[#3D006B] transition-colors"
+      >
+        {mod.title}
+      </Link>
 
-            {/* Title — clickable to enter module editor */}
-            <Link
-              href={`/admin/courses/${courseId}/modules/${mod.id}`}
-              className="flex-1 font-body text-sm text-[#0F0F0F] truncate hover:text-[#3D006B] transition-colors"
-            >
-              {mod.title}
-            </Link>
-
-            {/* Actions */}
-            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-              {confirming ? (
-                <>
-                  <Button variant="danger" size="sm" onClick={() => { onDelete(mod.id); setConfirmingId(null); }}>Confirm</Button>
-                  <Button variant="ghost" size="sm" onClick={() => setConfirmingId(null)}>Cancel</Button>
-                </>
-              ) : (
-                <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => setConfirmingId(mod.id)}>
-                  Delete
-                </Button>
-              )}
-            </div>
-          </div>
-        );
-      })}
-    </Card>
+      {/* Actions */}
+      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+        {confirming ? (
+          <>
+            <Button variant="danger" size="sm" onClick={() => { onDelete(mod.id); setConfirming(false); }}>Confirm</Button>
+            <Button variant="ghost" size="sm" onClick={() => setConfirming(false)}>Cancel</Button>
+          </>
+        ) : (
+          <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => setConfirming(true)}>
+            Delete
+          </Button>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -176,13 +150,22 @@ export default function ModulesListPage() {
               </svg>
               Drag to reorder · Click a module to edit its content
             </p>
-            <ModuleList
-              modules={sortedModules}
-              courseId={courseId}
-              onDelete={(id) => deleteModule(id)}
-              onReorder={(items) => reorderModules(items)}
-              reordering={reordering}
-            />
+            <Card>
+              <ReorderableList
+                items={sortedModules}
+                onReorder={(items) => reorderModules(items)}
+                renderItem={(mod, { isDragging, isDragOver }) => (
+                  <ModuleRow
+                    mod={mod}
+                    courseId={courseId}
+                    reordering={reordering}
+                    isDragging={isDragging}
+                    isDragOver={isDragOver}
+                    onDelete={(id) => deleteModule(id)}
+                  />
+                )}
+              />
+            </Card>
           </>
         )}
       </div>

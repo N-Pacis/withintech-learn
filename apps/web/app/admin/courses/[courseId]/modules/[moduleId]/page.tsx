@@ -4,10 +4,10 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useModule, useUpdateModule, useDeleteBlock, useReorderBlocks } from '@/hooks/queries/modules';
-import { Button, Card, PageLoader, Input } from '@/components/ui';
+import { Button, Card, PageLoader, Input, ReorderableList } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { BlockCard } from './_components/BlockCard';
-import { AddTextBlockForm, AddImageBlockForm } from './_components/AddBlockForms';
+import { AddTextBlockForm, AddImageBlockForm, AddCodeBlockForm } from './_components/AddBlockForms';
 
 export default function ModuleDetailPage() {
   const { courseId, moduleId } = useParams<{ courseId: string; moduleId: string }>();
@@ -21,13 +21,9 @@ export default function ModuleDetailPage() {
   const [titleError, setTitleError] = useState('');
   const titleInputRef = useRef<HTMLInputElement>(null);
 
-  const [addingType, setAddingType] = useState<'text' | 'image' | null>(null);
+  const [addingType, setAddingType] = useState<'text' | 'image' | 'code' | null>(null);
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [deletingBlockId, setDeletingBlockId] = useState<string | null>(null);
-
-  // Drag state
-  const [dragId, setDragId] = useState<string | null>(null);
-  const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   useEffect(() => {
     if (module && !editingTitle) setTitleValue(module.title);
@@ -46,23 +42,6 @@ export default function ModuleDetailPage() {
     } catch (err) {
       setTitleError(err instanceof Error ? err.message : 'Failed to save.');
     }
-  }
-
-  function handleDrop(targetId: string) {
-    if (!dragId || dragId === targetId || !module) {
-      setDragId(null); setDragOverId(null); return;
-    }
-    const drag = module.blocks.find(b => b.id === dragId);
-    const target = module.blocks.find(b => b.id === targetId);
-    if (!drag || !target) return;
-
-    const items = module.blocks.map(b => {
-      if (b.id === dragId) return { id: b.id, orderIndex: target.orderIndex };
-      if (b.id === targetId) return { id: b.id, orderIndex: drag.orderIndex };
-      return { id: b.id, orderIndex: b.orderIndex };
-    });
-    reorderBlocks(items);
-    setDragId(null); setDragOverId(null);
   }
 
   if (isLoading) return <PageLoader type="content" className="p-8 lg:p-12" />;
@@ -149,27 +128,25 @@ export default function ModuleDetailPage() {
               Drag to reorder
             </p>
             <Card>
-              {sortedBlocks.map((block) => (
-                <BlockCard
-                  key={block.id}
-                  block={block}
-                  moduleId={moduleId}
-                  isEditing={editingBlockId === block.id}
-                  isDeleting={deletingBlockId === block.id}
-                  isDragging={dragId === block.id}
-                  isDragOver={dragOverId === block.id && dragId !== block.id}
-                  onEdit={() => { setDeletingBlockId(null); setAddingType(null); setEditingBlockId(block.id); }}
-                  onCancelEdit={() => setEditingBlockId(null)}
-                  onDelete={() => { setEditingBlockId(null); setDeletingBlockId(block.id); }}
-                  onConfirmDelete={() => { deleteBlock(block.id); setDeletingBlockId(null); }}
-                  onCancelDelete={() => setDeletingBlockId(null)}
-                  onDragStart={() => setDragId(block.id)}
-                  onDragEnd={() => { setDragId(null); setDragOverId(null); }}
-                  onDragOver={(e) => { e.preventDefault(); setDragOverId(block.id); }}
-                  onDragLeave={() => setDragOverId(null)}
-                  onDrop={() => handleDrop(block.id)}
-                />
-              ))}
+              <ReorderableList
+                items={sortedBlocks}
+                onReorder={(items) => reorderBlocks(items)}
+                renderItem={(block, { isDragging, isDragOver }) => (
+                  <BlockCard
+                    block={block}
+                    moduleId={moduleId}
+                    isEditing={editingBlockId === block.id}
+                    isDeleting={deletingBlockId === block.id}
+                    isDragging={isDragging}
+                    isDragOver={isDragOver}
+                    onEdit={() => { setDeletingBlockId(null); setAddingType(null); setEditingBlockId(block.id); }}
+                    onCancelEdit={() => setEditingBlockId(null)}
+                    onDelete={() => { setEditingBlockId(null); setDeletingBlockId(block.id); }}
+                    onConfirmDelete={() => { deleteBlock(block.id); setDeletingBlockId(null); }}
+                    onCancelDelete={() => setDeletingBlockId(null)}
+                  />
+                )}
+              />
             </Card>
           </>
         )}
@@ -192,9 +169,12 @@ export default function ModuleDetailPage() {
         {addingType === 'image' && (
           <AddImageBlockForm moduleId={moduleId} nextOrder={nextOrder} onDone={() => setAddingType(null)} />
         )}
+        {addingType === 'code' && (
+          <AddCodeBlockForm moduleId={moduleId} nextOrder={nextOrder} onDone={() => setAddingType(null)} />
+        )}
 
         {!addingType && (
-          <div className={cn('flex items-center gap-3', sortedBlocks.length === 0 && 'justify-center')}>
+          <div className={cn('flex items-center gap-3 flex-wrap', sortedBlocks.length === 0 && 'justify-center')}>
             <Button variant="secondary" size="sm" onClick={() => { setEditingBlockId(null); setDeletingBlockId(null); setAddingType('text'); }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -206,6 +186,12 @@ export default function ModuleDetailPage() {
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
               </svg>
               Add Image Block
+            </Button>
+            <Button variant="secondary" size="sm" onClick={() => { setEditingBlockId(null); setDeletingBlockId(null); setAddingType('code'); }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
+              </svg>
+              Add Code Block
             </Button>
           </div>
         )}

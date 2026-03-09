@@ -10,3 +10,7 @@ export { Tabs } from './Tabs';
 export type { Tab } from './Tabs';
 export { PageLoader } from './PageLoader';
 export type { PageLoaderType } from './PageLoader';
+export { CodeEditor } from './CodeEditor';
+export type { CodeLanguage } from './CodeEditor';
+export { ReorderableList } from './ReorderableList';
+export type { ReorderItem } from './ReorderableList';

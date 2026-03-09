@@ -155,7 +155,8 @@
             "type": "string",
             "enum": [
               "text",
-              "image"
+              "image",
+              "code"
             ]
           },
           "content": {
@@ -172,6 +173,11 @@
           },
           "caption": {
             "type": "string",
+            "nullable": true
+          },
+          "language": {
+            "type": "string",
+            "enum": ["html", "css", "javascript", "python"],
             "nullable": true
           },
           "orderIndex": {
@@ -1560,7 +1566,7 @@
           "Admin / Blocks"
         ],
         "summary": "Add a block to a module",
-        "description": "For `text` blocks supply `content`. For `image` blocks supply optional `caption`. Upload the image separately via the upload-image endpoint.",
+        "description": "For `text` blocks supply `content`. For `image` blocks supply optional `caption`. For `code` blocks supply `content` and `language` (html|css|javascript|python). Upload images separately via the upload-image endpoint.",
         "security": [
           {
             "bearerAuth": []
@@ -1592,7 +1598,8 @@
                     "type": "string",
                     "enum": [
                       "text",
-                      "image"
+                      "image",
+                      "code"
                     ]
                   },
                   "content": {
@@ -1600,6 +1607,10 @@
                   },
                   "caption": {
                     "type": "string"
+                  },
+                  "language": {
+                    "type": "string",
+                    "enum": ["html", "css", "javascript", "python"]
                   },
                   "orderIndex": {
                     "type": "integer",
@@ -1758,7 +1769,7 @@
         "tags": [
           "Admin / Blocks"
         ],
-        "summary": "Update a block (text content or image caption)",
+        "summary": "Update a block (text content, image caption, or code content/language)",
         "security": [
           {
             "bearerAuth": []
@@ -1795,6 +1806,10 @@
                   },
                   "caption": {
                     "type": "string"
+                  },
+                  "language": {
+                    "type": "string",
+                    "enum": ["html", "css", "javascript", "python"]
                   }
                 }
               }
