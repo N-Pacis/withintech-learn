@@ -1,6 +1,12 @@
 export { Button } from './Button';
 export { Input } from './Input';
+export { Textarea } from './Textarea';
 export { FormField } from './FormField';
 export { Card, CardHeader, CardBody, CardFooter } from './Card';
 export { Badge } from './Badge';
 export { default as Spinner } from './Spinner';
+export { FileUpload } from './FileUpload';
+export { Tabs } from './Tabs';
+export type { Tab } from './Tabs';
+export { PageLoader } from './PageLoader';
+export type { PageLoaderType } from './PageLoader';

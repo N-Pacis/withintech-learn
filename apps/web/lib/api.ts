@@ -37,9 +37,12 @@ export async function apiFetch<T = unknown>(
 ): Promise<{ success: boolean; message: string; data?: T }> {
   const request = async (token: string | null) => {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
       ...(options.headers as Record<string, string>),
     };
+    // Let the browser set Content-Type automatically for FormData (includes boundary)
+    if (!(options.body instanceof FormData)) {
+      headers['Content-Type'] = 'application/json';
+    }
     if (token) headers['Authorization'] = `Bearer ${token}`;
     return fetch(`${BASE}${path}`, { ...options, headers });
   };

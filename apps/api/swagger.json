@@ -6,7 +6,10 @@
     "description": "REST API for the WithinTech-Learn LMS platform."
   },
   "servers": [
-    { "url": "/api", "description": "Current host" }
+    {
+      "url": "/api",
+      "description": "Current host"
+    }
   ],
   "components": {
     "securitySchemes": {
@@ -20,103 +23,263 @@
       "SuccessResponse": {
         "type": "object",
         "properties": {
-          "success": { "type": "boolean", "example": true },
-          "message": { "type": "string" },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string"
+          },
           "data": {}
         }
       },
       "ErrorResponse": {
         "type": "object",
         "properties": {
-          "success": { "type": "boolean", "example": false },
-          "message": { "type": "string" }
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string"
+          }
         }
       },
       "User": {
         "type": "object",
         "properties": {
-          "id":        { "type": "string", "format": "uuid" },
-          "email":     { "type": "string", "format": "email" },
-          "firstName": { "type": "string" },
-          "lastName":  { "type": "string" },
-          "role":      { "type": "string", "enum": ["admin", "student"] }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "student"
+            ]
+          }
         }
       },
       "Course": {
         "type": "object",
         "properties": {
-          "id":           { "type": "string", "format": "uuid" },
-          "title":        { "type": "string" },
-          "slug":         { "type": "string" },
-          "description":  { "type": "string", "nullable": true },
-          "thumbnailKey": { "type": "string", "nullable": true },
-          "thumbnailUrl": { "type": "string", "nullable": true },
-          "isPublished":  { "type": "boolean" },
-          "createdById":  { "type": "string", "format": "uuid" },
-          "createdAt":    { "type": "string", "format": "date-time" },
-          "updatedAt":    { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "thumbnailKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "isPublished": {
+            "type": "boolean"
+          },
+          "createdById": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "Module": {
         "type": "object",
         "properties": {
-          "id":         { "type": "string", "format": "uuid" },
-          "courseId":   { "type": "string", "format": "uuid" },
-          "title":      { "type": "string" },
-          "orderIndex": { "type": "integer" },
-          "createdAt":  { "type": "string", "format": "date-time" },
-          "updatedAt":  { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "courseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "orderIndex": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "ModuleBlock": {
         "type": "object",
         "properties": {
-          "id":         { "type": "string", "format": "uuid" },
-          "moduleId":   { "type": "string", "format": "uuid" },
-          "type":       { "type": "string", "enum": ["text", "image"] },
-          "content":    { "type": "string", "nullable": true },
-          "storageKey": { "type": "string", "nullable": true },
-          "url":        { "type": "string", "nullable": true },
-          "caption":    { "type": "string", "nullable": true },
-          "orderIndex": { "type": "integer" },
-          "createdAt":  { "type": "string", "format": "date-time" },
-          "updatedAt":  { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "moduleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "image"
+            ]
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "storageKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "caption": {
+            "type": "string",
+            "nullable": true
+          },
+          "orderIndex": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "Quiz": {
         "type": "object",
         "properties": {
-          "id":           { "type": "string", "format": "uuid" },
-          "moduleId":     { "type": "string", "format": "uuid", "nullable": true },
-          "courseId":     { "type": "string", "format": "uuid", "nullable": true },
-          "title":        { "type": "string" },
-          "passingScore": { "type": "integer", "minimum": 0, "maximum": 100 },
-          "maxAttempts":  { "type": "integer" },
-          "createdAt":    { "type": "string", "format": "date-time" },
-          "updatedAt":    { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "moduleId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "courseId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "title": {
+            "type": "string"
+          },
+          "passingScore": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "maxAttempts": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "Question": {
         "type": "object",
         "properties": {
-          "id":         { "type": "string", "format": "uuid" },
-          "quizId":     { "type": "string", "format": "uuid" },
-          "text":       { "type": "string" },
-          "orderIndex": { "type": "integer" },
-          "createdAt":  { "type": "string", "format": "date-time" },
-          "updatedAt":  { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quizId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string"
+          },
+          "orderIndex": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "QuestionOption": {
         "type": "object",
         "properties": {
-          "id":         { "type": "string", "format": "uuid" },
-          "questionId": { "type": "string", "format": "uuid" },
-          "text":       { "type": "string" },
-          "isCorrect":  { "type": "boolean" },
-          "orderIndex": { "type": "integer" },
-          "createdAt":  { "type": "string", "format": "date-time" },
-          "updatedAt":  { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "questionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string"
+          },
+          "isCorrect": {
+            "type": "boolean"
+          },
+          "orderIndex": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -125,7 +288,9 @@
         "description": "Missing or invalid token.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
           }
         }
       },
@@ -133,7 +298,9 @@
         "description": "Insufficient permissions.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
           }
         }
       },
@@ -141,7 +308,9 @@
         "description": "Resource already exists.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
           }
         }
       },
@@ -149,7 +318,9 @@
         "description": "Validation error or bad input.",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
           }
         }
       }
@@ -158,7 +329,9 @@
   "paths": {
     "/auth/login": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Login",
         "requestBody": {
           "required": true,
@@ -166,10 +339,19 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email", "password"],
+                "required": [
+                  "email",
+                  "password"
+                ],
                 "properties": {
-                  "email":    { "type": "string", "format": "email" },
-                  "password": { "type": "string", "minLength": 6 }
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 6
+                  }
                 }
               }
             }
@@ -182,15 +364,23 @@
               "application/json": {
                 "schema": {
                   "allOf": [
-                    { "$ref": "#/components/schemas/SuccessResponse" },
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
                     {
                       "properties": {
                         "data": {
                           "type": "object",
                           "properties": {
-                            "accessToken":  { "type": "string" },
-                            "refreshToken": { "type": "string" },
-                            "user": { "$ref": "#/components/schemas/User" }
+                            "accessToken": {
+                              "type": "string"
+                            },
+                            "refreshToken": {
+                              "type": "string"
+                            },
+                            "user": {
+                              "$ref": "#/components/schemas/User"
+                            }
                           }
                         }
                       }
@@ -200,15 +390,23 @@
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/auth/refresh": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Refresh access token",
         "requestBody": {
           "required": true,
@@ -216,9 +414,13 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["refreshToken"],
+                "required": [
+                  "refreshToken"
+                ],
                 "properties": {
-                  "refreshToken": { "type": "string" }
+                  "refreshToken": {
+                    "type": "string"
+                  }
                 }
               }
             }
@@ -231,13 +433,17 @@
               "application/json": {
                 "schema": {
                   "allOf": [
-                    { "$ref": "#/components/schemas/SuccessResponse" },
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
                     {
                       "properties": {
                         "data": {
                           "type": "object",
                           "properties": {
-                            "accessToken": { "type": "string" }
+                            "accessToken": {
+                              "type": "string"
+                            }
                           }
                         }
                       }
@@ -247,44 +453,75 @@
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/auth/logout": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Logout",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Logged out.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/auth/register": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Register a new student (admin only)",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["firstName", "lastName", "email"],
+                "required": [
+                  "firstName",
+                  "lastName",
+                  "email"
+                ],
                 "properties": {
-                  "firstName": { "type": "string", "minLength": 1 },
-                  "lastName":  { "type": "string", "minLength": 1 },
-                  "email":     { "type": "string", "format": "email" }
+                  "firstName": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
                 }
               }
             }
@@ -297,16 +534,28 @@
               "application/json": {
                 "schema": {
                   "allOf": [
-                    { "$ref": "#/components/schemas/SuccessResponse" },
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
                     {
                       "properties": {
                         "data": {
                           "type": "object",
                           "properties": {
-                            "id":        { "type": "string", "format": "uuid" },
-                            "email":     { "type": "string", "format": "email" },
-                            "firstName": { "type": "string" },
-                            "lastName":  { "type": "string" }
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "email": {
+                              "type": "string",
+                              "format": "email"
+                            },
+                            "firstName": {
+                              "type": "string"
+                            },
+                            "lastName": {
+                              "type": "string"
+                            }
                           }
                         }
                       }
@@ -316,16 +565,26 @@
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       }
     },
     "/auth/password-reset/request": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Request a password reset OTP",
         "description": "Sends a 6-digit OTP to the given email if an account exists. Always returns success to prevent email enumeration.",
         "requestBody": {
@@ -334,9 +593,14 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email"],
+                "required": [
+                  "email"
+                ],
                 "properties": {
-                  "email": { "type": "string", "format": "email" }
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
                 }
               }
             }
@@ -347,17 +611,23 @@
             "description": "Request received.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
         }
       }
     },
     "/auth/password-reset/confirm": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Confirm OTP and set new password",
         "description": "Verifies the OTP (valid for 10 minutes) and updates the password. Also activates the account if it was inactive.",
         "requestBody": {
@@ -366,11 +636,25 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email", "otp", "newPassword"],
+                "required": [
+                  "email",
+                  "otp",
+                  "newPassword"
+                ],
                 "properties": {
-                  "email":       { "type": "string", "format": "email" },
-                  "otp":         { "type": "string", "minLength": 6, "maxLength": 6 },
-                  "newPassword": { "type": "string", "minLength": 8 }
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 6
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 8
+                  }
                 }
               }
             }
@@ -381,29 +665,48 @@
             "description": "Password reset successfully.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
         }
       }
     },
     "/auth/password/change": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Change password (authenticated)",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["currentPassword", "newPassword"],
+                "required": [
+                  "currentPassword",
+                  "newPassword"
+                ],
                 "properties": {
-                  "currentPassword": { "type": "string", "minLength": 6 },
-                  "newPassword":     { "type": "string", "minLength": 8 }
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 6
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 8
+                  }
                 }
               }
             }
@@ -414,226 +717,642 @@
             "description": "Password changed.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/admin/courses": {
       "post": {
-        "tags": ["Admin / Courses"],
+        "tags": [
+          "Admin / Courses"
+        ],
         "summary": "Create a course",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["title"],
+                "required": [
+                  "title"
+                ],
                 "properties": {
-                  "title":       { "type": "string", "minLength": 1 },
-                  "description": { "type": "string" }
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": {
+                    "type": "string"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Course created.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "201": {
+            "description": "Course created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       },
       "get": {
-        "tags": ["Admin / Courses"],
+        "tags": [
+          "Admin / Courses"
+        ],
         "summary": "List courses (paginated)",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "query", "name": "page",  "schema": { "type": "integer", "default": 1 } },
-          { "in": "query", "name": "limit", "schema": { "type": "integer", "default": 20, "maximum": 100 } }
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "isPublished",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            },
+            "description": "Filter by published status"
+          }
         ],
         "responses": {
-          "200": { "description": "Paginated list of courses.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "200": {
+            "description": "Paginated list of courses.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/admin/courses/{id}": {
       "get": {
-        "tags": ["Admin / Courses"],
+        "tags": [
+          "Admin / Courses"
+        ],
         "summary": "Get a course by ID",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Course detail.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Course detail.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       },
       "patch": {
-        "tags": ["Admin / Courses"],
+        "tags": [
+          "Admin / Courses"
+        ],
         "summary": "Update a course",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "title":       { "type": "string" },
-                  "description": { "type": "string" }
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Course updated.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Course updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       },
       "delete": {
-        "tags": ["Admin / Courses"],
+        "tags": [
+          "Admin / Courses"
+        ],
         "summary": "Delete a course",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Course deleted.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Course deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
     "/admin/courses/{id}/publish": {
       "patch": {
-        "tags": ["Admin / Courses"],
+        "tags": [
+          "Admin / Courses"
+        ],
         "summary": "Publish a course",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Course published.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Course published.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
     "/admin/courses/{id}/unpublish": {
       "patch": {
-        "tags": ["Admin / Courses"],
+        "tags": [
+          "Admin / Courses"
+        ],
         "summary": "Unpublish a course",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Course unpublished.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Course unpublished.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
     "/admin/courses/{id}/upload-thumbnail": {
       "post": {
-        "tags": ["Admin / Courses"],
+        "tags": [
+          "Admin / Courses"
+        ],
         "summary": "Upload course thumbnail",
         "description": "Multipart form upload. Field name: `image`. Replaces existing thumbnail.",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "multipart/form-data": {
               "schema": {
                 "type": "object",
-                "properties": { "image": { "type": "string", "format": "binary" } }
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Thumbnail uploaded. Returns storageKey and signed URL.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "200": {
+            "description": "Thumbnail uploaded. Returns storageKey and signed URL.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/admin/courses/{courseId}/modules": {
       "post": {
-        "tags": ["Admin / Modules"],
+        "tags": [
+          "Admin / Modules"
+        ],
         "summary": "Add a module to a course",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "courseId", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "courseId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["title", "orderIndex"],
+                "required": [
+                  "title",
+                  "orderIndex"
+                ],
                 "properties": {
-                  "title":      { "type": "string" },
-                  "orderIndex": { "type": "integer", "minimum": 1 }
+                  "title": {
+                    "type": "string"
+                  },
+                  "orderIndex": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Module added.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Course not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "201": {
+            "description": "Module added.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Course not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       },
       "get": {
-        "tags": ["Admin / Modules"],
+        "tags": [
+          "Admin / Modules"
+        ],
         "summary": "List modules for a course",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "courseId", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "courseId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Ordered list of modules.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "200": {
+            "description": "Ordered list of modules.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/admin/courses/{courseId}/modules/reorder": {
       "post": {
-        "tags": ["Admin / Modules"],
+        "tags": [
+          "Admin / Modules"
+        ],
         "summary": "Reorder modules atomically",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "courseId", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "courseId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["items"],
+                "required": [
+                  "items"
+                ],
                 "properties": {
                   "items": {
                     "type": "array",
                     "items": {
                       "type": "object",
-                      "required": ["id", "orderIndex"],
+                      "required": [
+                        "id",
+                        "orderIndex"
+                      ],
                       "properties": {
-                        "id":         { "type": "string", "format": "uuid" },
-                        "orderIndex": { "type": "integer", "minimum": 1 }
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "orderIndex": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
                       }
                     }
                   }
@@ -643,128 +1362,366 @@
           }
         },
         "responses": {
-          "200": { "description": "Modules reordered.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "200": {
+            "description": "Modules reordered.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/admin/modules/{id}": {
       "get": {
-        "tags": ["Admin / Modules"],
+        "tags": [
+          "Admin / Modules"
+        ],
         "summary": "Get a module by ID",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Module detail with blocks.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
-        }
-      },
-      "patch": {
-        "tags": ["Admin / Modules"],
-        "summary": "Update a module title",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["title"],
-                "properties": { "title": { "type": "string" } }
+          "200": {
+            "description": "Module detail with blocks.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
-        },
-        "responses": {
-          "200": { "description": "Module updated.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
         }
       },
-      "delete": {
-        "tags": ["Admin / Modules"],
-        "summary": "Delete a module (cascades blocks)",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
-        "responses": {
-          "200": { "description": "Module deleted.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
-        }
-      }
-    },
-    "/admin/modules/{moduleId}/blocks": {
-      "post": {
-        "tags": ["Admin / Blocks"],
-        "summary": "Add a block to a module",
-        "description": "For `text` blocks supply `content`. For `image` blocks supply optional `caption`. Upload the image separately via the upload-image endpoint.",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "moduleId", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+      "patch": {
+        "tags": [
+          "Admin / Modules"
+        ],
+        "summary": "Update a module title",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["type", "orderIndex"],
+                "required": [
+                  "title"
+                ],
                 "properties": {
-                  "type":       { "type": "string", "enum": ["text", "image"] },
-                  "content":    { "type": "string" },
-                  "caption":    { "type": "string" },
-                  "orderIndex": { "type": "integer", "minimum": 1 }
+                  "title": {
+                    "type": "string"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Block added.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "200": {
+            "description": "Module updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       },
-      "get": {
-        "tags": ["Admin / Blocks"],
-        "summary": "List blocks for a module",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "moduleId", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+      "delete": {
+        "tags": [
+          "Admin / Modules"
+        ],
+        "summary": "Delete a module (cascades blocks)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Ordered list of blocks. Image blocks include a signed `url`.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "200": {
+            "description": "Module deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
-    "/admin/modules/{moduleId}/blocks/reorder": {
+    "/admin/modules/{moduleId}/blocks": {
       "post": {
-        "tags": ["Admin / Blocks"],
-        "summary": "Reorder blocks atomically",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "moduleId", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "tags": [
+          "Admin / Blocks"
+        ],
+        "summary": "Add a block to a module",
+        "description": "For `text` blocks supply `content`. For `image` blocks supply optional `caption`. Upload the image separately via the upload-image endpoint.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "moduleId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["items"],
+                "required": [
+                  "type",
+                  "orderIndex"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "text",
+                      "image"
+                    ]
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "caption": {
+                    "type": "string"
+                  },
+                  "orderIndex": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Block added.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Admin / Blocks"
+        ],
+        "summary": "List blocks for a module",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "moduleId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ordered list of blocks. Image blocks include a signed `url`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/admin/modules/{moduleId}/blocks/reorder": {
+      "post": {
+        "tags": [
+          "Admin / Blocks"
+        ],
+        "summary": "Reorder blocks atomically",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "moduleId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "items"
+                ],
                 "properties": {
                   "items": {
                     "type": "array",
                     "items": {
                       "type": "object",
-                      "required": ["id", "orderIndex"],
+                      "required": [
+                        "id",
+                        "orderIndex"
+                      ],
                       "properties": {
-                        "id":         { "type": "string", "format": "uuid" },
-                        "orderIndex": { "type": "integer", "minimum": 1 }
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "orderIndex": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
                       }
                     }
                   }
@@ -774,21 +1731,58 @@
           }
         },
         "responses": {
-          "200": { "description": "Blocks reordered.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "200": {
+            "description": "Blocks reordered.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/admin/modules/{moduleId}/blocks/{id}": {
       "patch": {
-        "tags": ["Admin / Blocks"],
+        "tags": [
+          "Admin / Blocks"
+        ],
         "summary": "Update a block (text content or image caption)",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "moduleId", "required": true, "schema": { "type": "string", "format": "uuid" } },
-          { "in": "path", "name": "id",       "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "moduleId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -796,45 +1790,137 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "content": { "type": "string" },
-                  "caption": { "type": "string" }
+                  "content": {
+                    "type": "string"
+                  },
+                  "caption": {
+                    "type": "string"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Block updated.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Block updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       },
       "delete": {
-        "tags": ["Admin / Blocks"],
+        "tags": [
+          "Admin / Blocks"
+        ],
         "summary": "Delete a block",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "moduleId", "required": true, "schema": { "type": "string", "format": "uuid" } },
-          { "in": "path", "name": "id",       "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "moduleId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Block deleted.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Block deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
     "/admin/modules/{moduleId}/blocks/{blockId}/upload-image": {
       "post": {
-        "tags": ["Admin / Blocks"],
+        "tags": [
+          "Admin / Blocks"
+        ],
         "summary": "Upload image for an image block",
         "description": "Block must exist and be of type `image`. Multipart form upload. Field name: `image`. Replaces existing image.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "moduleId", "required": true, "schema": { "type": "string", "format": "uuid" } },
-          { "in": "path", "name": "blockId",  "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "moduleId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "blockId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -842,185 +1928,506 @@
             "multipart/form-data": {
               "schema": {
                 "type": "object",
-                "properties": { "image": { "type": "string", "format": "binary" } }
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Image uploaded. Returns storageKey and signed URL.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Image uploaded. Returns storageKey and signed URL.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
     "/admin/modules/{moduleId}/quiz": {
       "post": {
-        "tags": ["Admin / Quizzes"],
+        "tags": [
+          "Admin / Quizzes"
+        ],
         "summary": "Create quiz for a module",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "moduleId", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "moduleId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["title", "passingScore"],
+                "required": [
+                  "title",
+                  "passingScore"
+                ],
                 "properties": {
-                  "title":        { "type": "string" },
-                  "passingScore": { "type": "integer", "minimum": 0, "maximum": 100 },
-                  "maxAttempts":  { "type": "integer", "default": 3 }
+                  "title": {
+                    "type": "string"
+                  },
+                  "passingScore": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "maxAttempts": {
+                    "type": "integer",
+                    "default": 3
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Quiz created.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Module not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "201": {
+            "description": "Quiz created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Module not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
     "/admin/courses/{courseId}/quiz": {
       "post": {
-        "tags": ["Admin / Quizzes"],
+        "tags": [
+          "Admin / Quizzes"
+        ],
         "summary": "Create quiz for a course",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "courseId", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "courseId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["title", "passingScore"],
+                "required": [
+                  "title",
+                  "passingScore"
+                ],
                 "properties": {
-                  "title":        { "type": "string" },
-                  "passingScore": { "type": "integer", "minimum": 0, "maximum": 100 },
-                  "maxAttempts":  { "type": "integer", "default": 3 }
+                  "title": {
+                    "type": "string"
+                  },
+                  "passingScore": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "maxAttempts": {
+                    "type": "integer",
+                    "default": 3
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Quiz created.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Course not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "201": {
+            "description": "Quiz created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Course not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
     "/admin/quizzes/{id}": {
       "get": {
-        "tags": ["Admin / Quizzes"],
+        "tags": [
+          "Admin / Quizzes"
+        ],
         "summary": "Get quiz with questions and options",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Quiz detail.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Quiz detail.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       },
       "patch": {
-        "tags": ["Admin / Quizzes"],
+        "tags": [
+          "Admin / Quizzes"
+        ],
         "summary": "Update quiz settings",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "title":        { "type": "string" },
-                  "passingScore": { "type": "integer", "minimum": 0, "maximum": 100 },
-                  "maxAttempts":  { "type": "integer" }
+                  "title": {
+                    "type": "string"
+                  },
+                  "passingScore": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "maxAttempts": {
+                    "type": "integer"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Quiz updated.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Quiz updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       },
       "delete": {
-        "tags": ["Admin / Quizzes"],
+        "tags": [
+          "Admin / Quizzes"
+        ],
         "summary": "Delete a quiz (cascades questions and options)",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Quiz deleted.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Quiz deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
     "/admin/quizzes/{quizId}/questions": {
       "post": {
-        "tags": ["Admin / Questions"],
+        "tags": [
+          "Admin / Questions"
+        ],
         "summary": "Add a question to a quiz",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "quizId", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "quizId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["text", "orderIndex"],
+                "required": [
+                  "text",
+                  "orderIndex"
+                ],
                 "properties": {
-                  "text":       { "type": "string" },
-                  "orderIndex": { "type": "integer", "minimum": 1 }
+                  "text": {
+                    "type": "string"
+                  },
+                  "orderIndex": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Question added.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "201": {
+            "description": "Question added.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/admin/quizzes/{quizId}/questions/reorder": {
       "post": {
-        "tags": ["Admin / Questions"],
+        "tags": [
+          "Admin / Questions"
+        ],
         "summary": "Reorder questions atomically",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "quizId", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "quizId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["items"],
+                "required": [
+                  "items"
+                ],
                 "properties": {
                   "items": {
                     "type": "array",
                     "items": {
                       "type": "object",
-                      "required": ["id", "orderIndex"],
+                      "required": [
+                        "id",
+                        "orderIndex"
+                      ],
                       "properties": {
-                        "id":         { "type": "string", "format": "uuid" },
-                        "orderIndex": { "type": "integer", "minimum": 1 }
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "orderIndex": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
                       }
                     }
                   }
@@ -1030,128 +2437,357 @@
           }
         },
         "responses": {
-          "200": { "description": "Questions reordered.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "200": {
+            "description": "Questions reordered.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/admin/questions/{id}": {
       "patch": {
-        "tags": ["Admin / Questions"],
+        "tags": [
+          "Admin / Questions"
+        ],
         "summary": "Update question text",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["text"],
-                "properties": { "text": { "type": "string" } }
+                "required": [
+                  "text"
+                ],
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Question updated.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Question updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       },
       "delete": {
-        "tags": ["Admin / Questions"],
+        "tags": [
+          "Admin / Questions"
+        ],
         "summary": "Delete a question (cascades options)",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Question deleted.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Question deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
     "/admin/questions/{questionId}/options": {
       "post": {
-        "tags": ["Admin / Options"],
+        "tags": [
+          "Admin / Options"
+        ],
         "summary": "Add an option to a question",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "questionId", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["text", "isCorrect", "orderIndex"],
+                "required": [
+                  "text",
+                  "isCorrect",
+                  "orderIndex"
+                ],
                 "properties": {
-                  "text":       { "type": "string" },
-                  "isCorrect":  { "type": "boolean" },
-                  "orderIndex": { "type": "integer", "minimum": 1 }
+                  "text": {
+                    "type": "string"
+                  },
+                  "isCorrect": {
+                    "type": "boolean"
+                  },
+                  "orderIndex": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Option added.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "201": {
+            "description": "Option added.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/admin/options/{id}": {
       "patch": {
-        "tags": ["Admin / Options"],
+        "tags": [
+          "Admin / Options"
+        ],
         "summary": "Update an option",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "text":      { "type": "string" },
-                  "isCorrect": { "type": "boolean" }
+                  "text": {
+                    "type": "string"
+                  },
+                  "isCorrect": {
+                    "type": "boolean"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Option updated.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Option updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       },
       "delete": {
-        "tags": ["Admin / Options"],
+        "tags": [
+          "Admin / Options"
+        ],
         "summary": "Delete an option",
         "description": "Cannot delete the last correct option for a question.",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Option deleted.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Not found.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+          "200": {
+            "description": "Option deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
     "/auth/profile": {
       "get": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Get current user profile",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Current user's profile.",
@@ -1159,10 +2795,14 @@
               "application/json": {
                 "schema": {
                   "allOf": [
-                    { "$ref": "#/components/schemas/SuccessResponse" },
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
                     {
                       "properties": {
-                        "data": { "$ref": "#/components/schemas/User" }
+                        "data": {
+                          "$ref": "#/components/schemas/User"
+                        }
                       }
                     }
                   ]
@@ -1170,7 +2810,9 @@
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     }

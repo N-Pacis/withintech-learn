@@ -48,9 +48,16 @@ export const deleteModule = async (id: string) => {
 
 export const reorderModules = async (courseId: string, items: { id: string; orderIndex: number }[]) => {
   validateReorder(items);
-  await prisma.$transaction(
-    items.map(({ id, orderIndex }) => prisma.module.update({ where: { id, courseId }, data: { orderIndex } }))
-  );
+  await prisma.$transaction(async (tx) => {
+    // Phase 1: move to temp negative indices so positive values never collide mid-swap
+    for (let i = 0; i < items.length; i++) {
+      await tx.module.update({ where: { id: items[i].id, courseId }, data: { orderIndex: -(i + 1) } });
+    }
+    // Phase 2: set final indices
+    for (const { id, orderIndex } of items) {
+      await tx.module.update({ where: { id, courseId }, data: { orderIndex } });
+    }
+  });
 };
 
 export const addBlock = async (moduleId: string, data: { type: 'text' | 'image'; content?: string; caption?: string; orderIndex: number }) => {
@@ -88,9 +95,16 @@ export const deleteBlock = async (id: string) => {
 
 export const reorderBlocks = async (moduleId: string, items: { id: string; orderIndex: number }[]) => {
   validateReorder(items);
-  await prisma.$transaction(
-    items.map(({ id, orderIndex }) => prisma.moduleBlock.update({ where: { id, moduleId }, data: { orderIndex } }))
-  );
+  await prisma.$transaction(async (tx) => {
+    // Phase 1: move to temp negative indices so positive values never collide mid-swap
+    for (let i = 0; i < items.length; i++) {
+      await tx.moduleBlock.update({ where: { id: items[i].id, moduleId }, data: { orderIndex: -(i + 1) } });
+    }
+    // Phase 2: set final indices
+    for (const { id, orderIndex } of items) {
+      await tx.moduleBlock.update({ where: { id, moduleId }, data: { orderIndex } });
+    }
+  });
 };
 
 export const uploadBlockImage = async (moduleId: string, blockId: string, file: Express.Multer.File) => {

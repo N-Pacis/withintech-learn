@@ -24,7 +24,11 @@ app.use(helmet({
   originAgentCluster: false,
   crossOriginOpenerPolicy: false,
 }));
-app.use(cors({ origin: process.env.APP_URL }));
+const allowedOrigins = [
+  process.env.APP_URL,
+  ...(process.env.NODE_ENV !== 'production' ? ['http://localhost:3000'] : []),
+].filter(Boolean) as string[];
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 app.use(compression());
 

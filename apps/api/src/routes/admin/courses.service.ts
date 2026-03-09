@@ -25,10 +25,12 @@ export const createCourse = async (data: { title: string; description?: string; 
   });
 };
 
-export const listCourses = async ({ page, limit }: { page: number; limit: number }) => {
+export const listCourses = async ({ page, limit, isPublished }: { page: number; limit: number; isPublished?: boolean }) => {
+  const where = isPublished !== undefined ? { isPublished } : {};
   const [total, courses] = await Promise.all([
-    prisma.course.count(),
+    prisma.course.count({ where }),
     prisma.course.findMany({
+      where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { createdAt: 'desc' },
