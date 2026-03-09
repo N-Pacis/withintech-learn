@@ -14,3 +14,6 @@ export { CodeEditor } from './CodeEditor';
 export type { CodeLanguage } from './CodeEditor';
 export { ReorderableList } from './ReorderableList';
 export type { ReorderItem } from './ReorderableList';
+export { Stepper } from './Stepper';
+export type { StepperStep } from './Stepper';
+export { default as Logo } from './Logo';

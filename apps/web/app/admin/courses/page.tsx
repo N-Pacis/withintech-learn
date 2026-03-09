@@ -3,18 +3,31 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
-import { useCourses, useDeleteCourse, type Course } from '@/hooks/queries/courses';
+import {
+  useCourses,
+  useDeleteCourse,
+  usePublishCourse,
+  useArchiveCourse,
+  type Course,
+  type CourseStatus,
+} from '@/hooks/queries/courses';
 import { Button, Badge, Tabs, PageLoader, type Tab } from '@/components/ui';
-import { usePublishCourse } from '@/hooks/queries/courses';
 
 const LIMIT = 20;
 
-type TabValue = 'published' | 'pending';
+type TabValue = 'draft' | 'published' | 'archived';
 
 const TABS: Tab<TabValue>[] = [
-  { label: 'Pending',   value: 'pending'   },
+  { label: 'Draft',     value: 'draft'     },
   { label: 'Published', value: 'published' },
+  { label: 'Archived',  value: 'archived'  },
 ];
+
+const STATUS_BADGE: Record<CourseStatus, { variant: 'gray' | 'success' | 'warning'; label: string }> = {
+  draft:     { variant: 'gray',    label: 'Draft'     },
+  published: { variant: 'success', label: 'Published' },
+  archived:  { variant: 'warning', label: 'Archived'  },
+};
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -29,22 +42,23 @@ function EmptyState({ tab }: { tab: TabValue }) {
           <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
         </svg>
       </div>
-      {tab === 'published' ? (
-        <>
-          <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">No published courses</h3>
-          <p className="font-body text-sm text-[#6B7280] mb-6 max-w-xs">
-            Publish a draft course to make it visible to students.
-          </p>
-        </>
-      ) : (
+      {tab === 'draft' ? (
         <>
           <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">No draft courses</h3>
-          <p className="font-body text-sm text-[#6B7280] mb-6 max-w-xs">
-            Create a course to get started.
-          </p>
+          <p className="font-body text-sm text-[#6B7280] mb-6 max-w-xs">Create a course to get started.</p>
           <Button asChild size="md">
             <Link href="/admin/courses/new">Create your first course</Link>
           </Button>
+        </>
+      ) : tab === 'published' ? (
+        <>
+          <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">No published courses</h3>
+          <p className="font-body text-sm text-[#6B7280] max-w-xs">Publish a draft course to make it visible to students.</p>
+        </>
+      ) : (
+        <>
+          <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">No archived courses</h3>
+          <p className="font-body text-sm text-[#6B7280] max-w-xs">Archived courses are retired and no longer accessible to students.</p>
         </>
       )}
     </div>
@@ -53,13 +67,17 @@ function EmptyState({ tab }: { tab: TabValue }) {
 
 function CourseCard({ course, onDelete }: { course: Course; onDelete: (id: string) => void }) {
   const [confirming, setConfirming] = useState(false);
-  const { mutate: togglePublish, isPending: publishing } = usePublishCourse();
+  const [confirmArchive, setConfirmArchive] = useState(false);
+  const { mutate: publish, isPending: publishing } = usePublishCourse();
+  const { mutate: archive, isPending: archiving } = useArchiveCourse();
+
+  const badge = STATUS_BADGE[course.status];
 
   return (
     <div className="group flex flex-col bg-white rounded-xl border border-[#E5E7EB] overflow-hidden hover:shadow-md hover:border-[#3D006B]/20 transition-all">
 
-      {/* Thumbnail — clicking goes to modules list */}
-      <Link href={`/admin/courses/${course.id}/modules`} className="relative h-40 bg-[#F3F4F6] shrink-0 block">
+      {/* Thumbnail */}
+      <Link href={`/admin/courses/${course.id}`} className="relative h-40 bg-[#F3F4F6] shrink-0 block">
         {course.thumbnailUrl ? (
           <Image src={course.thumbnailUrl} alt={course.title} fill className="object-cover" />
         ) : (
@@ -71,52 +89,71 @@ function CourseCard({ course, onDelete }: { course: Course; onDelete: (id: strin
           </div>
         )}
         <div className="absolute top-3 left-3">
-          <Badge variant={course.isPublished ? 'success' : 'gray'}>
-            {course.isPublished ? 'Published' : 'Draft'}
-          </Badge>
+          <Badge variant={badge.variant}>{badge.label}</Badge>
         </div>
       </Link>
 
-      {/* Body — clicking goes to modules list */}
-      <Link href={`/admin/courses/${course.id}/modules`} className="flex flex-col gap-1 p-4 flex-1">
+      {/* Body */}
+      <Link href={`/admin/courses/${course.id}`} className="flex flex-col gap-1 p-4 flex-1">
         <p className="font-heading font-bold text-sm text-[#0F0F0F] line-clamp-2 leading-snug group-hover:text-[#3D006B] transition-colors">
           {course.title}
         </p>
         {course.description && (
-          <p className="font-body text-xs text-[#6B7280] line-clamp-2 mt-0.5">
-            {course.description}
-          </p>
+          <p className="font-body text-xs text-[#6B7280] line-clamp-2 mt-0.5">{course.description}</p>
         )}
-        <p className="font-body text-xs text-[#9CA3AF] mt-auto pt-3">
-          Created {formatDate(course.createdAt)}
-        </p>
+        <p className="font-body text-xs text-[#9CA3AF] mt-auto pt-3">Created {formatDate(course.createdAt)}</p>
       </Link>
 
       {/* Footer */}
       <div className="flex items-center gap-2 px-4 pb-4 flex-wrap">
-        <Button variant="secondary" size="sm" asChild>
-          <Link href={`/admin/courses/${course.id}`}>Edit</Link>
-        </Button>
-        <Button
-          variant={course.isPublished ? 'ghost' : 'primary'}
-          size="sm"
-          loading={publishing}
-          onClick={() => togglePublish({ id: course.id, publish: !course.isPublished })}
-        >
-          {course.isPublished ? 'Unpublish' : 'Publish'}
-        </Button>
-        <div className="ml-auto">
-          {confirming ? (
-            <div className="flex items-center gap-1.5">
-              <Button variant="danger" size="sm" onClick={() => onDelete(course.id)}>Confirm</Button>
-              <Button variant="ghost" size="sm" onClick={() => setConfirming(false)}>Cancel</Button>
-            </div>
-          ) : (
-            <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => setConfirming(true)}>
-              Delete
+        {course.status === 'draft' && (
+          <>
+            <Button variant="secondary" size="sm" asChild>
+              <Link href={`/admin/courses/${course.id}/edit`}>Edit</Link>
             </Button>
-          )}
-        </div>
+            <Button variant="primary" size="sm" loading={publishing} onClick={() => publish(course.id)}>
+              Publish
+            </Button>
+            <div className="ml-auto">
+              {confirming ? (
+                <div className="flex items-center gap-1.5">
+                  <Button variant="danger" size="sm" onClick={() => onDelete(course.id)}>Confirm</Button>
+                  <Button variant="ghost" size="sm" onClick={() => setConfirming(false)}>Cancel</Button>
+                </div>
+              ) : (
+                <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => setConfirming(true)}>
+                  Delete
+                </Button>
+              )}
+            </div>
+          </>
+        )}
+
+        {course.status === 'published' && (
+          <>
+            <Button variant="secondary" size="sm" asChild>
+              <Link href={`/admin/courses/${course.id}`}>View</Link>
+            </Button>
+            {confirmArchive ? (
+              <div className="flex items-center gap-1.5">
+                <Button variant="danger" size="sm" loading={archiving} onClick={() => { archive(course.id); setConfirmArchive(false); }}>
+                  Archive
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setConfirmArchive(false)}>Cancel</Button>
+              </div>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={() => setConfirmArchive(true)}>
+                Archive
+              </Button>
+            )}
+          </>
+        )}
+
+        {course.status === 'archived' && (
+          <Button variant="secondary" size="sm" asChild>
+            <Link href={`/admin/courses/${course.id}`}>View</Link>
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -124,15 +161,12 @@ function CourseCard({ course, onDelete }: { course: Course; onDelete: (id: strin
 
 function CourseGrid({ tab }: { tab: TabValue }) {
   const [page, setPage] = useState(1);
-  const isPublished = tab === 'published';
-  const { data, isLoading, isError } = useCourses({ page, limit: LIMIT, isPublished });
+  const { data, isLoading, isError } = useCourses({ page, limit: LIMIT, status: tab });
   const { mutate: deleteCourse } = useDeleteCourse();
 
   const totalPages = data ? Math.ceil(data.total / LIMIT) : 1;
 
-  if (isLoading) {
-    return <PageLoader type="cards" count={LIMIT} />;
-  }
+  if (isLoading) return <PageLoader type="cards" count={LIMIT} />;
   if (isError) {
     return (
       <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-3 rounded-lg">
@@ -140,9 +174,7 @@ function CourseGrid({ tab }: { tab: TabValue }) {
       </p>
     );
   }
-  if (!data || data.courses.length === 0) {
-    return <EmptyState tab={tab} />;
-  }
+  if (!data || data.courses.length === 0) return <EmptyState tab={tab} />;
 
   return (
     <>
@@ -160,13 +192,9 @@ function CourseGrid({ tab }: { tab: TabValue }) {
         <div className="flex items-center justify-between mt-8">
           <p className="font-body text-sm text-[#6B7280]">{data.total} total</p>
           <div className="flex items-center gap-2">
-            <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
-              Previous
-            </Button>
+            <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Previous</Button>
             <span className="font-body text-sm text-[#6B7280] px-2">{page} / {totalPages}</span>
-            <Button variant="secondary" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
-              Next
-            </Button>
+            <Button variant="secondary" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</Button>
           </div>
         </div>
       )}
@@ -175,12 +203,10 @@ function CourseGrid({ tab }: { tab: TabValue }) {
 }
 
 export default function CoursesPage() {
-  const [activeTab, setActiveTab] = useState<TabValue>('pending');
+  const [activeTab, setActiveTab] = useState<TabValue>('draft');
 
   return (
     <div className="p-8 lg:p-12 max-w-6xl">
-
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <p className="font-body text-sm text-[#6B7280] mb-1">Admin</p>

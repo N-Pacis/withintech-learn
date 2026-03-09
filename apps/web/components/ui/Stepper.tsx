@@ -1,0 +1,93 @@
+'use client';
+
+import { cn } from '@/lib/utils';
+
+export interface StepperStep {
+  id: string;
+  label: string;
+}
+
+interface StepperProps {
+  steps: StepperStep[];
+  currentStep: number; // 0-indexed
+  className?: string;
+}
+
+export function Stepper({ steps, currentStep, className }: StepperProps) {
+  const progressRatio =
+    steps.length > 1 ? currentStep / (steps.length - 1) : 0;
+
+  return (
+    <div className={cn('w-full select-none', className)}>
+      <div className="relative">
+        {/* Track background */}
+        <div className="absolute top-[17px] left-[18px] right-[18px] h-0.5 bg-[#E5E7EB]" />
+
+        {/* Track fill */}
+        <div
+          className="absolute top-[17px] left-[18px] h-0.5 bg-[#3D006B] transition-all duration-500 ease-in-out"
+          style={{ width: `calc(${progressRatio} * (100% - 36px))` }}
+        />
+
+        {/* Steps */}
+        <div className="relative flex justify-between">
+          {steps.map((step, index) => {
+            const isDone = index < currentStep;
+            const isCurrent = index === currentStep;
+
+            return (
+              <div key={step.id} className="flex flex-col items-center gap-2.5">
+                {/* Circle */}
+                <div
+                  className={cn(
+                    'w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all duration-300',
+                    isDone && 'bg-[#3D006B] border-[#3D006B]',
+                    isCurrent &&
+                      'bg-[#3D006B] border-[#3D006B] shadow-[0_0_0_4px_rgba(61,0,107,0.14)]',
+                    !isDone && !isCurrent && 'bg-white border-[#D1D5DB]',
+                  )}
+                >
+                  {isDone ? (
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  ) : (
+                    <span
+                      className={cn(
+                        'font-heading font-bold text-sm leading-none',
+                        isCurrent ? 'text-white' : 'text-[#9CA3AF]',
+                      )}
+                    >
+                      {index + 1}
+                    </span>
+                  )}
+                </div>
+
+                {/* Label */}
+                <span
+                  className={cn(
+                    'font-body text-xs font-medium text-center whitespace-nowrap transition-colors duration-300',
+                    isDone && 'text-[#3D006B]',
+                    isCurrent && 'text-[#0F0F0F]',
+                    !isDone && !isCurrent && 'text-[#9CA3AF]',
+                  )}
+                >
+                  {step.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}

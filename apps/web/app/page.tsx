@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "@/components/landing/Navbar";
 import Ticker from "@/components/landing/Ticker";
 import CertificateCard from "@/components/landing/CertificateCard";
+import { Logo } from "@/components/ui";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -64,10 +65,10 @@ export default function Home() {
             <div className="lg:w-[52%] lg:-mr-12 self-end hidden lg:block">
               <div className="rounded-l-xl overflow-hidden shadow-xl ring-1 ring-purple-100">
                 <Image
-                  src="https://placehold.co/780x520/3D006B/F3E8FF?text=Course+Dashboard"
+                  src="/homepage/hero.jpg"
                   alt="Course dashboard preview"
-                  width={780}
-                  height={520}
+                  width={1024}
+                  height={681}
                   loading="lazy"
                   className="w-full h-auto block"
                 />
@@ -78,10 +79,10 @@ export default function Home() {
             <div className="lg:hidden w-full pb-12">
               <div className="rounded-md overflow-hidden shadow-xl ring-1 ring-purple-100">
                 <Image
-                  src="https://placehold.co/780x440/3D006B/F3E8FF?text=Course+Dashboard"
+                  src="/homepage/hero.jpg"
                   alt="Course dashboard preview"
-                  width={780}
-                  height={440}
+                  width={1024}
+                  height={681}
                   loading="lazy"
                   className="w-full h-auto block"
                 />
@@ -375,10 +376,10 @@ export default function Home() {
             <div className="lg:w-1/2 flex justify-center lg:justify-end">
               <div className="rounded-xl overflow-hidden shadow-lg ring-1 ring-purple-100 w-full max-w-md">
                 <Image
-                  src="https://placehold.co/600x400/3D006B/F3E8FF?text=Start+Learning"
+                  src="/homepage/ready-to-start-learning.jpg"
                   alt="Start learning illustration"
-                  width={600}
-                  height={400}
+                  width={1024}
+                  height={681}
                   loading="lazy"
                   className="w-full h-auto block"
                 />
@@ -395,9 +396,8 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
 
             <div>
-              <div className="flex items-baseline gap-0 mb-4">
-                <span className="font-heading font-bold text-lg text-[#3D006B]">WithinTech</span>
-                <span className="font-heading font-bold text-lg text-[#F97316]">Learn</span>
+              <div className="mb-4">
+                <Logo className="h-28" linked={false} />
               </div>
               <p className="font-body text-sm text-[#6B7280] mb-4">
                 Learn. Prove it. Move forward.

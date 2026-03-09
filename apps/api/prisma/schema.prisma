@@ -40,6 +40,12 @@ model OtpCode {
   createdAt DateTime  @default(now())
 }
 
+enum CourseStatus {
+  draft
+  published
+  archived
+}
+
 enum BlockType {
   text
   image
@@ -52,7 +58,7 @@ model Course {
   slug         String    @unique
   description  String?
   thumbnailKey String?
-  isPublished  Boolean   @default(false)
+  status       CourseStatus @default(draft)
   createdById  String
   createdBy    User      @relation(fields: [createdById], references: [id])
   modules      Module[]

@@ -3,6 +3,8 @@ import { apiFetch } from '@/lib/api';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+export type CourseStatus = 'draft' | 'published' | 'archived';
+
 export interface Course {
   id: string;
   title: string;
@@ -10,7 +12,7 @@ export interface Course {
   description: string | null;
   thumbnailKey: string | null;
   thumbnailUrl: string | null;
-  isPublished: boolean;
+  status: CourseStatus;
   createdById: string;
   createdBy: { id: string; firstName: string; lastName: string };
   createdAt: string;
@@ -29,13 +31,13 @@ export interface CoursesPage {
 export const courseKeys = {
   all:    ['courses'] as const,
   lists:  () => [...courseKeys.all, 'list'] as const,
-  list:   (p: { page: number; limit: number; isPublished?: boolean }) => [...courseKeys.lists(), p] as const,
+  list:   (p: { page: number; limit: number; status?: CourseStatus }) => [...courseKeys.lists(), p] as const,
   detail: (id: string) => [...courseKeys.all, id] as const,
 };
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
-export function useCourses(params: { page: number; limit: number; isPublished?: boolean } = { page: 1, limit: 20 }) {
+export function useCourses(params: { page: number; limit: number; status?: CourseStatus } = { page: 1, limit: 20 }) {
   return useQuery({
     queryKey: courseKeys.list(params),
     queryFn: async (): Promise<CoursesPage> => {
@@ -43,7 +45,7 @@ export function useCourses(params: { page: number; limit: number; isPublished?: 
         page: String(params.page),
         limit: String(params.limit),
       });
-      if (params.isPublished !== undefined) qs.set('isPublished', String(params.isPublished));
+      if (params.status) qs.set('status', params.status);
       const res = await apiFetch<CoursesPage>(`/admin/courses?${qs}`);
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
@@ -136,9 +138,23 @@ export function useUploadThumbnail() {
 export function usePublishCourse() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, publish }: { id: string; publish: boolean }): Promise<Course> => {
-      const endpoint = publish ? 'publish' : 'unpublish';
-      const res = await apiFetch<Course>(`/admin/courses/${id}/${endpoint}`, { method: 'PATCH' });
+    mutationFn: async (id: string): Promise<Course> => {
+      const res = await apiFetch<Course>(`/admin/courses/${id}/publish`, { method: 'PATCH' });
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    onSuccess: (updated) => {
+      queryClient.setQueryData(courseKeys.detail(updated.id), updated);
+      queryClient.invalidateQueries({ queryKey: courseKeys.lists() });
+    },
+  });
+}
+
+export function useArchiveCourse() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string): Promise<Course> => {
+      const res = await apiFetch<Course>(`/admin/courses/${id}/archive`, { method: 'PATCH' });
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },

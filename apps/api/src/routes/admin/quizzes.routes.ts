@@ -9,7 +9,9 @@ import * as ctrl from '../../controllers/quizzes.controller';
 
 const router = Router();
 
+router.get('/admin/modules/:moduleId/quiz', ctrl.getModuleQuiz);
 router.post('/admin/modules/:moduleId/quiz', validate(createQuizSchema), ctrl.postCreateModuleQuiz);
+router.get('/admin/courses/:courseId/quiz', ctrl.getCourseQuiz);
 router.post('/admin/courses/:courseId/quiz', validate(createQuizSchema), ctrl.postCreateCourseQuiz);
 router.get('/admin/quizzes/:id', ctrl.getQuiz);
 router.patch('/admin/quizzes/:id', validate(updateQuizSchema), ctrl.patchUpdateQuiz);

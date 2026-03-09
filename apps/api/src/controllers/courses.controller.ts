@@ -37,9 +37,9 @@ export const patchPublishCourse = asyncHandler(async (req: Request, res: Respons
   sendSuccess(res, result, 'Course published');
 });
 
-export const patchUnpublishCourse = asyncHandler(async (req: Request, res: Response) => {
-  const result = await service.unpublishCourse(req.params.id);
-  sendSuccess(res, result, 'Course unpublished');
+export const patchArchiveCourse = asyncHandler(async (req: Request, res: Response) => {
+  const result = await service.archiveCourse(req.params.id);
+  sendSuccess(res, result, 'Course archived');
 });
 
 export const postUploadThumbnail = asyncHandler(async (req: Request, res: Response) => {

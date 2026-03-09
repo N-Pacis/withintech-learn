@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Logo } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
@@ -54,10 +55,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     >
       {/* Logo */}
       <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between">
-        <div className="flex items-baseline gap-0">
-          <span className="font-heading font-bold text-base text-white">WithinTech</span>
-          <span className="font-heading font-bold text-base text-[#F97316]">Learn</span>
-        </div>
+        <Logo className="h-24" linked={false} />
         {/* Close button — mobile only */}
         <button
           onClick={onClose}

@@ -25,8 +25,8 @@ export const createCourse = async (data: { title: string; description?: string; 
   });
 };
 
-export const listCourses = async ({ page, limit, isPublished }: { page: number; limit: number; isPublished?: boolean }) => {
-  const where = isPublished !== undefined ? { isPublished } : {};
+export const listCourses = async ({ page, limit, status }: { page: number; limit: number; status?: string }) => {
+  const where = status ? { status: status as 'draft' | 'published' | 'archived' } : {};
   const [total, courses] = await Promise.all([
     prisma.course.count({ where }),
     prisma.course.findMany({
@@ -60,6 +60,7 @@ export const getCourse = async (id: string) => {
 export const updateCourse = async (id: string, data: { title?: string; description?: string }) => {
   const course = await prisma.course.findUnique({ where: { id } });
   if (!course) throw notFound('Course not found');
+  if (course.status !== 'draft') throw badRequest('Only draft courses can be edited');
   const update: Record<string, unknown> = { ...data };
   if (data.title) update.slug = await uniqueSlug(data.title);
   return prisma.course.update({ where: { id }, data: update });
@@ -77,21 +78,24 @@ export const publishCourse = async (id: string) => {
     include: { modules: { include: { blocks: true } } },
   });
   if (!course) throw notFound('Course not found');
+  if (course.status !== 'draft') throw badRequest('Only draft courses can be published');
   if (course.modules.length === 0) throw badRequest('Cannot publish a course with no modules');
   const emptyModule = course.modules.find(m => m.blocks.length === 0);
   if (emptyModule) throw badRequest(`Module "${emptyModule.title}" has no blocks`);
-  return prisma.course.update({ where: { id }, data: { isPublished: true } });
+  return prisma.course.update({ where: { id }, data: { status: 'published' } });
 };
 
-export const unpublishCourse = async (id: string) => {
+export const archiveCourse = async (id: string) => {
   const course = await prisma.course.findUnique({ where: { id } });
   if (!course) throw notFound('Course not found');
-  return prisma.course.update({ where: { id }, data: { isPublished: false } });
+  if (course.status !== 'published') throw badRequest('Only published courses can be archived');
+  return prisma.course.update({ where: { id }, data: { status: 'archived' } });
 };
 
 export const uploadThumbnail = async (id: string, file: Express.Multer.File) => {
   const course = await prisma.course.findUnique({ where: { id } });
   if (!course) throw notFound('Course not found');
+  if (course.status !== 'draft') throw badRequest('Only draft courses can be modified');
   if (course.thumbnailKey) await deleteFromS3(course.thumbnailKey);
   const storageKey = await uploadToS3(file, 'thumbnails');
   await prisma.course.update({ where: { id }, data: { thumbnailKey: storageKey } });

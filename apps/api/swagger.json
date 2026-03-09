@@ -822,16 +822,17 @@
             }
           },
           {
-            "name": "isPublished",
+            "name": "status",
             "in": "query",
             "schema": {
               "type": "string",
               "enum": [
-                "true",
-                "false"
+                "draft",
+                "published",
+                "archived"
               ]
             },
-            "description": "Filter by published status"
+            "description": "Filter by course status"
           }
         ],
         "responses": {
@@ -1078,12 +1079,12 @@
         }
       }
     },
-    "/admin/courses/{id}/unpublish": {
+    "/admin/courses/{id}/archive": {
       "patch": {
         "tags": [
           "Admin / Courses"
         ],
-        "summary": "Unpublish a course",
+        "summary": "Archive a published course (irreversible)",
         "security": [
           {
             "bearerAuth": []
@@ -1102,7 +1103,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Course unpublished.",
+            "description": "Course archived.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1110,6 +1111,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
@@ -1987,6 +1991,39 @@
       }
     },
     "/admin/modules/{moduleId}/quiz": {
+      "get": {
+        "tags": ["Admin / Quizzes"],
+        "summary": "Get quiz for a module (null if none exists)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "moduleId",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz or null.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": {
+            "description": "Module not found.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "Admin / Quizzes"
@@ -2070,6 +2107,39 @@
       }
     },
     "/admin/courses/{courseId}/quiz": {
+      "get": {
+        "tags": ["Admin / Quizzes"],
+        "summary": "Get quiz for a course (null if none exists)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "courseId",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz or null.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": {
+            "description": "Course not found.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "Admin / Quizzes"

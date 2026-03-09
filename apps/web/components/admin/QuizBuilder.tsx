@@ -1,2 +1,668 @@
-// TODO
-export {};
+'use client';
+
+import { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import {
+  useModuleQuiz,
+  useCourseQuiz,
+  useCreateModuleQuiz,
+  useCreateCourseQuiz,
+  useUpdateQuiz,
+  useDeleteQuiz,
+  useAddQuestion,
+  useUpdateQuestion,
+  useDeleteQuestion,
+  useAddOption,
+  useUpdateOption,
+  useDeleteOption,
+  quizKeys,
+  type Quiz,
+  type Question,
+  type QuestionOption,
+} from '@/hooks/queries/quizzes';
+import { Button, Input, PageLoader } from '@/components/ui';
+import { cn } from '@/lib/utils';
+
+// ─── Correct checkbox ─────────────────────────────────────────────────────────
+
+function CorrectCheckbox({
+  checked,
+  onChange,
+  disabled,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      title={checked ? 'Mark as incorrect' : 'Mark as correct'}
+      className={cn(
+        'w-[18px] h-[18px] rounded flex items-center justify-center border-2 shrink-0 transition-all duration-150',
+        checked
+          ? 'bg-[#3D006B] border-[#3D006B]'
+          : 'bg-white border-[#D1D5DB] hover:border-[#3D006B]/60',
+        disabled && 'opacity-50 cursor-not-allowed',
+      )}
+    >
+      {checked && (
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
+// ─── Option row ───────────────────────────────────────────────────────────────
+
+function OptionRow({
+  option,
+  cacheKey,
+}: {
+  option: QuestionOption;
+  cacheKey: readonly unknown[];
+}) {
+  const [text, setText] = useState(option.text);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const { mutate: updateOption, isPending } = useUpdateOption(cacheKey);
+  const { mutate: deleteOption, isPending: deleting } = useDeleteOption(cacheKey);
+
+  useEffect(() => { setText(option.text); }, [option.text]);
+
+  function handleBlur() {
+    const trimmed = text.trim();
+    if (!trimmed) { setText(option.text); return; }
+    if (trimmed !== option.text) updateOption({ id: option.id, text: trimmed });
+  }
+
+  return (
+    <div className="group flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-[#FAFAFA] transition-colors">
+      <CorrectCheckbox
+        checked={option.isCorrect}
+        onChange={(val) => updateOption({ id: option.id, isCorrect: val })}
+        disabled={isPending}
+      />
+
+      <input
+        type="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onBlur={handleBlur}
+        onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
+        disabled={isPending}
+        placeholder="Option text"
+        className="flex-1 font-body text-sm text-[#0F0F0F] bg-transparent border-b border-transparent focus:border-[#3D006B]/40 focus:outline-none placeholder:text-[#9CA3AF] transition-colors py-0.5 min-w-0"
+      />
+
+      {!isPending && (
+        confirmDelete ? (
+          <div className="flex items-center gap-1.5 shrink-0" onMouseLeave={() => setConfirmDelete(false)}>
+            <button
+              onClick={() => deleteOption(option.id)}
+              disabled={deleting}
+              className="font-body text-xs text-red-500 hover:text-red-600 px-1.5 py-0.5 rounded hover:bg-red-50 transition-colors"
+            >
+              {deleting ? 'Deleting…' : 'Delete'}
+            </button>
+            <button onClick={() => setConfirmDelete(false)} className="font-body text-xs text-[#9CA3AF] hover:text-[#6B7280]">
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setConfirmDelete(true)}
+            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded text-[#9CA3AF] hover:text-red-500 hover:bg-red-50 shrink-0"
+            title="Delete option"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        )
+      )}
+    </div>
+  );
+}
+
+// ─── Add option row ───────────────────────────────────────────────────────────
+
+function AddOptionRow({
+  questionId,
+  nextOrderIndex,
+  cacheKey,
+  onDone,
+}: {
+  questionId: string;
+  nextOrderIndex: number;
+  cacheKey: readonly unknown[];
+  onDone: () => void;
+}) {
+  const [text, setText] = useState('');
+  const [isCorrect, setIsCorrect] = useState(false);
+  const { mutateAsync: addOption, isPending } = useAddOption(cacheKey);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { inputRef.current?.focus(); }, []);
+
+  async function handleSave() {
+    const trimmed = text.trim();
+    if (!trimmed) { onDone(); return; }
+    await addOption({ questionId, text: trimmed, isCorrect, orderIndex: nextOrderIndex });
+    setText('');
+    setIsCorrect(false);
+    inputRef.current?.focus();
+  }
+
+  function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') handleSave();
+    if (e.key === 'Escape') onDone();
+  }
+
+  return (
+    <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-[#F9FAFB] border border-[#E5E7EB]">
+      <CorrectCheckbox checked={isCorrect} onChange={setIsCorrect} disabled={isPending} />
+      <input
+        ref={inputRef}
+        type="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="New option… (Enter to add)"
+        disabled={isPending}
+        className="flex-1 font-body text-sm text-[#0F0F0F] bg-transparent border-b border-[#3D006B]/40 focus:outline-none placeholder:text-[#9CA3AF] py-0.5 min-w-0"
+      />
+      <button
+        onClick={handleSave}
+        disabled={isPending || !text.trim()}
+        className="font-body text-xs font-medium text-[#3D006B] hover:text-[#5a0099] disabled:opacity-40 disabled:cursor-not-allowed shrink-0 transition-colors"
+      >
+        {isPending ? 'Adding…' : 'Add'}
+      </button>
+      <button onClick={onDone} className="font-body text-xs text-[#9CA3AF] hover:text-[#6B7280] shrink-0 transition-colors">
+        Done
+      </button>
+    </div>
+  );
+}
+
+// ─── Question card ────────────────────────────────────────────────────────────
+
+function QuestionCard({
+  question,
+  cacheKey,
+  number,
+}: {
+  question: Question;
+  cacheKey: readonly unknown[];
+  number: number;
+}) {
+  const [text, setText] = useState(question.text);
+  const [addingOption, setAddingOption] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const { mutate: updateQuestion, isPending: saving } = useUpdateQuestion(cacheKey);
+  const { mutate: deleteQuestion, isPending: deleting } = useDeleteQuestion(cacheKey);
+
+  useEffect(() => { setText(question.text); }, [question.text]);
+
+  function handleTextBlur() {
+    const trimmed = text.trim();
+    if (!trimmed) { setText(question.text); return; }
+    if (trimmed !== question.text) updateQuestion({ id: question.id, text: trimmed });
+  }
+
+  const sortedOptions = [...question.options].sort((a, b) => a.orderIndex - b.orderIndex);
+  const correctCount = sortedOptions.filter(o => o.isCorrect).length;
+
+  return (
+    <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
+
+      {/* Question header */}
+      <div className="flex items-start gap-3 px-5 pt-5 pb-4 border-b border-[#F3F4F6]">
+        <div className="w-6 h-6 rounded-full bg-[#F3E8FF] flex items-center justify-center shrink-0 mt-0.5">
+          <span className="font-heading font-bold text-xs text-[#3D006B]">{number}</span>
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onBlur={handleTextBlur}
+            rows={2}
+            placeholder="Enter your question…"
+            className="w-full font-body text-sm text-[#0F0F0F] bg-transparent resize-none leading-relaxed border-b border-transparent focus:border-[#3D006B]/30 focus:outline-none placeholder:text-[#9CA3AF] transition-colors"
+          />
+          {saving && (
+            <p className="font-body text-xs text-[#9CA3AF] mt-1">Saving…</p>
+          )}
+        </div>
+
+        {/* Delete question */}
+        {confirmDelete ? (
+          <div className="flex items-center gap-2 shrink-0" onMouseLeave={() => setConfirmDelete(false)}>
+            <button
+              onClick={() => deleteQuestion(question.id)}
+              disabled={deleting}
+              className="font-body text-xs text-red-500 hover:text-red-600 transition-colors"
+            >
+              {deleting ? 'Deleting…' : 'Delete'}
+            </button>
+            <button onClick={() => setConfirmDelete(false)} className="font-body text-xs text-[#9CA3AF]">
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setConfirmDelete(true)}
+            className="p-1.5 rounded-lg text-[#9CA3AF] hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
+            title="Delete question"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14H6L5 6" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M9 6V4h6v2" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {/* Options area */}
+      <div className="px-2 py-3">
+        <div className="flex items-center gap-2 px-3 mb-2">
+          <p className="font-body text-xs text-[#9CA3AF]">
+            Multiple choice — check all correct answers
+          </p>
+          {sortedOptions.length > 0 && (
+            <span className={cn(
+              'font-body text-xs px-1.5 py-0.5 rounded-full shrink-0',
+              correctCount === 0 ? 'text-amber-600 bg-amber-50' : 'text-[#3D006B] bg-[#F3E8FF]',
+            )}>
+              {correctCount} correct
+            </span>
+          )}
+        </div>
+
+        {sortedOptions.map((option) => (
+          <OptionRow key={option.id} option={option} cacheKey={cacheKey} />
+        ))}
+
+        {addingOption && (
+          <div className="mt-1">
+            <AddOptionRow
+              questionId={question.id}
+              nextOrderIndex={sortedOptions.length + 1}
+              cacheKey={cacheKey}
+              onDone={() => setAddingOption(false)}
+            />
+          </div>
+        )}
+
+        {!addingOption && (
+          <button
+            onClick={() => setAddingOption(true)}
+            className="flex items-center gap-2 px-4 py-2 mt-1 font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors rounded-lg hover:bg-[#F3E8FF]/50 w-full text-left"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add option
+          </button>
+        )}
+      </div>
+
+      {/* Validation hints */}
+      {(sortedOptions.length === 0 || correctCount === 0) && (
+        <div className="px-5 pb-4">
+          <p className="font-body text-xs text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg">
+            {sortedOptions.length === 0
+              ? 'Add at least two options to this question.'
+              : 'Mark at least one option as correct.'}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Quiz settings card ───────────────────────────────────────────────────────
+
+function QuizSettings({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unknown[] }) {
+  const [title, setTitle] = useState(quiz.title);
+  const [passingScore, setPassingScore] = useState(String(quiz.passingScore));
+  const [maxAttempts, setMaxAttempts] = useState(String(quiz.maxAttempts));
+  const [dirty, setDirty] = useState(false);
+  const [error, setError] = useState('');
+  const { mutateAsync: updateQuiz, isPending } = useUpdateQuiz(cacheKey);
+
+  useEffect(() => {
+    setTitle(quiz.title);
+    setPassingScore(String(quiz.passingScore));
+    setMaxAttempts(String(quiz.maxAttempts));
+    setDirty(false);
+  }, [quiz.id]);
+
+  function mark(field: 'title' | 'ps' | 'ma', value: string) {
+    if (field === 'title') setTitle(value);
+    if (field === 'ps') setPassingScore(value);
+    if (field === 'ma') setMaxAttempts(value);
+    setDirty(true);
+    setError('');
+  }
+
+  async function handleSave() {
+    const ps = parseInt(passingScore, 10);
+    const ma = parseInt(maxAttempts, 10);
+    if (!title.trim()) { setError('Title is required.'); return; }
+    if (isNaN(ps) || ps < 0 || ps > 100) { setError('Passing score must be 0–100.'); return; }
+    if (isNaN(ma) || ma < 1) { setError('Max attempts must be at least 1.'); return; }
+    try {
+      await updateQuiz({ id: quiz.id, title: title.trim(), passingScore: ps, maxAttempts: ma });
+      setDirty(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save.');
+    }
+  }
+
+  return (
+    <div className="bg-white border border-[#E5E7EB] rounded-xl p-5">
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="font-heading font-bold text-sm text-[#0F0F0F]">Quiz Settings</h3>
+        {dirty && <Button size="sm" loading={isPending} onClick={handleSave}>Save settings</Button>}
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <div>
+          <label className="font-body text-xs font-medium text-[#374151] block mb-1.5">
+            Quiz Title <span className="text-red-400">*</span>
+          </label>
+          <Input
+            value={title}
+            onChange={(e) => mark('title', e.target.value)}
+            placeholder="e.g. Module 1 Assessment"
+            maxLength={120}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="font-body text-xs font-medium text-[#374151] block mb-1.5">
+              Passing Score (%)
+            </label>
+            <div className="relative">
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                value={passingScore}
+                onChange={(e) => mark('ps', e.target.value)}
+                className="pr-8"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 font-body text-sm text-[#9CA3AF] pointer-events-none">%</span>
+            </div>
+            <p className="font-body text-xs text-[#9CA3AF] mt-1">Minimum to pass</p>
+          </div>
+
+          <div>
+            <label className="font-body text-xs font-medium text-[#374151] block mb-1.5">
+              Max Attempts
+            </label>
+            <Input
+              type="number"
+              min={1}
+              value={maxAttempts}
+              onChange={(e) => mark('ma', e.target.value)}
+            />
+            <p className="font-body text-xs text-[#9CA3AF] mt-1">Student retry limit</p>
+          </div>
+        </div>
+
+        {error && (
+          <p className="font-body text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Create quiz panel ────────────────────────────────────────────────────────
+
+function CreateQuizPanel({
+  onCreate,
+}: {
+  onCreate: (data: { title: string; passingScore: number; maxAttempts: number }) => Promise<unknown>;
+}) {
+  const [title, setTitle] = useState('');
+  const [passingScore, setPassingScore] = useState('70');
+  const [maxAttempts, setMaxAttempts] = useState('3');
+  const [error, setError] = useState('');
+  const [isPending, setIsPending] = useState(false);
+
+  async function handleCreate() {
+    const ps = parseInt(passingScore, 10);
+    const ma = parseInt(maxAttempts, 10);
+    if (!title.trim()) { setError('Title is required.'); return; }
+    if (isNaN(ps) || ps < 0 || ps > 100) { setError('Passing score must be 0–100.'); return; }
+    if (isNaN(ma) || ma < 1) { setError('Max attempts must be at least 1.'); return; }
+    setIsPending(true);
+    try {
+      await onCreate({ title: title.trim(), passingScore: ps, maxAttempts: ma });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create quiz.');
+    } finally {
+      setIsPending(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center py-12 border-2 border-dashed border-[#E5E7EB] rounded-xl">
+      <div className="w-14 h-14 rounded-full bg-[#F3E8FF] flex items-center justify-center mb-4">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3D006B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      </div>
+
+      <h3 className="font-heading font-bold text-base text-[#0F0F0F] mb-1">No quiz yet</h3>
+      <p className="font-body text-sm text-[#6B7280] mb-6 max-w-xs text-center">
+        Add a quiz to assess student understanding.
+      </p>
+
+      <div className="w-full max-w-sm flex flex-col gap-4 px-6">
+        <div>
+          <label className="font-body text-xs font-medium text-[#374151] block mb-1.5">
+            Quiz Title <span className="text-red-400">*</span>
+          </label>
+          <Input
+            placeholder="e.g. Module 1 Assessment"
+            value={title}
+            onChange={(e) => { setTitle(e.target.value); setError(''); }}
+            maxLength={120}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="font-body text-xs font-medium text-[#374151] block mb-1.5">
+              Passing Score
+            </label>
+            <div className="relative">
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                value={passingScore}
+                onChange={(e) => { setPassingScore(e.target.value); setError(''); }}
+                className="pr-8"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 font-body text-sm text-[#9CA3AF] pointer-events-none">%</span>
+            </div>
+          </div>
+          <div>
+            <label className="font-body text-xs font-medium text-[#374151] block mb-1.5">
+              Max Attempts
+            </label>
+            <Input
+              type="number"
+              min={1}
+              value={maxAttempts}
+              onChange={(e) => { setMaxAttempts(e.target.value); setError(''); }}
+            />
+          </div>
+        </div>
+
+        {error && (
+          <p className="font-body text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
+        )}
+
+        <Button size="md" loading={isPending} disabled={!title.trim()} onClick={handleCreate}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Create Quiz
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Quiz editor ──────────────────────────────────────────────────────────────
+
+function QuizEditor({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unknown[] }) {
+  const [confirmDeleteQuiz, setConfirmDeleteQuiz] = useState(false);
+  const { mutateAsync: addQuestion, isPending: addingQuestion } = useAddQuestion(cacheKey);
+  const { mutate: deleteQuiz, isPending: deletingQuiz } = useDeleteQuiz(cacheKey);
+
+  const sortedQuestions = [...quiz.questions].sort((a, b) => a.orderIndex - b.orderIndex);
+
+  async function handleAddQuestion() {
+    await addQuestion({
+      quizId: quiz.id,
+      text: 'New question',
+      orderIndex: sortedQuestions.length + 1,
+    });
+  }
+
+  return (
+    <div className="flex flex-col gap-5">
+      <QuizSettings quiz={quiz} cacheKey={cacheKey} />
+
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-px bg-[#E5E7EB]" />
+        <span className="font-body text-xs text-[#9CA3AF] shrink-0 uppercase tracking-wide">
+          Questions ({sortedQuestions.length})
+        </span>
+        <div className="flex-1 h-px bg-[#E5E7EB]" />
+      </div>
+
+      {sortedQuestions.length === 0 && (
+        <div className="flex flex-col items-center py-10 border-2 border-dashed border-[#E5E7EB] rounded-xl text-center">
+          <div className="w-10 h-10 rounded-full bg-[#F3E8FF] flex items-center justify-center mb-3">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D006B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </div>
+          <p className="font-body text-sm text-[#6B7280] mb-1">No questions yet</p>
+          <p className="font-body text-xs text-[#9CA3AF]">Click "Add Question" to get started.</p>
+        </div>
+      )}
+
+      {sortedQuestions.map((q, i) => (
+        <QuestionCard key={q.id} question={q} cacheKey={cacheKey} number={i + 1} />
+      ))}
+
+      <Button variant="secondary" size="md" loading={addingQuestion} onClick={handleAddQuestion} className="w-full">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        Add Question
+      </Button>
+
+      <div className="border-t border-[#E5E7EB] pt-4">
+        {confirmDeleteQuiz ? (
+          <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-lg">
+            <p className="font-body text-sm text-red-700 flex-1">
+              Delete this quiz and all its questions?
+            </p>
+            <Button variant="danger" size="sm" loading={deletingQuiz} onClick={() => deleteQuiz(quiz.id)}>
+              Delete Quiz
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setConfirmDeleteQuiz(false)}>
+              Cancel
+            </Button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setConfirmDeleteQuiz(true)}
+            className="font-body text-xs text-[#9CA3AF] hover:text-red-500 transition-colors flex items-center gap-1.5"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14H6L5 6" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M9 6V4h6v2" />
+            </svg>
+            Delete quiz
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── QuizBuilder ──────────────────────────────────────────────────────────────
+
+export type QuizBuilderProps =
+  | { moduleId: string; courseId?: never }
+  | { courseId: string; moduleId?: never };
+
+function ModuleQuizBuilder({ moduleId }: { moduleId: string }) {
+  const cacheKey = quizKeys.forModule(moduleId);
+  const { data: quiz, isLoading, isError } = useModuleQuiz(moduleId);
+  const { mutateAsync: createQuiz } = useCreateModuleQuiz(moduleId);
+
+  if (isLoading) {
+    return (
+      <PageLoader type="list" count={2} />
+    );
+  }
+  if (isError) {
+    return (
+      <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-3 rounded-lg">
+        Failed to load quiz. Please refresh.
+      </p>
+    );
+  }
+  if (!quiz) return <CreateQuizPanel onCreate={createQuiz} />;
+  return <QuizEditor quiz={quiz} cacheKey={cacheKey} />;
+}
+
+function CourseQuizBuilder({ courseId }: { courseId: string }) {
+  const cacheKey = quizKeys.forCourse(courseId);
+  const { data: quiz, isLoading, isError } = useCourseQuiz(courseId);
+  const { mutateAsync: createQuiz } = useCreateCourseQuiz(courseId);
+
+  if (isLoading) {
+    return (
+      <PageLoader type="list" count={2} />
+    );
+  }
+  if (isError) {
+    return (
+      <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-3 rounded-lg">
+        Failed to load quiz. Please refresh.
+      </p>
+    );
+  }
+  if (!quiz) return <CreateQuizPanel onCreate={createQuiz} />;
+  return <QuizEditor quiz={quiz} cacheKey={cacheKey} />;
+}
+
+export function QuizBuilder(props: QuizBuilderProps) {
+  if ('moduleId' in props && props.moduleId) return <ModuleQuizBuilder moduleId={props.moduleId} />;
+  if ('courseId' in props && props.courseId) return <CourseQuizBuilder courseId={props.courseId} />;
+  return null;
+}

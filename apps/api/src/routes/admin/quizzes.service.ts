@@ -7,11 +7,39 @@ const validateReorder = (items: { id: string; orderIndex: number }[]) => {
     throw badRequest('orderIndex values must be contiguous starting from 1');
 };
 
+export const getModuleQuiz = async (moduleId: string) => {
+  const mod = await prisma.module.findUnique({ where: { id: moduleId } });
+  if (!mod) throw notFound('Module not found');
+  return prisma.quiz.findUnique({
+    where: { moduleId },
+    include: {
+      questions: {
+        orderBy: { orderIndex: 'asc' },
+        include: { options: { orderBy: { orderIndex: 'asc' } } },
+      },
+    },
+  });
+};
+
 export const createModuleQuiz = async (moduleId: string, data: { title: string; passingScore: number; maxAttempts: number }) => {
   const mod = await prisma.module.findUnique({ where: { id: moduleId }, include: { quiz: true } });
   if (!mod) throw notFound('Module not found');
   if (mod.quiz) throw badRequest('Module already has a quiz');
   return prisma.quiz.create({ data: { moduleId, ...data } });
+};
+
+export const getCourseQuiz = async (courseId: string) => {
+  const course = await prisma.course.findUnique({ where: { id: courseId } });
+  if (!course) throw notFound('Course not found');
+  return prisma.quiz.findUnique({
+    where: { courseId },
+    include: {
+      questions: {
+        orderBy: { orderIndex: 'asc' },
+        include: { options: { orderBy: { orderIndex: 'asc' } } },
+      },
+    },
+  });
 };
 
 export const createCourseQuiz = async (courseId: string, data: { title: string; passingScore: number; maxAttempts: number }) => {

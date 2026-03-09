@@ -13,6 +13,7 @@ const badgeVariants = cva(
         gray:     'border border-[#E5E7EB] text-[#6B7280]',
         success:  'bg-green-50 text-green-700',
         danger:   'bg-red-50 text-red-600',
+        warning:  'bg-amber-50 text-amber-700',
       },
       size: {
         sm: 'text-[10px] px-2 py-0.5',

@@ -3,9 +3,19 @@ import * as service from '../routes/admin/quizzes.service';
 import { sendSuccess } from '../utils/response';
 import { asyncHandler } from '../utils/asyncHandler';
 
+export const getModuleQuiz = asyncHandler(async (req: Request, res: Response) => {
+  const result = await service.getModuleQuiz(req.params.moduleId);
+  sendSuccess(res, result);
+});
+
 export const postCreateModuleQuiz = asyncHandler(async (req: Request, res: Response) => {
   const result = await service.createModuleQuiz(req.params.moduleId, req.body);
   sendSuccess(res, result, 'Quiz created', 201);
+});
+
+export const getCourseQuiz = asyncHandler(async (req: Request, res: Response) => {
+  const result = await service.getCourseQuiz(req.params.courseId);
+  sendSuccess(res, result);
 });
 
 export const postCreateCourseQuiz = asyncHandler(async (req: Request, res: Response) => {

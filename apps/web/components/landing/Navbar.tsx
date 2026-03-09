@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Logo } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 const links = [
@@ -14,13 +15,10 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-[#E5E7EB]">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 h-24 flex items-center justify-between">
 
         {/* Logo */}
-        <Link href="/" className="flex items-baseline gap-0 shrink-0">
-          <span className="font-heading font-bold text-xl text-[#3D006B]">WithinTech</span>
-          <span className="font-heading font-bold text-xl text-[#F97316]">Learn</span>
-        </Link>
+        <Logo className="h-28" />
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">
