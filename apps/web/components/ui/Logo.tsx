@@ -6,12 +6,15 @@ interface LogoProps {
   className?: string;
   /** Wrap the logo in a link to "/" (default: true) */
   linked?: boolean;
+  /** Use 'sidebar' to show the sidebar-specific logo */
+  variant?: 'default' | 'sidebar';
 }
 
-export default function Logo({ className, linked = true }: LogoProps) {
+export default function Logo({ className, linked = true, variant = 'default' }: LogoProps) {
+  const src = variant === 'sidebar' ? '/sidebar-logo.png' : '/logo.svg';
   const img = (
     <Image
-      src="/logo.svg"
+      src={src}
       alt="WithinTech Learn"
       width={1500}
       height={1500}

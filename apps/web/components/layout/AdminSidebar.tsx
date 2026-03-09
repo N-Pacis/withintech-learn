@@ -55,7 +55,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     >
       {/* Logo */}
       <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between">
-        <Logo className="h-24" linked={false} />
+        <Logo className="h-24" linked={false} variant="sidebar" />
         {/* Close button — mobile only */}
         <button
           onClick={onClose}
