@@ -93,16 +93,28 @@ jobs:
           port: 222
           script_stop: true
           script: |
-            COMPOSE="docker compose -f $HOME/withintech-learn/docker-compose.yml"
+            # Ensure Docker Compose V2 plugin is installed
+            if ! docker compose version &>/dev/null; then
+              DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+              mkdir -p "$DOCKER_CONFIG/cli-plugins"
+              curl -fsSL https://github.com/docker/compose/releases/download/v2.27.1/docker-compose-linux-x86_64 \
+                -o "$DOCKER_CONFIG/cli-plugins/docker-compose"
+              chmod +x "$DOCKER_CONFIG/cli-plugins/docker-compose"
+              echo "Docker Compose V2 installed: $(docker compose version)"
+            else
+              echo "Docker Compose V2 already available: $(docker compose version)"
+            fi
+
+            cd $HOME/withintech-learn
 
             # Build new images first — running containers are untouched during this step
-            $COMPOSE build
+            docker compose build
 
             # Kill anything outside of compose that grabbed 80/443 (stale system services)
             sudo fuser -k 80/tcp 443/tcp 2>/dev/null || true
 
             # Rolling replace: recreate only changed containers, leave healthy ones running
-            $COMPOSE up -d --no-build --remove-orphans
+            docker compose up -d --no-build --remove-orphans
 
       # ── 4. Seed database ─────────────────────────────────────────────────────
       - name: Seed database
@@ -135,3 +147,4 @@ jobs:
           script: |
             docker image prune -f
             docker system prune -f --volumes=false
+
