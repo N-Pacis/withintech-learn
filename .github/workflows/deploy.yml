@@ -93,6 +93,7 @@ jobs:
           port: 222
           script_stop: true
           script: |
+            set -x  # print every command before executing
             # Ensure Docker Compose V2 plugin is installed
             if ! docker compose version &>/dev/null; then
               DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
