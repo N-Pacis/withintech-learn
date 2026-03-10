@@ -50,7 +50,7 @@ export default function Home() {
               </p>
 
               <Link
-                href="/sign-in"
+                href="/sign-up"
                 className="font-body font-medium inline-flex items-center gap-2 bg-[#3D006B] text-white px-7 py-3.5 rounded-md hover:bg-[#2A004A] transition-colors text-base"
               >
                 Start Learning →
@@ -109,7 +109,7 @@ export default function Home() {
               </h2>
             </div>
             <Link
-              href="/sign-in"
+              href="/sign-up"
               className="hidden md:inline-flex font-body text-sm font-medium text-[#3D006B] items-center gap-1.5 hover:gap-3 transition-all"
             >
               All courses →
@@ -149,7 +149,7 @@ export default function Home() {
                   <span className="font-body text-sm text-[#6B7280]">Certificate included</span>
                 </div>
                 <Link
-                  href="/sign-in"
+                  href="/sign-up"
                   className="font-body text-sm font-medium text-[#3D006B] inline-flex items-center gap-1.5 hover:gap-3 transition-all"
                 >
                   View course →
@@ -183,7 +183,7 @@ export default function Home() {
                     7 modules · Certificate
                   </p>
                   <Link
-                    href="/sign-in"
+                    href="/sign-up"
                     className="font-body text-sm font-medium text-[#3D006B] inline-flex items-center gap-1.5 hover:gap-3 transition-all mt-auto"
                   >
                     View course →
@@ -214,7 +214,7 @@ export default function Home() {
                     5 modules · Certificate
                   </p>
                   <Link
-                    href="/sign-in"
+                    href="/sign-up"
                     className="font-body text-sm font-medium text-[#3D006B] inline-flex items-center gap-1.5 hover:gap-3 transition-all mt-auto"
                   >
                     View course →
@@ -228,7 +228,7 @@ export default function Home() {
           {/* Mobile: "all courses" link */}
           <div className="mt-8 md:hidden">
             <Link
-              href="/sign-in"
+              href="/sign-up"
               className="font-body text-sm font-medium text-[#3D006B] inline-flex items-center gap-1.5"
             >
               All courses →
@@ -358,10 +358,10 @@ export default function Home() {
 
               <div className="flex flex-wrap gap-4">
                 <Link
-                  href="/sign-in"
+                  href="/sign-up"
                   className="font-body font-medium bg-[#3D006B] text-white px-7 py-3.5 rounded-md hover:bg-[#2A004A] transition-colors text-base"
                 >
-                  Sign In
+                  Start Learning
                 </Link>
                 <Link
                   href="#how-it-works"
@@ -412,7 +412,7 @@ export default function Home() {
               <ul className="flex flex-col gap-3">
                 {[
                   { label: "Home", href: "/" },
-                  { label: "Sign In", href: "/sign-in" },
+                  { label: "Start Learning", href: "/sign-up" },
                   { label: "How It Works", href: "#how-it-works" },
                 ].map(({ label, href }) => (
                   <li key={label}>

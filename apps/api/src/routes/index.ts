@@ -5,14 +5,20 @@ import authRouter from './auth/auth.routes';
 import adminCoursesRouter from './admin/courses.routes';
 import adminModulesRouter from './admin/modules.routes';
 import adminQuizzesRouter from './admin/quizzes.routes';
+import adminUsersRouter from './admin/users.routes';
 
 const router = Router();
 
 router.use(authRouter);
 
+// All /admin/* routes require a valid JWT and admin role
 router.use('/admin', authenticate, isAdmin);
 router.use(adminCoursesRouter);
 router.use(adminModulesRouter);
 router.use(adminQuizzesRouter);
+router.use(adminUsersRouter);
+
+// All /student/* routes require a valid JWT (any role)
+router.use('/student', authenticate);
 
 export default router;

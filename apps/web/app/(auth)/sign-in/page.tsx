@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Logo } from '@/components/ui';
 import { useLogin } from '@/hooks/queries/auth';
-import { Button, Input, FormField, Card } from '@/components/ui';
+import { Button, Input, FormField, Card, PasswordInput } from '@/components/ui';
 
 export default function SignInPage() {
   const router = useRouter();
@@ -51,7 +51,7 @@ export default function SignInPage() {
       <div className="relative z-10 w-full max-w-md mx-4">
         <Card shadow="lg" className="px-8 py-10 ring-1 ring-[#E5E7EB] rounded-2xl">
 
-          <div className="mb-8">
+          <div className="mb-3">
             <Logo className="h-36" linked={false} />
           </div>
 
@@ -71,9 +71,8 @@ export default function SignInPage() {
             </FormField>
 
             <FormField label="Password" htmlFor="password" required>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -91,6 +90,13 @@ export default function SignInPage() {
               Sign In
             </Button>
           </form>
+
+          <p className="font-body text-sm text-[#6B7280] text-center mt-6">
+            Don&apos;t have an account?{' '}
+            <Link href="/sign-up" className="text-[#3D006B] font-medium hover:underline">
+              Get Started
+            </Link>
+          </p>
 
         </Card>
       </div>

@@ -20,7 +20,7 @@ export const login = async ({ email, password }: { email: string; password: stri
   if (!user || !(await comparePassword(password, user.passwordHash)))
     throw unauthorized('Invalid email or password');
   if (!user.isActive)
-    throw forbidden('Account not activated. Please reset your password to activate your account.');
+    throw forbidden('Your account has been deactivated. Please contact an administrator.');
   const payload = { userId: user.id, role: user.role.name };
   return { accessToken: signAccessToken(payload), refreshToken: signRefreshToken(payload), user: safeUser(user) };
 };
@@ -28,7 +28,7 @@ export const login = async ({ email, password }: { email: string; password: stri
 export const refreshToken = async ({ refreshToken: token }: { refreshToken: string }) => {
   const payload = verifyToken(token, process.env.JWT_REFRESH_SECRET as string);
   const user = await prisma.user.findUnique({ where: { id: payload.userId }, include: { role: true } });
-  if (!user || !user.isActive) throw unauthorized('User not found or inactive');
+  if (!user || !user.isActive) throw unauthorized('Invalid or expired token');
   return { accessToken: signAccessToken({ userId: user.id, role: user.role.name }) };
 };
 
@@ -62,9 +62,25 @@ export const adminSeed = async () => {
   return { skipped: false as const, email: process.env.ADMIN_SEED_EMAIL, password };
 };
 
+export const signUp = async ({ firstName, lastName, email, password }: { firstName: string; lastName: string; email: string; password: string }) => {
+  const studentRole = await prisma.role.findUnique({ where: { name: 'student' } });
+  if (!studentRole) throw badRequest('Registration is currently unavailable. Please try again later.');
+  const taken = await prisma.user.findUnique({ where: { email } });
+  if (taken) throw conflict('Email already in use');
+
+  const passwordHash = await hashPassword(password);
+  const user = await prisma.user.create({
+    data: { firstName, lastName, email, passwordHash, roleId: studentRole.id, isActive: true },
+    include: { role: true },
+  });
+
+  const payload = { userId: user.id, role: user.role.name };
+  return { accessToken: signAccessToken(payload), refreshToken: signRefreshToken(payload), user: safeUser(user) };
+};
+
 export const registerUser = async ({ firstName, lastName, email }: { firstName: string; lastName: string; email: string }) => {
   const studentRole = await prisma.role.findUnique({ where: { name: 'student' } });
-  if (!studentRole) throw badRequest('Student role not found. Run /api/auth/seed first.');
+  if (!studentRole) throw badRequest('Registration is currently unavailable. Please try again later.');
   const taken = await prisma.user.findUnique({ where: { email } });
   if (taken) throw conflict('Email already in use');
 
@@ -123,12 +139,14 @@ export const resetPassword = async ({ email, otp, newPassword }: { email: string
 };
 
 export const getProfile = async ({ userId }: { userId: string }) => {
-  const user = await prisma.user.findUniqueOrThrow({ where: { id: userId }, include: { role: true } });
+  const user = await prisma.user.findUnique({ where: { id: userId }, include: { role: true } });
+  if (!user) throw unauthorized();
   return safeUser(user);
 };
 
 export const changePassword = async ({ userId, currentPassword, newPassword }: { userId: string; currentPassword: string; newPassword: string }) => {
-  const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw unauthorized();
   if (!(await comparePassword(currentPassword, user.passwordHash))) throw unauthorized('Current password is incorrect');
   await prisma.user.update({ where: { id: userId }, data: { passwordHash: await hashPassword(newPassword) } });
   return true;

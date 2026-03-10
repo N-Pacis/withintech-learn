@@ -18,6 +18,11 @@ export const postLogout = asyncHandler(async (req: Request, res: Response) => {
   sendSuccess(res, undefined, 'Logged out');
 });
 
+export const postSignUp = asyncHandler(async (req: Request, res: Response) => {
+  const result = await authService.signUp(req.body);
+  sendSuccess(res, result, 'Account created successfully', 201);
+});
+
 export const postRegisterUser = asyncHandler(async (req: Request, res: Response) => {
   const result = await authService.registerUser(req.body);
   sendSuccess(res, result, 'User registered', 201);

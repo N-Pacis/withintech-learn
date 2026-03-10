@@ -35,7 +35,7 @@ export default function CourseOverviewPage() {
 
       {course.thumbnailUrl && (
         <div className="relative h-52 rounded-xl overflow-hidden bg-[#F3F4F6] mb-8">
-          <Image src={course.thumbnailUrl} alt={course.title} fill className="object-cover" />
+          <Image src={course.thumbnailUrl} alt={course.title} fill className="object-cover" unoptimized />
         </div>
       )}
 

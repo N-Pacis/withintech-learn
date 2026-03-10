@@ -49,7 +49,7 @@ export default function AdminDashboard() {
           Your workspace is ready
         </h2>
         <p className="font-body text-sm text-[#6B7280]">
-          Use the sidebar to manage courses, students, and enrollments.
+          Use the sidebar to manage courses and users.
         </p>
       </div>
 

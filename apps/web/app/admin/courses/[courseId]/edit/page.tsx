@@ -3,14 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { useCourse, useUpdateCourse, usePublishCourse, useArchiveCourse, useUploadThumbnail } from '@/hooks/queries/courses';
+import { useCourse, useUpdateCourse, useArchiveCourse, useUploadThumbnail } from '@/hooks/queries/courses';
 import { Button, Badge, PageLoader, Card, CardHeader, CardBody, FormField, Input, Textarea, FileUpload } from '@/components/ui';
 
 export default function EditCoursePage() {
   const { courseId } = useParams<{ courseId: string }>();
   const { data: course, isLoading } = useCourse(courseId);
   const { mutateAsync: updateCourse, isPending: saving } = useUpdateCourse(courseId);
-  const { mutate: publish, isPending: publishing } = usePublishCourse();
   const { mutate: archive, isPending: archiving } = useArchiveCourse();
   const { mutateAsync: uploadThumbnail, isPending: uploadingThumb } = useUploadThumbnail();
 
@@ -19,6 +18,7 @@ export default function EditCoursePage() {
   const [dirty, setDirty] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [publishError, setPublishError] = useState('');
+  const [saved, setSaved] = useState(false);
   const [confirmArchive, setConfirmArchive] = useState(false);
 
   useEffect(() => {
@@ -38,9 +38,12 @@ export default function EditCoursePage() {
   async function handleSave() {
     if (!title.trim()) { setSaveError('Title cannot be empty.'); return; }
     setSaveError('');
+    setSaved(false);
     try {
       await updateCourse({ title: title.trim(), description: description.trim() || undefined });
       setDirty(false);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Failed to save.');
     }
@@ -162,9 +165,8 @@ export default function EditCoursePage() {
 
         {/* Details */}
         <Card shadow="sm">
-          <CardHeader className="flex items-center justify-between">
+          <CardHeader>
             <h2 className="font-heading font-bold text-base text-[#0F0F0F]">Details</h2>
-            {dirty && <Button size="sm" loading={saving} onClick={handleSave}>Save changes</Button>}
           </CardHeader>
           <CardBody className="flex flex-col gap-5">
             <FormField label="Title" htmlFor="edit-title" required>
@@ -191,6 +193,19 @@ export default function EditCoursePage() {
             {saveError && (
               <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-2.5 rounded-lg">{saveError}</p>
             )}
+            <div className="flex items-center gap-3 pt-1">
+              <Button loading={saving} onClick={handleSave} disabled={!dirty}>
+                Save Changes
+              </Button>
+              {saved && !dirty && (
+                <span className="font-body text-sm text-green-600 flex items-center gap-1.5">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  Saved
+                </span>
+              )}
+            </div>
           </CardBody>
         </Card>
 
@@ -212,32 +227,6 @@ export default function EditCoursePage() {
               onFileSelect={handleThumbnailSelect}
               uploading={uploadingThumb}
             />
-          </CardBody>
-        </Card>
-
-        {/* Publish */}
-        <Card shadow="sm">
-          <CardBody className="flex items-center justify-between gap-4">
-            <div>
-              <p className="font-heading font-bold text-sm text-[#0F0F0F]">Ready to go live?</p>
-              <p className="font-body text-xs text-[#9CA3AF] mt-0.5">
-                All modules must have content blocks. Once published, the course cannot be edited.
-              </p>
-              {publishError && <p className="font-body text-xs text-red-500 mt-1">{publishError}</p>}
-            </div>
-            <Button
-              variant="primary"
-              size="sm"
-              loading={publishing}
-              onClick={() =>
-                publish(courseId, {
-                  onError: (err) => setPublishError(err instanceof Error ? err.message : 'Failed.'),
-                })
-              }
-              className="shrink-0"
-            >
-              Publish
-            </Button>
           </CardBody>
         </Card>
 

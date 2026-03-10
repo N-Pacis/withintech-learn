@@ -17,3 +17,4 @@ export type { ReorderItem } from './ReorderableList';
 export { Stepper } from './Stepper';
 export type { StepperStep } from './Stepper';
 export { default as Logo } from './Logo';
+export { PasswordInput } from './PasswordInput';

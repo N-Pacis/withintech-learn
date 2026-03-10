@@ -79,7 +79,7 @@ function CourseCard({ course, onDelete }: { course: Course; onDelete: (id: strin
       {/* Thumbnail */}
       <Link href={`/admin/courses/${course.id}`} className="relative h-40 bg-[#F3F4F6] shrink-0 block">
         {course.thumbnailUrl ? (
-          <Image src={course.thumbnailUrl} alt={course.title} fill className="object-cover" />
+          <Image src={course.thumbnailUrl} alt={course.title} fill className="object-cover" unoptimized />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

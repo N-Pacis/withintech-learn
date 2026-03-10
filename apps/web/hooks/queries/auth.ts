@@ -47,6 +47,25 @@ export function useLogin() {
   });
 }
 
+export function useSignUp() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { firstName: string; lastName: string; email: string; password: string }) => {
+      const res = await apiFetch<{ accessToken: string; refreshToken: string; user: User }>(
+        '/auth/signup',
+        { method: 'POST', body: JSON.stringify(data) },
+      );
+      if (!res.success || !res.data) throw new Error(res.message ?? 'Sign up failed');
+      return res.data;
+    },
+    onSuccess: (data) => {
+      setTokens(data.accessToken, data.refreshToken);
+      queryClient.setQueryData(authKeys.profile, data.user);
+    },
+  });
+}
+
 export function useLogout() {
   const queryClient = useQueryClient();
 

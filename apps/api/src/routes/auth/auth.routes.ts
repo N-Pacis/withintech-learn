@@ -4,6 +4,7 @@ import { isAdmin } from '../../middleware/isAdmin.middleware';
 import { validate } from '../../middleware/validate.middleware';
 import {
   loginSchema,
+  signupSchema,
   registerUserSchema,
   requestPasswordResetSchema,
   resetPasswordSchema,
@@ -11,6 +12,7 @@ import {
 } from './auth.schemas';
 import {
   postLogin,
+  postSignUp,
   postRefreshToken,
   postLogout,
   postRegisterUser,
@@ -23,6 +25,7 @@ import {
 const router = Router();
 
 router.post('/auth/login', validate(loginSchema), postLogin);
+router.post('/auth/signup', validate(signupSchema), postSignUp);
 router.post('/auth/refresh', postRefreshToken);
 router.post('/auth/logout', authenticate, postLogout);
 router.post('/auth/register', authenticate, isAdmin, validate(registerUserSchema), postRegisterUser);

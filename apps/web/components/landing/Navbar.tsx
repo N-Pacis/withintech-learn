@@ -32,10 +32,10 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/sign-in"
+            href="/sign-up"
             className="font-body text-sm font-medium bg-[#3D006B] text-white px-5 py-2 rounded-md hover:bg-[#2A004A] transition-colors"
           >
-            Sign In
+            Start Learning
           </Link>
         </div>
 
@@ -76,11 +76,11 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/sign-in"
+            href="/sign-up"
             onClick={() => setOpen(false)}
             className="mt-3 font-body text-sm font-medium bg-[#3D006B] text-white px-5 py-3 rounded-md hover:bg-[#2A004A] transition-colors text-center"
           >
-            Sign In
+            Start Learning
           </Link>
         </div>
       </div>
