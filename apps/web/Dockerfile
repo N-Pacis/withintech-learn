@@ -13,6 +13,10 @@ COPY packages/ ./packages/
 COPY apps/web/ ./apps/web/
 
 RUN pnpm install --frozen-lockfile
+
+# Build shared package first so @withintech-learn/shared resolves correctly
+RUN cd packages/shared && pnpm build
+
 RUN cd apps/web && pnpm build
 
 EXPOSE 3000

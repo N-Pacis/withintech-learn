@@ -11,6 +11,9 @@ COPY apps/api/ ./apps/api/
 # Install all deps
 RUN pnpm install --frozen-lockfile
 
+# Build shared package first so the API can resolve @withintech-learn/shared
+RUN cd packages/shared && pnpm build
+
 # Generate Prisma client explicitly
 RUN cd apps/api && npx prisma generate
 
