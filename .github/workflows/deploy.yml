@@ -94,11 +94,15 @@ jobs:
           script_stop: true
           script: |
             COMPOSE="docker-compose -f $HOME/withintech-learn/docker-compose.yml"
-            docker system prune -f
-            $COMPOSE down
-            # Kill anything holding port 80 or 443 (e.g. stale nginx, apache, system services)
+
+            # Build new images first — running containers are untouched during this step
+            $COMPOSE build
+
+            # Kill anything outside of compose that grabbed 80/443 (stale system services)
             sudo fuser -k 80/tcp 443/tcp 2>/dev/null || true
-            $COMPOSE up --build -d
+
+            # Rolling replace: recreate only changed containers, leave healthy ones running
+            $COMPOSE up -d --no-build --remove-orphans
 
       # ── 4. Seed database ─────────────────────────────────────────────────────
       - name: Seed database
@@ -110,12 +114,12 @@ jobs:
           port: 222
           script_stop: true
           script: |
-            echo "Waiting for system to settle..."
-            sleep 15
-            echo "Waiting for API to finish migrations..."
-            for i in $(seq 1 12); do
-              docker exec withintech-learn_api echo "ready" 2>/dev/null && break
-              echo "  attempt $i/12..."
+            echo "Waiting for API container to be healthy..."
+            for i in $(seq 1 24); do
+              status=$(docker inspect -f '{{.State.Health.Status}}' withintech-learn_api 2>/dev/null || echo "missing")
+              echo "  attempt $i/24 — status: $status"
+              [ "$status" = "healthy" ] && break
+              [ $i -eq 24 ] && echo "API did not become healthy in time" && exit 1
               sleep 5
             done
             docker exec withintech-learn_api node --max-old-space-size=512 dist/scripts/seed.js
@@ -130,3 +134,4 @@ jobs:
           port: 222
           script: |
             docker image prune -f
+            docker system prune -f --volumes=false
