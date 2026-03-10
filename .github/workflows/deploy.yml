@@ -93,7 +93,7 @@ jobs:
           port: 222
           script_stop: true
           script: |
-            COMPOSE="docker-compose -f $HOME/withintech-learn/docker-compose.yml"
+            COMPOSE="docker compose -f $HOME/withintech-learn/docker-compose.yml"
 
             # Build new images first — running containers are untouched during this step
             $COMPOSE build
