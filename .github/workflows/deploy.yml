@@ -118,6 +118,11 @@ jobs:
               | grep -E '^[a-f0-9]{12}_withintech-learn_' \
               | xargs -r docker rm -f 2>/dev/null || true
 
+            # Remove stale V2-named containers that block compose from reusing names
+            docker ps -a --format '{{.Names}}' \
+              | grep -E '^withintech-learn_' \
+              | xargs -r docker rm -f 2>/dev/null || true
+
             # Rolling replace: recreate only changed containers, leave healthy ones running
             docker compose up -d --no-build --remove-orphans
 
