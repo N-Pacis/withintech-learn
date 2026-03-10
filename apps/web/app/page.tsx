@@ -50,7 +50,7 @@ export default function Home() {
               </p>
 
               <Link
-                href="/sign-up"
+                href="/sign-in"
                 className="font-body font-medium inline-flex items-center gap-2 bg-[#3D006B] text-white px-7 py-3.5 rounded-md hover:bg-[#2A004A] transition-colors text-base"
               >
                 Start Learning →
@@ -358,7 +358,7 @@ export default function Home() {
 
               <div className="flex flex-wrap gap-4">
                 <Link
-                  href="/sign-up"
+                  href="/sign-in"
                   className="font-body font-medium bg-[#3D006B] text-white px-7 py-3.5 rounded-md hover:bg-[#2A004A] transition-colors text-base"
                 >
                   Start Learning
@@ -412,7 +412,7 @@ export default function Home() {
               <ul className="flex flex-col gap-3">
                 {[
                   { label: "Home", href: "/" },
-                  { label: "Start Learning", href: "/sign-up" },
+                  { label: "Start Learning", href: "/sign-in" },
                   { label: "How It Works", href: "#how-it-works" },
                 ].map(({ label, href }) => (
                   <li key={label}>
