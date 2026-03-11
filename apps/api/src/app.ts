@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+import * as Sentry from '@sentry/node';
 import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -12,6 +13,7 @@ import router from './routes';
 import { AppError } from './utils/errors';
 
 const app = express();
+Sentry.setupExpressErrorHandler(app);
 const options = {
   customPath: '/api/docs',
   swaggerOptions: {
@@ -43,6 +45,7 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     res.status(err.statusCode).json({ success: false, message: err.message });
     return;
   }
+  Sentry.captureException(err);
   console.error(err);
   res.status(500).json({ success: false, message: 'Internal server error' });
 });

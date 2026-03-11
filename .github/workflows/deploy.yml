@@ -31,7 +31,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 222
           script_stop: true
-          envs: DATABASE_URL,JWT_ACCESS_SECRET,JWT_REFRESH_SECRET,JWT_ACCESS_EXPIRES_IN,JWT_REFRESH_EXPIRES_IN,STORAGE_PROVIDER,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,S3_BUCKET_NAME,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,EMAIL_FROM,NEXT_PUBLIC_API_URL,APP_URL,NODE_ENV,PORT,ADMIN_SEED_EMAIL,POSTGRES_USER,POSTGRES_PASSWORD,BCRYPT_ROUNDS
+          envs: DATABASE_URL,JWT_ACCESS_SECRET,JWT_REFRESH_SECRET,JWT_ACCESS_EXPIRES_IN,JWT_REFRESH_EXPIRES_IN,STORAGE_PROVIDER,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,S3_BUCKET_NAME,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,EMAIL_FROM,NEXT_PUBLIC_API_URL,APP_URL,NODE_ENV,PORT,ADMIN_SEED_EMAIL,POSTGRES_USER,POSTGRES_PASSWORD,BCRYPT_ROUNDS,SENTRY_DSN
           script: |
             {
               printf 'DATABASE_URL=%s\n'           "$DATABASE_URL"
@@ -57,6 +57,7 @@ jobs:
               printf 'POSTGRES_USER=%s\n'          "$POSTGRES_USER"
               printf 'POSTGRES_PASSWORD=%s\n'      "$POSTGRES_PASSWORD"
               printf 'BCRYPT_ROUNDS=%s\n'          "${BCRYPT_ROUNDS:-12}"
+              printf 'SENTRY_DSN=%s\n'             "$SENTRY_DSN"
             } > $HOME/withintech-learn/.env
         env:
           DATABASE_URL:           ${{ secrets.DATABASE_URL }}
@@ -82,6 +83,7 @@ jobs:
           POSTGRES_USER:          ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD:      ${{ secrets.POSTGRES_PASSWORD }}
           BCRYPT_ROUNDS:          ${{ secrets.BCRYPT_ROUNDS }}
+          SENTRY_DSN:             ${{ secrets.SENTRY_DSN }}
 
       # ── 3. Install docker-rollout (idempotent) ───────────────────────────────
       - name: Install docker-rollout
