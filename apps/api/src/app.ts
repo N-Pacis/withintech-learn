@@ -41,11 +41,11 @@ app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 app.use(router);
 
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+  Sentry.captureException(err);
   if (err instanceof AppError) {
     res.status(err.statusCode).json({ success: false, message: err.message });
     return;
   }
-  Sentry.captureException(err);
   console.error(err);
   res.status(500).json({ success: false, message: 'Internal server error' });
 });
