@@ -29,9 +29,6 @@ importers:
       '@sentry/node':
         specifier: ^10.43.0
         version: 10.43.0
-      '@sentry/profiling-node':
-        specifier: ^10.43.0
-        version: 10.43.0
       '@withintech-learn/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -1488,10 +1485,6 @@ packages:
   '@scarf/scarf@1.4.0':
     resolution: {integrity: sha512-xxeapPiUXdZAE3che6f3xogoJPeZgig6omHEy1rIY5WVsB3H2BHNnZH+gHG6x91SCWyQCzWGsuL2Hh3ClO5/qQ==}
 
-  '@sentry-internal/node-cpu-profiler@2.2.0':
-    resolution: {integrity: sha512-oLHVYurqZfADPh5hvmQYS5qx8t0UZzT2u6+/68VXsFruQEOnYJTODKgU3BVLmemRs3WE6kCJjPeFdHVYOQGSzQ==}
-    engines: {node: '>=18'}
-
   '@sentry/core@10.43.0':
     resolution: {integrity: sha512-l0SszQAPiQGWl/ferw8GP3ALyHXiGiRKJaOvNmhGO+PrTQyZTZ6OYyPnGijAFRg58dE1V3RCH/zw5d2xSUIiNg==}
     engines: {node: '>=18'}
@@ -1536,11 +1529,6 @@ packages:
       '@opentelemetry/core': ^1.30.1 || ^2.1.0
       '@opentelemetry/sdk-trace-base': ^1.30.1 || ^2.1.0
       '@opentelemetry/semantic-conventions': ^1.39.0
-
-  '@sentry/profiling-node@10.43.0':
-    resolution: {integrity: sha512-mzd+1svmgWjqe4ROlLOjWtLg8DFt7p4tkox5UoLuSGEqVuBsDhNgZAotahhMZrKqRImP+JAmaHO0SWCDQEMPGw==}
-    engines: {node: '>=18'}
-    hasBin: true
 
   '@smithy/abort-controller@4.2.11':
     resolution: {integrity: sha512-Hj4WoYWMJnSpM6/kchsm4bUNTL9XiSyhvoMb2KIq4VJzyDt7JpGHUZHkVNPZVC7YE1tf8tPeVauxpFBKGW4/KQ==}
@@ -3568,10 +3556,6 @@ packages:
         optional: true
       sass:
         optional: true
-
-  node-abi@3.88.0:
-    resolution: {integrity: sha512-At6b4UqIEVudaqPsXjmUO1r/N5BUr4yhDGs5PkBE8/oG5+TfLPhFechiskFsnT6Ql0VfUXbalUUCbfXxtj7K+w==}
-    engines: {node: '>=10'}
 
   node-exports-info@1.6.0:
     resolution: {integrity: sha512-pyFS63ptit/P5WqUkt+UUfe+4oevH+bFeIiPPdfb0pFeYEu/1ELnJu5l+5EcTKYL5M7zaAa7S8ddywgXypqKCw==}
@@ -6050,11 +6034,6 @@ snapshots:
 
   '@scarf/scarf@1.4.0': {}
 
-  '@sentry-internal/node-cpu-profiler@2.2.0':
-    dependencies:
-      detect-libc: 2.1.2
-      node-abi: 3.88.0
-
   '@sentry/core@10.43.0': {}
 
   '@sentry/node-core@10.43.0(@opentelemetry/api@1.9.0)(@opentelemetry/context-async-hooks@2.6.0(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.6.0(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.211.0(@opentelemetry/api@1.9.0))(@opentelemetry/resources@2.6.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.6.0(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.40.0)':
@@ -6119,14 +6098,6 @@ snapshots:
       '@opentelemetry/sdk-trace-base': 2.6.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/semantic-conventions': 1.40.0
       '@sentry/core': 10.43.0
-
-  '@sentry/profiling-node@10.43.0':
-    dependencies:
-      '@sentry-internal/node-cpu-profiler': 2.2.0
-      '@sentry/core': 10.43.0
-      '@sentry/node': 10.43.0
-    transitivePeerDependencies:
-      - supports-color
 
   '@smithy/abort-controller@4.2.11':
     dependencies:
@@ -8434,10 +8405,6 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
-
-  node-abi@3.88.0:
-    dependencies:
-      semver: 7.7.4
 
   node-exports-info@1.6.0:
     dependencies:
