@@ -60,9 +60,6 @@ export async function apiFetch<T = unknown>(
     token = await refreshPromise;
 
     if (!token) {
-      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/sign-in') && !window.location.pathname.startsWith('/sign-up')) {
-        window.location.href = '/sign-in';
-      }
       return { success: false, message: 'Session expired' };
     }
 

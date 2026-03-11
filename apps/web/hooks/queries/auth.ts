@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
-import { setTokens, clearTokens } from '@/lib/auth';
+import { setTokens, clearTokens, getAccessToken } from '@/lib/auth';
 import type { User } from '@/lib/auth';
 
 // ─── Query keys ──────────────────────────────────────────────────────────────
@@ -20,7 +20,8 @@ export function useProfile() {
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
-    // Don't auto-refetch in background — profile only changes on login/logout
+    enabled: !!getAccessToken(),
+    retry: false,
     refetchOnWindowFocus: false,
   });
 }
