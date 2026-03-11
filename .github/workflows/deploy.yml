@@ -129,28 +129,38 @@ jobs:
           script: |
             cd $HOME/withintech-learn
 
+            # Remove any legacy fixed-name container left from before container_name was removed.
+            # This is a no-op once the migration is done.
+            docker rm -f withintech-learn_api 2>/dev/null || true
+
             # Scale UP: start a second instance of the api alongside the current one.
             # Nginx/proxy continues routing to the original container during this window.
             docker compose up -d --no-build --scale api=2 --no-recreate api
 
-            # Wait until at least one NEW api container is healthy
+            # Wait until at least one NEW api container is healthy.
+            # Use if/fi instead of [ ] && to avoid set -e false-positive exits.
             echo "Waiting for new API instance to become healthy..."
+            HEALTHY=0
             for i in $(seq 1 24); do
-              # Count containers that are healthy AND running the new image
               NEW_IMAGE=$(docker compose images -q api | tail -1)
               HEALTHY=$(docker ps --filter "health=healthy" --format '{{.Image}}' \
-                        | grep -c "$NEW_IMAGE" || true)
+                        | grep -c "$NEW_IMAGE" 2>/dev/null || echo "0")
               echo "  attempt $i/24 — healthy new instances: $HEALTHY"
-              [ "$HEALTHY" -ge 1 ] && break
-              [ $i -eq 24 ] && echo "New API did not become healthy — aborting, old version still live" && exit 1
+              if [ "$HEALTHY" -ge 1 ]; then
+                break
+              fi
+              if [ "$i" -eq 24 ]; then
+                echo "New API did not become healthy — aborting, old version still live"
+                exit 1
+              fi
               sleep 5
             done
 
-            # New container is healthy — now do the atomic swap.
+            # New container is healthy — atomic swap.
             # Scale back to 1: Compose removes the OLD instance, keeps the NEW one.
             docker compose up -d --no-build --scale api=1 --remove-orphans
 
-            # Reload nginx to flush any connection state (no restart = no downtime)
+            # Reload nginx gracefully (no restart = no dropped connections)
             docker compose exec nginx nginx -s reload 2>/dev/null || true
 
       # ── 6. Clean up old images ───────────────────────────────────────────────
