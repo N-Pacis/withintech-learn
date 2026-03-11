@@ -33,7 +33,7 @@ export const getModule = async (id: string) => {
   if (!mod) throw notFound('Module not found');
   const blocks = await Promise.all(mod.blocks.map(async (b) => ({
     ...b,
-    url: b.type === 'image' && b.storageKey ? await getSignedUrl(b.storageKey) : b.url,
+    url: b.type === 'image' && b.storageKey ? await getSignedUrl(b.storageKey) : null,
   })));
   return { ...mod, blocks };
 };

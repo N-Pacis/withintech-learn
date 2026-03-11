@@ -83,8 +83,8 @@ jobs:
           POSTGRES_PASSWORD:      ${{ secrets.POSTGRES_PASSWORD }}
           BCRYPT_ROUNDS:          ${{ secrets.BCRYPT_ROUNDS }}
 
-      # ── 3. Build images & start services ────────────────────────────────────
-      - name: Build & start services
+      # ── 3. Build new images (old containers keep serving traffic) ────────────
+      - name: Build new images
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -93,42 +93,15 @@ jobs:
           port: 222
           script_stop: true
           script: |
-            # Ensure Docker Compose V2 plugin is installed
-            # Use || instead of `if !` — script_stop injects an exit-code check after
-            # every command, which fires on the non-zero exit of `docker compose version`
-            # before the `if` branch can handle it.
-            DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
-            docker compose version &>/dev/null || (
-              mkdir -p "$DOCKER_CONFIG/cli-plugins"
-              curl -fsSL https://github.com/docker/compose/releases/download/v2.27.1/docker-compose-linux-x86_64 \
-                -o "$DOCKER_CONFIG/cli-plugins/docker-compose"
-              chmod +x "$DOCKER_CONFIG/cli-plugins/docker-compose"
-            )
-            echo "Docker Compose V2: $(docker compose version)"
-
             cd $HOME/withintech-learn
-
-            # Build new images first — running containers are untouched during this step
+            # Tag what's currently live so we can roll back to it
+            CURRENT=$(docker inspect withintech-learn-api --format '{{.Image}}' 2>/dev/null || echo "")
+            [ -n "$CURRENT" ] && docker tag "$CURRENT" withintech-learn-api:rollback || true
+            # Build fresh images — zero impact on running containers
             docker compose build
 
-            # Kill anything outside of compose that grabbed 80/443 (stale system services)
-            sudo fuser -k 80/tcp 443/tcp 2>/dev/null || true
-
-            # Remove stale V1-named containers (hash-prefixed) that block V2 from reusing names
-            docker ps -a --format '{{.Names}}' \
-              | grep -E '^[a-f0-9]{12}_withintech-learn_' \
-              | xargs -r docker rm -f 2>/dev/null || true
-
-            # Remove stale V2-named containers that block compose from reusing names
-            docker ps -a --format '{{.Names}}' \
-              | grep -E '^withintech-learn_' \
-              | xargs -r docker rm -f 2>/dev/null || true
-
-            # Rolling replace: recreate only changed containers, leave healthy ones running
-            docker compose up -d --no-build --remove-orphans
-
-      # ── 4. Seed database ─────────────────────────────────────────────────────
-      - name: Seed database
+      # ── 4. Seed / migrate (against the live DB, before cutover) ─────────────
+      - name: Run migrations
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -137,18 +110,51 @@ jobs:
           port: 222
           script_stop: true
           script: |
-            echo "Waiting for API container to be healthy..."
+            cd $HOME/withintech-learn
+            # Run migrations in a short-lived throwaway container using the NEW image.
+            # The live API container is untouched and keeps serving traffic.
+            # Migrations must be backward-compatible (expand-only, no breaking changes).
+            docker compose run --rm --no-deps api \
+              node --max-old-space-size=512 dist/scripts/seed.js
+
+      # ── 5. Cut over: start new containers, wait for health, drop old ones ────
+      - name: Zero-downtime cutover
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 222
+          script_stop: true
+          script: |
+            cd $HOME/withintech-learn
+
+            # Scale UP: start a second instance of the api alongside the current one.
+            # Nginx/proxy continues routing to the original container during this window.
+            docker compose up -d --no-build --scale api=2 --no-recreate api
+
+            # Wait until at least one NEW api container is healthy
+            echo "Waiting for new API instance to become healthy..."
             for i in $(seq 1 24); do
-              status=$(docker inspect -f '{{.State.Health.Status}}' withintech-learn_api 2>/dev/null || echo "missing")
-              echo "  attempt $i/24 — status: $status"
-              [ "$status" = "healthy" ] && break
-              [ $i -eq 24 ] && echo "API did not become healthy in time" && exit 1
+              # Count containers that are healthy AND running the new image
+              NEW_IMAGE=$(docker compose images -q api | tail -1)
+              HEALTHY=$(docker ps --filter "health=healthy" --format '{{.Image}}' \
+                        | grep -c "$NEW_IMAGE" || true)
+              echo "  attempt $i/24 — healthy new instances: $HEALTHY"
+              [ "$HEALTHY" -ge 1 ] && break
+              [ $i -eq 24 ] && echo "New API did not become healthy — aborting, old version still live" && exit 1
               sleep 5
             done
-            docker exec withintech-learn_api node --max-old-space-size=512 dist/scripts/seed.js
+
+            # New container is healthy — now do the atomic swap.
+            # Scale back to 1: Compose removes the OLD instance, keeps the NEW one.
+            docker compose up -d --no-build --scale api=1 --remove-orphans
+
+            # Reload nginx to flush any connection state (no restart = no downtime)
+            docker compose exec nginx nginx -s reload 2>/dev/null || true
 
       # ── 6. Clean up old images ───────────────────────────────────────────────
-      - name: Clean up old images
+      - name: Clean up
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -158,4 +164,3 @@ jobs:
           script: |
             docker image prune -f
             docker system prune -f --volumes=false
-
