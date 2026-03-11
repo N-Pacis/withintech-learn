@@ -129,24 +129,37 @@ jobs:
           script: |
             cd $HOME/withintech-learn
 
-            # Remove any legacy fixed-name container left from before container_name was removed.
-            # This is a no-op once the migration is done.
+            # Remove any legacy fixed-name container from before container_name was removed.
             docker rm -f withintech-learn_api 2>/dev/null || true
 
-            # Scale UP: start a second instance of the api alongside the current one.
-            # Nginx/proxy continues routing to the original container during this window.
+            # Record currently running api container IDs BEFORE scaling up.
+            OLD_IDS=$(docker ps --filter "name=withintech-learn-api" --format '{{.ID}}')
+            echo "Old API containers: $(echo $OLD_IDS | tr '\n' ' ' || echo none)"
+
+            # Scale UP: bring a second instance online alongside the old one.
             docker compose up -d --no-build --scale api=2 --no-recreate api
 
-            # Wait until at least one NEW api container is healthy.
-            # Use if/fi instead of [ ] && to avoid set -e false-positive exits.
+            # Find the new container — the one not present in OLD_IDS.
+            NEW_ID=""
+            for id in $(docker ps --filter "name=withintech-learn-api" --format '{{.ID}}'); do
+              if ! echo "$OLD_IDS" | grep -q "$id"; then
+                NEW_ID="$id"
+                break
+              fi
+            done
+
+            if [ -z "$NEW_ID" ]; then
+              echo "Could not identify new API container — aborting"
+              exit 1
+            fi
+            echo "New API container: $NEW_ID"
+
+            # Wait for that specific container to become healthy.
             echo "Waiting for new API instance to become healthy..."
-            HEALTHY=0
             for i in $(seq 1 24); do
-              NEW_IMAGE=$(docker compose images -q api | tail -1)
-              HEALTHY=$(docker ps --filter "health=healthy" --format '{{.Image}}' \
-                        | grep -c "$NEW_IMAGE" 2>/dev/null || echo "0")
-              echo "  attempt $i/24 — healthy new instances: $HEALTHY"
-              if [ "$HEALTHY" -ge 1 ]; then
+              STATUS=$(docker inspect -f '{{.State.Health.Status}}' "$NEW_ID" 2>/dev/null || echo "none")
+              echo "  attempt $i/24 — status: $STATUS"
+              if [ "$STATUS" = "healthy" ]; then
                 break
               fi
               if [ "$i" -eq 24 ]; then
@@ -156,11 +169,14 @@ jobs:
               sleep 5
             done
 
-            # New container is healthy — atomic swap.
-            # Scale back to 1: Compose removes the OLD instance, keeps the NEW one.
-            docker compose up -d --no-build --scale api=1 --remove-orphans
+            # New container is healthy — remove old containers explicitly.
+            # (Compose scale-down removes the newest replica, which is the opposite of what we want.)
+            if [ -n "$OLD_IDS" ]; then
+              echo "Removing old API containers..."
+              echo "$OLD_IDS" | xargs -r docker rm -f
+            fi
 
-            # Reload nginx gracefully (no restart = no dropped connections)
+            # Reload nginx gracefully (no restart = no dropped connections).
             docker compose exec nginx nginx -s reload 2>/dev/null || true
 
       # ── 6. Clean up old images ───────────────────────────────────────────────
