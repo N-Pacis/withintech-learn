@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState } from 'react';
 import {
   useCourses,
@@ -11,7 +10,8 @@ import {
   type Course,
   type CourseStatus,
 } from '@/hooks/queries/courses';
-import { Button, Badge, Tabs, PageLoader, type Tab } from '@/components/ui';
+import { Button, Badge, Tabs, PageLoader, Pagination, type Tab } from '@/components/ui';
+import { CourseCard } from '@/components/CourseCard';
 
 const LIMIT = 20;
 
@@ -28,10 +28,6 @@ const STATUS_BADGE: Record<CourseStatus, { variant: 'gray' | 'success' | 'warnin
   published: { variant: 'success', label: 'Published' },
   archived:  { variant: 'warning', label: 'Archived'  },
 };
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
 
 function EmptyState({ tab }: { tab: TabValue }) {
   return (
@@ -65,97 +61,57 @@ function EmptyState({ tab }: { tab: TabValue }) {
   );
 }
 
-function CourseCard({ course, onDelete }: { course: Course; onDelete: (id: string) => void }) {
+function CourseActions({ course, onDelete }: { course: Course; onDelete: (id: string) => void }) {
   const [confirming, setConfirming] = useState(false);
   const [confirmArchive, setConfirmArchive] = useState(false);
   const { mutate: publish, isPending: publishing } = usePublishCourse();
   const { mutate: archive, isPending: archiving } = useArchiveCourse();
 
-  const badge = STATUS_BADGE[course.status];
-
-  return (
-    <div className="group flex flex-col bg-white rounded-xl border border-[#E5E7EB] overflow-hidden hover:shadow-md hover:border-[#3D006B]/20 transition-all">
-
-      {/* Thumbnail */}
-      <Link href={`/admin/courses/${course.id}`} className="relative h-40 bg-[#F3F4F6] shrink-0 block">
-        {course.thumbnailUrl ? (
-          <Image src={course.thumbnailUrl} alt={course.title} fill className="object-cover" unoptimized />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-            </svg>
+  if (course.status === 'draft') return (
+    <>
+      <Button variant="secondary" size="sm" asChild>
+        <Link href={`/admin/courses/${course.id}/edit`}>Edit</Link>
+      </Button>
+      <Button variant="primary" size="sm" loading={publishing} onClick={() => publish(course.id)}>
+        Publish
+      </Button>
+      <div className="ml-auto">
+        {confirming ? (
+          <div className="flex items-center gap-1.5">
+            <Button variant="danger" size="sm" onClick={() => onDelete(course.id)}>Confirm</Button>
+            <Button variant="ghost" size="sm" onClick={() => setConfirming(false)}>Cancel</Button>
           </div>
-        )}
-        <div className="absolute top-3 left-3">
-          <Badge variant={badge.variant}>{badge.label}</Badge>
-        </div>
-      </Link>
-
-      {/* Body */}
-      <Link href={`/admin/courses/${course.id}`} className="flex flex-col gap-1 p-4 flex-1">
-        <p className="font-heading font-bold text-sm text-[#0F0F0F] line-clamp-2 leading-snug group-hover:text-[#3D006B] transition-colors">
-          {course.title}
-        </p>
-        {course.description && (
-          <p className="font-body text-xs text-[#6B7280] line-clamp-2 mt-0.5">{course.description}</p>
-        )}
-        <p className="font-body text-xs text-[#9CA3AF] mt-auto pt-3">Created {formatDate(course.createdAt)}</p>
-      </Link>
-
-      {/* Footer */}
-      <div className="flex items-center gap-2 px-4 pb-4 flex-wrap">
-        {course.status === 'draft' && (
-          <>
-            <Button variant="secondary" size="sm" asChild>
-              <Link href={`/admin/courses/${course.id}/edit`}>Edit</Link>
-            </Button>
-            <Button variant="primary" size="sm" loading={publishing} onClick={() => publish(course.id)}>
-              Publish
-            </Button>
-            <div className="ml-auto">
-              {confirming ? (
-                <div className="flex items-center gap-1.5">
-                  <Button variant="danger" size="sm" onClick={() => onDelete(course.id)}>Confirm</Button>
-                  <Button variant="ghost" size="sm" onClick={() => setConfirming(false)}>Cancel</Button>
-                </div>
-              ) : (
-                <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => setConfirming(true)}>
-                  Delete
-                </Button>
-              )}
-            </div>
-          </>
-        )}
-
-        {course.status === 'published' && (
-          <>
-            <Button variant="secondary" size="sm" asChild>
-              <Link href={`/admin/courses/${course.id}`}>View</Link>
-            </Button>
-            {confirmArchive ? (
-              <div className="flex items-center gap-1.5">
-                <Button variant="danger" size="sm" loading={archiving} onClick={() => { archive(course.id); setConfirmArchive(false); }}>
-                  Archive
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => setConfirmArchive(false)}>Cancel</Button>
-              </div>
-            ) : (
-              <Button variant="ghost" size="sm" onClick={() => setConfirmArchive(true)}>
-                Archive
-              </Button>
-            )}
-          </>
-        )}
-
-        {course.status === 'archived' && (
-          <Button variant="secondary" size="sm" asChild>
-            <Link href={`/admin/courses/${course.id}`}>View</Link>
+        ) : (
+          <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => setConfirming(true)}>
+            Delete
           </Button>
         )}
       </div>
-    </div>
+    </>
+  );
+
+  if (course.status === 'published') return (
+    <>
+      <Button variant="secondary" size="sm" asChild>
+        <Link href={`/admin/courses/${course.id}`}>View</Link>
+      </Button>
+      {confirmArchive ? (
+        <div className="flex items-center gap-1.5">
+          <Button variant="danger" size="sm" loading={archiving} onClick={() => { archive(course.id); setConfirmArchive(false); }}>
+            Archive
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => setConfirmArchive(false)}>Cancel</Button>
+        </div>
+      ) : (
+        <Button variant="ghost" size="sm" onClick={() => setConfirmArchive(true)}>Archive</Button>
+      )}
+    </>
+  );
+
+  return (
+    <Button variant="secondary" size="sm" asChild>
+      <Link href={`/admin/courses/${course.id}`}>View</Link>
+    </Button>
   );
 }
 
@@ -176,6 +132,8 @@ function CourseGrid({ tab }: { tab: TabValue }) {
   }
   if (!data || data.courses.length === 0) return <EmptyState tab={tab} />;
 
+  const badge = STATUS_BADGE[tab];
+
   return (
     <>
       <p className="font-body text-sm text-[#9CA3AF] mb-5">
@@ -184,20 +142,17 @@ function CourseGrid({ tab }: { tab: TabValue }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {data.courses.map((course) => (
-          <CourseCard key={course.id} course={course} onDelete={(id) => deleteCourse(id)} />
+          <CourseCard
+            key={course.id}
+            course={course}
+            href={`/admin/courses/${course.id}`}
+            badge={badge}
+            footer={<CourseActions course={course} onDelete={(id) => deleteCourse(id)} />}
+          />
         ))}
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-8">
-          <p className="font-body text-sm text-[#6B7280]">{data.total} total</p>
-          <div className="flex items-center gap-2">
-            <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Previous</Button>
-            <span className="font-body text-sm text-[#6B7280] px-2">{page} / {totalPages}</span>
-            <Button variant="secondary" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</Button>
-          </div>
-        </div>
-      )}
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </>
   );
 }

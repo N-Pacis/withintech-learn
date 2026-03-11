@@ -1,2 +1,1 @@
-// TODO
-export {};
+export { CourseCard } from '@/components/CourseCard';

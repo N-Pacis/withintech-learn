@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import Spinner from './Spinner';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 font-body font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed',
+  'inline-flex items-center justify-center gap-2 font-body font-medium transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed',
   {
     variants: {
       variant: {
@@ -14,7 +14,7 @@ const buttonVariants = cva(
         danger:    'bg-red-600 text-white hover:bg-red-700',
       },
       size: {
-        sm: 'text-xs px-4 py-2 rounded-md',
+        sm: 'text-xs px-4 py-2.5 rounded-md',
         md: 'text-sm px-6 py-2.5 rounded-md',
         lg: 'text-base px-7 py-3.5 rounded-md',
       },

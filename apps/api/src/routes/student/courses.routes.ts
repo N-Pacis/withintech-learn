@@ -1,2 +1,34 @@
-// TODO
-export {};
+import { Router, Request, Response } from 'express';
+import { z } from 'zod';
+import { asyncHandler } from '../../utils/asyncHandler';
+import { sendSuccess } from '../../utils/response';
+import { badRequest } from '../../utils/errors';
+import { listPublishedCourses, getPublishedCourseBySlug, enrollInCourse } from './courses.service';
+
+const router = Router();
+
+const listSchema = z.object({
+  page:   z.coerce.number().int().positive().default(1),
+  limit:  z.coerce.number().int().positive().max(100).default(20),
+  search: z.string().optional(),
+  filter: z.enum(['all', 'enrolled', 'not_enrolled']).default('all'),
+});
+
+router.get('/student/courses', asyncHandler(async (req: Request, res: Response) => {
+  const parsed = listSchema.safeParse(req.query);
+  if (!parsed.success) throw badRequest(parsed.error.errors[0]?.message ?? 'Validation error');
+  const result = await listPublishedCourses({ userId: req.user!.userId, ...parsed.data });
+  sendSuccess(res, result);
+}));
+
+router.get('/student/courses/:slug', asyncHandler(async (req: Request, res: Response) => {
+  const result = await getPublishedCourseBySlug(req.params.slug, req.user!.userId);
+  sendSuccess(res, result);
+}));
+
+router.post('/student/courses/:id/enroll', asyncHandler(async (req: Request, res: Response) => {
+  const result = await enrollInCourse(req.user!.userId, req.params.id);
+  sendSuccess(res, result, 'Enrolled successfully', 201);
+}));
+
+export default router;

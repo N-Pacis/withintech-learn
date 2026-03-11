@@ -1,15 +1,22 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Logo } from '@/components/ui';
 import { useLogin } from '@/hooks/queries/auth';
 import { Button, Input, FormField, Card, PasswordInput } from '@/components/ui';
+import { useProfile } from '@/hooks/queries/auth';
 
 export default function SignInPage() {
   const router = useRouter();
   const { mutateAsync: login, isPending } = useLogin();
+  const { data: profile } = useProfile();
+
+  useEffect(() => {
+    if (!profile) return;
+    router.replace(profile.role === 'admin' ? '/admin' : '/learn');
+  }, [profile, router]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

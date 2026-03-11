@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAddBlock, useUploadBlockImage } from '@/hooks/queries/modules';
 import { Button, Badge, Card, CardBody, FormField, Input, Textarea, FileUpload, CodeEditor, CodeLanguage } from '@/components/ui';
+import { SaveWarning } from '@/components/SaveWarning';
 
 const IMAGE_ACCEPT = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -47,6 +48,7 @@ export function AddTextBlockForm({ moduleId, nextOrder, onDone }: AddFormProps) 
           placeholder="Type your text content here…"
         />
         {error && <p className="font-body text-xs text-red-500">{error}</p>}
+        <SaveWarning message={<>Click <span className="font-medium">Add Text Block</span> to save.</>} />
         <div className="flex gap-2 justify-end">
           <Button variant="ghost" size="sm" onClick={onDone}>Cancel</Button>
           <Button size="sm" loading={isPending} disabled={!content.trim()} onClick={handleAdd}>
@@ -111,6 +113,7 @@ export function AddImageBlockForm({ moduleId, nextOrder, onDone }: AddFormProps)
           />
         </FormField>
         {error && <p className="font-body text-xs text-red-500">{error}</p>}
+        <SaveWarning message={<>Click <span className="font-medium">Add Image Block</span> to save.</>} />
         <div className="flex gap-2 justify-end">
           <Button variant="ghost" size="sm" onClick={onDone}>Cancel</Button>
           <Button size="sm" loading={pending} onClick={handleAdd}>
@@ -154,6 +157,7 @@ export function AddCodeBlockForm({ moduleId, nextOrder, onDone }: AddFormProps) 
           onLanguageChange={setLanguage}
         />
         {error && <p className="font-body text-xs text-red-500">{error}</p>}
+        <SaveWarning message={<>Click <span className="font-medium">Add Code Block</span> to save.</>} />
         <div className="flex gap-2 justify-end">
           <Button variant="ghost" size="sm" onClick={onDone}>Cancel</Button>
           <Button size="sm" loading={isPending} disabled={!content.trim()} onClick={handleAdd}>

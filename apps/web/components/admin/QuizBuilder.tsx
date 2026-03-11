@@ -20,6 +20,7 @@ import {
   type QuestionOption,
 } from '@/hooks/queries/quizzes';
 import { Button, Input, PageLoader } from '@/components/ui';
+import { SaveWarning } from '@/components/SaveWarning';
 import { cn } from '@/lib/utils';
 
 // ─── Correct checkbox ─────────────────────────────────────────────────────────
@@ -162,28 +163,31 @@ function AddOptionRow({
   }
 
   return (
-    <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-[#F9FAFB] border border-[#E5E7EB]">
-      <CorrectCheckbox checked={isCorrect} onChange={setIsCorrect} disabled={isPending} />
-      <input
-        ref={inputRef}
-        type="text"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="New option… (Enter to add)"
-        disabled={isPending}
-        className="flex-1 font-body text-sm text-[#0F0F0F] bg-transparent border-b border-[#3D006B]/40 focus:outline-none placeholder:text-[#9CA3AF] py-0.5 min-w-0"
-      />
-      <button
-        onClick={handleSave}
-        disabled={isPending || !text.trim()}
-        className="font-body text-xs font-medium text-[#3D006B] hover:text-[#5a0099] disabled:opacity-40 disabled:cursor-not-allowed shrink-0 transition-colors"
-      >
-        {isPending ? 'Adding…' : 'Add'}
-      </button>
-      <button onClick={onDone} className="font-body text-xs text-[#9CA3AF] hover:text-[#6B7280] shrink-0 transition-colors">
-        Done
-      </button>
+    <div className="flex flex-col gap-2">
+      <SaveWarning message={<>Press <span className="font-medium">Enter</span> or click <span className="font-medium">Add</span> to save.</>} />
+      <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-[#F9FAFB] border border-[#E5E7EB]">
+        <CorrectCheckbox checked={isCorrect} onChange={setIsCorrect} disabled={isPending} />
+        <input
+          ref={inputRef}
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="New option…"
+          disabled={isPending}
+          className="flex-1 font-body text-sm text-[#0F0F0F] bg-transparent border-b border-[#3D006B]/40 focus:outline-none placeholder:text-[#9CA3AF] py-0.5 min-w-0"
+        />
+        <button
+          onClick={handleSave}
+          disabled={isPending || !text.trim()}
+          className="font-body text-xs font-medium text-[#3D006B] hover:text-[#5a0099] disabled:opacity-40 disabled:cursor-not-allowed shrink-0 transition-colors"
+        >
+          {isPending ? 'Adding…' : 'Add'}
+        </button>
+        <button onClick={onDone} className="font-body text-xs text-[#9CA3AF] hover:text-[#6B7280] shrink-0 transition-colors">
+          Done
+        </button>
+      </div>
     </div>
   );
 }
@@ -194,18 +198,28 @@ function QuestionCard({
   question,
   cacheKey,
   number,
+  autoFocus,
 }: {
   question: Question;
   cacheKey: readonly unknown[];
   number: number;
+  autoFocus?: boolean;
 }) {
   const [text, setText] = useState(question.text);
-  const [addingOption, setAddingOption] = useState(false);
+  const [addingOption, setAddingOption] = useState(!!autoFocus);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { mutate: updateQuestion, isPending: saving } = useUpdateQuestion(cacheKey);
   const { mutate: deleteQuestion, isPending: deleting } = useDeleteQuestion(cacheKey);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => { setText(question.text); }, [question.text]);
+
+  useEffect(() => {
+    if (autoFocus) {
+      textareaRef.current?.focus();
+      textareaRef.current?.select();
+    }
+  }, [autoFocus]);
 
   function handleTextBlur() {
     const trimmed = text.trim();
@@ -227,12 +241,13 @@ function QuestionCard({
 
         <div className="flex-1 min-w-0">
           <textarea
+            ref={textareaRef}
             value={text}
             onChange={(e) => setText(e.target.value)}
             onBlur={handleTextBlur}
             rows={2}
             placeholder="Enter your question…"
-            className="w-full font-body text-sm text-[#0F0F0F] bg-transparent resize-none leading-relaxed border-b border-transparent focus:border-[#3D006B]/30 focus:outline-none placeholder:text-[#9CA3AF] transition-colors"
+            className="w-full font-body text-sm text-[#0F0F0F] bg-transparent resize-none leading-relaxed border-b border-[#E5E7EB] focus:border-[#3D006B]/50 focus:outline-none placeholder:text-[#9CA3AF] transition-colors"
           />
           {saving && (
             <p className="font-body text-xs text-[#9CA3AF] mt-1">Saving…</p>
@@ -533,17 +548,19 @@ function CreateQuizPanel({
 
 function QuizEditor({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unknown[] }) {
   const [confirmDeleteQuiz, setConfirmDeleteQuiz] = useState(false);
+  const [newQuestionId, setNewQuestionId] = useState<string | null>(null);
   const { mutateAsync: addQuestion, isPending: addingQuestion } = useAddQuestion(cacheKey);
   const { mutate: deleteQuiz, isPending: deletingQuiz } = useDeleteQuiz(cacheKey);
 
   const sortedQuestions = [...quiz.questions].sort((a, b) => a.orderIndex - b.orderIndex);
 
   async function handleAddQuestion() {
-    await addQuestion({
+    const q = await addQuestion({
       quizId: quiz.id,
       text: 'New question',
       orderIndex: sortedQuestions.length + 1,
     });
+    setNewQuestionId(q.id);
   }
 
   return (
@@ -571,7 +588,13 @@ function QuizEditor({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unknown
       )}
 
       {sortedQuestions.map((q, i) => (
-        <QuestionCard key={q.id} question={q} cacheKey={cacheKey} number={i + 1} />
+        <QuestionCard
+          key={q.id}
+          question={q}
+          cacheKey={cacheKey}
+          number={i + 1}
+          autoFocus={q.id === newQuestionId}
+        />
       ))}
 
       <Button variant="secondary" size="md" loading={addingQuestion} onClick={handleAddQuestion} className="w-full">

@@ -15,18 +15,19 @@ model Role {
 }
 
 model User {
-  id           String    @id @default(uuid())
+  id           String          @id @default(uuid())
   roleId       Int
-  role         Role      @relation(fields: [roleId], references: [id])
+  role         Role            @relation(fields: [roleId], references: [id])
   firstName    String
   lastName     String
-  email        String    @unique
+  email        String          @unique
   passwordHash String
-  isActive     Boolean   @default(false)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  isActive     Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
   otpCodes     OtpCode[]
   courses      Course[]
+  enrollments  StudentCourse[]
 }
 
 model OtpCode {
@@ -53,18 +54,37 @@ enum BlockType {
 }
 
 model Course {
-  id           String    @id @default(uuid())
+  id           String          @id @default(uuid())
   title        String
-  slug         String    @unique
+  slug         String          @unique
   description  String?
   thumbnailKey String?
-  status       CourseStatus @default(draft)
+  status       CourseStatus    @default(draft)
   createdById  String
-  createdBy    User      @relation(fields: [createdById], references: [id])
+  createdBy    User            @relation(fields: [createdById], references: [id])
   modules      Module[]
   quiz         Quiz?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  enrollments  StudentCourse[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+enum EnrollmentStatus {
+  PENDING
+  ENROLLED
+}
+
+model StudentCourse {
+  id         String           @id @default(uuid())
+  studentId  String
+  student    User             @relation(fields: [studentId], references: [id])
+  courseId   String
+  course     Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  status     EnrollmentStatus @default(ENROLLED)
+  enrolledAt DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([studentId, courseId])
 }
 
 model Module {

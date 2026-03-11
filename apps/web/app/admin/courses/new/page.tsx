@@ -6,10 +6,6 @@ import Link from 'next/link';
 import { useCreateCourse, useUploadThumbnail } from '@/hooks/queries/courses';
 import { Button, FormField, Input, Textarea, Card, CardHeader, CardBody, CardFooter, FileUpload } from '@/components/ui';
 
-function toSlug(title: string) {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-}
-
 type Step = 'idle' | 'creating' | 'uploading' | 'done';
 
 export default function NewCoursePage() {
@@ -26,7 +22,6 @@ export default function NewCoursePage() {
 
   useEffect(() => { titleRef.current?.focus(); }, []);
 
-  const slug = toSlug(title);
   const isPending = step === 'creating' || step === 'uploading';
 
   const stepLabel: Record<Step, string> = {
@@ -110,17 +105,6 @@ export default function NewCoursePage() {
               />
             </FormField>
 
-            {title && (
-              <div className="flex items-center gap-2 -mt-3 px-1">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                </svg>
-                <span className="font-body text-xs text-[#9CA3AF]">
-                  Slug: <span className="text-[#6B7280] font-medium">{slug}</span>
-                </span>
-              </div>
-            )}
 
             <FormField label="Description" htmlFor="description" hint="A short summary shown to students.">
               <Textarea

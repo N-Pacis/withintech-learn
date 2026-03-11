@@ -26,25 +26,56 @@ export interface CoursesPage {
   courses: Course[];
 }
 
+// Courses returned to students/public — no createdBy, status always published
+export type EnrollmentStatus = 'PENDING' | 'ENROLLED';
+export type CourseFilter = 'all' | 'enrolled' | 'not_enrolled';
+
+export interface PublishedCourse {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  thumbnailKey: string | null;
+  thumbnailUrl: string | null;
+  status: 'published';
+  module_count: number;
+  enrollment_status: EnrollmentStatus | null;
+  enrolled_at: string | null;
+}
+
+export interface PublishedCoursesPage {
+  total: number;
+  page: number;
+  limit: number;
+  courses: PublishedCourse[];
+}
+
 // ─── Query keys ───────────────────────────────────────────────────────────────
 
 export const courseKeys = {
+  // Admin
   all:    ['courses'] as const,
   lists:  () => [...courseKeys.all, 'list'] as const,
   list:   (p: { page: number; limit: number; status?: CourseStatus }) => [...courseKeys.lists(), p] as const,
   detail: (id: string) => [...courseKeys.all, id] as const,
+  // Student
+  student: {
+    lists: () => ['courses', 'student', 'list'] as const,
+    list:  (p: { page: number; limit: number; search?: string; filter?: CourseFilter }) => [...courseKeys.student.lists(), p] as const,
+  },
+  // Public
+  public: {
+    top: ['courses', 'public', 'top'] as const,
+  },
 };
 
-// ─── Queries ──────────────────────────────────────────────────────────────────
+// ─── Admin queries ────────────────────────────────────────────────────────────
 
 export function useCourses(params: { page: number; limit: number; status?: CourseStatus } = { page: 1, limit: 20 }) {
   return useQuery({
     queryKey: courseKeys.list(params),
     queryFn: async (): Promise<CoursesPage> => {
-      const qs = new URLSearchParams({
-        page: String(params.page),
-        limit: String(params.limit),
-      });
+      const qs = new URLSearchParams({ page: String(params.page), limit: String(params.limit) });
       if (params.status) qs.set('status', params.status);
       const res = await apiFetch<CoursesPage>(`/admin/courses?${qs}`);
       if (!res.success || !res.data) throw new Error(res.message);
@@ -65,16 +96,69 @@ export function useCourse(id: string) {
   });
 }
 
-// ─── Mutations ────────────────────────────────────────────────────────────────
+// ─── Student queries ──────────────────────────────────────────────────────────
+
+export function usePublishedCourse(slug: string) {
+  return useQuery({
+    queryKey: [...courseKeys.student.lists(), slug] as const,
+    queryFn: async () => {
+      const res = await apiFetch<PublishedCourse & { modules: unknown[]; quiz: unknown | null }>(`/student/courses/${slug}`);
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    enabled: !!slug,
+  });
+}
+
+export function usePublishedCourses(
+  params: { page: number; limit: number; search?: string; filter?: CourseFilter } = { page: 1, limit: 20 },
+) {
+  return useQuery({
+    queryKey: courseKeys.student.list(params),
+    queryFn: async (): Promise<PublishedCoursesPage> => {
+      const qs = new URLSearchParams({ page: String(params.page), limit: String(params.limit) });
+      if (params.search) qs.set('search', params.search);
+      if (params.filter) qs.set('filter', params.filter);
+      const res = await apiFetch<PublishedCoursesPage>(`/student/courses?${qs}`);
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+  });
+}
+
+export function useEnrollInCourse() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (courseId: string) => {
+      const res = await apiFetch(`/student/courses/${courseId}/enroll`, { method: 'POST' });
+      if (!res.success) throw new Error(res.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: courseKeys.student.lists() });
+    },
+  });
+}
+
+// ─── Public queries ───────────────────────────────────────────────────────────
+
+export function useTopCourses() {
+  return useQuery({
+    queryKey: courseKeys.public.top,
+    queryFn: async (): Promise<PublishedCourse[]> => {
+      const res = await apiFetch<PublishedCourse[]>('/public/courses');
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+  });
+}
+
+// ─── Admin mutations ──────────────────────────────────────────────────────────
 
 export function useCreateCourse() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: { title: string; description?: string }): Promise<Course> => {
-      const res = await apiFetch<Course>('/admin/courses', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
+      const res = await apiFetch<Course>('/admin/courses', { method: 'POST', body: JSON.stringify(data) });
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
@@ -88,10 +172,7 @@ export function useUpdateCourse(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: { title?: string; description?: string }): Promise<Course> => {
-      const res = await apiFetch<Course>(`/admin/courses/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(data),
-      });
+      const res = await apiFetch<Course>(`/admin/courses/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },

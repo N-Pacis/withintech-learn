@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { Logo } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { useProfile } from '@/hooks/queries/auth';
 
 const links = [
   { label: 'Courses',      href: '#courses'      },
@@ -12,6 +14,10 @@ const links = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const { data: profile } = useProfile();
+
+  const ctaHref  = profile ? (profile.role === 'admin' ? '/admin' : '/learn') : '/sign-in';
+  const ctaLabel = profile ? 'Continue' : 'Start Learning';
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-[#E5E7EB]">
@@ -32,10 +38,10 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/sign-in"
-            className="font-body text-sm font-medium bg-[#3D006B] text-white px-5 py-2 rounded-md hover:bg-[#2A004A] transition-colors"
+            href={ctaHref}
+            className="inline-flex items-center gap-2 font-body text-sm font-medium bg-[#3D006B] text-white px-5 py-2 rounded-md hover:bg-[#2A004A] transition-colors"
           >
-            Start Learning
+            {ctaLabel} <ArrowRight size={14} />
           </Link>
         </div>
 
@@ -76,11 +82,11 @@ export default function Navbar() {
             </Link>
           ))}
           <Link
-            href="/sign-in"
+            href={ctaHref}
             onClick={() => setOpen(false)}
-            className="mt-3 font-body text-sm font-medium bg-[#3D006B] text-white px-5 py-3 rounded-md hover:bg-[#2A004A] transition-colors text-center"
+            className="mt-3 inline-flex items-center justify-center gap-2 font-body text-sm font-medium bg-[#3D006B] text-white px-5 py-3 rounded-md hover:bg-[#2A004A] transition-colors"
           >
-            Start Learning
+            {ctaLabel} <ArrowRight size={14} />
           </Link>
         </div>
       </div>

@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../../db/prisma';
 import { badRequest, notFound } from '../../utils/errors';
 import { uploadToS3, deleteFromS3, getSignedUrl } from '../../services/storage.service';
@@ -6,12 +5,8 @@ import { uploadToS3, deleteFromS3, getSignedUrl } from '../../services/storage.s
 const toSlug = (title: string) =>
   title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-const uniqueSlug = async (title: string) => {
-  const base = toSlug(title);
-  const exists = await prisma.course.findUnique({ where: { slug: base } });
-  if (!exists) return base;
-  return `${base}-${uuidv4().slice(0, 8)}`;
-};
+const uniqueSlug = (title: string) =>
+  `${toSlug(title)}-${Date.now()}`;
 
 const withThumbnailUrl = async <T extends { thumbnailKey: string | null }>(course: T) => {
   if (!course.thumbnailKey) return { ...course, thumbnailUrl: null };
@@ -19,7 +14,7 @@ const withThumbnailUrl = async <T extends { thumbnailKey: string | null }>(cours
 };
 
 export const createCourse = async (data: { title: string; description?: string; userId: string }) => {
-  const slug = await uniqueSlug(data.title);
+  const slug = uniqueSlug(data.title);
   return prisma.course.create({
     data: { title: data.title, slug, description: data.description, createdById: data.userId },
   });
@@ -62,7 +57,7 @@ export const updateCourse = async (id: string, data: { title?: string; descripti
   if (!course) throw notFound('Course not found');
   if (course.status !== 'draft') throw badRequest('Only draft courses can be edited');
   const update: Record<string, unknown> = { ...data };
-  if (data.title) update.slug = await uniqueSlug(data.title);
+  if (data.title) update.slug = uniqueSlug(data.title);
   return prisma.course.update({ where: { id }, data: update });
 };
 

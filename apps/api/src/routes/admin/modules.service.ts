@@ -31,7 +31,11 @@ export const getModule = async (id: string) => {
     include: { blocks: { orderBy: { orderIndex: 'asc' } } },
   });
   if (!mod) throw notFound('Module not found');
-  return mod;
+  const blocks = await Promise.all(mod.blocks.map(async (b) => ({
+    ...b,
+    url: b.type === 'image' && b.storageKey ? await getSignedUrl(b.storageKey) : b.url,
+  })));
+  return { ...mod, blocks };
 };
 
 export const updateModule = async (id: string, title: string) => {

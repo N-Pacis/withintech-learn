@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "@/components/landing/Navbar";
 import Ticker from "@/components/landing/Ticker";
 import CertificateCard from "@/components/landing/CertificateCard";
+import CoursesSection from "@/components/landing/CoursesSection";
 import { Logo } from "@/components/ui";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -95,148 +96,7 @@ export default function Home() {
       </section>
 
       {/* ── 3. Top Courses ──────────────────────────────────────────────────── */}
-      <section id="courses" className="bg-white py-20 lg:py-28">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-
-          {/* Header row */}
-          <div className="flex items-end justify-between mb-12">
-            <div>
-              <p className="font-heading text-xs tracking-widest uppercase text-[#3D006B] font-bold mb-3">
-                Courses
-              </p>
-              <h2 className="font-heading font-black text-3xl lg:text-4xl text-[#0F0F0F] tracking-tight">
-                Start with what matters.
-              </h2>
-            </div>
-            <Link
-              href="/sign-up"
-              className="hidden md:inline-flex font-body text-sm font-medium text-[#3D006B] items-center gap-1.5 hover:gap-3 transition-all"
-            >
-              All courses →
-            </Link>
-          </div>
-
-          {/* Course grid: featured left + 2 stacked right */}
-          <div className="flex flex-col lg:flex-row gap-4">
-
-            {/* Featured course */}
-            <div className="lg:w-[58%] border border-[#E5E7EB] rounded-md overflow-hidden group hover:border-[#3D006B]/30 transition-colors">
-              <div className="overflow-hidden">
-                <Image
-                  src="https://placehold.co/720x380/3D006B/F3E8FF?text=Digital+Literacy"
-                  alt="Digital Literacy Fundamentals"
-                  width={720}
-                  height={380}
-                  loading="lazy"
-                  className="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.02]"
-                />
-              </div>
-              <div className="p-8">
-                <div className="flex items-center gap-2.5 mb-5">
-                  <span className="font-body text-[10px] tracking-widest uppercase bg-[#F97316] text-white px-2.5 py-1 rounded">
-                    Most Popular
-                  </span>
-                  <span className="font-body text-[10px] tracking-widest uppercase text-[#6B7280] border border-[#E5E7EB] px-2.5 py-1 rounded">
-                    Beginner
-                  </span>
-                </div>
-                <h3 className="font-heading font-bold text-2xl text-[#0F0F0F] mb-3 leading-snug">
-                  Digital Literacy Fundamentals
-                </h3>
-                <div className="flex items-center gap-1 mb-7">
-                  <span className="font-body text-sm text-[#6B7280]">10 modules</span>
-                  <span className="text-[#D1D5DB] mx-2">·</span>
-                  <span className="font-body text-sm text-[#6B7280]">Certificate included</span>
-                </div>
-                <Link
-                  href="/sign-up"
-                  className="font-body text-sm font-medium text-[#3D006B] inline-flex items-center gap-1.5 hover:gap-3 transition-all"
-                >
-                  View course →
-                </Link>
-              </div>
-            </div>
-
-            {/* Right: 2 smaller cards */}
-            <div className="lg:w-[42%] flex flex-col gap-4">
-
-              {/* Card 2 */}
-              <div className="flex-1 border border-[#E5E7EB] rounded-md overflow-hidden group hover:border-[#3D006B]/30 transition-colors flex flex-col">
-                <div className="overflow-hidden">
-                  <Image
-                    src="https://placehold.co/480x190/0F0F0F/F9FAFB?text=MS+Office"
-                    alt="Microsoft Office Essentials"
-                    width={480}
-                    height={190}
-                    loading="lazy"
-                    className="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.02]"
-                  />
-                </div>
-                <div className="p-6 flex-1 flex flex-col">
-                  <span className="font-body text-[10px] tracking-widest uppercase text-[#6B7280] border border-[#E5E7EB] px-2 py-0.5 rounded w-fit mb-4">
-                    Beginner
-                  </span>
-                  <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2 leading-snug">
-                    Microsoft Office Essentials
-                  </h3>
-                  <p className="font-body text-sm text-[#6B7280] mb-5">
-                    7 modules · Certificate
-                  </p>
-                  <Link
-                    href="/sign-up"
-                    className="font-body text-sm font-medium text-[#3D006B] inline-flex items-center gap-1.5 hover:gap-3 transition-all mt-auto"
-                  >
-                    View course →
-                  </Link>
-                </div>
-              </div>
-
-              {/* Card 3 */}
-              <div className="flex-1 border border-[#E5E7EB] rounded-md overflow-hidden group hover:border-[#3D006B]/30 transition-colors flex flex-col">
-                <div className="overflow-hidden">
-                  <Image
-                    src="https://placehold.co/480x190/1F2937/F3F4F6?text=Online+Safety"
-                    alt="Online Safety & Communication"
-                    width={480}
-                    height={190}
-                    loading="lazy"
-                    className="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.02]"
-                  />
-                </div>
-                <div className="p-6 flex-1 flex flex-col">
-                  <span className="font-body text-[10px] tracking-widest uppercase text-[#6B7280] border border-[#E5E7EB] px-2 py-0.5 rounded w-fit mb-4">
-                    Beginner
-                  </span>
-                  <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2 leading-snug">
-                    Online Safety & Communication
-                  </h3>
-                  <p className="font-body text-sm text-[#6B7280] mb-5">
-                    5 modules · Certificate
-                  </p>
-                  <Link
-                    href="/sign-up"
-                    className="font-body text-sm font-medium text-[#3D006B] inline-flex items-center gap-1.5 hover:gap-3 transition-all mt-auto"
-                  >
-                    View course →
-                  </Link>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          {/* Mobile: "all courses" link */}
-          <div className="mt-8 md:hidden">
-            <Link
-              href="/sign-up"
-              className="font-body text-sm font-medium text-[#3D006B] inline-flex items-center gap-1.5"
-            >
-              All courses →
-            </Link>
-          </div>
-
-        </div>
-      </section>
+      <CoursesSection />
 
       {/* ── 5. Certificate Moment ───────────────────────────────────────────── */}
       <section className="bg-[#3D006B] py-20 lg:py-28">
