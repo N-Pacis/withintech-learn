@@ -83,7 +83,24 @@ jobs:
           POSTGRES_PASSWORD:      ${{ secrets.POSTGRES_PASSWORD }}
           BCRYPT_ROUNDS:          ${{ secrets.BCRYPT_ROUNDS }}
 
-      # ── 3. Build new images (old containers keep serving traffic) ────────────
+      # ── 3. Install docker-rollout (idempotent) ───────────────────────────────
+      - name: Install docker-rollout
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 222
+          script_stop: true
+          script: |
+            mkdir -p /usr/local/lib/docker/cli-plugins
+            if [ ! -f /usr/local/lib/docker/cli-plugins/docker-rollout ]; then
+              curl -fsSL https://github.com/wowu/docker-rollout/releases/latest/download/docker-rollout \
+                -o /usr/local/lib/docker/cli-plugins/docker-rollout
+              chmod +x /usr/local/lib/docker/cli-plugins/docker-rollout
+            fi
+
+      # ── 4. Build new images (old containers keep serving traffic) ────────────
       - name: Build new images
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -94,13 +111,9 @@ jobs:
           script_stop: true
           script: |
             cd $HOME/withintech-learn
-            # Tag what's currently live so we can roll back to it
-            CURRENT=$(docker inspect withintech-learn-api --format '{{.Image}}' 2>/dev/null || echo "")
-            [ -n "$CURRENT" ] && docker tag "$CURRENT" withintech-learn-api:rollback || true
-            # Build fresh images — zero impact on running containers
             docker compose build
 
-      # ── 4. Seed / migrate (against the live DB, before cutover) ─────────────
+      # ── 5. Run migrations (throwaway container, old api still live) ──────────
       - name: Run migrations
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -111,13 +124,10 @@ jobs:
           script_stop: true
           script: |
             cd $HOME/withintech-learn
-            # Run migrations in a short-lived throwaway container using the NEW image.
-            # The live API container is untouched and keeps serving traffic.
-            # Migrations must be backward-compatible (expand-only, no breaking changes).
             docker compose run --rm --no-deps api \
               node --max-old-space-size=512 dist/scripts/seed.js
 
-      # ── 5. Cut over: start new containers, wait for health, drop old ones ────
+      # ── 6. Zero-downtime cutover via docker-rollout ──────────────────────────
       - name: Zero-downtime cutover
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -129,57 +139,17 @@ jobs:
           script: |
             cd $HOME/withintech-learn
 
-            # Remove any legacy fixed-name container from before container_name was removed.
-            docker rm -f withintech-learn_api 2>/dev/null || true
+            # Ensure all other services (postgres, redis, nginx, web) are up
+            docker compose up -d --no-build postgres redis nginx web
 
-            # Record currently running api container IDs BEFORE scaling up.
-            OLD_IDS=$(docker ps --filter "name=withintech-learn-api" --format '{{.ID}}')
-            echo "Old API containers: $(echo $OLD_IDS | tr '\n' ' ' || echo none)"
+            # docker-rollout handles: scale up, health check, old container removal.
+            # It uses the Docker HEALTHCHECK defined in docker-compose.yml.
+            docker rollout -f docker-compose.yml api
 
-            # Scale UP: bring a second instance online alongside the old one.
-            docker compose up -d --no-build --scale api=2 --no-recreate api
-
-            # Find the new container — the one not present in OLD_IDS.
-            NEW_ID=""
-            for id in $(docker ps --filter "name=withintech-learn-api" --format '{{.ID}}'); do
-              if ! echo "$OLD_IDS" | grep -q "$id"; then
-                NEW_ID="$id"
-                break
-              fi
-            done
-
-            if [ -z "$NEW_ID" ]; then
-              echo "Could not identify new API container — aborting"
-              exit 1
-            fi
-            echo "New API container: $NEW_ID"
-
-            # Wait for that specific container to become healthy.
-            echo "Waiting for new API instance to become healthy..."
-            for i in $(seq 1 24); do
-              STATUS=$(docker inspect -f '{{.State.Health.Status}}' "$NEW_ID" 2>/dev/null || echo "none")
-              echo "  attempt $i/24 — status: $STATUS"
-              if [ "$STATUS" = "healthy" ]; then
-                break
-              fi
-              if [ "$i" -eq 24 ]; then
-                echo "New API did not become healthy — aborting, old version still live"
-                exit 1
-              fi
-              sleep 5
-            done
-
-            # New container is healthy — remove old containers explicitly.
-            # (Compose scale-down removes the newest replica, which is the opposite of what we want.)
-            if [ -n "$OLD_IDS" ]; then
-              echo "Removing old API containers..."
-              echo "$OLD_IDS" | xargs -r docker rm -f
-            fi
-
-            # Reload nginx gracefully (no restart = no dropped connections).
+            # Reload nginx gracefully after the swap
             docker compose exec nginx nginx -s reload 2>/dev/null || true
 
-      # ── 6. Clean up old images ───────────────────────────────────────────────
+      # ── 7. Clean up old images ───────────────────────────────────────────────
       - name: Clean up
         uses: appleboy/ssh-action@v1.0.3
         with:
