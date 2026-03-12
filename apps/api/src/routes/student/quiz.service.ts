@@ -63,12 +63,16 @@ export const submitQuiz = async (userId: string, quizId: string, answers: Submit
       questionId: question.id,
       text: question.text,
       isCorrect,
-      options: question.options.map((o) => ({
-        id: o.id,
-        text: o.text,
-        ...(isCourseQuiz ? {} : { isCorrect: o.isCorrect }),
-        wasChosen: chosenSet.has(o.id),
-      })),
+      options: question.options.map((o) => {
+        const wasChosen = chosenSet.has(o.id);
+        return {
+          id: o.id,
+          text: o.text,
+          // For course quizzes, only reveal isCorrect on options the student chose
+          ...(isCourseQuiz ? (wasChosen ? { isCorrect: o.isCorrect } : {}) : { isCorrect: o.isCorrect }),
+          wasChosen,
+        };
+      }),
     };
   });
 

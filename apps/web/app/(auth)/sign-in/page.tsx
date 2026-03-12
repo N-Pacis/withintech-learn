@@ -58,8 +58,8 @@ export default function SignInPage() {
       <div className="relative z-10 w-full max-w-md mx-4">
         <Card shadow="lg" className="px-8 py-10 ring-1 ring-[#E5E7EB] rounded-2xl">
 
-          <div className="mb-3">
-            <Logo className="h-36" linked={false} />
+          <div className="mb-6 py-2">
+            <Logo className="h-16" linked={false} />
           </div>
 
           <h1 className="font-heading font-black text-2xl text-[#0F0F0F] mb-1">Welcome back</h1>

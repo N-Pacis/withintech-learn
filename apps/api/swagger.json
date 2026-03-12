@@ -3296,7 +3296,8 @@
               "enum": [
                 "all",
                 "enrolled",
-                "not_enrolled"
+                "not_enrolled",
+                "passed"
               ],
               "default": "all"
             }
@@ -3380,6 +3381,24 @@
           "404": {
             "description": "Course not found"
           }
+        }
+      }
+    },
+    "/student/courses/{slug}/complete": {
+      "post": {
+        "tags": ["Student - Courses"],
+        "summary": "Mark a course as completed (PASSED)",
+        "description": "Sets enrollment status to PASSED. Requires all modules to be done. If the course has a quiz, the student must have passed it first.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Course marked as completed" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
         }
       }
     },

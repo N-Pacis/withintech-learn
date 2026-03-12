@@ -19,10 +19,10 @@ export default function StudentNavbar() {
 
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-[#E5E7EB] shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
-        <div className="flex-shrink-0">
-          <Logo className="h-24" linked={false} />
+        <div className="flex-shrink-0 py-1">
+          <Logo className="h-14" linked={false} />
         </div>
 
         {/* Desktop nav */}

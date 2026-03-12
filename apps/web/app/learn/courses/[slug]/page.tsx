@@ -1,16 +1,19 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronLeft, Trophy } from 'lucide-react';
 import {
   usePublishedCourse,
   useStudentModule,
   useCompleteModule,
+  useCompleteCourse,
   type StudentBlock,
   type StudentModuleDetail,
+  type StudentModuleQuiz,
+  type QuizAttemptSummary,
 } from '@/hooks/queries/courses';
 import { Button, PageLoader } from '@/components/ui';
 import { Stepper, type StepperStep } from '@/components/ui/Stepper';
@@ -72,7 +75,6 @@ function ModuleContent({
 }) {
   const { data: mod, isLoading } = useStudentModule(slug, moduleId);
 
-  // Derive passability from server data; reset to false while data is loading
   useEffect(() => {
     if (!mod) {
       onCanCompleteChange(false);
@@ -91,9 +93,7 @@ function ModuleContent({
 
   if (!mod) return null;
 
-  return (
-    <ModuleView slug={slug} moduleId={moduleId} mod={mod} onPass={() => onCanCompleteChange(true)} />
-  );
+  return <ModuleView slug={slug} moduleId={moduleId} mod={mod} onPass={() => onCanCompleteChange(true)} />;
 }
 
 function ModuleView({ slug, moduleId, mod, onPass }: { slug: string; moduleId: string; mod: StudentModuleDetail; onPass: () => void }) {
@@ -112,29 +112,77 @@ function ModuleView({ slug, moduleId, mod, onPass }: { slug: string; moduleId: s
   );
 }
 
+// ─── Course quiz step ─────────────────────────────────────────────────────────
+
+function CourseQuizStep({
+  slug,
+  quiz,
+  lastAttempt,
+  onPass,
+}: {
+  slug: string;
+  quiz: StudentModuleQuiz;
+  lastAttempt: QuizAttemptSummary | null;
+  onPass: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-3 px-5 py-4 rounded-xl bg-[#F3E8FF] border border-[#E9D5FF]">
+        <div className="w-10 h-10 rounded-full bg-[#3D006B] flex items-center justify-center shrink-0">
+          <Trophy size={18} className="text-white" />
+        </div>
+        <div>
+          <p className="font-heading font-bold text-base text-[#0F0F0F]">Final Course Quiz</p>
+          <p className="font-body text-sm text-[#6B7280]">Pass to complete the course. Answers are not revealed.</p>
+        </div>
+      </div>
+      {/* Reuse QuizSection — backend already strips isCorrect for course quizzes */}
+      <QuizSection
+        slug={slug}
+        moduleId="course-quiz"
+        quiz={quiz}
+        lastAttempt={lastAttempt}
+        onPass={onPass}
+      />
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CoursePage() {
   const { slug } = useParams<{ slug: string }>();
+  const router = useRouter();
   const { data: course, isLoading, isError } = usePublishedCourse(slug);
   const { mutate: completeModuleMutation, isPending: completing } = useCompleteModule(slug);
+  const { mutate: completeCourse, isPending: completingCourse } = useCompleteCourse(slug);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [canComplete, setCanComplete] = useState(false);
+  const [courseQuizPassed, setCourseQuizPassed] = useState(false);
 
-  // Initialize completedIds + reset index when course loads/changes
   useEffect(() => {
     if (!course) return;
-    setCompletedIds(new Set(course.modules.filter((m) => m.isCompleted).map((m) => m.id)));
+    const ids = new Set(course.modules.filter((m) => m.isCompleted).map((m) => m.id));
+    setCompletedIds(ids);
+    setCourseQuizPassed(course.lastCourseQuizAttempt?.status === 'pass');
+
+    const allDone = course.modules.every((m) => m.isCompleted);
     const firstIncomplete = course.modules.findIndex((m) => !m.isCompleted);
-    setCurrentIndex(firstIncomplete === -1 ? course.modules.length - 1 : firstIncomplete);
+
+    if (allDone && course.quiz) {
+      setCurrentIndex(course.modules.length); // quiz step
+    } else if (firstIncomplete === -1) {
+      setCurrentIndex(course.modules.length - 1);
+    } else {
+      setCurrentIndex(firstIncomplete);
+    }
   }, [course?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleCanCompleteChange = useCallback((v: boolean) => setCanComplete(v), []);
 
   if (isLoading) return <PageLoader type="content" />;
-
   if (isError || !course) {
     return (
       <div className="px-6 py-10 max-w-3xl mx-auto">
@@ -144,22 +192,44 @@ export default function CoursePage() {
   }
 
   const modules = course.modules;
-  const currentModule = modules[currentIndex];
+  const quizStepIndex = modules.length; // only valid when course.quiz exists
+  const isOnQuizStep = !!course.quiz && currentIndex === quizStepIndex;
+  const currentModule = !isOnQuizStep ? modules[currentIndex] : null;
 
-  if (!currentModule) return null;
+  if (!isOnQuizStep && !currentModule) return null;
 
-  const steps: StepperStep[] = modules.map((m) => ({
-    id: m.id,
-    label: m.title,
-    isCompleted: completedIds.has(m.id),
-  }));
+  // Build stepper steps
+  const steps: StepperStep[] = [
+    ...modules.map((m) => ({
+      id: m.id,
+      label: m.title,
+      isCompleted: completedIds.has(m.id),
+    })),
+    ...(course.quiz
+      ? [{
+          id: 'course-quiz',
+          label: 'Final Quiz',
+          type: 'quiz' as const,
+          isCompleted: courseQuizPassed,
+        }]
+      : []),
+  ];
+
+  function handleStepClick(index: number) {
+    setCurrentIndex(index);
+  }
 
   function handleNext() {
     if (!currentModule) return;
+    const goToQuizStep = isLast && !!course!.quiz;
     completeModuleMutation(currentModule.id, {
       onSuccess: () => {
         setCompletedIds((prev) => new Set([...prev, currentModule.id]));
-        if (currentIndex < modules.length - 1) setCurrentIndex(currentIndex + 1);
+        if (goToQuizStep) {
+          setCurrentIndex(quizStepIndex);
+        } else if (currentIndex < modules.length - 1) {
+          setCurrentIndex(currentIndex + 1);
+        }
       },
     });
   }
@@ -168,13 +238,18 @@ export default function CoursePage() {
     if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
   }
 
-  function handleStepClick(index: number) {
-    setCurrentIndex(index);
+  function handleCompleteCourse() {
+    completeCourse(undefined, {
+      onSuccess: () => {
+        router.push('/learn');
+      },
+    });
   }
 
   const isFirst = currentIndex === 0;
-  const isLast = currentIndex === modules.length - 1;
-  const isCurrentCompleted = completedIds.has(currentModule.id);
+  const isLast = !isOnQuizStep && currentIndex === modules.length - 1;
+  const isCurrentCompleted = currentModule ? completedIds.has(currentModule.id) : false;
+  const allModulesDone = modules.every((m) => completedIds.has(m.id));
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
@@ -195,70 +270,111 @@ export default function CoursePage() {
       <div className="bg-white border-b border-[#E5E7EB] px-6 py-6">
         <div className="max-w-4xl mx-auto overflow-x-auto">
           <div className="min-w-max">
-            <Stepper
-              steps={steps}
-              currentStep={currentIndex}
-              onStepClick={handleStepClick}
-            />
+            <Stepper steps={steps} currentStep={currentIndex} onStepClick={handleStepClick} />
           </div>
         </div>
       </div>
 
-      {/* Module content */}
+      {/* Content */}
       <div className="max-w-3xl mx-auto px-6 py-10">
 
-        <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-6">
-          Module {currentIndex + 1} of {modules.length}
-        </p>
-
-        <ModuleContent
-          key={currentModule.id}
-          slug={slug}
-          moduleId={currentModule.id}
-          onCanCompleteChange={handleCanCompleteChange}
-        />
-
-        {/* Navigation */}
-        <div className="flex items-center justify-between mt-12 pt-8 border-t border-[#E5E7EB]">
-          <Button
-            variant="secondary"
-            size="md"
-            onClick={handlePrev}
-            disabled={isFirst}
-            className="flex items-center gap-2"
-          >
-            <ChevronLeft size={16} /> Previous
-          </Button>
-
-          {isLast ? (
-            isCurrentCompleted ? (
-              <Button variant="secondary" size="md" asChild>
-                <Link href="/learn">Back to courses</Link>
+        {isOnQuizStep ? (
+          // ── Course quiz step ──
+          <>
+            <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-6">
+              Final Quiz
+            </p>
+            <CourseQuizStep
+              slug={slug}
+              quiz={course.quiz!}
+              lastAttempt={course.lastCourseQuizAttempt}
+              onPass={() => setCourseQuizPassed(true)}
+            />
+            <div className="flex items-center justify-between mt-12 pt-8 border-t border-[#E5E7EB]">
+              <Button variant="secondary" size="md" onClick={handlePrev} className="flex items-center gap-2">
+                <ChevronLeft size={16} /> Previous
               </Button>
-            ) : (
               <Button
                 size="md"
-                onClick={handleNext}
-                disabled={!canComplete || completing}
-                loading={completing}
+                onClick={handleCompleteCourse}
+                disabled={!courseQuizPassed || completingCourse}
+                loading={completingCourse}
                 className="flex items-center gap-2"
               >
-                Complete module <ArrowRight size={16} />
+                Complete course <Trophy size={16} />
               </Button>
-            )
-          ) : (
-            <Button
-              size="md"
-              onClick={handleNext}
-              disabled={!canComplete || completing}
-              loading={completing}
-              className="flex items-center gap-2"
-            >
-              {isCurrentCompleted ? 'Next module' : 'Complete & continue'} <ArrowRight size={16} />
-            </Button>
-          )}
-        </div>
+            </div>
+          </>
+        ) : (
+          // ── Module step ──
+          <>
+            <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-6">
+              Module {currentIndex + 1} of {modules.length}
+            </p>
 
+            <ModuleContent
+              key={currentModule!.id}
+              slug={slug}
+              moduleId={currentModule!.id}
+              onCanCompleteChange={handleCanCompleteChange}
+            />
+
+            <div className="flex items-center justify-between mt-12 pt-8 border-t border-[#E5E7EB]">
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={handlePrev}
+                disabled={isFirst}
+                className="flex items-center gap-2"
+              >
+                <ChevronLeft size={16} /> Previous
+              </Button>
+
+              {/* Right-side button logic */}
+              {isLast ? (
+                isCurrentCompleted ? (
+                  course.quiz ? (
+                    // Last module done, course has quiz → go to quiz step
+                    <Button size="md" onClick={() => setCurrentIndex(quizStepIndex)} className="flex items-center gap-2">
+                      Final quiz <ArrowRight size={16} />
+                    </Button>
+                  ) : (
+                    // Last module done, no quiz → complete course
+                    <Button
+                      size="md"
+                      onClick={handleCompleteCourse}
+                      disabled={completingCourse}
+                      loading={completingCourse}
+                      className="flex items-center gap-2"
+                    >
+                      Complete course <Trophy size={16} />
+                    </Button>
+                  )
+                ) : (
+                  <Button
+                    size="md"
+                    onClick={handleNext}
+                    disabled={!canComplete || completing}
+                    loading={completing}
+                    className="flex items-center gap-2"
+                  >
+                    Complete module <ArrowRight size={16} />
+                  </Button>
+                )
+              ) : (
+                <Button
+                  size="md"
+                  onClick={handleNext}
+                  disabled={!canComplete || completing}
+                  loading={completing}
+                  className="flex items-center gap-2"
+                >
+                  {isCurrentCompleted ? 'Next module' : 'Complete & continue'} <ArrowRight size={16} />
+                </Button>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

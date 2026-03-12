@@ -14,6 +14,7 @@ const FILTERS: { label: string; value: CourseFilter }[] = [
   { label: 'All courses',   value: 'all'          },
   { label: 'Enrolled',      value: 'enrolled'      },
   { label: 'Not enrolled',  value: 'not_enrolled'  },
+  { label: 'Completed',     value: 'passed'        },
 ];
 
 function FilterPills({
@@ -53,6 +54,13 @@ function EnrollButton({ course }: { course: PublishedCourse }) {
 }
 
 function CourseFooter({ course }: { course: PublishedCourse }) {
+  if (course.enrollment_status === 'PASSED') {
+    return (
+      <Button size="sm" variant="secondary" asChild className="w-full justify-between">
+        <Link href={`/learn/courses/${course.slug}`}>View course <ArrowRight size={14} /></Link>
+      </Button>
+    );
+  }
   if (course.enrollment_status === 'ENROLLED' || course.enrollment_status === 'PENDING') {
     return (
       <Button size="sm" variant="secondary" asChild className="w-full justify-between">
@@ -87,6 +95,19 @@ function EmptyState({ filter, search }: { filter: CourseFilter; search: string }
         </div>
         <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">Not enrolled yet</h3>
         <p className="font-body text-sm text-[#6B7280] max-w-xs">Browse all courses and enroll to start learning.</p>
+      </div>
+    );
+  }
+  if (filter === 'passed') {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 text-center">
+        <div className="w-16 h-16 rounded-full bg-[#F3E8FF] flex items-center justify-center mb-5">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3D006B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+          </svg>
+        </div>
+        <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">No completed courses yet</h3>
+        <p className="font-body text-sm text-[#6B7280] max-w-xs">Complete all modules and pass the final quiz to finish a course.</p>
       </div>
     );
   }

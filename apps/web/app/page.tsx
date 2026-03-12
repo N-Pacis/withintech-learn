@@ -256,8 +256,8 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
 
             <div>
-              <div className="mb-4">
-                <Logo className="h-28" linked={false} />
+              <div className="mb-4 py-1">
+                <Logo className="h-16" linked={false} />
               </div>
               <p className="font-body text-sm text-[#6B7280] mb-4">
                 Learn. Prove it. Move forward.

@@ -21,10 +21,10 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-[#E5E7EB]">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 h-24 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
 
         {/* Logo */}
-        <Logo className="h-28" />
+        <Logo className="h-14" />
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-8">

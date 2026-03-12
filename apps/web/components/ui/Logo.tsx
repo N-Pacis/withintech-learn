@@ -11,13 +11,13 @@ interface LogoProps {
 }
 
 export default function Logo({ className, linked = true, variant = 'default' }: LogoProps) {
-  const src = variant === 'sidebar' ? '/sidebar-logo.png' : '/logo.svg';
+  const src = variant === 'sidebar' ? '/sidebar-logo.png' : '/logo.png';
   const img = (
     <Image
       src={src}
       alt="WithinTech Learn"
-      width={1500}
-      height={1500}
+      width={1000}
+      height={1000}
       className={cn('w-auto', className ?? 'h-20')}
       priority
     />

@@ -12,6 +12,7 @@ interface CourseCardCourse {
   createdAt?: string;
   module_count?: number;
   enrolled_at?: string | null;
+  enrollment_status?: string | null;
 }
 
 interface CourseCardProps {
@@ -77,6 +78,11 @@ export function CourseCard({ course, href, badge, footer, featured, locked }: Co
       {badge && (
         <div className="absolute top-3 left-3">
           <Badge variant={badge.variant}>{badge.label}</Badge>
+        </div>
+      )}
+      {course.enrollment_status === 'PASSED' && (
+        <div className="absolute top-3 right-3">
+          <Badge variant="success">Completed</Badge>
         </div>
       )}
     </div>
