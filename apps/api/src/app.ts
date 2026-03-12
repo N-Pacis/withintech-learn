@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-import path from 'path';
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 import * as Sentry from '@sentry/node';
 import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
@@ -41,11 +38,12 @@ app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 app.use(router);
 
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
-  Sentry.captureException(err);
   if (err instanceof AppError) {
+    if (err.statusCode >= 500) Sentry.captureException(err);
     res.status(err.statusCode).json({ success: false, message: err.message });
     return;
   }
+  Sentry.captureException(err);
   console.error(err);
   res.status(500).json({ success: false, message: 'Internal server error' });
 });

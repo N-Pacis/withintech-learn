@@ -3382,6 +3382,132 @@
           }
         }
       }
+    },
+    "/student/courses/{slug}/modules/{moduleId}/progress": {
+      "post": {
+        "tags": ["Student - Courses"],
+        "summary": "Mark a module as completed",
+        "description": "Saves module progress. If the module has a quiz, the student must have passed it first.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "moduleId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "201": { "description": "Module marked as completed" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/student/quizzes/{quizId}/attempt": {
+      "post": {
+        "tags": ["Student - Quizzes"],
+        "summary": "Submit and mark a quiz attempt",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "quizId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["answers"],
+                "properties": {
+                  "answers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["questionId", "chosenOptionIds"],
+                      "properties": {
+                        "questionId": { "type": "string", "format": "uuid" },
+                        "chosenOptionIds": {
+                          "type": "array",
+                          "items": { "type": "string", "format": "uuid" },
+                          "minItems": 1
+                        }
+                      }
+                    },
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Quiz marked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "attempt": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "string", "format": "uuid" },
+                                "score": { "type": "integer", "description": "Percentage 0–100" },
+                                "status": { "type": "string", "enum": ["pass", "fail"] },
+                                "quizId": { "type": "string", "format": "uuid" },
+                                "moduleId": { "type": "string", "format": "uuid", "nullable": true },
+                                "courseId": { "type": "string", "format": "uuid", "nullable": true },
+                                "createdAt": { "type": "string", "format": "date-time" }
+                              }
+                            },
+                            "questions": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "questionId": { "type": "string", "format": "uuid" },
+                                  "text": { "type": "string" },
+                                  "isCorrect": { "type": "boolean" },
+                                  "options": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": { "type": "string", "format": "uuid" },
+                                        "text": { "type": "string" },
+                                        "isCorrect": { "type": "boolean" },
+                                        "wasChosen": { "type": "boolean" }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
     }
   }
 }

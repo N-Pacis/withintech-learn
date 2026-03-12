@@ -17,12 +17,6 @@ const LIMIT = 20;
 
 type TabValue = 'draft' | 'published' | 'archived';
 
-const TABS: Tab<TabValue>[] = [
-  { label: 'Draft',     value: 'draft'     },
-  { label: 'Published', value: 'published' },
-  { label: 'Archived',  value: 'archived'  },
-];
-
 const STATUS_BADGE: Record<CourseStatus, { variant: 'gray' | 'success' | 'warning'; label: string }> = {
   draft:     { variant: 'gray',    label: 'Draft'     },
   published: { variant: 'success', label: 'Published' },
@@ -157,8 +151,26 @@ function CourseGrid({ tab }: { tab: TabValue }) {
   );
 }
 
+function useTabCounts() {
+  const draft     = useCourses({ page: 1, limit: 1, status: 'draft' });
+  const published = useCourses({ page: 1, limit: 1, status: 'published' });
+  const archived  = useCourses({ page: 1, limit: 1, status: 'archived' });
+  return {
+    draft:     draft.data?.total,
+    published: published.data?.total,
+    archived:  archived.data?.total,
+  };
+}
+
 export default function CoursesPage() {
   const [activeTab, setActiveTab] = useState<TabValue>('draft');
+  const counts = useTabCounts();
+
+  const tabs: Tab<TabValue>[] = [
+    { label: 'Draft',     value: 'draft',     count: counts.draft     },
+    { label: 'Published', value: 'published', count: counts.published },
+    { label: 'Archived',  value: 'archived',  count: counts.archived  },
+  ];
 
   return (
     <div className="p-8 lg:p-12 max-w-6xl">
@@ -177,7 +189,7 @@ export default function CoursesPage() {
         </Button>
       </div>
 
-      <Tabs tabs={TABS} value={activeTab} onChange={(v) => setActiveTab(v)} className="mb-6" />
+      <Tabs tabs={tabs} value={activeTab} onChange={(v) => setActiveTab(v)} className="mb-6" />
 
       <CourseGrid key={activeTab} tab={activeTab} />
     </div>

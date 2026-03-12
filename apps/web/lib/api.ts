@@ -60,6 +60,7 @@ export async function apiFetch<T = unknown>(
     token = await refreshPromise;
 
     if (!token) {
+      if (typeof window !== 'undefined') window.location.href = '/sign-in';
       return { success: false, message: 'Session expired' };
     }
 

@@ -25,9 +25,11 @@ model User {
   isActive     Boolean         @default(false)
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
-  otpCodes     OtpCode[]
-  courses      Course[]
-  enrollments  StudentCourse[]
+  otpCodes        OtpCode[]
+  courses         Course[]
+  enrollments     StudentCourse[]
+  quizAttempts    QuizAttempt[]
+  moduleProgress  ModuleProgress[]
 }
 
 model OtpCode {
@@ -72,6 +74,7 @@ model Course {
 enum EnrollmentStatus {
   PENDING
   ENROLLED
+  PASSED
 }
 
 model StudentCourse {
@@ -87,6 +90,17 @@ model StudentCourse {
   @@unique([studentId, courseId])
 }
 
+model ModuleProgress {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  moduleId    String
+  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+
+  @@unique([userId, moduleId])
+}
+
 model Module {
   id         String        @id @default(uuid())
   courseId   String
@@ -95,6 +109,7 @@ model Module {
   orderIndex Int
   blocks     ModuleBlock[]
   quiz       Quiz?
+  progress   ModuleProgress[]
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
 
@@ -118,17 +133,34 @@ model ModuleBlock {
 }
 
 model Quiz {
-  id           String     @id @default(uuid())
-  moduleId     String?    @unique
-  module       Module?    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  courseId     String?    @unique
-  course       Course?    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  id           String        @id @default(uuid())
+  moduleId     String?       @unique
+  module       Module?       @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  courseId     String?       @unique
+  course       Course?       @relation(fields: [courseId], references: [id], onDelete: Cascade)
   title        String
   passingScore Int
-  maxAttempts  Int        @default(3)
+  maxAttempts  Int           @default(3)
   questions    Question[]
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  attempts     QuizAttempt[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+enum AttemptStatus {
+  pass
+  fail
+}
+
+model QuizAttempt {
+  id        String        @id @default(uuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  quizId    String
+  quiz      Quiz          @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  score     Int
+  status    AttemptStatus
+  createdAt DateTime      @default(now())
 }
 
 model Question {

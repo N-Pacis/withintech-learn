@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { sendSuccess } from '../../utils/response';
 import { badRequest } from '../../utils/errors';
-import { listPublishedCourses, getPublishedCourseBySlug, enrollInCourse } from './courses.service';
+import { listPublishedCourses, getPublishedCourseBySlug, getStudentModule, completeModule, completeCourse, enrollInCourse } from './courses.service';
 
 const router = Router();
 
@@ -11,7 +11,7 @@ const listSchema = z.object({
   page:   z.coerce.number().int().positive().default(1),
   limit:  z.coerce.number().int().positive().max(100).default(20),
   search: z.string().optional(),
-  filter: z.enum(['all', 'enrolled', 'not_enrolled']).default('all'),
+  filter: z.enum(['all', 'enrolled', 'not_enrolled', 'passed']).default('all'),
 });
 
 router.get('/student/courses', asyncHandler(async (req: Request, res: Response) => {
@@ -24,6 +24,21 @@ router.get('/student/courses', asyncHandler(async (req: Request, res: Response) 
 router.get('/student/courses/:slug', asyncHandler(async (req: Request, res: Response) => {
   const result = await getPublishedCourseBySlug(req.params.slug, req.user!.userId);
   sendSuccess(res, result);
+}));
+
+router.get('/student/courses/:slug/modules/:moduleId', asyncHandler(async (req: Request, res: Response) => {
+  const result = await getStudentModule(req.params.slug, req.params.moduleId, req.user!.userId);
+  sendSuccess(res, result);
+}));
+
+router.post('/student/courses/:slug/modules/:moduleId/progress', asyncHandler(async (req: Request, res: Response) => {
+  const result = await completeModule(req.params.slug, req.params.moduleId, req.user!.userId);
+  sendSuccess(res, result, 'Module completed', 201);
+}));
+
+router.post('/student/courses/:slug/complete', asyncHandler(async (req: Request, res: Response) => {
+  const result = await completeCourse(req.params.slug, req.user!.userId);
+  sendSuccess(res, result, 'Course completed');
 }));
 
 router.post('/student/courses/:id/enroll', asyncHandler(async (req: Request, res: Response) => {

@@ -1,19 +1,23 @@
 'use client';
 
+import { Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface StepperStep {
   id: string;
   label: string;
+  isCompleted?: boolean;
+  type?: 'quiz';
 }
 
 interface StepperProps {
   steps: StepperStep[];
   currentStep: number; // 0-indexed
+  onStepClick?: (index: number) => void;
   className?: string;
 }
 
-export function Stepper({ steps, currentStep, className }: StepperProps) {
+export function Stepper({ steps, currentStep, onStepClick, className }: StepperProps) {
   const progressRatio =
     steps.length > 1 ? currentStep / (steps.length - 1) : 0;
 
@@ -32,57 +36,83 @@ export function Stepper({ steps, currentStep, className }: StepperProps) {
         {/* Steps */}
         <div className="relative flex justify-between">
           {steps.map((step, index) => {
-            const isDone = index < currentStep;
+            const isDone = step.isCompleted !== undefined ? step.isCompleted : index < currentStep;
             const isCurrent = index === currentStep;
+            const isClickable = isDone && !!onStepClick;
+
+            if (step.type === 'quiz') {
+              return (
+                <div
+                  key={step.id}
+                  className={cn('flex flex-col items-center gap-2.5', isClickable && 'cursor-pointer')}
+                  onClick={() => isClickable && onStepClick?.(index)}
+                >
+                  <div
+                    className={cn(
+                      'w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all duration-300',
+                      isDone && 'bg-green-600 border-green-600',
+                      isDone && isClickable && 'hover:opacity-80',
+                      isCurrent && 'bg-[#3D006B] border-[#3D006B] shadow-[0_0_0_4px_rgba(61,0,107,0.14)]',
+                      !isDone && !isCurrent && 'bg-white border-[#D1D5DB]',
+                    )}
+                  >
+                    <Trophy
+                      size={16}
+                      className={cn(
+                        isDone && 'text-white',
+                        isCurrent && 'text-white',
+                        !isDone && !isCurrent && 'text-[#9CA3AF]',
+                      )}
+                    />
+                  </div>
+                  {/* Quiz step always shows label */}
+                  <span
+                    className={cn(
+                      'font-body text-xs font-medium text-center whitespace-nowrap transition-colors duration-300',
+                      isDone && 'text-green-600',
+                      isCurrent && 'text-[#0F0F0F]',
+                      !isDone && !isCurrent && 'text-[#9CA3AF]',
+                    )}
+                  >
+                    {step.label}
+                  </span>
+                </div>
+              );
+            }
 
             return (
-              <div key={step.id} className="flex flex-col items-center gap-2.5">
+              <div
+                key={step.id}
+                className={cn('flex flex-col items-center gap-2.5', isClickable && 'cursor-pointer')}
+                onClick={() => isClickable && onStepClick?.(index)}
+              >
                 {/* Circle */}
                 <div
                   className={cn(
                     'w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all duration-300',
                     isDone && 'bg-[#3D006B] border-[#3D006B]',
-                    isCurrent &&
-                      'bg-[#3D006B] border-[#3D006B] shadow-[0_0_0_4px_rgba(61,0,107,0.14)]',
+                    isDone && isClickable && 'hover:opacity-80',
+                    isCurrent && 'bg-[#3D006B] border-[#3D006B] shadow-[0_0_0_4px_rgba(61,0,107,0.14)]',
                     !isDone && !isCurrent && 'bg-white border-[#D1D5DB]',
                   )}
                 >
                   {isDone ? (
-                    <svg
-                      width="15"
-                      height="15"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
                   ) : (
-                    <span
-                      className={cn(
-                        'font-heading font-bold text-sm leading-none',
-                        isCurrent ? 'text-white' : 'text-[#9CA3AF]',
-                      )}
-                    >
+                    <span className={cn('font-heading font-bold text-sm leading-none', isCurrent ? 'text-white' : 'text-[#9CA3AF]')}>
                       {index + 1}
                     </span>
                   )}
                 </div>
 
-                {/* Label */}
-                <span
-                  className={cn(
-                    'font-body text-xs font-medium text-center whitespace-nowrap transition-colors duration-300',
-                    isDone && 'text-[#3D006B]',
-                    isCurrent && 'text-[#0F0F0F]',
-                    !isDone && !isCurrent && 'text-[#9CA3AF]',
-                  )}
-                >
-                  {step.label}
-                </span>
+                {/* Label — only shown for current step */}
+                {isCurrent && (
+                  <span className="font-body text-xs font-medium text-center whitespace-nowrap text-[#0F0F0F]">
+                    {step.label}
+                  </span>
+                )}
               </div>
             );
           })}

@@ -27,8 +27,8 @@ export interface CoursesPage {
 }
 
 // Courses returned to students/public — no createdBy, status always published
-export type EnrollmentStatus = 'PENDING' | 'ENROLLED';
-export type CourseFilter = 'all' | 'enrolled' | 'not_enrolled';
+export type EnrollmentStatus = 'PENDING' | 'ENROLLED' | 'PASSED';
+export type CourseFilter = 'all' | 'enrolled' | 'not_enrolled' | 'passed';
 
 export interface PublishedCourse {
   id: string;
@@ -41,6 +41,92 @@ export interface PublishedCourse {
   module_count: number;
   enrollment_status: EnrollmentStatus | null;
   enrolled_at: string | null;
+}
+
+export interface StudentCourseModule {
+  id: string;
+  title: string;
+  orderIndex: number;
+  isCompleted: boolean;
+}
+
+export interface StudentCourse {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  thumbnailUrl: string | null;
+  status: 'published';
+  modules: StudentCourseModule[];
+  enrollment_status: EnrollmentStatus;
+  enrolled_at: string;
+  quiz: StudentModuleQuiz | null;
+  lastCourseQuizAttempt: QuizAttemptSummary | null;
+}
+
+export interface StudentBlock {
+  id: string;
+  type: 'text' | 'image' | 'code';
+  content: string | null;
+  url: string | null;
+  caption: string | null;
+  language: string | null;
+  orderIndex: number;
+}
+
+export interface QuizOption {
+  id: string;
+  text: string;
+  orderIndex: number;
+}
+
+export interface QuizQuestion {
+  id: string;
+  text: string;
+  orderIndex: number;
+  options: QuizOption[];
+}
+
+export interface StudentModuleQuiz {
+  id: string;
+  title: string;
+  passingScore: number;
+  questions: QuizQuestion[];
+}
+
+export interface QuizAttemptSummary {
+  id: string;
+  score: number;
+  status: 'pass' | 'fail';
+  createdAt: string;
+}
+
+export interface MarkedOption {
+  id: string;
+  text: string;
+  isCorrect?: boolean; // omitted for course-level quizzes
+  wasChosen: boolean;
+}
+
+export interface MarkedQuestion {
+  questionId: string;
+  text: string;
+  isCorrect: boolean;
+  options: MarkedOption[];
+}
+
+export interface QuizAttemptResult {
+  attempt: QuizAttemptSummary & { quizId: string; moduleId: string | null; courseId: string | null };
+  questions: MarkedQuestion[];
+}
+
+export interface StudentModuleDetail {
+  id: string;
+  title: string;
+  orderIndex: number;
+  blocks: StudentBlock[];
+  quiz: StudentModuleQuiz | null;
+  lastAttempt: QuizAttemptSummary | null;
 }
 
 export interface PublishedCoursesPage {
@@ -102,11 +188,23 @@ export function usePublishedCourse(slug: string) {
   return useQuery({
     queryKey: [...courseKeys.student.lists(), slug] as const,
     queryFn: async () => {
-      const res = await apiFetch<PublishedCourse & { modules: unknown[]; quiz: unknown | null }>(`/student/courses/${slug}`);
+      const res = await apiFetch<StudentCourse>(`/student/courses/${slug}`);
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
     enabled: !!slug,
+  });
+}
+
+export function useStudentModule(slug: string, moduleId: string) {
+  return useQuery({
+    queryKey: ['student', 'module', slug, moduleId] as const,
+    queryFn: async () => {
+      const res = await apiFetch<StudentModuleDetail>(`/student/courses/${slug}/modules/${moduleId}`);
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    enabled: !!slug && !!moduleId,
   });
 }
 
@@ -120,6 +218,52 @@ export function usePublishedCourses(
       if (params.search) qs.set('search', params.search);
       if (params.filter) qs.set('filter', params.filter);
       const res = await apiFetch<PublishedCoursesPage>(`/student/courses?${qs}`);
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+  });
+}
+
+export function useCompleteModule(slug: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (moduleId: string) => {
+      const res = await apiFetch(`/student/courses/${slug}/modules/${moduleId}/progress`, { method: 'POST' });
+      if (!res.success) throw new Error(res.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [...courseKeys.student.lists(), slug] });
+    },
+  });
+}
+
+export function useCompleteCourse(slug: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const res = await apiFetch(`/student/courses/${slug}/complete`, { method: 'POST' });
+      if (!res.success) throw new Error(res.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: courseKeys.student.lists() });
+      queryClient.invalidateQueries({ queryKey: [...courseKeys.student.lists(), slug] });
+    },
+  });
+}
+
+export function useSubmitQuiz() {
+  return useMutation({
+    mutationFn: async ({
+      quizId,
+      answers,
+    }: {
+      quizId: string;
+      answers: { questionId: string; chosenOptionIds: string[] }[];
+    }): Promise<QuizAttemptResult> => {
+      const res = await apiFetch<QuizAttemptResult>(`/student/quizzes/${quizId}/attempt`, {
+        method: 'POST',
+        body: JSON.stringify({ answers }),
+      });
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
