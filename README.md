@@ -1,6 +1,6 @@
 # WithinTech Learn
 
-An LMS platform for course delivery, quizzes, and certificates.
+WithinTech Learn is an LMS designed to provide Withintech camp and programs participants access to a vast array of courses that will equip them with the skills needed to thrive in this AI era.
 
 ---
 
