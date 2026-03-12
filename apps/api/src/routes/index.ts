@@ -8,6 +8,7 @@ import adminQuizzesRouter from './admin/quizzes.routes';
 import adminUsersRouter from './admin/users.routes';
 import studentCoursesRouter from './student/courses.routes';
 import studentQuizRouter from './student/quiz.routes';
+import certificatesRouter from './student/certificates.routes';
 import publicCoursesRouter from './public/courses.routes';
 
 const router = Router();
@@ -26,5 +27,8 @@ router.use(adminUsersRouter);
 router.use('/student', authenticate);
 router.use(studentCoursesRouter);
 router.use(studentQuizRouter);
+
+// Public certificate verification — no auth
+router.use(certificatesRouter);
 
 export default router;

@@ -67,5 +67,10 @@ export async function apiFetch<T = unknown>(
     res = await request(token);
   }
 
+  if (res.status === 403) {
+    if (typeof window !== 'undefined') window.history.back();
+    return { success: false, message: 'You do not have permission to access this.' };
+  }
+
   return res.json();
 }

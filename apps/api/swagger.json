@@ -3386,52 +3386,115 @@
     },
     "/student/courses/{slug}/complete": {
       "post": {
-        "tags": ["Student - Courses"],
+        "tags": [
+          "Student - Courses"
+        ],
         "summary": "Mark a course as completed (PASSED)",
         "description": "Sets enrollment status to PASSED. Requires all modules to be done. If the course has a quiz, the student must have passed it first.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Course marked as completed" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "200": {
+            "description": "Course marked as completed"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/student/courses/{slug}/modules/{moduleId}/progress": {
       "post": {
-        "tags": ["Student - Courses"],
+        "tags": [
+          "Student - Courses"
+        ],
         "summary": "Mark a module as completed",
         "description": "Saves module progress. If the module has a quiz, the student must have passed it first.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } },
-          { "name": "moduleId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moduleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
-          "201": { "description": "Module marked as completed" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "201": {
+            "description": "Module marked as completed"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/student/quizzes/{quizId}/attempt": {
       "post": {
-        "tags": ["Student - Quizzes"],
+        "tags": [
+          "Student - Quizzes"
+        ],
         "summary": "Submit and mark a quiz attempt",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "quizId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string", "format": "uuid" }
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "requestBody": {
@@ -3440,18 +3503,29 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["answers"],
+                "required": [
+                  "answers"
+                ],
                 "properties": {
                   "answers": {
                     "type": "array",
                     "items": {
                       "type": "object",
-                      "required": ["questionId", "chosenOptionIds"],
+                      "required": [
+                        "questionId",
+                        "chosenOptionIds"
+                      ],
                       "properties": {
-                        "questionId": { "type": "string", "format": "uuid" },
+                        "questionId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
                         "chosenOptionIds": {
                           "type": "array",
-                          "items": { "type": "string", "format": "uuid" },
+                          "items": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
                           "minItems": 1
                         }
                       }
@@ -3470,7 +3544,9 @@
               "application/json": {
                 "schema": {
                   "allOf": [
-                    { "$ref": "#/components/schemas/SuccessResponse" },
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
                     {
                       "type": "object",
                       "properties": {
@@ -3480,13 +3556,39 @@
                             "attempt": {
                               "type": "object",
                               "properties": {
-                                "id": { "type": "string", "format": "uuid" },
-                                "score": { "type": "integer", "description": "Percentage 0–100" },
-                                "status": { "type": "string", "enum": ["pass", "fail"] },
-                                "quizId": { "type": "string", "format": "uuid" },
-                                "moduleId": { "type": "string", "format": "uuid", "nullable": true },
-                                "courseId": { "type": "string", "format": "uuid", "nullable": true },
-                                "createdAt": { "type": "string", "format": "date-time" }
+                                "id": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "score": {
+                                  "type": "integer",
+                                  "description": "Percentage 0\u2013100"
+                                },
+                                "status": {
+                                  "type": "string",
+                                  "enum": [
+                                    "pass",
+                                    "fail"
+                                  ]
+                                },
+                                "quizId": {
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "moduleId": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "nullable": true
+                                },
+                                "courseId": {
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "nullable": true
+                                },
+                                "createdAt": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
                               }
                             },
                             "questions": {
@@ -3494,18 +3596,34 @@
                               "items": {
                                 "type": "object",
                                 "properties": {
-                                  "questionId": { "type": "string", "format": "uuid" },
-                                  "text": { "type": "string" },
-                                  "isCorrect": { "type": "boolean" },
+                                  "questionId": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                  },
+                                  "text": {
+                                    "type": "string"
+                                  },
+                                  "isCorrect": {
+                                    "type": "boolean"
+                                  },
                                   "options": {
                                     "type": "array",
                                     "items": {
                                       "type": "object",
                                       "properties": {
-                                        "id": { "type": "string", "format": "uuid" },
-                                        "text": { "type": "string" },
-                                        "isCorrect": { "type": "boolean" },
-                                        "wasChosen": { "type": "boolean" }
+                                        "id": {
+                                          "type": "string",
+                                          "format": "uuid"
+                                        },
+                                        "text": {
+                                          "type": "string"
+                                        },
+                                        "isCorrect": {
+                                          "type": "boolean"
+                                        },
+                                        "wasChosen": {
+                                          "type": "boolean"
+                                        }
                                       }
                                     }
                                   }
@@ -3521,10 +3639,94 @@
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/certificates/{userId}/{courseSlug}": {
+      "get": {
+        "summary": "Get certificate by userId and course slug",
+        "description": "Public endpoint \u2014 no authentication required. Returns certificate info for display.",
+        "tags": [
+          "Certificates"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The student user ID"
+          },
+          {
+            "in": "path",
+            "name": "courseSlug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The course slug"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Certificate data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "completedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "recipientName": {
+                          "type": "string"
+                        },
+                        "courseTitle": {
+                          "type": "string"
+                        },
+                        "courseSlug": {
+                          "type": "string"
+                        },
+                        "modules": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Certificate not found"
+          }
         }
       }
     }

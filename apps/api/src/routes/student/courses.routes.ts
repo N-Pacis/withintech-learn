@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { sendSuccess } from '../../utils/response';
 import { badRequest } from '../../utils/errors';
-import { listPublishedCourses, getPublishedCourseBySlug, getStudentModule, completeModule, completeCourse, enrollInCourse } from './courses.service';
+import { listPublishedCourses, getPublishedCourseBySlug, getStudentModule, completeModule, completeCourse, enrollInCourse, getStudentStats } from './courses.service';
 
 const router = Router();
 
@@ -44,6 +44,11 @@ router.post('/student/courses/:slug/complete', asyncHandler(async (req: Request,
 router.post('/student/courses/:id/enroll', asyncHandler(async (req: Request, res: Response) => {
   const result = await enrollInCourse(req.user!.userId, req.params.id);
   sendSuccess(res, result, 'Enrolled successfully', 201);
+}));
+
+router.get('/student/stats', asyncHandler(async (req: Request, res: Response) => {
+  const result = await getStudentStats(req.user!.userId);
+  sendSuccess(res, result);
 }));
 
 export default router;

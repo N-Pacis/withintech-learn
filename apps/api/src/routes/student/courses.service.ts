@@ -1,6 +1,7 @@
 import { prisma } from '../../db/prisma';
 import { getSignedUrl } from '../../services/storage.service';
 import { notFound, badRequest, forbidden } from '../../utils/errors';
+import { upsertCertificate } from './certificates.service';
 
 const withThumbnailUrl = async <T extends { thumbnailKey: string | null }>(course: T) => {
   if (!course.thumbnailKey) return { ...course, thumbnailUrl: null };
@@ -191,11 +192,16 @@ export const completeCourse = async (slug: string, userId: string) => {
     }
   }
 
-  return prisma.studentCourse.update({
-    where: { studentId_courseId: { studentId: userId, courseId: course.id } },
-    data: { status: 'PASSED' },
-    select: { id: true, status: true },
-  });
+  const [updated] = await Promise.all([
+    prisma.studentCourse.update({
+      where: { studentId_courseId: { studentId: userId, courseId: course.id } },
+      data: { status: 'PASSED' },
+      select: { id: true, status: true },
+    }),
+    upsertCertificate(userId, course.id),
+  ]);
+
+  return updated;
 };
 
 // Returns a single module with blocks + quiz (no isCorrect) + last attempt
@@ -292,6 +298,23 @@ export const completeModule = async (slug: string, moduleId: string, userId: str
     update: {},
     select: { id: true, completedAt: true },
   });
+};
+
+export const getStudentStats = async (userId: string) => {
+  const [enrolled, completed, modulesFinished] = await Promise.all([
+    prisma.studentCourse.count({ where: { studentId: userId, status: 'ENROLLED' } }),
+    prisma.studentCourse.count({ where: { studentId: userId, status: 'PASSED' } }),
+    prisma.moduleProgress.count({ where: { userId } }),
+  ]);
+
+  const total = enrolled + completed;
+  return {
+    enrolled,
+    completed,
+    modulesFinished,
+    completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+    total,
+  };
 };
 
 export const enrollInCourse = async (userId: string, courseId: string) => {

@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { useState, useTransition } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { usePublishedCourses, useEnrollInCourse, type CourseFilter, type PublishedCourse } from '@/hooks/queries/courses';
+import { usePublishedCourses, useEnrollInCourse, useStudentStats, type CourseFilter, type PublishedCourse } from '@/hooks/queries/courses';
+import { useProfile } from '@/hooks/queries/auth';
 import { Button, PageLoader, Pagination, Input } from '@/components/ui';
 import { CourseCard } from '@/components/CourseCard';
 import { cn } from '@/lib/utils';
@@ -53,11 +54,11 @@ function EnrollButton({ course }: { course: PublishedCourse }) {
   );
 }
 
-function CourseFooter({ course }: { course: PublishedCourse }) {
+function CourseFooter({ course, userId }: { course: PublishedCourse; userId?: string }) {
   if (course.enrollment_status === 'PASSED') {
     return (
-      <Button size="sm" variant="secondary" asChild className="w-full justify-between">
-        <Link href={`/learn/courses/${course.slug}`}>View course <ArrowRight size={14} /></Link>
+      <Button size="sm" asChild className="w-full justify-between bg-green-600 hover:bg-green-700 text-white border-0">
+        <Link href={`/certificates/${userId}/${course.slug}`} target="_blank" rel="noopener noreferrer">Go to Certificate <ArrowRight size={14} /></Link>
       </Button>
     );
   }
@@ -149,15 +150,18 @@ function StatCard({ label, value, icon, accent = '#3D006B' }: StatCardProps) {
 }
 
 function StudentSidebar() {
+  const { data: stats } = useStudentStats();
+
+  const completionRate = stats?.completionRate ?? 0;
+
   return (
     <aside className="w-full lg:w-64 xl:w-72 shrink-0 flex flex-col gap-3">
 
-      {/* Section label */}
       <p className="font-heading font-bold text-xs tracking-widest uppercase text-[#9CA3AF]">My Progress</p>
 
       <StatCard
         label="Courses enrolled"
-        value={4}
+        value={stats?.enrolled ?? '—'}
         accent="#3D006B"
         icon={
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -169,7 +173,7 @@ function StudentSidebar() {
 
       <StatCard
         label="Courses completed"
-        value={1}
+        value={stats?.completed ?? '—'}
         accent="#059669"
         icon={
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -180,8 +184,8 @@ function StudentSidebar() {
 
       <StatCard
         label="Modules finished"
-        value={12}
-        accent="#0EA5E9"
+        value={stats?.modulesFinished ?? '—'}
+        accent="#3D006B"
         icon={
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -193,22 +197,9 @@ function StudentSidebar() {
       />
 
       <StatCard
-        label="Quizzes passed"
-        value={3}
-        accent="#D97706"
-        icon={
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
-          </svg>
-        }
-      />
-
-      <StatCard
         label="Certificates earned"
-        value={1}
-        accent="#BE185D"
+        value={stats?.completed ?? '—'}
+        accent="#059669"
         icon={
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="8" r="6" />
@@ -221,12 +212,14 @@ function StudentSidebar() {
       <div className="p-4 bg-white rounded-xl border border-[#E5E7EB] mt-1">
         <div className="flex items-center justify-between mb-2">
           <p className="font-body text-xs text-[#6B7280]">Completion rate</p>
-          <p className="font-heading font-black text-sm text-[#3D006B]">25%</p>
+          <p className="font-heading font-black text-sm text-[#3D006B]">{completionRate}%</p>
         </div>
         <div className="h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden">
-          <div className="h-full bg-[#3D006B] rounded-full" style={{ width: '25%' }} />
+          <div className="h-full bg-[#3D006B] rounded-full transition-all duration-500" style={{ width: `${completionRate}%` }} />
         </div>
-        <p className="font-body text-xs text-[#9CA3AF] mt-2">1 of 4 courses completed</p>
+        <p className="font-body text-xs text-[#9CA3AF] mt-2">
+          {stats ? `${stats.completed} of ${stats.total} courses completed` : '—'}
+        </p>
       </div>
 
     </aside>
@@ -240,6 +233,7 @@ export default function LearnPage() {
   const [, startTransition] = useTransition();
 
   const { data, isLoading, isError } = usePublishedCourses({ page, limit: LIMIT, search, filter });
+  const { data: profile } = useProfile();
   const totalPages = data ? Math.ceil(data.total / LIMIT) : 1;
 
   function handleSearch(value: string) {
@@ -303,7 +297,7 @@ export default function LearnPage() {
                     key={course.id}
                     course={course}
                     href={`/learn/courses/${course.slug}`}
-                    footer={<CourseFooter course={course} />}
+                    footer={<CourseFooter course={course} userId={profile?.id} />}
                     locked={!course.enrollment_status}
                   />
                 ))}

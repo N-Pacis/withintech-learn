@@ -64,6 +64,15 @@ export interface StudentCourse {
   lastCourseQuizAttempt: QuizAttemptSummary | null;
 }
 
+export interface CertificateData {
+  id: string;
+  completedAt: string;
+  recipientName: string;
+  courseTitle: string;
+  courseSlug: string;
+  modules: string[];
+}
+
 export interface StudentBlock {
   id: string;
   type: 'text' | 'image' | 'code';
@@ -293,6 +302,37 @@ export function useTopCourses() {
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
+  });
+}
+
+export interface StudentStats {
+  enrolled: number;
+  completed: number;
+  modulesFinished: number;
+  completionRate: number;
+  total: number;
+}
+
+export function useStudentStats() {
+  return useQuery({
+    queryKey: ['student', 'stats'] as const,
+    queryFn: async (): Promise<StudentStats> => {
+      const res = await apiFetch<StudentStats>('/student/stats');
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+  });
+}
+
+export function useCertificate(userId: string, courseSlug: string) {
+  return useQuery({
+    queryKey: ['certificate', userId, courseSlug] as const,
+    queryFn: async (): Promise<CertificateData> => {
+      const res = await apiFetch<CertificateData>(`/certificates/${userId}/${courseSlug}`);
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    enabled: !!userId && !!courseSlug,
   });
 }
 

@@ -30,6 +30,7 @@ model User {
   enrollments     StudentCourse[]
   quizAttempts    QuizAttempt[]
   moduleProgress  ModuleProgress[]
+  certificates    Certificate[]
 }
 
 model OtpCode {
@@ -67,6 +68,7 @@ model Course {
   modules      Module[]
   quiz         Quiz?
   enrollments  StudentCourse[]
+  certificates Certificate[]
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
 }
@@ -187,4 +189,15 @@ model QuestionOption {
   updatedAt  DateTime @updatedAt
 
   @@unique([questionId, orderIndex])
+}
+
+model Certificate {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+
+  @@unique([userId, courseId])
 }

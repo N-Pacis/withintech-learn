@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, ArrowRight, ChevronLeft, Trophy } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronLeft, Trophy, Award } from 'lucide-react';
 import {
   usePublishedCourse,
   useStudentModule,
@@ -15,6 +15,7 @@ import {
   type StudentModuleQuiz,
   type QuizAttemptSummary,
 } from '@/hooks/queries/courses';
+import { useProfile } from '@/hooks/queries/auth';
 import { Button, PageLoader } from '@/components/ui';
 import { Stepper, type StepperStep } from '@/components/ui/Stepper';
 import { CodeEditor, type CodeLanguage } from '@/components/ui/CodeEditor';
@@ -152,8 +153,8 @@ function CourseQuizStep({
 
 export default function CoursePage() {
   const { slug } = useParams<{ slug: string }>();
-  const router = useRouter();
   const { data: course, isLoading, isError } = usePublishedCourse(slug);
+  const { data: profile } = useProfile();
   const { mutate: completeModuleMutation, isPending: completing } = useCompleteModule(slug);
   const { mutate: completeCourse, isPending: completingCourse } = useCompleteCourse(slug);
 
@@ -222,12 +223,19 @@ export default function CoursePage() {
   function handleNext() {
     if (!currentModule) return;
     const goToQuizStep = isLast && !!course!.quiz;
+    const goToCert = isLast && !course!.quiz;
     completeModuleMutation(currentModule.id, {
       onSuccess: () => {
         setCompletedIds((prev) => new Set([...prev, currentModule.id]));
         if (goToQuizStep) {
           setCurrentIndex(quizStepIndex);
-        } else if (currentIndex < modules.length - 1) {
+        } else if (goToCert) {
+          completeCourse(undefined, {
+            onSuccess: () => {
+              window.open(`/certificates/${profile!.id}/${course!.slug}`, '_blank');
+            },
+          });
+        } else {
           setCurrentIndex(currentIndex + 1);
         }
       },
@@ -241,7 +249,7 @@ export default function CoursePage() {
   function handleCompleteCourse() {
     completeCourse(undefined, {
       onSuccess: () => {
-        router.push('/learn');
+        window.open(`/certificates/${profile!.id}/${course!.slug}`, '_blank');
       },
     });
   }
@@ -250,6 +258,8 @@ export default function CoursePage() {
   const isLast = !isOnQuizStep && currentIndex === modules.length - 1;
   const isCurrentCompleted = currentModule ? completedIds.has(currentModule.id) : false;
   const allModulesDone = modules.every((m) => completedIds.has(m.id));
+  const isCoursePassed = course.enrollment_status === 'PASSED';
+  const certHref = `/certificates/${profile?.id}/${course.slug}`;
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
@@ -294,15 +304,21 @@ export default function CoursePage() {
               <Button variant="secondary" size="md" onClick={handlePrev} className="flex items-center gap-2">
                 <ChevronLeft size={16} /> Previous
               </Button>
-              <Button
-                size="md"
-                onClick={handleCompleteCourse}
-                disabled={!courseQuizPassed || completingCourse}
-                loading={completingCourse}
-                className="flex items-center gap-2"
-              >
-                Complete course <Trophy size={16} />
-              </Button>
+              {!isCoursePassed ? (
+                <Button size="md" asChild className="flex items-center gap-2 bg-green-600 hover:bg-green-700 border-0">
+                  <Link href={certHref} target="_blank" rel="noopener noreferrer">Go to Certificate <Award size={16} /></Link>
+                </Button>
+              ) : (
+                <Button
+                  size="md"
+                  onClick={handleCompleteCourse}
+                  disabled={!courseQuizPassed || completingCourse}
+                  loading={completingCourse}
+                  className="flex items-center gap-2"
+                >
+                  Complete course <Trophy size={16} />
+                </Button>
+              )}
             </div>
           </>
         ) : (
@@ -338,6 +354,11 @@ export default function CoursePage() {
                     <Button size="md" onClick={() => setCurrentIndex(quizStepIndex)} className="flex items-center gap-2">
                       Final quiz <ArrowRight size={16} />
                     </Button>
+                  ) : isCoursePassed ? (
+                    // No quiz, already passed → go to certificate
+                    <Button size="md" asChild className="flex items-center gap-2 bg-green-600 hover:bg-green-700 border-0">
+                      <Link href={certHref} target="_blank" rel="noopener noreferrer">Go to Certificate <Award size={16} /></Link>
+                    </Button>
                   ) : (
                     // Last module done, no quiz → complete course
                     <Button
@@ -351,14 +372,15 @@ export default function CoursePage() {
                     </Button>
                   )
                 ) : (
+                  // Last module not yet done — complete module (+ course if no quiz)
                   <Button
                     size="md"
                     onClick={handleNext}
-                    disabled={!canComplete || completing}
-                    loading={completing}
+                    disabled={!canComplete || completing || completingCourse}
+                    loading={completing || completingCourse}
                     className="flex items-center gap-2"
                   >
-                    Complete module <ArrowRight size={16} />
+                    {course!.quiz ? 'Complete module' : 'Complete course'} <Trophy size={16} />
                   </Button>
                 )
               ) : (
