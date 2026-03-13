@@ -16,7 +16,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: user = null, isLoading } = useProfile();
   const loginMutation = useLogin();
-  const logoutMutation = useLogout();
+  const logout = useLogout();
 
   const login = async (email: string, password: string): Promise<{ error?: string }> => {
     try {
@@ -26,8 +26,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: err instanceof Error ? err.message : 'Login failed' };
     }
   };
-
-  const logout = () => logoutMutation.mutate();
 
   return (
     <AuthContext.Provider value={{ user, isLoading, login, logout }}>
