@@ -25,12 +25,6 @@ export const signupSchema = z.object({
   password: signupPasswordField,
 });
 
-export const registerUserSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  email: trustedEmailField,
-});
-
 export const requestPasswordResetSchema = z.object({
   email: emailField,
 });

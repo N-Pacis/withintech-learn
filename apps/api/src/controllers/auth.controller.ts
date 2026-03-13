@@ -13,11 +13,6 @@ export const postRefreshToken = asyncHandler(async (req: Request, res: Response)
   sendSuccess(res, result, 'Token refreshed');
 });
 
-export const postLogout = asyncHandler(async (req: Request, res: Response) => {
-  await authService.logout({ userId: req.user!.userId });
-  sendSuccess(res, undefined, 'Logged out');
-});
-
 export const postSignUp = asyncHandler(async (req: Request, res: Response) => {
   const result = await authService.signUp(req.body);
   sendSuccess(res, result, 'Account created successfully', 201);

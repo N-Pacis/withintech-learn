@@ -10,10 +10,6 @@ export interface ListUsersParams {
   sortOrder?: 'asc' | 'desc';
 }
 
-// Build Prisma OR conditions for a search string.
-// Single word  → match firstName, lastName, or email.
-// Multiple words → also try "first word = firstName AND rest = lastName"
-//                  and the reverse, so "Jane Doe" and "Doe Jane" both work.
 function buildSearchConditions(search: string) {
   const term = search.trim();
   const conditions: object[] = [
