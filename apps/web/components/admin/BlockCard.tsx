@@ -196,13 +196,15 @@ export function BlockCard({
     >
       {/* Drag handle + order */}
       <div className="flex flex-col items-center gap-1 shrink-0 pt-0.5">
-        <span className="text-[#D1D5DB] group-hover:text-[#9CA3AF] transition-colors cursor-grab active:cursor-grabbing">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="9" cy="5" r="1.5" /><circle cx="15" cy="5" r="1.5" />
-            <circle cx="9" cy="12" r="1.5" /><circle cx="15" cy="12" r="1.5" />
-            <circle cx="9" cy="19" r="1.5" /><circle cx="15" cy="19" r="1.5" />
-          </svg>
-        </span>
+        {isDraft && (
+          <span className="text-[#D1D5DB] group-hover:text-[#9CA3AF] transition-colors cursor-grab active:cursor-grabbing">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="9" cy="5" r="1.5" /><circle cx="15" cy="5" r="1.5" />
+              <circle cx="9" cy="12" r="1.5" /><circle cx="15" cy="12" r="1.5" />
+              <circle cx="9" cy="19" r="1.5" /><circle cx="15" cy="19" r="1.5" />
+            </svg>
+          </span>
+        )}
         <span className="font-heading font-bold text-xs text-[#9CA3AF]">{block.orderIndex}</span>
       </div>
 
