@@ -50,6 +50,7 @@ router.patch('/admin/users/:id/activate', asyncHandler(async (req, res) => {
 }));
 
 router.patch('/admin/users/:id/deactivate', asyncHandler(async (req, res) => {
+  if (req.params.id === req.user!.userId) throw badRequest('You cannot deactivate your own account');
   const user = await usersService.setUserActive({ userId: req.params.id, isActive: false });
   sendSuccess(res, user, 'Account deactivated');
 }));

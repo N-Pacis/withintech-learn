@@ -65,7 +65,7 @@ export default function AddAdminModal({ onClose }: AddAdminModalProps) {
             />
           </FormField>
           <p className="font-body text-xs text-[#9CA3AF]">
-            A temporary password will be auto-generated. Share the login credentials with the new admin directly.
+            A temporary password will be auto-generated. The invited user will receive an email with instructions to set their password and log in.
           </p>
           <div className="flex justify-end gap-3 pt-2">
             <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>

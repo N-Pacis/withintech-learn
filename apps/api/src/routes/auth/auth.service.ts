@@ -91,7 +91,7 @@ export const requestPasswordReset = async ({ email }: { email: string }) => {
 
   await sendEmail({
     to: user.email,
-    subject: 'Your password reset code',
+    subject: 'WithinTech Learn: Your password reset code',
     html: otpEmailTemplate({ firstName: user.firstName, otp, purposeLabel: 'Password Reset' }),
   });
 

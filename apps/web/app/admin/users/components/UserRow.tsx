@@ -6,11 +6,13 @@ import { AdminUser } from '@/hooks/queries/users';
 
 interface UserRowProps {
   user: AdminUser;
+  currentUserId?: string;
   onToggle: (userId: string, isActive: boolean) => Promise<void>;
 }
 
-export default function UserRow({ user, onToggle }: UserRowProps) {
+export default function UserRow({ user, currentUserId, onToggle }: UserRowProps) {
   const [loading, setLoading] = useState(false);
+  const isSelf = user.id === currentUserId;
 
   async function handleToggle() {
     setLoading(true);
@@ -62,6 +64,8 @@ export default function UserRow({ user, onToggle }: UserRowProps) {
           loading={loading}
           onClick={handleToggle}
           className="text-xs py-1.5 px-3"
+          disabled={isSelf && user.isActive}
+          title={isSelf && user.isActive ? 'You cannot deactivate your own account' : undefined}
         >
           {user.isActive ? 'Deactivate' : 'Activate'}
         </Button>

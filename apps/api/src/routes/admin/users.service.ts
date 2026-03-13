@@ -2,6 +2,8 @@ import crypto from 'crypto';
 import { prisma } from '../../db/prisma';
 import { hashPassword } from '../../utils/password';
 import { notFound, conflict } from '../../utils/errors';
+import { sendEmail } from '../../services/email.service';
+import { adminInviteEmailTemplate } from '../../templates/admin-invite-email';
 
 export interface ListUsersParams {
   search?: string;
@@ -93,6 +95,8 @@ export const createAdmin = async ({
   const password = crypto.randomBytes(12).toString('base64').slice(0, 16);
   const passwordHash = await hashPassword(password);
 
+  const inviter = await prisma.user.findUniqueOrThrow({ where: { id: createdById } });
+
   const user = await prisma.user.create({
     data: {
       firstName,
@@ -104,6 +108,15 @@ export const createAdmin = async ({
       createdById,
     },
     include: { role: true },
+  });
+
+  await sendEmail({
+    to: email,
+    subject: `WithinTech Learn: You've been invited as an admin`,
+    html: adminInviteEmailTemplate({
+      firstName,
+      invitedByFullName: `${inviter.firstName} ${inviter.lastName}`,
+    }),
   });
 
   return formatUser(user);

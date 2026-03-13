@@ -6,6 +6,7 @@ import { useUsers, useSetUserActive, UsersParams } from '@/hooks/queries/users';
 import UserRow from './components/UserRow';
 import UsersToolbar from './components/UsersToolbar';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -31,6 +32,7 @@ export default function UsersPage() {
     sortOrder,
   };
 
+  const { user: currentUser } = useAuth();
   const { data: users, isLoading, error } = useUsers(params);
   const { mutateAsync: setActive } = useSetUserActive();
 
@@ -112,7 +114,7 @@ export default function UsersPage() {
             </thead>
             <tbody>
               {users.map((user) => (
-                <UserRow key={user.id} user={user} onToggle={handleToggle} />
+                <UserRow key={user.id} user={user} currentUserId={currentUser?.id} onToggle={handleToggle} />
               ))}
             </tbody>
           </table>
