@@ -23,11 +23,6 @@ export const postSignUp = asyncHandler(async (req: Request, res: Response) => {
   sendSuccess(res, result, 'Account created successfully', 201);
 });
 
-export const postRegisterUser = asyncHandler(async (req: Request, res: Response) => {
-  const result = await authService.registerUser(req.body);
-  sendSuccess(res, result, 'User registered', 201);
-});
-
 export const postRequestPasswordReset = asyncHandler(async (req: Request, res: Response) => {
   await authService.requestPasswordReset(req.body);
   sendSuccess(res, undefined, 'If that email exists, a reset code has been sent');

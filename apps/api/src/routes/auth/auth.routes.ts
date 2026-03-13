@@ -16,7 +16,6 @@ import {
   postSignUp,
   postRefreshToken,
   postLogout,
-  postRegisterUser,
   postRequestPasswordReset,
   postVerifyResetOtp,
   postResetPassword,
@@ -30,7 +29,6 @@ router.post('/auth/login', validate(loginSchema), postLogin);
 router.post('/auth/signup', validate(signupSchema), postSignUp);
 router.post('/auth/refresh', postRefreshToken);
 router.post('/auth/logout', authenticate, postLogout);
-router.post('/auth/register', authenticate, isAdmin, validate(registerUserSchema), postRegisterUser);
 router.post('/auth/password-reset/request', validate(requestPasswordResetSchema), postRequestPasswordReset);
 router.post('/auth/password-reset/verify', validate(verifyResetOtpSchema), postVerifyResetOtp);
 router.post('/auth/password-reset/confirm', validate(resetPasswordSchema), postResetPassword);

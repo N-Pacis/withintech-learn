@@ -418,7 +418,7 @@
         "tags": [
           "Auth"
         ],
-        "summary": "Sign up (student self-registration)",
+        "summary": "Student Sign up",
         "requestBody": {
           "required": true,
           "content": {
@@ -578,99 +578,6 @@
         }
       }
     },
-    "/auth/register": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Register a new student (admin only)",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "firstName",
-                  "lastName",
-                  "email"
-                ],
-                "properties": {
-                  "firstName": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "lastName": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User registered. Account is inactive until the user resets their password.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SuccessResponse"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "id": {
-                              "type": "string",
-                              "format": "uuid"
-                            },
-                            "email": {
-                              "type": "string",
-                              "format": "email"
-                            },
-                            "firstName": {
-                              "type": "string"
-                            },
-                            "lastName": {
-                              "type": "string"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "409": {
-            "$ref": "#/components/responses/Conflict"
-          }
-        }
-      }
-    },
     "/auth/password-reset/request": {
       "post": {
         "tags": [
@@ -717,7 +624,7 @@
     "/auth/password-reset/verify": {
       "post": {
         "tags": ["Auth"],
-        "summary": "Verify OTP and receive a short-lived reset token",
+        "summary": "Verify OTP",
         "requestBody": {
           "required": true,
           "content": {
@@ -742,7 +649,7 @@
     "/auth/password-reset/confirm": {
       "post": {
         "tags": ["Auth"],
-        "summary": "Set new password using the reset token (returns full session)",
+        "summary": "Set new password",
         "requestBody": {
           "required": true,
           "content": {
@@ -3030,7 +2937,7 @@
     "/admin/admins": {
       "post": {
         "tags": ["Admin / Users"],
-        "summary": "Create a new admin account (auto-generated password)",
+        "summary": "Create a new admin account",
         "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
