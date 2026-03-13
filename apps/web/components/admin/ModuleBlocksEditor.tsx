@@ -9,9 +9,10 @@ import { AddTextBlockForm, AddImageBlockForm, AddCodeBlockForm } from './AddBloc
 
 interface ModuleBlocksEditorProps {
   moduleId: string;
+  isDraft?: boolean;
 }
 
-export function ModuleBlocksEditor({ moduleId }: ModuleBlocksEditorProps) {
+export function ModuleBlocksEditor({ moduleId, isDraft = true }: ModuleBlocksEditorProps) {
   const { data: module, isLoading, error: loadError } = useModule(moduleId);
   const { mutate: deleteBlock } = useDeleteBlock(moduleId);
   const { mutate: reorderBlocks } = useReorderBlocks(moduleId);
@@ -45,14 +46,16 @@ export function ModuleBlocksEditor({ moduleId }: ModuleBlocksEditorProps) {
       {/* Blocks list */}
       {sortedBlocks.length > 0 && (
         <>
-          <p className="font-body text-xs text-[#9CA3AF] -mt-2 flex items-center gap-1.5">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="9" cy="5" r="1.5" /><circle cx="15" cy="5" r="1.5" />
-              <circle cx="9" cy="12" r="1.5" /><circle cx="15" cy="12" r="1.5" />
-              <circle cx="9" cy="19" r="1.5" /><circle cx="15" cy="19" r="1.5" />
-            </svg>
-            Drag to reorder
-          </p>
+          {isDraft && (
+            <p className="font-body text-xs text-[#9CA3AF] -mt-2 flex items-center gap-1.5">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="9" cy="5" r="1.5" /><circle cx="15" cy="5" r="1.5" />
+                <circle cx="9" cy="12" r="1.5" /><circle cx="15" cy="12" r="1.5" />
+                <circle cx="9" cy="19" r="1.5" /><circle cx="15" cy="19" r="1.5" />
+              </svg>
+              Drag to reorder
+            </p>
+          )}
           <Card>
             <ReorderableList
               items={sortedBlocks}
@@ -61,6 +64,7 @@ export function ModuleBlocksEditor({ moduleId }: ModuleBlocksEditorProps) {
                 <BlockCard
                   block={block}
                   moduleId={moduleId}
+                  isDraft={isDraft}
                   isEditing={editingBlockId === block.id}
                   isDeleting={deletingBlockId === block.id}
                   isDragging={isDragging}
