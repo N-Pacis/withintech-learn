@@ -12,7 +12,7 @@ const IMAGE_ACCEPT = ['image/jpeg', 'image/png', 'image/webp'];
 
 function TextBlockView({ block }: { block: Block }) {
   return (
-    <p className="font-body text-sm text-[#374151] leading-relaxed whitespace-pre-wrap line-clamp-4">
+    <p className="font-body text-sm text-[#374151] leading-relaxed whitespace-pre-wrap">
       {block.content}
     </p>
   );
@@ -169,6 +169,7 @@ function EditCodeBlock({ block, moduleId, onDone }: { block: Block; moduleId: st
 export interface BlockCardProps {
   block: Block;
   moduleId: string;
+  isDraft?: boolean;
   isEditing: boolean;
   isDeleting: boolean;
   isDragging: boolean;
@@ -181,7 +182,7 @@ export interface BlockCardProps {
 }
 
 export function BlockCard({
-  block, moduleId, isEditing, isDeleting, isDragging, isDragOver,
+  block, moduleId, isDraft = true, isEditing, isDeleting, isDragging, isDragOver,
   onEdit, onCancelEdit, onDelete, onConfirmDelete, onCancelDelete,
 }: BlockCardProps) {
   return (
