@@ -95,18 +95,18 @@ export function ModuleBlocksEditor({ moduleId, isDraft = true }: ModuleBlocksEdi
       )}
 
       {/* Add block forms */}
-      {addingType === 'text' && (
+      {isDraft && addingType === 'text' && (
         <AddTextBlockForm moduleId={moduleId} nextOrder={nextOrder} onDone={() => setAddingType(null)} />
       )}
-      {addingType === 'image' && (
+      {isDraft && addingType === 'image' && (
         <AddImageBlockForm moduleId={moduleId} nextOrder={nextOrder} onDone={() => setAddingType(null)} />
       )}
-      {addingType === 'code' && (
+      {isDraft && addingType === 'code' && (
         <AddCodeBlockForm moduleId={moduleId} nextOrder={nextOrder} onDone={() => setAddingType(null)} />
       )}
 
       {/* Add buttons */}
-      {!addingType && (
+      {isDraft && !addingType && (
         <div className={cn('flex items-center gap-3 flex-wrap', sortedBlocks.length === 0 && 'justify-center')}>
           <Button
             variant="secondary"
