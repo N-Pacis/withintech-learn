@@ -57,7 +57,7 @@ function ModuleRow({
       </Link>
 
       {/* Actions */}
-      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+      <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
         {confirming ? (
           <>
             <Button variant="danger" size="sm" onClick={() => { onDelete(mod.id); setConfirming(false); }}>Confirm</Button>
@@ -83,10 +83,10 @@ export default function ModulesListPage() {
   const isLoading = courseLoading || modulesLoading;
   const sortedModules = [...modules].sort((a, b) => a.orderIndex - b.orderIndex);
 
-  if (isLoading) return <PageLoader type="list" className="p-8 lg:p-12" />;
+  if (isLoading) return <PageLoader type="list" className="p-4 sm:p-8 lg:p-12" />;
 
   return (
-    <div className="p-8 lg:p-12 max-w-3xl">
+    <div className="p-4 sm:p-8 lg:p-12 max-w-3xl">
 
       {/* Back */}
       <Link href="/admin/courses" className="inline-flex items-center gap-2 font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors mb-8">
@@ -97,7 +97,7 @@ export default function ModulesListPage() {
       </Link>
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
         <div className="min-w-0">
           <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-wide mb-1">Course</p>
           <h1 className="font-heading font-black text-3xl text-[#0F0F0F] leading-tight truncate">

@@ -17,7 +17,8 @@ interface TableProps<T> {
 export function Table<T>({ columns, rows, rowKey, className }: TableProps<T>) {
   return (
     <div className={cn('bg-white rounded-xl ring-1 ring-[#E5E7EB] overflow-hidden shadow-sm', className)}>
-      <table className="w-full">
+      <div className="overflow-x-auto">
+      <table className="w-full min-w-[600px]">
         <thead>
           <tr className="border-b border-[#E5E7EB] bg-[#F9FAFB]">
             {columns.map((col) => (
@@ -45,6 +46,7 @@ export function Table<T>({ columns, rows, rowKey, className }: TableProps<T>) {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

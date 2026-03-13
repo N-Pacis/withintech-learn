@@ -212,7 +212,7 @@ export function BlockCard({
             {block.type === 'text' ? 'Text' : block.type === 'image' ? 'Image' : 'Code'}
           </Badge>
           {!isEditing && !isDeleting && (
-            <div className="ml-auto flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="ml-auto flex items-center gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
               <Button variant="ghost" size="sm" onClick={onEdit}>Edit</Button>
               <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={onDelete}>
                 Delete

@@ -93,7 +93,7 @@ export function ModuleCards({ courseId, isDraft }: { courseId: string; isDraft: 
                 ) : (
                   <>
                     <button
-                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg text-[#9CA3AF] hover:text-red-500 hover:bg-red-50"
+                      className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-1.5 rounded-lg text-[#9CA3AF] hover:text-red-500 hover:bg-red-50"
                       onClick={(e) => { e.stopPropagation(); setConfirmingId(mod.id); }}
                       title="Delete module"
                     >
