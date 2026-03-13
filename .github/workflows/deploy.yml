@@ -127,6 +127,8 @@ jobs:
           script: |
             cd $HOME/withintech-learn
             docker compose run --rm --no-deps api \
+              npx prisma migrate deploy
+            docker compose run --rm --no-deps api \
               node --max-old-space-size=512 dist/scripts/seed.js
 
       # ── 6. Zero-downtime cutover via docker-rollout ──────────────────────────
