@@ -77,7 +77,15 @@ export default function SignInPage() {
               />
             </FormField>
 
-            <FormField label="Password" htmlFor="password" required>
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="password" className="font-body text-sm font-medium text-[#374151]">
+                  Password <span className="text-red-500">*</span>
+                </label>
+                <Link href="/forgot-password" className="font-body text-xs text-[#3D006B] hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
               <PasswordInput
                 id="password"
                 placeholder="••••••••"
@@ -85,7 +93,7 @@ export default function SignInPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-            </FormField>
+            </div>
 
             {error && (
               <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-2.5 rounded-lg">

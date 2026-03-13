@@ -81,6 +81,7 @@ export default function UsersPage() {
                 <th className="px-6 py-3 text-left font-body text-xs font-semibold text-[#6B7280] uppercase tracking-wider">User</th>
                 <th className="px-6 py-3 text-left font-body text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Role</th>
                 <th className="px-6 py-3 text-left font-body text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left font-body text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Last Login</th>
                 <th className="px-6 py-3 text-left">
                   <button
                     onClick={() => setSortOrder((s) => (s === 'desc' ? 'asc' : 'desc'))}

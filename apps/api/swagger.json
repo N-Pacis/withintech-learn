@@ -714,57 +714,54 @@
         }
       }
     },
-    "/auth/password-reset/confirm": {
+    "/auth/password-reset/verify": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Confirm OTP and set new password",
-        "description": "Verifies the OTP (valid for 10 minutes) and updates the password. Also activates the account if it was inactive.",
+        "tags": ["Auth"],
+        "summary": "Verify OTP and receive a short-lived reset token",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "email",
-                  "otp",
-                  "newPassword"
-                ],
+                "required": ["email", "otp"],
                 "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email"
-                  },
-                  "otp": {
-                    "type": "string",
-                    "minLength": 6,
-                    "maxLength": 6
-                  },
-                  "newPassword": {
-                    "type": "string",
-                    "minLength": 8
-                  }
+                  "email": { "type": "string", "format": "email" },
+                  "otp": { "type": "string", "minLength": 6, "maxLength": 6 }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Password reset successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
+          "200": { "description": "OTP verified, resetToken returned (valid 10 min)" },
+          "400": { "$ref": "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/auth/password-reset/confirm": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Set new password using the reset token (returns full session)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["resetToken", "newPassword"],
+                "properties": {
+                  "resetToken": { "type": "string" },
+                  "newPassword": { "type": "string", "minLength": 8 }
                 }
               }
             }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
           }
+        },
+        "responses": {
+          "200": { "description": "Password reset, accessToken + refreshToken + user returned" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
     },
@@ -3030,6 +3027,33 @@
         }
       }
     },
+    "/admin/admins": {
+      "post": {
+        "tags": ["Admin / Users"],
+        "summary": "Create a new admin account (auto-generated password)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["firstName", "lastName", "email"],
+                "properties": {
+                  "firstName": { "type": "string" },
+                  "lastName":  { "type": "string" },
+                  "email":     { "type": "string", "format": "email" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Admin created" },
+          "400": { "description": "Validation error or email already in use" }
+        }
+      }
+    },
     "/admin/users": {
       "get": {
         "tags": [
@@ -3651,6 +3675,26 @@
           "404": {
             "$ref": "#/components/responses/NotFound"
           }
+        }
+      }
+    },
+    "/admin/stats": {
+      "get": {
+        "tags": ["Admin / Dashboard"],
+        "summary": "Get basic platform statistics",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "{ totalStudents, activeCourses, certificatesIssued }" }
+        }
+      }
+    },
+    "/student/certificates": {
+      "get": {
+        "tags": ["Student"],
+        "summary": "List all certificates earned by the authenticated student",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Array of certificate summaries" }
         }
       }
     },

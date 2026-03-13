@@ -1,5 +1,7 @@
+import crypto from 'crypto';
 import { prisma } from '../../db/prisma';
-import { notFound } from '../../utils/errors';
+import { hashPassword } from '../../utils/password';
+import { notFound, conflict } from '../../utils/errors';
 
 export interface ListUsersParams {
   search?: string;
@@ -24,12 +26,10 @@ function buildSearchConditions(search: string) {
   if (parts.length >= 2) {
     const first = parts[0];
     const rest  = parts.slice(1).join(' ');
-    // "Jane Doe"
     conditions.push({ AND: [
       { firstName: { contains: first, mode: 'insensitive' } },
       { lastName:  { contains: rest,  mode: 'insensitive' } },
     ]});
-    // "Doe Jane"
     conditions.push({ AND: [
       { lastName:  { contains: first, mode: 'insensitive' } },
       { firstName: { contains: rest,  mode: 'insensitive' } },
@@ -39,23 +39,8 @@ function buildSearchConditions(search: string) {
   return conditions;
 }
 
-export const listUsers = async ({ search, role, status, sortOrder = 'desc' }: ListUsersParams = {}) => {
-  const users = await prisma.user.findMany({
-    where: {
-      AND: [
-        search
-          ? {
-              OR: buildSearchConditions(search),
-            }
-          : {},
-        role ? { role: { name: role } } : {},
-        status !== undefined ? { isActive: status === 'active' } : {},
-      ],
-    },
-    include: { role: true },
-    orderBy: { createdAt: sortOrder },
-  });
-  return users.map((u) => ({
+function formatUser(u: { id: string; firstName: string; lastName: string; email: string; role: { name: string }; isActive: boolean; createdAt: Date; lastLoggedIn: Date | null; createdById: string | null }) {
+  return {
     id: u.id,
     firstName: u.firstName,
     lastName: u.lastName,
@@ -63,7 +48,24 @@ export const listUsers = async ({ search, role, status, sortOrder = 'desc' }: Li
     role: u.role.name,
     isActive: u.isActive,
     createdAt: u.createdAt,
-  }));
+    lastLoggedIn: u.lastLoggedIn,
+    createdById: u.createdById,
+  };
+}
+
+export const listUsers = async ({ search, role, status, sortOrder = 'desc' }: ListUsersParams = {}) => {
+  const users = await prisma.user.findMany({
+    where: {
+      AND: [
+        search ? { OR: buildSearchConditions(search) } : {},
+        role ? { role: { name: role } } : {},
+        status !== undefined ? { isActive: status === 'active' } : {},
+      ],
+    },
+    include: { role: true },
+    orderBy: { createdAt: sortOrder },
+  });
+  return users.map(formatUser);
 };
 
 export const setUserActive = async ({ userId, isActive }: { userId: string; isActive: boolean }) => {
@@ -74,13 +76,39 @@ export const setUserActive = async ({ userId, isActive }: { userId: string; isAc
     data: { isActive },
     include: { role: true },
   });
-  return {
-    id: updated.id,
-    firstName: updated.firstName,
-    lastName: updated.lastName,
-    email: updated.email,
-    role: updated.role.name,
-    isActive: updated.isActive,
-    createdAt: updated.createdAt,
-  };
+  return formatUser(updated);
+};
+
+export const createAdmin = async ({
+  firstName,
+  lastName,
+  email,
+  createdById,
+}: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  createdById: string;
+}) => {
+  const taken = await prisma.user.findUnique({ where: { email } });
+  if (taken) throw conflict('Email already in use');
+
+  const adminRole = await prisma.role.findUniqueOrThrow({ where: { name: 'admin' } });
+  const password = crypto.randomBytes(12).toString('base64').slice(0, 16);
+  const passwordHash = await hashPassword(password);
+
+  const user = await prisma.user.create({
+    data: {
+      firstName,
+      lastName,
+      email,
+      passwordHash,
+      roleId: adminRole.id,
+      isActive: true,
+      createdById,
+    },
+    include: { role: true },
+  });
+
+  return formatUser(user);
 };

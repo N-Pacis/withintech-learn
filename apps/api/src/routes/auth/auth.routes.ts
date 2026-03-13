@@ -7,6 +7,7 @@ import {
   signupSchema,
   registerUserSchema,
   requestPasswordResetSchema,
+  verifyResetOtpSchema,
   resetPasswordSchema,
   changePasswordSchema,
 } from './auth.schemas';
@@ -17,6 +18,7 @@ import {
   postLogout,
   postRegisterUser,
   postRequestPasswordReset,
+  postVerifyResetOtp,
   postResetPassword,
   postChangePassword,
   getProfile,
@@ -30,6 +32,7 @@ router.post('/auth/refresh', postRefreshToken);
 router.post('/auth/logout', authenticate, postLogout);
 router.post('/auth/register', authenticate, isAdmin, validate(registerUserSchema), postRegisterUser);
 router.post('/auth/password-reset/request', validate(requestPasswordResetSchema), postRequestPasswordReset);
+router.post('/auth/password-reset/verify', validate(verifyResetOtpSchema), postVerifyResetOtp);
 router.post('/auth/password-reset/confirm', validate(resetPasswordSchema), postResetPassword);
 router.post('/auth/password/change', authenticate, validate(changePasswordSchema), postChangePassword);
 router.get('/auth/profile', authenticate, getProfile);

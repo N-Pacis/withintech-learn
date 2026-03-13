@@ -33,9 +33,14 @@ export const postRequestPasswordReset = asyncHandler(async (req: Request, res: R
   sendSuccess(res, undefined, 'If that email exists, a reset code has been sent');
 });
 
+export const postVerifyResetOtp = asyncHandler(async (req: Request, res: Response) => {
+  const result = await authService.verifyResetOtp(req.body);
+  sendSuccess(res, result, 'OTP verified');
+});
+
 export const postResetPassword = asyncHandler(async (req: Request, res: Response) => {
-  await authService.resetPassword(req.body);
-  sendSuccess(res, undefined, 'Password reset successfully');
+  const result = await authService.resetPassword(req.body);
+  sendSuccess(res, result, 'Password reset successfully');
 });
 
 export const getProfile = asyncHandler(async (req: Request, res: Response) => {

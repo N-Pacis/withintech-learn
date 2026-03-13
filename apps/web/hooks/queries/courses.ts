@@ -313,11 +313,30 @@ export interface StudentStats {
   total: number;
 }
 
+export interface StudentCertificateSummary {
+  id: string;
+  completedAt: string;
+  recipientName: string;
+  courseTitle: string;
+  courseSlug: string;
+}
+
 export function useStudentStats() {
   return useQuery({
     queryKey: ['student', 'stats'] as const,
     queryFn: async (): Promise<StudentStats> => {
       const res = await apiFetch<StudentStats>('/student/stats');
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+  });
+}
+
+export function useStudentCertificates() {
+  return useQuery({
+    queryKey: ['student', 'certificates'] as const,
+    queryFn: async (): Promise<StudentCertificateSummary[]> => {
+      const res = await apiFetch<StudentCertificateSummary[]>('/student/certificates');
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
