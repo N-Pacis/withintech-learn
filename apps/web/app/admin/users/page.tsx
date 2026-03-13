@@ -49,7 +49,7 @@ export default function UsersPage() {
   const toolbarParams: UsersParams = { search: rawSearch, role, status, sortOrder };
 
   return (
-    <div className="p-6 lg:p-8 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
         <h1 className="font-heading font-black text-2xl text-[#0F0F0F]">Users</h1>
@@ -77,7 +77,8 @@ export default function UsersPage() {
 
       {users && users.length > 0 && (
         <div className="bg-white rounded-xl ring-1 ring-[#E5E7EB] overflow-hidden shadow-sm">
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px]">
             <thead>
               <tr className="border-b border-[#E5E7EB] bg-[#F9FAFB]">
                 <th className="px-6 py-3 text-left font-body text-xs font-semibold text-[#6B7280] uppercase tracking-wider">User</th>
@@ -118,6 +119,7 @@ export default function UsersPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

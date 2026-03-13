@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="p-8 lg:p-12">
+    <div className="p-4 sm:p-8 lg:p-12">
 
       <div className="mb-10">
         <p className="font-body text-sm text-[#6B7280] mb-1">Admin Dashboard</p>

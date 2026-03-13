@@ -82,7 +82,7 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
     <div className="mt-12 pt-10 border-t-2 border-[#E5E7EB]">
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 mb-6">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
           <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-1">Module Quiz</p>
           <h3 className="font-heading font-bold text-xl text-[#0F0F0F]">{quiz.title}</h3>

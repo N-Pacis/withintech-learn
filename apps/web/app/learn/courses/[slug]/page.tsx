@@ -265,15 +265,15 @@ export default function CoursePage() {
     <div className="min-h-screen bg-[#FAFAFA]">
 
       {/* Top bar */}
-      <div className="bg-white border-b border-[#E5E7EB] px-6 py-4 flex items-center gap-4">
+      <div className="bg-white border-b border-[#E5E7EB] px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">
         <Link
           href="/learn"
           className="inline-flex items-center gap-1.5 font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors shrink-0"
         >
           <ArrowLeft size={15} />
-          All courses
+          <span className="hidden sm:inline">All courses</span>
         </Link>
-        <h1 className="font-heading font-bold text-base text-[#0F0F0F] truncate">{course.title}</h1>
+        <h1 className="font-heading font-bold text-sm sm:text-base text-[#0F0F0F] truncate">{course.title}</h1>
       </div>
 
       {/* Module roadmap */}
@@ -286,12 +286,12 @@ export default function CoursePage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-3xl mx-auto px-6 py-10">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
         {isOnQuizStep ? (
           // ── Course quiz step ──
           <>
-            <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-6">
+            <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-4 sm:mb-6">
               Final Quiz
             </p>
             <CourseQuizStep
@@ -300,8 +300,8 @@ export default function CoursePage() {
               lastAttempt={course.lastCourseQuizAttempt}
               onPass={() => setCourseQuizPassed(true)}
             />
-            <div className="flex items-center justify-between mt-12 pt-8 border-t border-[#E5E7EB]">
-              <Button variant="secondary" size="md" onClick={handlePrev} className="flex items-center gap-2">
+            <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-[#E5E7EB]">
+              <Button variant="secondary" size="md" onClick={handlePrev} className="flex items-center justify-center gap-2">
                 <ChevronLeft size={16} /> Previous
               </Button>
               {!isCoursePassed ? (
@@ -335,13 +335,13 @@ export default function CoursePage() {
               onCanCompleteChange={handleCanCompleteChange}
             />
 
-            <div className="flex items-center justify-between mt-12 pt-8 border-t border-[#E5E7EB]">
+            <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-[#E5E7EB]">
               <Button
                 variant="secondary"
                 size="md"
                 onClick={handlePrev}
                 disabled={isFirst}
-                className="flex items-center gap-2"
+                className="flex items-center justify-center gap-2"
               >
                 <ChevronLeft size={16} /> Previous
               </Button>

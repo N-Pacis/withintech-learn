@@ -112,7 +112,7 @@ export default function StudentsPage() {
   ];
 
   return (
-    <div className="p-6 lg:p-8 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
       <div className="mb-8">
         <h1 className="font-heading font-black text-2xl text-[#0F0F0F]">Students</h1>
         <p className="font-body text-sm text-[#6B7280] mt-1">Manage student accounts.</p>

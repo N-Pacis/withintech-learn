@@ -143,9 +143,6 @@ jobs:
           script: |
             cd $HOME/withintech-learn
 
-            # Free ports 80/443 if anything outside Docker is holding them
-            sudo fuser -k 80/tcp 443/tcp 2>/dev/null || true
-
             # Ensure all other services (postgres, redis, nginx, web) are up
             docker compose up -d --no-build postgres redis nginx web
 

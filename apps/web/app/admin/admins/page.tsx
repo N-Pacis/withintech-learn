@@ -100,7 +100,7 @@ export default function AdminsPage() {
   ];
 
   return (
-    <div className="p-6 lg:p-8 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
       <div className="flex items-start justify-between mb-8">
         <div>
           <h1 className="font-heading font-black text-2xl text-[#0F0F0F]">Admins</h1>

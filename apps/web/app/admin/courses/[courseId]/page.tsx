@@ -19,7 +19,7 @@ export default function CourseOverviewPage() {
   }
 
   return (
-    <div className="p-8 lg:p-12 max-w-3xl">
+    <div className="p-4 sm:p-8 lg:p-12 max-w-3xl">
 
       <Link
         href="/admin/courses"
@@ -41,7 +41,7 @@ export default function CourseOverviewPage() {
 
       <ModuleCards courseId={courseId} isDraft={course.status === 'draft'} />
 
-      <CourseQuizSection courseId={courseId} />
+      <CourseQuizSection courseId={courseId} isDraft={course.status === 'draft'} />
 
     </div>
   );

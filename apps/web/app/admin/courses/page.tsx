@@ -13,6 +13,35 @@ import {
 import { Button, Badge, Tabs, PageLoader, Pagination, type Tab } from '@/components/ui';
 import { CourseCard } from '@/components/CourseCard';
 
+function PublishConfirmModal({ onConfirm, onCancel, loading }: { onConfirm: () => void; onCancel: () => void; loading: boolean }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onCancel} />
+      <div className="relative bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+        <div className="flex items-start gap-4 mb-5">
+          <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="font-heading font-bold text-lg text-[#0F0F0F] mb-1">Publish this course?</h2>
+            <p className="font-body text-sm text-[#6B7280] leading-relaxed">
+              Once published, this course will be visible to students and <span className="font-semibold text-[#0F0F0F]">cannot be edited</span>. Quizzes, modules, and content will be locked. You can archive it later, but not unpublish.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center justify-end gap-3">
+          <Button variant="secondary" size="md" onClick={onCancel} disabled={loading}>Cancel</Button>
+          <Button variant="primary" size="md" loading={loading} onClick={onConfirm}>Publish</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const LIMIT = 20;
 
 type TabValue = 'draft' | 'published' | 'archived';
@@ -58,15 +87,23 @@ function EmptyState({ tab }: { tab: TabValue }) {
 function CourseActions({ course, onDelete }: { course: Course; onDelete: (id: string) => void }) {
   const [confirming, setConfirming] = useState(false);
   const [confirmArchive, setConfirmArchive] = useState(false);
+  const [confirmPublish, setConfirmPublish] = useState(false);
   const { mutate: publish, isPending: publishing } = usePublishCourse();
   const { mutate: archive, isPending: archiving } = useArchiveCourse();
 
   if (course.status === 'draft') return (
     <>
+      {confirmPublish && (
+        <PublishConfirmModal
+          loading={publishing}
+          onConfirm={() => publish(course.id, { onSettled: () => setConfirmPublish(false) })}
+          onCancel={() => setConfirmPublish(false)}
+        />
+      )}
       <Button variant="secondary" size="sm" asChild>
         <Link href={`/admin/courses/${course.id}/edit`}>Edit</Link>
       </Button>
-      <Button variant="primary" size="sm" loading={publishing} onClick={() => publish(course.id)}>
+      <Button variant="primary" size="sm" onClick={() => setConfirmPublish(true)}>
         Publish
       </Button>
       <div className="ml-auto">
@@ -173,8 +210,8 @@ export default function CoursesPage() {
   ];
 
   return (
-    <div className="p-8 lg:p-12 max-w-6xl">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-8 lg:p-12 max-w-6xl">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
           <p className="font-body text-sm text-[#6B7280] mb-1">Admin</p>
           <h1 className="font-heading font-black text-3xl text-[#0F0F0F]">Courses</h1>
