@@ -12,9 +12,9 @@ import { AppError } from './utils/errors';
 const app = express();
 Sentry.setupExpressErrorHandler(app);
 const options = {
-  customPath: '/api/docs',
+  customPath: '/docs',
   swaggerOptions: {
-    url: '/api/docs-json',
+    url: '/docs-json',
   }
 }
 
@@ -31,7 +31,7 @@ app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 app.use(compression());
 
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 
 app.get('/docs-json', (_req, res) => res.json(swaggerDocument));
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
