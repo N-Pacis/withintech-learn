@@ -112,13 +112,7 @@ export function useResetPassword() {
 
 export function useLogout() {
   const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: () => apiFetch('/auth/logout', { method: 'POST' }),
-    onSettled: () => {
       clearTokens();
       queryClient.clear();
       window.location.href = '/sign-in';
-    },
-  });
 }

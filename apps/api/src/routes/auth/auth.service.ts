@@ -33,11 +33,6 @@ export const refreshToken = async ({ refreshToken: token }: { refreshToken: stri
   return { accessToken: signAccessToken({ userId: user.id, role: user.role.name }) };
 };
 
-export const logout = async ({ userId: _userId }: { userId: string }) => {
-  // TODO: invalidate refresh token in Redis
-  return true;
-};
-
 export const adminSeed = async () => {
   await prisma.role.upsert({ where: { name: 'admin' }, update: {}, create: { name: 'admin' } });
   await prisma.role.upsert({ where: { name: 'student' }, update: {}, create: { name: 'student' } });
