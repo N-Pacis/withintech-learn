@@ -6,6 +6,7 @@ import type { Column } from '@/components/ui';
 import { useAdmins, useSetUserActive, AdminUser, UsersParams } from '@/hooks/queries/users';
 import AddAdminModal from './components/AddAdminModal';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -32,6 +33,7 @@ export default function AdminsPage() {
     status: status || undefined,
   };
 
+  const { user: currentUser } = useAuth();
   const { data: admins, isLoading, error } = useAdmins(params);
   const { mutate: setActive } = useSetUserActive();
 
@@ -80,15 +82,20 @@ export default function AdminsPage() {
       key: 'actions',
       header: <span className="sr-only">Actions</span>,
       className: 'text-right',
-      cell: (u) => (
-        <Button
-          variant={u.isActive ? 'danger' : 'secondary'}
-          onClick={() => setActive({ userId: u.id, isActive: !u.isActive })}
-          className="text-xs py-1.5 px-3"
-        >
-          {u.isActive ? 'Deactivate' : 'Activate'}
-        </Button>
-      ),
+      cell: (u) => {
+        const isSelf = u.id === currentUser?.id;
+        return (
+          <Button
+            variant={u.isActive ? 'danger' : 'secondary'}
+            onClick={() => setActive({ userId: u.id, isActive: !u.isActive })}
+            className="text-xs py-1.5 px-3"
+            disabled={isSelf && u.isActive}
+            title={isSelf && u.isActive ? 'You cannot deactivate your own account' : undefined}
+          >
+            {u.isActive ? 'Deactivate' : 'Activate'}
+          </Button>
+        );
+      },
     },
   ];
 
