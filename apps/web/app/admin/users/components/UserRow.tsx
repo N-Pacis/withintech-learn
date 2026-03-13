@@ -49,6 +49,11 @@ export default function UserRow({ user, onToggle }: UserRowProps) {
         </Badge>
       </td>
       <td className="px-6 py-4 font-body text-sm text-[#6B7280]">
+        {user.lastLoggedIn
+          ? new Date(user.lastLoggedIn).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+          : <span className="text-[#D1D5DB]">—</span>}
+      </td>
+      <td className="px-6 py-4 font-body text-sm text-[#6B7280]">
         {new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
       </td>
       <td className="px-6 py-4 text-right">

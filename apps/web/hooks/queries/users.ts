@@ -9,6 +9,8 @@ export interface AdminUser {
   role: string;
   isActive: boolean;
   createdAt: string;
+  lastLoggedIn: string | null;
+  createdById: string | null;
 }
 
 export interface UsersParams {
@@ -40,6 +42,14 @@ export function useUsers(params: UsersParams = {}) {
   });
 }
 
+export function useAdmins(params: Omit<UsersParams, 'role'> = {}) {
+  return useUsers({ ...params, role: 'admin' });
+}
+
+export function useStudents(params: Omit<UsersParams, 'role'> = {}) {
+  return useUsers({ ...params, role: 'student' });
+}
+
 export function useSetUserActive() {
   const queryClient = useQueryClient();
 
@@ -51,7 +61,38 @@ export function useSetUserActive() {
       return res.data;
     },
     onSuccess: () => {
-      // Invalidate all user list variants
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    },
+  });
+}
+
+export interface AdminStats {
+  totalStudents: number;
+  activeCourses: number;
+  certificatesIssued: number;
+}
+
+export function useAdminStats() {
+  return useQuery({
+    queryKey: ['admin', 'stats'] as const,
+    queryFn: async (): Promise<AdminStats> => {
+      const res = await apiFetch<AdminStats>('/admin/stats');
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+  });
+}
+
+export function useCreateAdmin() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { firstName: string; lastName: string; email: string }): Promise<AdminUser> => {
+      const res = await apiFetch<AdminUser>('/admin/admins', { method: 'POST', body: JSON.stringify(data) });
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
     },
   });

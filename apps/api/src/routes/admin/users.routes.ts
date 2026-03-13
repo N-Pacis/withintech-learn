@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { sendSuccess } from '../../utils/response';
 import { badRequest } from '../../utils/errors';
+import { prisma } from '../../db/prisma';
 import * as usersService from './users.service';
 
 const listUsersQuerySchema = z.object({
@@ -12,13 +13,35 @@ const listUsersQuerySchema = z.object({
   sortOrder: z.enum(['asc', 'desc']).optional(),
 });
 
+const createAdminSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  email: z.string().email(),
+});
+
 const router = Router();
+
+router.get('/admin/stats', asyncHandler(async (_req, res) => {
+  const [totalStudents, activeCourses, certificatesIssued] = await Promise.all([
+    prisma.user.count({ where: { role: { name: 'student' } } }),
+    prisma.course.count({ where: { status: 'published' } }),
+    prisma.certificate.count(),
+  ]);
+  sendSuccess(res, { totalStudents, activeCourses, certificatesIssued });
+}));
 
 router.get('/admin/users', asyncHandler(async (req, res) => {
   const parsed = listUsersQuerySchema.safeParse(req.query);
   if (!parsed.success) throw badRequest('Invalid query parameters');
   const users = await usersService.listUsers(parsed.data);
   sendSuccess(res, users);
+}));
+
+router.post('/admin/admins', asyncHandler(async (req, res) => {
+  const parsed = createAdminSchema.safeParse(req.body);
+  if (!parsed.success) throw badRequest('firstName, lastName, and a valid email are required');
+  const admin = await usersService.createAdmin({ ...parsed.data, createdById: req.user!.userId });
+  sendSuccess(res, admin, 'Admin created and invitation sent', 201);
 }));
 
 router.patch('/admin/users/:id/activate', asyncHandler(async (req, res) => {

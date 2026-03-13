@@ -3,7 +3,7 @@ import { prisma } from '../../db/prisma';
 import { sendEmail } from '../../services/email.service';
 import { otpEmailTemplate } from '../../templates/otp-email';
 import { unauthorized, forbidden, conflict, badRequest } from '../../utils/errors';
-import { signAccessToken, signRefreshToken, verifyToken } from '../../utils/jwt';
+import { signAccessToken, signRefreshToken, signResetToken, verifyResetToken, verifyToken } from '../../utils/jwt';
 import { hashPassword, comparePassword } from '../../utils/password';
 import { generateOtp, hashOtp, verifyOtp, otpExpiresAt } from '../../utils/otp';
 
@@ -21,6 +21,7 @@ export const login = async ({ email, password }: { email: string; password: stri
     throw unauthorized('Invalid email or password');
   if (!user.isActive)
     throw forbidden('Your account has been deactivated. Please contact an administrator.');
+  await prisma.user.update({ where: { id: user.id }, data: { lastLoggedIn: new Date() } });
   const payload = { userId: user.id, role: user.role.name };
   return { accessToken: signAccessToken(payload), refreshToken: signRefreshToken(payload), user: safeUser(user) };
 };
@@ -118,7 +119,7 @@ export const requestPasswordReset = async ({ email }: { email: string }) => {
   return true;
 };
 
-export const resetPassword = async ({ email, otp, newPassword }: { email: string; otp: string; newPassword: string }) => {
+export const verifyResetOtp = async ({ email, otp }: { email: string; otp: string }) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) throw badRequest('Invalid or expired OTP');
 
@@ -129,13 +130,23 @@ export const resetPassword = async ({ email, otp, newPassword }: { email: string
   if (!record) throw badRequest('Invalid or expired OTP');
   if (!(await verifyOtp(otp, record.code))) throw badRequest('Invalid or expired OTP');
 
-  const passwordHash = await hashPassword(newPassword);
-  await prisma.$transaction([
-    prisma.user.update({ where: { id: user.id }, data: { passwordHash, isActive: true } }),
-    prisma.otpCode.update({ where: { id: record.id }, data: { usedAt: new Date() } }),
-  ]);
+  // Mark OTP as used
+  await prisma.otpCode.update({ where: { id: record.id }, data: { usedAt: new Date() } });
 
-  return true;
+  // Return a short-lived reset token (10 min) — no role, not a real session
+  return { resetToken: signResetToken(user.id) };
+};
+
+export const resetPassword = async ({ resetToken, newPassword }: { resetToken: string; newPassword: string }) => {
+  const { userId } = verifyResetToken(resetToken);
+  const user = await prisma.user.findUnique({ where: { id: userId }, include: { role: true } });
+  if (!user) throw unauthorized();
+
+  const passwordHash = await hashPassword(newPassword);
+  await prisma.user.update({ where: { id: userId }, data: { passwordHash, isActive: true, lastLoggedIn: new Date() } });
+
+  const payload = { userId: user.id, role: user.role.name };
+  return { accessToken: signAccessToken(payload), refreshToken: signRefreshToken(payload), user: safeUser(user) };
 };
 
 export const getProfile = async ({ userId }: { userId: string }) => {

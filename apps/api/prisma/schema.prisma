@@ -15,16 +15,20 @@ model Role {
 }
 
 model User {
-  id           String          @id @default(uuid())
-  roleId       Int
-  role         Role            @relation(fields: [roleId], references: [id])
-  firstName    String
-  lastName     String
-  email        String          @unique
-  passwordHash String
-  isActive     Boolean         @default(false)
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  id            String          @id @default(uuid())
+  roleId        Int
+  role          Role            @relation(fields: [roleId], references: [id])
+  firstName     String
+  lastName      String
+  email         String          @unique
+  passwordHash  String
+  isActive      Boolean         @default(false)
+  lastLoggedIn  DateTime?
+  createdById   String?
+  createdBy     User?           @relation("AdminCreatedBy", fields: [createdById], references: [id])
+  createdAdmins User[]          @relation("AdminCreatedBy")
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
   otpCodes        OtpCode[]
   courses         Course[]
   enrollments     StudentCourse[]

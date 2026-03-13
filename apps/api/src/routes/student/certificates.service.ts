@@ -1,5 +1,30 @@
 import { prisma } from '../../db/prisma';
+import { getSignedUrl } from '../../services/storage.service';
 import { notFound } from '../../utils/errors';
+
+export const listStudentCertificates = async (userId: string) => {
+  const [user, certs] = await Promise.all([
+    prisma.user.findUnique({ where: { id: userId }, select: { firstName: true, lastName: true } }),
+    prisma.certificate.findMany({
+      where: { userId },
+      orderBy: { completedAt: 'desc' },
+      select: {
+        id: true,
+        completedAt: true,
+        course: { select: { title: true, slug: true } },
+      },
+    }),
+  ]);
+
+  const recipientName = user ? `${user.firstName} ${user.lastName}` : '';
+  return certs.map((c) => ({
+    id: c.id,
+    completedAt: c.completedAt,
+    recipientName,
+    courseTitle: c.course.title,
+    courseSlug: c.course.slug,
+  }));
+};
 
 export const upsertCertificate = async (userId: string, courseId: string) => {
   return prisma.certificate.upsert({

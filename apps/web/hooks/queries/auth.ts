@@ -67,6 +67,49 @@ export function useSignUp() {
   });
 }
 
+export function useRequestPasswordReset() {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const res = await apiFetch('/auth/password-reset/request', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+      if (!res.success) throw new Error(res.message ?? 'Failed to send OTP');
+    },
+  });
+}
+
+export function useVerifyResetOtp() {
+  return useMutation({
+    mutationFn: async ({ email, otp }: { email: string; otp: string }): Promise<{ resetToken: string }> => {
+      const res = await apiFetch<{ resetToken: string }>('/auth/password-reset/verify', {
+        method: 'POST',
+        body: JSON.stringify({ email, otp }),
+      });
+      if (!res.success || !res.data) throw new Error(res.message ?? 'Invalid OTP');
+      return res.data;
+    },
+  });
+}
+
+export function useResetPassword() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ resetToken, newPassword }: { resetToken: string; newPassword: string }) => {
+      const res = await apiFetch<{ accessToken: string; refreshToken: string; user: User }>(
+        '/auth/password-reset/confirm',
+        { method: 'POST', body: JSON.stringify({ resetToken, newPassword }) },
+      );
+      if (!res.success || !res.data) throw new Error(res.message ?? 'Failed to reset password');
+      return res.data;
+    },
+    onSuccess: (data) => {
+      setTokens(data.accessToken, data.refreshToken);
+      queryClient.setQueryData(authKeys.profile, data.user);
+    },
+  });
+}
+
 export function useLogout() {
   const queryClient = useQueryClient();
 

@@ -35,9 +35,13 @@ export const requestPasswordResetSchema = z.object({
   email: emailField,
 });
 
-export const resetPasswordSchema = z.object({
+export const verifyResetOtpSchema = z.object({
   email: emailField,
   otp: z.string().length(6),
+});
+
+export const resetPasswordSchema = z.object({
+  resetToken: z.string().min(1),
   newPassword: passwordField(8),
 });
 
