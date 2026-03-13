@@ -79,22 +79,6 @@ export const signUp = async ({ firstName, lastName, email, password }: { firstNa
   return { accessToken: signAccessToken(payload), refreshToken: signRefreshToken(payload), user: safeUser(user) };
 };
 
-export const registerUser = async ({ firstName, lastName, email }: { firstName: string; lastName: string; email: string }) => {
-  const studentRole = await prisma.role.findUnique({ where: { name: 'student' } });
-  if (!studentRole) throw badRequest('Registration is currently unavailable. Please try again later.');
-  const taken = await prisma.user.findUnique({ where: { email } });
-  if (taken) throw conflict('Email already in use');
-
-  const password = crypto.randomBytes(12).toString('base64').slice(0, 16);
-  const passwordHash = await hashPassword(password);
-
-  const user = await prisma.user.create({
-    data: { firstName, lastName, email, passwordHash, roleId: studentRole.id, isActive: false },
-  });
-
-  return { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName };
-};
-
 export const requestPasswordReset = async ({ email }: { email: string }) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return true; // no enumeration
