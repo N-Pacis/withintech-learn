@@ -121,7 +121,7 @@ export default function ModuleDetailPage() {
       <Tabs tabs={TABS} value={activeTab} onChange={setActiveTab} className="mb-6" />
 
       {/* Tab content */}
-      {activeTab === 'content' && <ModuleBlocksEditor moduleId={moduleId} />}
+      {activeTab === 'content' && <ModuleBlocksEditor moduleId={moduleId} isDraft={isDraft} />}
       {activeTab === 'quiz' && (
         isDraft ? (
           <QuizBuilder moduleId={moduleId} />
