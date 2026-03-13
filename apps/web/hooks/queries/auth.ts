@@ -112,7 +112,9 @@ export function useResetPassword() {
 
 export function useLogout() {
   const queryClient = useQueryClient();
-      clearTokens();
-      queryClient.clear();
-      window.location.href = '/sign-in';
+  return () => {
+    clearTokens();
+    queryClient.clear();
+    window.location.href = '/sign-in';
+  };
 }
