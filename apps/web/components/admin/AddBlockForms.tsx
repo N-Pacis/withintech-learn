@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useAddBlock, useUploadBlockImage } from '@/hooks/queries/modules';
-import { Button, Badge, Card, CardBody, FormField, Input, Textarea, FileUpload, CodeEditor, CodeLanguage } from '@/components/ui';
+import { Button, Badge, Card, CardBody, FormField, Input, FileUpload, CodeEditor, CodeLanguage } from '@/components/ui';
+import { TiptapEditor } from '@/components/ui/TiptapEditor';
 import { SaveWarning } from '@/components/SaveWarning';
 
 const IMAGE_ACCEPT = ['image/jpeg', 'image/png', 'image/webp'];
@@ -19,14 +20,12 @@ export function AddTextBlockForm({ moduleId, nextOrder, onDone }: AddFormProps) 
   const [content, setContent] = useState('');
   const [error, setError] = useState('');
   const { mutateAsync: addBlock, isPending } = useAddBlock(moduleId);
-  const ref = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => { ref.current?.focus(); }, []);
 
   async function handleAdd() {
-    if (!content.trim()) { setError('Content cannot be empty.'); return; }
+    const stripped = content.replace(/<[^>]*>/g, '').trim();
+    if (!stripped) { setError('Content cannot be empty.'); return; }
     try {
-      await addBlock({ type: 'text', content: content.trim(), orderIndex: nextOrder });
+      await addBlock({ type: 'text', content, orderIndex: nextOrder });
       onDone();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add block.');
@@ -40,18 +39,12 @@ export function AddTextBlockForm({ moduleId, nextOrder, onDone }: AddFormProps) 
           <Badge variant="gray" size="sm">Text</Badge>
           <span className="font-body text-xs text-[#9CA3AF]">Block {nextOrder}</span>
         </div>
-        <Textarea
-          ref={ref}
-          value={content}
-          onChange={(e) => { setContent(e.target.value); setError(''); }}
-          rows={5}
-          placeholder="Type your text content here…"
-        />
+        <TiptapEditor content={content} onChange={(html) => { setContent(html); setError(''); }} placeholder="Type your text content here…" />
         {error && <p className="font-body text-xs text-red-500">{error}</p>}
         <SaveWarning message={<>Click <span className="font-medium">Add Text Block</span> to save.</>} />
         <div className="flex gap-2 justify-end">
           <Button variant="ghost" size="sm" onClick={onDone}>Cancel</Button>
-          <Button size="sm" loading={isPending} disabled={!content.trim()} onClick={handleAdd}>
+          <Button size="sm" loading={isPending} onClick={handleAdd}>
             Add Text Block
           </Button>
         </div>

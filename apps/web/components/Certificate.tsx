@@ -282,43 +282,36 @@ export function Certificate({ data, domId }: CertificateProps) {
           gap: em(24),
         }}>
 
-          {/* Seal */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: em(8) }}>
-            <div style={{
-              width: em(80), height: em(80),
-              borderRadius: '50%',
-              border: `${em(4)} solid #3D006B`,
-              backgroundColor: '#F3E8FF',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              position: 'relative',
+          {/* Signature */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: em(4) }}>
+            <Image
+              src="/signature.png"
+              alt="Signature"
+              width={220}
+              height={88}
+              style={{ height: em(72), width: 'auto', objectFit: 'contain' }}
+              unoptimized
+            />
+            <div style={{ width: em(200), height: '1px', backgroundColor: '#C084FC' }} />
+            <p style={{
+              fontFamily: 'var(--font-dm-sans), sans-serif',
+              fontWeight: 700,
+              fontSize: em(11),
+              color: '#1F0A3C',
+              textAlign: 'center',
+              marginTop: em(4),
+              lineHeight: 1.4,
             }}>
-              <div style={{
-                position: 'absolute', inset: em(8),
-                borderRadius: '50%',
-                border: `${em(2)} dashed #C084FC`,
-              }} />
-              <p style={{
-                fontFamily: 'var(--font-syne), sans-serif',
-                fontWeight: 900,
-                fontSize: em(9),
-                color: '#3D006B',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-                textAlign: 'center',
-                lineHeight: 1.3,
-                position: 'relative', zIndex: 1,
-              }}>
-                CERT<br />IFIED
-              </p>
-            </div>
+              Niyomungeli Aline
+            </p>
             <p style={{
               fontFamily: 'var(--font-dm-sans), sans-serif',
               fontSize: em(10),
-              color: '#9CA3AF',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
+              color: '#6B7280',
+              textAlign: 'center',
+              letterSpacing: '0.05em',
             }}>
-              Official Seal
+              CEO, WithinTech Rwanda
             </p>
           </div>
 

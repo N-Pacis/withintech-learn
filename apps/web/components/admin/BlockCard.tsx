@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useUpdateBlock, useUploadBlockImage, type Block } from '@/hooks/queries/modules';
-import { Button, Badge, Textarea, FormField, Input, FileUpload, CodeEditor, CodeLanguage } from '@/components/ui';
+import { Button, Badge, FormField, Input, FileUpload, CodeEditor, CodeLanguage } from '@/components/ui';
+import { TiptapEditor, TiptapViewer } from '@/components/ui/TiptapEditor';
 import { cn } from '@/lib/utils';
 
 const IMAGE_ACCEPT = ['image/jpeg', 'image/png', 'image/webp'];
@@ -11,11 +12,7 @@ const IMAGE_ACCEPT = ['image/jpeg', 'image/png', 'image/webp'];
 // ─── Text block display ───────────────────────────────────────────────────────
 
 function TextBlockView({ block }: { block: Block }) {
-  return (
-    <p className="font-body text-sm text-[#374151] leading-relaxed whitespace-pre-wrap">
-      {block.content}
-    </p>
-  );
+  return <TiptapViewer content={block.content ?? ''} />;
 }
 
 // ─── Image block display ──────────────────────────────────────────────────────
@@ -49,14 +46,12 @@ function EditTextBlock({ block, moduleId, onDone }: { block: Block; moduleId: st
   const [content, setContent] = useState(block.content ?? '');
   const [error, setError] = useState('');
   const { mutateAsync: updateBlock, isPending } = useUpdateBlock(moduleId);
-  const ref = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => { ref.current?.focus(); }, []);
 
   async function handleSave() {
-    if (!content.trim()) { setError('Content cannot be empty.'); return; }
+    const stripped = content.replace(/<[^>]*>/g, '').trim();
+    if (!stripped) { setError('Content cannot be empty.'); return; }
     try {
-      await updateBlock({ id: block.id, content: content.trim() });
+      await updateBlock({ id: block.id, content });
       onDone();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save.');
@@ -65,11 +60,11 @@ function EditTextBlock({ block, moduleId, onDone }: { block: Block; moduleId: st
 
   return (
     <div className="flex flex-col gap-3 pt-2">
-      <Textarea ref={ref} value={content} onChange={(e) => { setContent(e.target.value); setError(''); }} rows={5} placeholder="Enter text content…" />
+      <TiptapEditor content={content} onChange={(html) => { setContent(html); setError(''); }} placeholder="Enter text content…" />
       {error && <p className="font-body text-xs text-red-500">{error}</p>}
       <div className="flex gap-2 justify-end">
         <Button variant="ghost" size="sm" onClick={onDone}>Cancel</Button>
-        <Button size="sm" loading={isPending} disabled={!content.trim()} onClick={handleSave}>Save</Button>
+        <Button size="sm" loading={isPending} onClick={handleSave}>Save</Button>
       </div>
     </div>
   );
