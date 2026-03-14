@@ -34,7 +34,8 @@ app.use(compression());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 
 app.get('/docs-json', (_req, res) => res.json(swaggerDocument));
-app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+app.get('/health', (_req, res) => res.status(200).json({ status: 'ok' }));
+
 app.use(router);
 
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
