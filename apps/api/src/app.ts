@@ -36,21 +36,32 @@ app.use(compression());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 
 app.get('/docs-json', (_req, res) => res.json(swaggerDocument));
-app.get('/health', async (req, res) => {
+
+// Liveness — just confirms the process is up (used by Docker healthcheck)
+app.get('/health', (_req, res) => res.status(200).json({ status: 'ok' }));
+
+// Readiness — checks Postgres + Redis connectivity
+app.get('/health/full', async (_req, res) => {
+  const checks: Record<string, string> = {};
+  let degraded = false;
+
   try {
-    await prisma.$queryRaw`SELECT 1`;  // checks Postgres
-    await redis.ping();                 // checks Redis
-    res.status(200).json({
-      status: 'ok',
-      postgres: 'up',
-      redis: 'up',
-    });
-  } catch (error:any) {
-    res.status(503).json({
-      status: 'degraded',
-      error: error.message,
-    });
+    await prisma.$queryRaw`SELECT 1`;
+    checks.postgres = 'up';
+  } catch {
+    checks.postgres = 'down';
+    degraded = true;
   }
+
+  try {
+    await redis.ping();
+    checks.redis = 'up';
+  } catch {
+    checks.redis = 'down';
+    degraded = true;
+  }
+
+  res.status(degraded ? 503 : 200).json({ status: degraded ? 'degraded' : 'ok', ...checks });
 });
 
 app.use(router);
