@@ -3078,6 +3078,118 @@
         }
       }
     },
+    "/admin/enrollments": {
+      "get": {
+        "tags": ["Admin / Enrollments"],
+        "summary": "List all enrollments",
+        "description": "Returns all student enrollments with optional filters for student name or course title.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Filter by student first or last name (case-insensitive)",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "course",
+            "in": "query",
+            "description": "Filter by course title (case-insensitive)",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of enrollments.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "studentId": { "type": "string" },
+                          "studentName": { "type": "string" },
+                          "courseId": { "type": "string" },
+                          "courseTitle": { "type": "string" },
+                          "enrolledAt": { "type": "string", "format": "date-time" },
+                          "status": { "type": "string", "enum": ["in_progress", "completed"] }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/admin/enrollments/{id}/progress": {
+      "get": {
+        "tags": ["Admin / Enrollments"],
+        "summary": "Get module progress for an enrollment",
+        "description": "Returns module-level completion progress for a specific student enrollment.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enrollment progress.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "enrollmentId": { "type": "string" },
+                        "studentName": { "type": "string" },
+                        "courseTitle": { "type": "string" },
+                        "totalModules": { "type": "integer" },
+                        "completedModules": { "type": "integer" },
+                        "modules": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "string" },
+                              "title": { "type": "string" },
+                              "orderIndex": { "type": "integer" },
+                              "completed": { "type": "boolean" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
     "/public/courses": {
       "get": {
         "tags": [

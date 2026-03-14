@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Syne, DM_Sans } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
 
@@ -43,6 +44,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${syne.variable} ${dmSans.variable}`}>
+      <head>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-DY93CNS1DD"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-DY93CNS1DD');
+          `}
+        </Script>
+      </head>
       <body className="antialiased">
         <QueryProvider>{children}</QueryProvider>
       </body>
