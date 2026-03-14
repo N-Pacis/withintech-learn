@@ -143,6 +143,9 @@ jobs:
           script: |
             cd $HOME/withintech-learn
 
+            # Stop nginx first so port 80/443 are released before the new container binds them
+            docker compose stop nginx || true
+
             # Ensure all other services (postgres, redis, nginx, web) are up
             docker compose up -d --no-build postgres redis nginx web
 
