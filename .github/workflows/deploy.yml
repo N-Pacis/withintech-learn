@@ -23,6 +23,7 @@ jobs:
             git clone https://N-Pacis:${{ secrets.GH_PAT }}@github.com/N-Pacis/withintech-learn.git $HOME/withintech-learn
 
       # ── 2. Write .env from secrets ───────────────────────────────────────────
+      # To add a new secret: add it once below in env: and to the ENV_FILE block.
       - name: Write .env
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -31,59 +32,35 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 222
           script_stop: true
-          envs: DATABASE_URL,JWT_ACCESS_SECRET,JWT_REFRESH_SECRET,JWT_ACCESS_EXPIRES_IN,JWT_REFRESH_EXPIRES_IN,STORAGE_PROVIDER,AWS_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,S3_BUCKET_NAME,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,EMAIL_FROM,NEXT_PUBLIC_API_URL,APP_URL,NODE_ENV,PORT,ADMIN_SEED_EMAIL,POSTGRES_USER,POSTGRES_PASSWORD,BCRYPT_ROUNDS,SENTRY_DSN
-          script: |
-            {
-              printf 'DATABASE_URL=%s\n'           "$DATABASE_URL"
-              printf 'JWT_ACCESS_SECRET=%s\n'      "$JWT_ACCESS_SECRET"
-              printf 'JWT_REFRESH_SECRET=%s\n'     "$JWT_REFRESH_SECRET"
-              printf 'JWT_ACCESS_EXPIRES_IN=%s\n'  "${JWT_ACCESS_EXPIRES_IN:-24h}"
-              printf 'JWT_REFRESH_EXPIRES_IN=%s\n' "${JWT_REFRESH_EXPIRES_IN:-7d}"
-              printf 'STORAGE_PROVIDER=%s\n'       "${STORAGE_PROVIDER:-s3}"
-              printf 'AWS_REGION=%s\n'             "$AWS_REGION"
-              printf 'AWS_ACCESS_KEY_ID=%s\n'      "$AWS_ACCESS_KEY_ID"
-              printf 'AWS_SECRET_ACCESS_KEY=%s\n'  "$AWS_SECRET_ACCESS_KEY"
-              printf 'S3_BUCKET_NAME=%s\n'         "$S3_BUCKET_NAME"
-              printf 'SMTP_HOST=%s\n'              "$SMTP_HOST"
-              printf 'SMTP_PORT=%s\n'              "$SMTP_PORT"
-              printf 'SMTP_USER=%s\n'              "$SMTP_USER"
-              printf 'SMTP_PASS=%s\n'              "$SMTP_PASS"
-              printf 'EMAIL_FROM=%s\n'             "$EMAIL_FROM"
-              printf 'NEXT_PUBLIC_API_URL=%s\n'    "$NEXT_PUBLIC_API_URL"
-              printf 'APP_URL=%s\n'                "$APP_URL"
-              printf 'NODE_ENV=%s\n'               "${NODE_ENV:-production}"
-              printf 'PORT=%s\n'                   "${PORT:-3001}"
-              printf 'ADMIN_SEED_EMAIL=%s\n'       "$ADMIN_SEED_EMAIL"
-              printf 'POSTGRES_USER=%s\n'          "$POSTGRES_USER"
-              printf 'POSTGRES_PASSWORD=%s\n'      "$POSTGRES_PASSWORD"
-              printf 'BCRYPT_ROUNDS=%s\n'          "${BCRYPT_ROUNDS:-12}"
-              printf 'SENTRY_DSN=%s\n'             "$SENTRY_DSN"
-            } > $HOME/withintech-learn/.env
+          envs: ENV_FILE
+          script: printf '%s' "$ENV_FILE" > $HOME/withintech-learn/.env
         env:
-          DATABASE_URL:           ${{ secrets.DATABASE_URL }}
-          JWT_ACCESS_SECRET:      ${{ secrets.JWT_ACCESS_SECRET }}
-          JWT_REFRESH_SECRET:     ${{ secrets.JWT_REFRESH_SECRET }}
-          JWT_ACCESS_EXPIRES_IN:  ${{ secrets.JWT_ACCESS_EXPIRES_IN }}
-          JWT_REFRESH_EXPIRES_IN: ${{ secrets.JWT_REFRESH_EXPIRES_IN }}
-          STORAGE_PROVIDER:       ${{ secrets.STORAGE_PROVIDER }}
-          AWS_REGION:             ${{ secrets.AWS_REGION }}
-          AWS_ACCESS_KEY_ID:      ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          S3_BUCKET_NAME:         ${{ secrets.S3_BUCKET_NAME }}
-          SMTP_HOST:              ${{ secrets.SMTP_HOST }}
-          SMTP_PORT:              ${{ secrets.SMTP_PORT }}
-          SMTP_USER:              ${{ secrets.SMTP_USER }}
-          SMTP_PASS:              ${{ secrets.SMTP_PASS }}
-          EMAIL_FROM:             ${{ secrets.EMAIL_FROM }}
-          NEXT_PUBLIC_API_URL:    ${{ secrets.NEXT_PUBLIC_API_URL }}
-          APP_URL:                ${{ secrets.APP_URL }}
-          NODE_ENV:               ${{ secrets.NODE_ENV }}
-          PORT:                   ${{ secrets.PORT }}
-          ADMIN_SEED_EMAIL:       ${{ secrets.ADMIN_SEED_EMAIL }}
-          POSTGRES_USER:          ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD:      ${{ secrets.POSTGRES_PASSWORD }}
-          BCRYPT_ROUNDS:          ${{ secrets.BCRYPT_ROUNDS }}
-          SENTRY_DSN:             ${{ secrets.SENTRY_DSN }}
+          ENV_FILE: |
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
+            JWT_ACCESS_EXPIRES_IN=${{ secrets.JWT_ACCESS_EXPIRES_IN }}
+            JWT_REFRESH_EXPIRES_IN=${{ secrets.JWT_REFRESH_EXPIRES_IN }}
+            STORAGE_PROVIDER=${{ secrets.STORAGE_PROVIDER }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}
+            SMTP_HOST=${{ secrets.SMTP_HOST }}
+            SMTP_PORT=${{ secrets.SMTP_PORT }}
+            SMTP_USER=${{ secrets.SMTP_USER }}
+            SMTP_PASS=${{ secrets.SMTP_PASS }}
+            EMAIL_FROM=${{ secrets.EMAIL_FROM }}
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+            APP_URL=${{ secrets.APP_URL }}
+            NODE_ENV=${{ secrets.NODE_ENV }}
+            PORT=${{ secrets.PORT }}
+            ADMIN_SEED_EMAIL=${{ secrets.ADMIN_SEED_EMAIL }}
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            BCRYPT_ROUNDS=${{ secrets.BCRYPT_ROUNDS }}
+            SENTRY_DSN=${{ secrets.SENTRY_DSN }}
+            REDIS_URL=${{ secrets.REDIS_URL }}
 
       # ── 3. Install docker-rollout (idempotent) ───────────────────────────────
       - name: Install docker-rollout
@@ -143,11 +120,8 @@ jobs:
           script: |
             cd $HOME/withintech-learn
 
-            # Stop nginx first so port 80/443 are released before the new container binds them
-            docker compose stop nginx || true
-
-            # Ensure all other services (postgres, redis, nginx, web) are up
-            docker compose up -d --no-build postgres redis nginx web
+            # Start any stopped/missing services; leave already-running containers (nginx) untouched
+            docker compose up -d --no-build --no-recreate postgres redis nginx web
 
             # docker-rollout handles: scale up, health check, old container removal.
             # It uses the Docker HEALTHCHECK defined in docker-compose.yml.
