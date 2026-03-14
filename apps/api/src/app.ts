@@ -8,6 +8,8 @@ import swaggerUi from 'swagger-ui-express';
 const swaggerDocument = require('../swagger.json');
 import router from './routes';
 import { AppError } from './utils/errors';
+import { prisma } from './db/prisma';
+import redis from './db/redis';
 
 const app = express();
 Sentry.setupExpressErrorHandler(app);
@@ -34,7 +36,22 @@ app.use(compression());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 
 app.get('/docs-json', (_req, res) => res.json(swaggerDocument));
-app.get('/health', (_req, res) => res.status(200).json({ status: 'ok' }));
+app.get('/health', async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;  // checks Postgres
+    await redis.ping();                 // checks Redis
+    res.status(200).json({
+      status: 'ok',
+      postgres: 'up',
+      redis: 'up',
+    });
+  } catch (error:any) {
+    res.status(503).json({
+      status: 'degraded',
+      error: error.message,
+    });
+  }
+});
 
 app.use(router);
 
