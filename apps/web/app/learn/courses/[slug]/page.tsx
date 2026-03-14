@@ -19,16 +19,13 @@ import { useProfile } from '@/hooks/queries/auth';
 import { Button, PageLoader } from '@/components/ui';
 import { Stepper, type StepperStep } from '@/components/ui/Stepper';
 import { CodeEditor, type CodeLanguage } from '@/components/ui/CodeEditor';
+import { TiptapViewer } from '@/components/ui/TiptapEditor';
 import { QuizSection } from './components/QuizSection';
 
 // ─── Block renderers ───────────────────────────────────────────────────────────
 
 function TextBlock({ block }: { block: StudentBlock }) {
-  return (
-    <p className="font-body text-[#374151] text-base leading-relaxed whitespace-pre-wrap">
-      {block.content}
-    </p>
-  );
+  return <TiptapViewer content={block.content ?? ''} />;
 }
 
 function ImageBlock({ block }: { block: StudentBlock }) {
