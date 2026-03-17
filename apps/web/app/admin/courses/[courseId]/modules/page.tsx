@@ -56,6 +56,12 @@ function ModuleRow({
         {mod.title}
       </Link>
 
+      {!mod.hasQuiz && (
+        <span className="shrink-0 px-2 py-0.5 rounded font-body text-xs font-medium bg-amber-50 text-amber-600 border border-amber-200">
+          No quiz
+        </span>
+      )}
+
       {/* Actions */}
       <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
         {confirming ? (

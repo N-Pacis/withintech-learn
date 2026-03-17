@@ -75,10 +75,12 @@ export const deleteQuiz = async (id: string) => {
   await prisma.quiz.delete({ where: { id } });
 };
 
-export const addQuestion = async (quizId: string, data: { text: string; orderIndex: number }) => {
+export const addQuestion = async (quizId: string, data: { text: string }) => {
   const quiz = await prisma.quiz.findUnique({ where: { id: quizId } });
   if (!quiz) throw notFound('Quiz not found');
-  return prisma.question.create({ data: { quizId, ...data } });
+  const agg = await prisma.question.aggregate({ where: { quizId }, _max: { orderIndex: true } });
+  const orderIndex = (agg._max.orderIndex ?? 0) + 1;
+  return prisma.question.create({ data: { quizId, text: data.text, orderIndex } });
 };
 
 export const updateQuestion = async (id: string, text: string) => {
@@ -100,10 +102,12 @@ export const reorderQuestions = async (quizId: string, items: { id: string; orde
   );
 };
 
-export const addOption = async (questionId: string, data: { text: string; isCorrect: boolean; orderIndex: number }) => {
+export const addOption = async (questionId: string, data: { text: string; isCorrect: boolean }) => {
   const q = await prisma.question.findUnique({ where: { id: questionId } });
   if (!q) throw notFound('Question not found');
-  return prisma.questionOption.create({ data: { questionId, ...data } });
+  const agg = await prisma.questionOption.aggregate({ where: { questionId }, _max: { orderIndex: true } });
+  const orderIndex = (agg._max.orderIndex ?? 0) + 1;
+  return prisma.questionOption.create({ data: { questionId, text: data.text, isCorrect: data.isCorrect, orderIndex } });
 };
 
 export const updateOption = async (id: string, data: { text?: string; isCorrect?: boolean }) => {
