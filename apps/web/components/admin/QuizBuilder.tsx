@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import { toast } from 'sonner';
 import {
   useModuleQuiz,
   useCourseQuiz,
@@ -346,16 +347,6 @@ function QuestionCard({
           </p>
         </div>
       )}
-      {!readOnly && sortedOptions.length > 0 && correctCount === 0 && (
-        <div className="px-5 pb-4">
-          <p className="font-body text-sm font-medium text-red-600 bg-red-50 border border-red-200 px-4 py-2.5 rounded-lg flex items-center gap-2">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            You must mark at least one option as correct before adding another question.
-          </p>
-        </div>
-      )}
     </div>
   );
 }
@@ -584,10 +575,17 @@ function QuizEditor({ quiz, cacheKey, readOnly }: { quiz: Quiz; cacheKey: readon
 
   const sortedQuestions = [...quiz.questions].sort((a, b) => a.orderIndex - b.orderIndex);
   const hasInvalidQuestion = sortedQuestions.some(
-    (q) => q.options.filter((o) => o.isCorrect).length === 0,
+    (q) => q.options.length > 0 && q.options.filter((o) => o.isCorrect).length === 0,
   );
 
   async function handleAddQuestion() {
+    const invalidQuestions = sortedQuestions.filter(
+      (q) => q.options.length > 0 && q.options.filter((o) => o.isCorrect).length === 0,
+    );
+    if (invalidQuestions.length > 0) {
+      toast.warning('Please mark at least one correct option for all existing questions before adding a new one.');
+      return;
+    }
     const q = await addQuestion({
       quizId: quiz.id,
       text: 'New question',
@@ -620,19 +618,33 @@ function QuizEditor({ quiz, cacheKey, readOnly }: { quiz: Quiz; cacheKey: readon
         </div>
       )}
 
-      {sortedQuestions.map((q, i) => (
-        <QuestionCard
-          key={q.id}
-          question={q}
-          cacheKey={cacheKey}
-          number={i + 1}
-          autoFocus={q.id === newQuestionId}
-          readOnly={readOnly}
-        />
-      ))}
+      {sortedQuestions.map((q, i) => {
+        const hasNoCorrect = q.options.length > 0 && q.options.filter(o => o.isCorrect).length === 0;
+        return (
+          <div key={q.id} className="flex flex-col gap-2">
+            <QuestionCard
+              question={q}
+              cacheKey={cacheKey}
+              number={i + 1}
+              autoFocus={q.id === newQuestionId}
+              readOnly={readOnly}
+            />
+            {hasNoCorrect && !readOnly && (
+              <div className="px-2">
+                <p className="font-body text-xs font-medium text-red-600 bg-red-50 border border-red-100 px-3 py-2 rounded-lg flex items-center gap-2">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                    <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  At least one correct option required for this question.
+                </p>
+              </div>
+            )}
+          </div>
+        );
+      })}
 
       {!readOnly && (
-        <Button variant="secondary" size="md" loading={addingQuestion} disabled={hasInvalidQuestion} onClick={handleAddQuestion} className="w-full">
+        <Button variant="secondary" size="md" loading={addingQuestion} onClick={handleAddQuestion} className="w-full">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
           </svg>
