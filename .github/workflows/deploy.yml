@@ -120,8 +120,8 @@ jobs:
           script: |
             cd $HOME/withintech-learn
 
-            # Start any stopped/missing services; leave already-running containers untouched
-            docker compose up -d --no-build --no-recreate postgres redis nginx
+            # Recreate postgres/redis/nginx if their image or config changed
+            docker compose up -d --no-build postgres redis nginx
 
             # docker-rollout handles: scale up, health check, old container removal.
             # It uses the Docker HEALTHCHECK defined in docker-compose.yml.
