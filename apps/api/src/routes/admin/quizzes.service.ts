@@ -7,6 +7,30 @@ const validateReorder = (items: { id: string; orderIndex: number }[]) => {
     throw badRequest('orderIndex values must be contiguous starting from 1');
 };
 
+const assertQuizQuestionsHaveCorrectOptions = async (quizId: string) => {
+  const questions = await prisma.question.findMany({
+    where: { quizId },
+    include: {
+      options: {
+        select: {
+          id: true,
+          isCorrect: true,
+        },
+      },
+    },
+  });
+
+  const hasInvalidQuestion = questions.some(
+    (question) =>
+      question.options.length > 0 &&
+      !question.options.some((option) => option.isCorrect),
+  );
+
+  if (hasInvalidQuestion) {
+    throw badRequest('Each question with options must have at least one correct option before saving the quiz');
+  }
+};
+
 export const getModuleQuiz = async (moduleId: string) => {
   const mod = await prisma.module.findUnique({ where: { id: moduleId } });
   if (!mod) throw notFound('Module not found');
@@ -66,6 +90,9 @@ export const getQuiz = async (id: string) => {
 export const updateQuiz = async (id: string, data: { title?: string; passingScore?: number; maxAttempts?: number }) => {
   const quiz = await prisma.quiz.findUnique({ where: { id } });
   if (!quiz) throw notFound('Quiz not found');
+
+  await assertQuizQuestionsHaveCorrectOptions(id);
+
   return prisma.quiz.update({ where: { id }, data });
 };
 
@@ -113,19 +140,11 @@ export const addOption = async (questionId: string, data: { text: string; isCorr
 export const updateOption = async (id: string, data: { text?: string; isCorrect?: boolean }) => {
   const opt = await prisma.questionOption.findUnique({ where: { id } });
   if (!opt) throw notFound('Option not found');
-  if (data.isCorrect === false && opt.isCorrect) {
-    const correctCount = await prisma.questionOption.count({ where: { questionId: opt.questionId, isCorrect: true } });
-    if (correctCount === 1) throw badRequest('At least one option must be correct');
-  }
   return prisma.questionOption.update({ where: { id }, data });
 };
 
 export const deleteOption = async (id: string) => {
   const opt = await prisma.questionOption.findUnique({ where: { id } });
   if (!opt) throw notFound('Option not found');
-  if (opt.isCorrect) {
-    const correctCount = await prisma.questionOption.count({ where: { questionId: opt.questionId, isCorrect: true } });
-    if (correctCount === 1) throw badRequest('Cannot delete the only correct option');
-  }
   await prisma.questionOption.delete({ where: { id } });
 };
