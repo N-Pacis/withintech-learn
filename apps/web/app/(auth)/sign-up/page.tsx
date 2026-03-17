@@ -1,17 +1,14 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Logo, Button, Input, FormField, Card, PasswordInput } from '@/components/ui';
 import { useSignUp } from '@/hooks/queries/auth';
 import { isDisposableEmail } from '@withintech-learn/shared';
 
-function PasswordRequirements({ password }: { password: string }) {
-  const hasMinLength = password.length >= 6;
-  const hasNumber = /\d/.test(password);
-
-  const Req = ({ met, label }: { met: boolean; label: string }) => (
+function Req({ met, label }: { met: boolean; label: string }) {
+  return (
     <li className="flex items-center gap-1.5">
       <span className={met ? 'text-green-500' : 'text-[#9CA3AF]'}>
         {met ? (
@@ -27,6 +24,11 @@ function PasswordRequirements({ password }: { password: string }) {
       <span className={`font-body text-xs ${met ? 'text-green-600' : 'text-[#9CA3AF]'}`}>{label}</span>
     </li>
   );
+}
+
+function PasswordRequirements({ password }: { password: string }) {
+  const hasMinLength = password.length >= 6;
+  const hasNumber = /\d/.test(password);
 
   return (
     <ul className="flex flex-col gap-1 mt-1">
@@ -80,7 +82,7 @@ export default function SignUpPage() {
     return errs;
   }
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setServerError('');
     const errs = validate();

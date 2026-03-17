@@ -30,10 +30,6 @@ export default function ModuleDetailPage() {
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (module && !editingTitle) setTitleValue(module.title);
-  }, [module, editingTitle]);
-
-  useEffect(() => {
     if (editingTitle) titleInputRef.current?.focus();
   }, [editingTitle]);
 
@@ -103,7 +99,11 @@ export default function ModuleDetailPage() {
                 {module.title}
               </h1>
               <button
-                onClick={() => setEditingTitle(true)}
+                onClick={() => {
+                  setEditingTitle(true);
+                  setTitleValue(module.title);
+                  setTitleError('');
+                }}
                 className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-[#F3E8FF] text-[#6B7280] hover:text-[#3D006B] shrink-0"
                 title="Rename module"
               >

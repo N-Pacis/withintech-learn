@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useCourse, useUpdateCourse, useArchiveCourse, useUploadThumbnail } from '@/hooks/queries/courses';
@@ -21,12 +21,12 @@ export default function EditCoursePage() {
   const [saved, setSaved] = useState(false);
   const [confirmArchive, setConfirmArchive] = useState(false);
 
-  useEffect(() => {
-    if (course) {
-      setTitle(course.title);
-      setDescription(course.description ?? '');
-    }
-  }, [course]);
+  const [prevCourse, setPrevCourse] = useState(course);
+  if (course && course !== prevCourse) {
+    setPrevCourse(course);
+    setTitle(course.title);
+    setDescription(course.description ?? '');
+  }
 
   function handleFieldChange(field: 'title' | 'description', value: string) {
     if (field === 'title') setTitle(value);

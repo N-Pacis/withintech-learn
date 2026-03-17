@@ -120,7 +120,7 @@ function EmptyState({ filter, search }: { filter: CourseFilter; search: string }
         </svg>
       </div>
       <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">No courses yet</h3>
-      <p className="font-body text-sm text-[#6B7280] max-w-xs">New courses will appear here once they're published.</p>
+      <p className="font-body text-sm text-[#6B7280] max-w-xs">New courses will appear here once they&apos;re published.</p>
     </div>
   );
 }

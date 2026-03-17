@@ -10,7 +10,7 @@ import {
   type Course,
   type CourseStatus,
 } from '@/hooks/queries/courses';
-import { Button, Badge, Tabs, PageLoader, Pagination, type Tab } from '@/components/ui';
+import { Button, Tabs, PageLoader, Pagination, type Tab } from '@/components/ui';
 import { CourseCard } from '@/components/CourseCard';
 
 function PublishConfirmModal({ onConfirm, onCancel, loading }: { onConfirm: () => void; onCancel: () => void; loading: boolean }) {

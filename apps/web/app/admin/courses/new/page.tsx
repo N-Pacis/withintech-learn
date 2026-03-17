@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCreateCourse, useUploadThumbnail } from '@/hooks/queries/courses';
-import { Button, FormField, Input, Textarea, Card, CardHeader, CardBody, CardFooter, FileUpload } from '@/components/ui';
+import { Button, FormField, Input, Textarea, Card, CardHeader, CardBody, FileUpload } from '@/components/ui';
 
 type Step = 'idle' | 'creating' | 'uploading' | 'done';
 

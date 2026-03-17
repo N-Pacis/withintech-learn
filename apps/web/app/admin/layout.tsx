@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import AdminSidebar from '@/components/layout/AdminSidebar';
@@ -20,9 +20,8 @@ function AdminGuard({ children }: { children: React.ReactNode }) {
   }, [user, isLoading, router]);
 
   // Close sidebar on route changes (resize from mobile to desktop is fine too)
-  useEffect(() => {
-    setSidebarOpen(false);
-  }, []);
+  // Re-evaluated: This empty effect that sets state to false is not needed if the component initializes it as false,
+  // and it was triggering cascading renders. Removed.
 
   if (isLoading) {
     return (
