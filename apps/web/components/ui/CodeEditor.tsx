@@ -6,14 +6,46 @@ import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
 import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
+import { markdown } from '@codemirror/lang-markdown';
+import { cpp } from '@codemirror/lang-cpp';
+import { java } from '@codemirror/lang-java';
+import { rust } from '@codemirror/lang-rust';
+import { xml } from '@codemirror/lang-xml';
+import { yaml } from '@codemirror/lang-yaml';
+import { StreamLanguage } from '@codemirror/language';
+import { shell } from '@codemirror/legacy-modes/mode/shell';
 
-export type CodeLanguage = 'html' | 'css' | 'javascript' | 'python';
+export type CodeLanguage =
+  | 'html'
+  | 'css'
+  | 'javascript'
+  | 'typescript'
+  | 'python'
+  | 'markdown'
+  | 'text'
+  | 'bash'
+  | 'cpp'
+  | 'csharp'
+  | 'rust'
+  | 'java'
+  | 'xml'
+  | 'yaml';
 
 const LANGUAGES: { value: CodeLanguage; label: string }[] = [
   { value: 'html',       label: 'HTML'       },
   { value: 'css',        label: 'CSS'        },
   { value: 'javascript', label: 'JavaScript' },
+  { value: 'typescript', label: 'TypeScript' },
   { value: 'python',     label: 'Python'     },
+  { value: 'markdown',   label: 'Markdown'   },
+  { value: 'text',       label: 'Text'       },
+  { value: 'bash',       label: 'Bash'       },
+  { value: 'cpp',        label: 'C/C++'      },
+  { value: 'csharp',     label: 'C#'         },
+  { value: 'rust',       label: 'Rust'       },
+  { value: 'java',       label: 'Java'       },
+  { value: 'xml',        label: 'XML'        },
+  { value: 'yaml',       label: 'YAML'       },
 ];
 
 function getExtension(lang: CodeLanguage) {
@@ -21,7 +53,18 @@ function getExtension(lang: CodeLanguage) {
     case 'html':       return [html()];
     case 'css':        return [css()];
     case 'javascript': return [javascript()];
+    case 'typescript': return [javascript({ typescript: true })];
     case 'python':     return [python()];
+    case 'markdown':   return [markdown()];
+    case 'text':       return [];
+    case 'bash':       return [StreamLanguage.define(shell)];
+    case 'cpp':        return [cpp()];
+    case 'csharp':     return [cpp()]; // @codemirror/lang-cpp often handles C# as well or use cpp for it
+    case 'rust':       return [rust()];
+    case 'java':       return [java()];
+    case 'xml':        return [xml()];
+    case 'yaml':       return [yaml()];
+    default:           return [];
   }
 }
 

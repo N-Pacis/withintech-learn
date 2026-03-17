@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState} from 'react';
 import Image from 'next/image';
 import { useUpdateBlock, useUploadBlockImage, type Block } from '@/hooks/queries/modules';
 import { Button, Badge, FormField, Input, FileUpload, CodeEditor, CodeLanguage } from '@/components/ui';
 import { TiptapEditor, TiptapViewer } from '@/components/ui/TiptapEditor';
 import { cn } from '@/lib/utils';
 
-const IMAGE_ACCEPT = ['image/jpeg', 'image/png', 'image/webp'];
+const IMAGE_ACCEPT = ['image/jpeg', 'image/png', 'image/webp','image/jpg'];
 
 // ─── Text block display ───────────────────────────────────────────────────────
 
@@ -48,8 +48,12 @@ function EditTextBlock({ block, moduleId, onDone }: { block: Block; moduleId: st
   const { mutateAsync: updateBlock, isPending } = useUpdateBlock(moduleId);
 
   async function handleSave() {
-    const stripped = content.replace(/<[^>]*>/g, '').trim();
-    if (!stripped) { setError('Content cannot be empty.'); return; }
+    const stripped = content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+    if (!stripped && !content.includes('<img') && !content.includes('<table') && !content.includes('<div data-youtube-video') && !content.includes('<details')) {
+      setError('Content cannot be empty.');
+      return;
+    }
+    setError('');
     try {
       await updateBlock({ id: block.id, content });
       onDone();
