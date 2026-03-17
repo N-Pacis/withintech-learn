@@ -7,7 +7,16 @@ import Link from '@tiptap/extension-link';
 import TextAlign from '@tiptap/extension-text-align';
 import Highlight from '@tiptap/extension-highlight';
 import Placeholder from '@tiptap/extension-placeholder';
+import {Table} from '@tiptap/extension-table';
+import TableRow from '@tiptap/extension-table-row';
+import TableHeader from '@tiptap/extension-table-header';
+import TableCell from '@tiptap/extension-table-cell';
+import Youtube from '@tiptap/extension-youtube';
+import { Details } from '@tiptap/extension-details';
+import { DetailsContent } from '@tiptap/extension-details-content';
+import { DetailsSummary } from '@tiptap/extension-details-summary';
 import { cn } from '@/lib/utils';
+import React from "react";
 
 // ─── Shared extensions (editor + viewer) ─────────────────────────────────────
 
@@ -21,6 +30,19 @@ export const tiptapExtensions = [
   Link.configure({ openOnClick: false }),
   TextAlign.configure({ types: ['heading', 'paragraph'] }),
   Highlight,
+  Table.configure({
+    resizable: true,
+  }),
+  TableRow,
+  TableHeader,
+  TableCell,
+  Youtube.configure({
+    width: 640,
+    height: 480,
+  }),
+  Details,
+  DetailsSummary,
+  DetailsContent,
 ];
 
 // ─── Toolbar button ───────────────────────────────────────────────────────────
@@ -45,7 +67,7 @@ function ToolbarBtn({
       disabled={disabled}
       title={title}
       className={cn(
-        'h-7 min-w-[28px] px-1.5 rounded flex items-center justify-center font-body text-xs transition-colors',
+        'h-7 min-w-7 px-1.5 rounded flex items-center justify-center font-body text-xs transition-colors',
         active
           ? 'bg-[#3D006B] text-white'
           : 'text-[#374151] hover:bg-[#F3E8FF] hover:text-[#3D006B]',
@@ -59,6 +81,84 @@ function ToolbarBtn({
 
 function Divider() {
   return <span className="w-px h-5 bg-[#E5E7EB] mx-0.5 shrink-0" />;
+}
+
+// ─── Toolbar components ───────────────────────────────────────────────────────
+
+function LinkButton({ editor }: { editor: ReturnType<typeof useEditor> }) {
+  const setLink = () => {
+    const previousUrl = editor.getAttributes('link').href;
+    const url = window.prompt('URL', previousUrl);
+
+    if (url === null) return;
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+      return;
+    }
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+  };
+
+  return (
+    <ToolbarBtn title="Set link" active={editor.isActive('link')} onClick={setLink}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+      </svg>
+    </ToolbarBtn>
+  );
+}
+
+function YoutubeButton({ editor }: { editor: ReturnType<typeof useEditor> }) {
+  const addYoutubeVideo = () => {
+    const url = window.prompt('YouTube URL');
+    if (url) {
+      editor.commands.setYoutubeVideo({ src: url });
+    }
+  };
+
+  return (
+    <ToolbarBtn title="YouTube" onClick={addYoutubeVideo}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" /><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
+      </svg>
+    </ToolbarBtn>
+  );
+}
+
+function TableToolbar({ editor }: { editor: ReturnType<typeof useEditor> }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      <ToolbarBtn title="Insert Table" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="3" y1="15" x2="21" y2="15" /><line x1="9" y1="3" x2="9" y2="21" /><line x1="15" y1="3" x2="15" y2="21" />
+        </svg>
+      </ToolbarBtn>
+      {editor.isActive('table') && (
+        <>
+          <ToolbarBtn title="Add Row Above" onClick={() => editor.chain().focus().addRowBefore().run()}>
+            R+↑
+          </ToolbarBtn>
+          <ToolbarBtn title="Add Row Below" onClick={() => editor.chain().focus().addRowAfter().run()}>
+            R+↓
+          </ToolbarBtn>
+          <ToolbarBtn title="Delete Row" onClick={() => editor.chain().focus().deleteRow().run()}>
+            R-
+          </ToolbarBtn>
+          <ToolbarBtn title="Add Column Before" onClick={() => editor.chain().focus().addColumnBefore().run()}>
+            C+←
+          </ToolbarBtn>
+          <ToolbarBtn title="Add Column After" onClick={() => editor.chain().focus().addColumnAfter().run()}>
+            C+→
+          </ToolbarBtn>
+          <ToolbarBtn title="Delete Column" onClick={() => editor.chain().focus().deleteColumn().run()}>
+            C-
+          </ToolbarBtn>
+          <ToolbarBtn title="Delete Table" onClick={() => editor.chain().focus().deleteTable().run()}>
+            T-
+          </ToolbarBtn>
+        </>
+      )}
+    </div>
+  );
 }
 
 // ─── Toolbar ──────────────────────────────────────────────────────────────────
@@ -165,6 +265,21 @@ function Toolbar({ editor }: { editor: ReturnType<typeof useEditor> | null }) {
           <path d="M21 7v6h-6" /><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13" />
         </svg>
       </ToolbarBtn>
+
+      <Divider />
+
+      {/* Advanced */}
+      <LinkButton editor={editor} />
+      <YoutubeButton editor={editor} />
+      <ToolbarBtn title="Details" active={editor.isActive('details')} onClick={() => editor.chain().focus().setDetails().run()}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </ToolbarBtn>
+
+      <Divider />
+
+      <TableToolbar editor={editor} />
     </div>
   );
 }
@@ -193,6 +308,75 @@ export function TiptapEditor({ content, onChange, placeholder = 'Start writing�
 
   return (
     <div className={cn('border border-[#E5E7EB] rounded-lg overflow-hidden focus-within:border-[#3D006B] focus-within:ring-2 focus-within:ring-[#3D006B]/10 transition-all', className)}>
+      <style jsx global>{`
+        .tiptap-editor .tiptap, .tiptap-viewer .tiptap {
+          table {
+            border-collapse: collapse;
+            table-layout: fixed;
+            width: 100%;
+            margin: 0;
+            overflow: hidden;
+
+            td, th {
+              min-width: 1em;
+              border: 2px solid #ced4da;
+              padding: 3px 5px;
+              vertical-align: top;
+              box-sizing: border-box;
+              position: relative;
+
+              > * {
+                margin-bottom: 0;
+              }
+            }
+
+            th {
+              font-weight: bold;
+              text-align: left;
+              background-color: #f1f3f5;
+            }
+
+            .selectedCell:after {
+              z-index: 2;
+              position: absolute;
+              content: "";
+              left: 0; right: 0; top: 0; bottom: 0;
+              background: rgba(200, 200, 255, 0.4);
+              pointer-events: none;
+            }
+
+            .column-resize-handle {
+              position: absolute;
+              right: -2px;
+              top: 0;
+              bottom: -2px;
+              width: 4px;
+              background-color: #adf;
+              pointer-events: none;
+            }
+
+            p {
+              margin: 0;
+            }
+          }
+
+          details {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 0.5rem;
+            margin: 1rem 0;
+
+            summary {
+              font-weight: bold;
+              cursor: pointer;
+            }
+
+            div[data-type="detailsContent"] {
+              margin-top: 0.5rem;
+            }
+          }
+        }
+      `}</style>
       <Toolbar editor={editor} />
       <EditorContent
         editor={editor}
@@ -218,9 +402,80 @@ export function TiptapViewer({ content, className }: TiptapViewerProps) {
   });
 
   return (
-    <EditorContent
-      editor={editor}
-      className={cn('tiptap-viewer', className)}
-    />
+    <div className={className}>
+      <style jsx global>{`
+        .tiptap-editor .tiptap, .tiptap-viewer .tiptap {
+          table {
+            border-collapse: collapse;
+            table-layout: fixed;
+            width: 100%;
+            margin: 0;
+            overflow: hidden;
+
+            td, th {
+              min-width: 1em;
+              border: 2px solid #ced4da;
+              padding: 3px 5px;
+              vertical-align: top;
+              box-sizing: border-box;
+              position: relative;
+
+              > * {
+                margin-bottom: 0;
+              }
+            }
+
+            th {
+              font-weight: bold;
+              text-align: left;
+              background-color: #f1f3f5;
+            }
+
+            .selectedCell:after {
+              z-index: 2;
+              position: absolute;
+              content: "";
+              left: 0; right: 0; top: 0; bottom: 0;
+              background: rgba(200, 200, 255, 0.4);
+              pointer-events: none;
+            }
+
+            .column-resize-handle {
+              position: absolute;
+              right: -2px;
+              top: 0;
+              bottom: -2px;
+              width: 4px;
+              background-color: #adf;
+              pointer-events: none;
+            }
+
+            p {
+              margin: 0;
+            }
+          }
+
+          details {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 0.5rem;
+            margin: 1rem 0;
+
+            summary {
+              font-weight: bold;
+              cursor: pointer;
+            }
+
+            div[data-type="detailsContent"] {
+              margin-top: 0.5rem;
+            }
+          }
+        }
+      `}</style>
+      <EditorContent
+        editor={editor}
+        className="tiptap-viewer"
+      />
+    </div>
   );
 }

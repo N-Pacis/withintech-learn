@@ -174,8 +174,10 @@ export function useAddBlock(moduleId: string) {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
-      queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) }),
+        queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) }),
+      ]);
     },
   });
 }
@@ -202,8 +204,10 @@ export function useUpdateBlock(moduleId: string) {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
-      queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) }),
+        queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) }),
+      ]);
     },
   });
 }
@@ -218,8 +222,10 @@ export function useDeleteBlock(moduleId: string) {
       if (!res.success) throw new Error(res.message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
-      queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) }),
+        queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) }),
+      ]);
     },
   });
 }
@@ -235,8 +241,10 @@ export function useReorderBlocks(moduleId: string) {
       if (!res.success) throw new Error(res.message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
-      queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) }),
+        queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) }),
+      ]);
     },
   });
 }
@@ -261,8 +269,10 @@ export function useUploadBlockImage(moduleId: string) {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
-      queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) }),
+        queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) }),
+      ]);
     },
   });
 }

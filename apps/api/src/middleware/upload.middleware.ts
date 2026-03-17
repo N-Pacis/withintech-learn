@@ -2,7 +2,7 @@ import multer from 'multer';
 import { Request, Response, NextFunction } from 'express';
 import { badRequest } from '../utils/errors';
 
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp','image/jpg'];
 const MAX_SIZE = 5 * 1024 * 1024;
 
 const _upload = multer({
@@ -10,7 +10,7 @@ const _upload = multer({
   limits: { fileSize: MAX_SIZE },
   fileFilter: (_req, file, cb) => {
     if (!ALLOWED_TYPES.includes(file.mimetype)) {
-      cb(badRequest('Only JPEG, PNG, and WebP images are allowed'));
+      cb(badRequest('Only JPEG,JPG, PNG, and WebP images are allowed'));
       return;
     }
     cb(null, true);
