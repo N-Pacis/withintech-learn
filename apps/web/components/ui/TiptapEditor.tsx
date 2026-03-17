@@ -16,7 +16,7 @@ import { Details } from '@tiptap/extension-details';
 import { DetailsContent } from '@tiptap/extension-details-content';
 import { DetailsSummary } from '@tiptap/extension-details-summary';
 import { cn } from '@/lib/utils';
-import React from "react";
+import React from 'react';
 
 // ─── Shared extensions (editor + viewer) ─────────────────────────────────────
 
@@ -38,7 +38,7 @@ export const tiptapExtensions = [
   TableCell,
   Youtube.configure({
     width: 640,
-    height: 480,
+    height: 360,
   }),
   Details,
   DetailsSummary,
@@ -375,6 +375,43 @@ export function TiptapEditor({ content, onChange, placeholder = 'Start writing�
               margin-top: 0.5rem;
             }
           }
+
+          iframe {
+            max-width: 100%;
+          }
+
+          div[data-youtube-video] {
+            width: 100%;
+            max-width: 100%;
+            margin: 1rem 0;
+            overflow: hidden;
+            border-radius: 0.75rem;
+          }
+
+          div[data-youtube-video] iframe {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            border: 0;
+          }
+
+          details {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 0.5rem;
+            margin: 1rem 0;
+
+            summary {
+              font-weight: bold;
+              cursor: pointer;
+            }
+
+            div[data-type="detailsContent"] {
+              margin-top: 0.5rem;
+            }
+          }
         }
       `}</style>
       <Toolbar editor={editor} />
@@ -453,6 +490,43 @@ export function TiptapViewer({ content, className }: TiptapViewerProps) {
             p {
               margin: 0;
             }
+          }
+
+          details {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 0.5rem;
+            margin: 1rem 0;
+
+            summary {
+              font-weight: bold;
+              cursor: pointer;
+            }
+
+            div[data-type="detailsContent"] {
+              margin-top: 0.5rem;
+            }
+          }
+
+          iframe {
+            max-width: 100%;
+          }
+
+          div[data-youtube-video] {
+            width: 100%;
+            max-width: 100%;
+            margin: 1rem 0;
+            overflow: hidden;
+            border-radius: 0.75rem;
+          }
+
+          div[data-youtube-video] iframe {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            border: 0;
           }
 
           details {

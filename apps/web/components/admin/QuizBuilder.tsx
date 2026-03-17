@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
-import { toast } from 'sonner';
 import {
   useModuleQuiz,
   useCourseQuiz,
@@ -586,13 +585,6 @@ function QuizEditor({ quiz, cacheKey, readOnly }: { quiz: Quiz; cacheKey: readon
   const sortedQuestions = [...quiz.questions].sort((a, b) => a.orderIndex - b.orderIndex);
 
   async function handleAddQuestion() {
-    const invalidQuestions = sortedQuestions.filter(
-      (q) => q.options.length > 0 && q.options.filter((o) => o.isCorrect).length === 0,
-    );
-    if (invalidQuestions.length > 0) {
-      toast.warning('Please mark at least one correct option for all existing questions before adding a new one.');
-      return;
-    }
     const q = await addQuestion({
       quizId: quiz.id,
       text: 'New question',
