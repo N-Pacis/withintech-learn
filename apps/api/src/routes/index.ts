@@ -1,6 +1,12 @@
 import { Router } from 'express';
 import { authenticate } from '../middleware/auth.middleware';
 import { isAdmin } from '../middleware/isAdmin.middleware';
+import {
+  loginLimiter,
+  passwordResetRequestLimiter,
+  passwordResetConfirmLimiter,
+  quizAttemptLimiter,
+} from '../middleware/rateLimiter.middleware';
 import authRouter from './auth/auth.routes';
 import adminCoursesRouter from './admin/courses.routes';
 import adminModulesRouter from './admin/modules.routes';
@@ -14,10 +20,17 @@ import publicCoursesRouter from './public/courses.routes';
 
 const router = Router();
 
+// ── Route-specific limiters ───────────────────────────────────────────────────
+router.post('/auth/login', loginLimiter);
+router.post('/auth/password-reset/request', passwordResetRequestLimiter);
+router.post('/auth/password-reset/confirm', passwordResetConfirmLimiter);
+router.post('/student/quizzes/:quizId/attempt', authenticate, quizAttemptLimiter);
+
+// ── Public routes ─────────────────────────────────────────────────────────────
 router.use(publicCoursesRouter);
 router.use(authRouter);
 
-// All /admin/* routes require a valid JWT and admin role
+// ── Admin routes ──────────────────────────────────────────────────────────────
 router.use('/admin', authenticate, isAdmin);
 router.use(adminCoursesRouter);
 router.use(adminModulesRouter);
@@ -25,12 +38,12 @@ router.use(adminQuizzesRouter);
 router.use(adminUsersRouter);
 router.use(adminEnrollmentsRouter);
 
-// All /student/* routes require a valid JWT (any role)
+// ── Student routes ────────────────────────────────────────────────────────────
 router.use('/student', authenticate);
 router.use(studentCoursesRouter);
 router.use(studentQuizRouter);
 
-// Public certificate verification — no auth
+// ── Certificate routes ────────────────────────────────────────────────────────
 router.use(certificatesRouter);
 
 export default router;

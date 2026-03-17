@@ -185,7 +185,7 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
                           onChange={() => toggleOption(q.id, opt.id)}
                           className="accent-[#3D006B]"
                         />
-                        <span className="font-body text-sm text-[#374151]">{opt.text}</span>
+                        <span className="font-body text-sm text-[#374151] flex-1 min-w-0">{opt.text}</span>
                       </label>
                     );
                   })}
@@ -216,7 +216,7 @@ function MarkedQuestionRow({ question, index, isCourseQuiz }: { question: Marked
         {question.isCorrect
           ? <CheckCircle size={16} className="text-green-600 shrink-0" />
           : <XCircle size={16} className="text-red-500 shrink-0" />}
-        <p className="font-body text-sm font-medium text-[#0F0F0F]">
+        <p className="font-body text-sm font-medium text-[#0F0F0F] min-w-0">
           {index + 1}. {question.text}
         </p>
       </div>
@@ -229,33 +229,34 @@ function MarkedQuestionRow({ question, index, isCourseQuiz }: { question: Marked
                 key={opt.id}
                 className={cn(
                   'flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-body',
-                  question.isCorrect && opt.isCorrect ? 'border-green-500 bg-green-50 text-green-800' :
+                  question.isCorrect && opt.wasChosen ? 'border-green-500 bg-green-50 text-green-800' :
                   !question.isCorrect && opt.wasChosen ? 'border-red-400 bg-red-50 text-red-700' :
                   'border-[#E5E7EB] text-[#6B7280]',
                 )}
               >
-                <span className="flex-1">{opt.text}</span>
-                {question.isCorrect && opt.isCorrect && <CheckCircle size={14} className="text-green-600 shrink-0" />}
+                <span className="flex-1 min-w-0">{opt.text}</span>
+                {question.isCorrect && opt.wasChosen && <CheckCircle size={14} className="text-green-600 shrink-0" />}
                 {!question.isCorrect && opt.wasChosen && <XCircle size={14} className="text-red-500 shrink-0" />}
               </div>
             );
           }
 
           // Module quiz: full feedback — green (correct+chosen), blue dotted (correct+unchosen), red (wrong+chosen)
+          const autoAwarded = question.isCorrect && !opt.isCorrect;
           return (
             <div
               key={opt.id}
               className={cn(
                 'flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-body',
-                opt.isCorrect && opt.wasChosen && 'border-green-500 bg-green-50 text-green-800',
-                opt.isCorrect && !opt.wasChosen && 'border-dashed border-blue-400 bg-blue-50/40 text-blue-700',
-                !opt.isCorrect && opt.wasChosen && 'border-red-400 bg-red-50 text-red-700',
-                !opt.isCorrect && !opt.wasChosen && 'border-[#E5E7EB] text-[#6B7280]',
+                opt.wasChosen && (opt.isCorrect || autoAwarded) && 'border-green-500 bg-green-50 text-green-800',
+                opt.isCorrect && !opt.wasChosen && !autoAwarded && 'border-dashed border-blue-400 bg-blue-50/40 text-blue-700',
+                !opt.isCorrect && opt.wasChosen && !question.isCorrect && 'border-red-400 bg-red-50 text-red-700',
+                !opt.wasChosen && (!opt.isCorrect || autoAwarded) && 'border-[#E5E7EB] text-[#6B7280]',
               )}
             >
               <span className="flex-1">{opt.text}</span>
-              {opt.isCorrect && opt.wasChosen && <CheckCircle size={14} className="text-green-600 shrink-0" />}
-              {!opt.isCorrect && opt.wasChosen && <XCircle size={14} className="text-red-500 shrink-0" />}
+              {opt.wasChosen && (opt.isCorrect || autoAwarded) && <CheckCircle size={14} className="text-green-600 shrink-0" />}
+              {!opt.isCorrect && opt.wasChosen && !question.isCorrect && <XCircle size={14} className="text-red-500 shrink-0" />}
             </div>
           );
         })}

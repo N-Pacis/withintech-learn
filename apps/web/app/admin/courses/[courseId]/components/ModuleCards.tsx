@@ -84,6 +84,12 @@ export function ModuleCards({ courseId, isDraft }: { courseId: string; isDraft: 
                 <p className="font-body text-xs text-[#9CA3AF] mt-0.5">Module {mod.orderIndex}</p>
               </div>
 
+              {!mod.hasQuiz && (
+                <span className="shrink-0 px-2 py-0.5 rounded font-body text-xs font-medium bg-amber-50 text-amber-600 border border-amber-200">
+                  No quiz
+                </span>
+              )}
+
               <div className="flex items-center gap-2 shrink-0">
                 {confirmingId === mod.id ? (
                   <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>

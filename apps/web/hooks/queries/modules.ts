@@ -9,6 +9,7 @@ export interface Module {
   courseId: string;
   title: string;
   orderIndex: number;
+  hasQuiz: boolean;
   createdAt: string;
   updatedAt: string;
 }
