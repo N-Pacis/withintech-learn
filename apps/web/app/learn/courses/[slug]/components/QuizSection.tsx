@@ -185,7 +185,7 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
                           onChange={() => toggleOption(q.id, opt.id)}
                           className="accent-[#3D006B] mt-0.5 shrink-0"
                         />
-                        <span className="font-body text-sm text-[#374151] min-w-0 break-words">{opt.text}</span>
+                        <span className="font-body text-sm text-[#374151] flex-1 min-w-0 break-words">{opt.text}</span>
                       </label>
                     );
                   })}
