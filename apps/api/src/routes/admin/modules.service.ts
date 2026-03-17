@@ -22,7 +22,12 @@ export const addModule = async (courseId: string, data: { title: string; orderIn
 export const listModules = async (courseId: string) => {
   const course = await prisma.course.findUnique({ where: { id: courseId } });
   if (!course) throw notFound('Course not found');
-  return prisma.module.findMany({ where: { courseId }, orderBy: { orderIndex: 'asc' } });
+  const modules = await prisma.module.findMany({
+    where: { courseId },
+    orderBy: { orderIndex: 'asc' },
+    include: { quiz: { select: { id: true } } },
+  });
+  return modules.map(({ quiz, ...mod }) => ({ ...mod, hasQuiz: !!quiz }));
 };
 
 export const getModule = async (id: string) => {

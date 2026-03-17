@@ -143,6 +143,7 @@ function AddOptionRow({
 }) {
   const [text, setText] = useState('');
   const [isCorrect, setIsCorrect] = useState(false);
+  const [showHint, setShowHint] = useState(false);
   const { mutateAsync: addOption, isPending } = useAddOption(cacheKey);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -151,6 +152,7 @@ function AddOptionRow({
   async function handleSave() {
     const trimmed = text.trim();
     if (!trimmed) { onDone(); return; }
+    setShowHint(false);
     await addOption({ questionId, text: trimmed, isCorrect, orderIndex: nextOrderIndex });
     setText('');
     setIsCorrect(false);
@@ -164,7 +166,7 @@ function AddOptionRow({
 
   return (
     <div className="flex flex-col gap-2">
-      <SaveWarning message={<>Press <span className="font-medium">Enter</span> or click <span className="font-medium">Add</span> to save.</>} />
+      {showHint && <SaveWarning message={<>Press <span className="font-medium">Enter</span> or click <span className="font-medium">Add</span> to save.</>} />}
       <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-[#F9FAFB] border border-[#E5E7EB]">
         <CorrectCheckbox checked={isCorrect} onChange={setIsCorrect} disabled={isPending} />
         <input
@@ -172,6 +174,7 @@ function AddOptionRow({
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onFocus={() => setShowHint(true)}
           onKeyDown={handleKeyDown}
           placeholder="New option…"
           disabled={isPending}
@@ -329,12 +332,20 @@ function QuestionCard({
       </div>
 
       {/* Validation hints */}
-      {(sortedOptions.length === 0 || correctCount === 0) && (
+      {sortedOptions.length === 0 && (
         <div className="px-5 pb-4">
           <p className="font-body text-xs text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg">
-            {sortedOptions.length === 0
-              ? 'Add at least two options to this question.'
-              : 'Mark at least one option as correct.'}
+            Add at least two options to this question.
+          </p>
+        </div>
+      )}
+      {sortedOptions.length > 0 && correctCount === 0 && (
+        <div className="px-5 pb-4">
+          <p className="font-body text-sm font-medium text-red-600 bg-red-50 border border-red-200 px-4 py-2.5 rounded-lg flex items-center gap-2">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            You must mark at least one option as correct before adding another question.
           </p>
         </div>
       )}
@@ -553,6 +564,9 @@ function QuizEditor({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unknown
   const { mutate: deleteQuiz, isPending: deletingQuiz } = useDeleteQuiz(cacheKey);
 
   const sortedQuestions = [...quiz.questions].sort((a, b) => a.orderIndex - b.orderIndex);
+  const hasInvalidQuestion = sortedQuestions.some(
+    (q) => q.options.filter((o) => o.isCorrect).length === 0,
+  );
 
   async function handleAddQuestion() {
     const q = await addQuestion({
@@ -597,7 +611,7 @@ function QuizEditor({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unknown
         />
       ))}
 
-      <Button variant="secondary" size="md" loading={addingQuestion} onClick={handleAddQuestion} className="w-full">
+      <Button variant="secondary" size="md" loading={addingQuestion} disabled={hasInvalidQuestion} onClick={handleAddQuestion} className="w-full">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
         </svg>

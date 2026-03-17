@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import CodeMirror from '@uiw/react-codemirror';
+import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
 import { javascript } from '@codemirror/lang-javascript';
@@ -71,7 +71,7 @@ export function CodeEditor({
       {/* Editor */}
       <CodeMirror
         value={value}
-        extensions={getExtension(language)}
+        extensions={[...getExtension(language), ...(readOnly ? [EditorView.lineWrapping] : [])]}
         onChange={handleChange}
         readOnly={readOnly}
         theme="dark"

@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand, PutBucketCorsCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl as awsGetSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
@@ -38,4 +38,20 @@ export const deleteFromS3 = async (storageKey: string): Promise<void> => {
 export const getSignedUrl = async (storageKey: string): Promise<string> => {
   const command = new GetObjectCommand({ Bucket: BUCKET(), Key: storageKey });
   return awsGetSignedUrl(s3(), command, { expiresIn: 3600 });
+};
+
+export const configureBucketCors = async (): Promise<void> => {
+  const allowedOrigins = [process.env.APP_URL].filter(Boolean) as string[];
+  if (process.env.NODE_ENV !== 'production') allowedOrigins.push('http://localhost:3000');
+  await s3().send(new PutBucketCorsCommand({
+    Bucket: BUCKET(),
+    CORSConfiguration: {
+      CORSRules: [{
+        AllowedHeaders: ['*'],
+        AllowedMethods: ['GET'],
+        AllowedOrigins: allowedOrigins,
+        MaxAgeSeconds: 3600,
+      }],
+    },
+  }));
 };

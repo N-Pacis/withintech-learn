@@ -49,11 +49,13 @@ export const submitQuiz = async (userId: string, quizId: string, answers: Submit
     const chosenIds = answerMap.get(question.id) ?? [];
     const correctIds = question.options.filter((o) => o.isCorrect).map((o) => o.id);
 
-    // A question is correct only if chosen set exactly matches correct set
+    // A question is correct only if chosen set exactly matches correct set.
+    // If the question has no correct options configured, award the mark automatically.
     const chosenSet = new Set(chosenIds);
     const correctSet = new Set(correctIds);
     const isCorrect =
-      chosenSet.size === correctSet.size && [...chosenSet].every((id) => correctSet.has(id));
+      correctSet.size === 0 ||
+      (chosenSet.size === correctSet.size && [...chosenSet].every((id) => correctSet.has(id)));
 
     if (isCorrect) correctCount++;
 
