@@ -103,6 +103,9 @@ jobs:
           script_stop: true
           script: |
             cd $HOME/withintech-learn
+            # Resolve failed migration state if any
+            docker compose run --rm --no-deps api \
+              npx prisma migrate resolve --applied 20260317115741_init || true
             docker compose run --rm --no-deps api \
               npx prisma migrate deploy
             docker compose run --rm --no-deps api \
