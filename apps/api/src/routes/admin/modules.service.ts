@@ -90,7 +90,7 @@ export const listBlocks = async (moduleId: string) => {
   })));
 };
 
-export const updateBlock = async (id: string, data: { content?: string; caption?: string }) => {
+export const updateBlock = async (id: string, data: { content?: string; caption?: string; language?: string }) => {
   const block = await prisma.moduleBlock.findUnique({ where: { id } });
   if (!block) throw notFound('Block not found');
   return prisma.moduleBlock.update({ where: { id }, data });
