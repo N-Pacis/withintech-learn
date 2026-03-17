@@ -10,10 +10,6 @@ async function main() {
     console.log(`Admin already exists (${result.email}) — skipping.`);
     return;
   }
-  console.log('Admin seeded successfully.');
-  console.log(`Email:    ${result.email}`);
-  console.log(`Password: ${result.password}`);
-  console.log('Store this password — it will not be shown again.');
 }
 
 main()
