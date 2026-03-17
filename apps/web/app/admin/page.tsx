@@ -27,7 +27,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
         {statCards.map(({ label, value, href }) => {
           const card = (
-            <div className={`bg-white rounded-xl border border-[#E5E7EB] px-6 py-5${href ? ' hover:border-[#3D006B]/30 transition-colors cursor-pointer' : ''}`}>
+            <div className={`bg-white rounded-xl border border-[#E5E7EB] px-6 py-5 ${href ? ' hover:border-[#3D006B]/30 transition-colors cursor-pointer' : ''}`}>
               <p className="font-body text-xs text-[#6B7280] uppercase tracking-widest mb-2">{label}</p>
               <p className="font-heading font-bold text-3xl text-[#0F0F0F]">{value}</p>
             </div>

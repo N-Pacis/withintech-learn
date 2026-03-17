@@ -160,8 +160,8 @@ export default function CoursePage() {
   const [canComplete, setCanComplete] = useState(false);
   const [courseQuizPassed, setCourseQuizPassed] = useState(false);
 
-  useEffect(() => {
-    if (!course) return;
+  const [prevCourseId, setPrevCourseId] = useState<string | undefined>(course?.id);
+  if (course && course.id !== prevCourseId) {
     const ids = new Set(course.modules.filter((m) => m.isCompleted).map((m) => m.id));
     setCompletedIds(ids);
     setCourseQuizPassed(course.lastCourseQuizAttempt?.status === 'pass');
@@ -176,7 +176,8 @@ export default function CoursePage() {
     } else {
       setCurrentIndex(firstIncomplete);
     }
-  }, [course?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+    setPrevCourseId(course.id);
+  }
 
   const handleCanCompleteChange = useCallback((v: boolean) => setCanComplete(v), []);
 
@@ -254,7 +255,6 @@ export default function CoursePage() {
   const isFirst = currentIndex === 0;
   const isLast = !isOnQuizStep && currentIndex === modules.length - 1;
   const isCurrentCompleted = currentModule ? completedIds.has(currentModule.id) : false;
-  const allModulesDone = modules.every((m) => completedIds.has(m.id));
   const isCoursePassed = course.enrollment_status === 'PASSED';
   const certHref = `/certificates/${profile?.id}/${course.slug}`;
 

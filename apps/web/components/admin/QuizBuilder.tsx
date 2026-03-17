@@ -42,7 +42,7 @@ function CorrectCheckbox({
       onClick={() => onChange(!checked)}
       title={checked ? 'Mark as incorrect' : 'Mark as correct'}
       className={cn(
-        'w-[18px] h-[18px] rounded flex items-center justify-center border-2 shrink-0 transition-all duration-150',
+        'w-4.5 h-4.5 rounded flex items-center justify-center border-2 shrink-0 transition-all duration-150',
         checked
           ? 'bg-[#3D006B] border-[#3D006B]'
           : 'bg-white border-[#D1D5DB] hover:border-[#3D006B]/60',
@@ -70,11 +70,15 @@ function OptionRow({
   readOnly?: boolean;
 }) {
   const [text, setText] = useState(option.text);
+  const [prevPropText, setPrevPropText] = useState(option.text);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { mutate: updateOption, isPending } = useUpdateOption(cacheKey);
   const { mutate: deleteOption, isPending: deleting } = useDeleteOption(cacheKey);
 
-  useEffect(() => { setText(option.text); }, [option.text]);
+  if (option.text !== prevPropText) {
+    setText(option.text);
+    setPrevPropText(option.text);
+  }
 
   function handleBlur() {
     if (readOnly) return;
@@ -215,13 +219,17 @@ function QuestionCard({
   readOnly?: boolean;
 }) {
   const [text, setText] = useState(question.text);
-  const [addingOption, setAddingOption] = useState(!!autoFocus);
+  const [prevPropText, setPrevPropText] = useState(question.text);
+  const [addingOption, setAddingOption] = useState(autoFocus);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { mutate: updateQuestion, isPending: saving } = useUpdateQuestion(cacheKey);
   const { mutate: deleteQuestion, isPending: deleting } = useDeleteQuestion(cacheKey);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => { setText(question.text); }, [question.text]);
+  if (question.text !== prevPropText) {
+    setText(question.text);
+    setPrevPropText(question.text);
+  }
 
   useEffect(() => {
     if (autoFocus) {
@@ -361,12 +369,14 @@ function QuizSettings({ quiz, cacheKey, readOnly }: { quiz: Quiz; cacheKey: read
   const [error, setError] = useState('');
   const { mutateAsync: updateQuiz, isPending } = useUpdateQuiz(cacheKey);
 
-  useEffect(() => {
+  const [prevQuizId, setPrevQuizId] = useState(quiz.id);
+  if (quiz.id !== prevQuizId) {
+    setPrevQuizId(quiz.id);
     setTitle(quiz.title);
     setPassingScore(String(quiz.passingScore));
     setMaxAttempts(String(quiz.maxAttempts));
     setDirty(false);
-  }, [quiz.id]);
+  }
 
   function mark(field: 'title' | 'ps' | 'ma', value: string) {
     if (readOnly) return;
@@ -574,9 +584,6 @@ function QuizEditor({ quiz, cacheKey, readOnly }: { quiz: Quiz; cacheKey: readon
   const { mutate: deleteQuiz, isPending: deletingQuiz } = useDeleteQuiz(cacheKey);
 
   const sortedQuestions = [...quiz.questions].sort((a, b) => a.orderIndex - b.orderIndex);
-  const hasInvalidQuestion = sortedQuestions.some(
-    (q) => q.options.length > 0 && q.options.filter((o) => o.isCorrect).length === 0,
-  );
 
   async function handleAddQuestion() {
     const invalidQuestions = sortedQuestions.filter(
@@ -614,7 +621,7 @@ function QuizEditor({ quiz, cacheKey, readOnly }: { quiz: Quiz; cacheKey: readon
             </svg>
           </div>
           <p className="font-body text-sm text-[#6B7280] mb-1">No questions yet</p>
-          {!readOnly && <p className="font-body text-xs text-[#9CA3AF]">Click "Add Question" to get started.</p>}
+          {!readOnly && <p className="font-body text-xs text-[#9CA3AF]">Click &#34;Add Question&#34; to get started.</p>}
         </div>
       )}
 

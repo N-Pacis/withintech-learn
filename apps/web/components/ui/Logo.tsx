@@ -10,7 +10,7 @@ interface LogoProps {
   variant?: 'default' | 'sidebar';
 }
 
-export default function Logo({ className, linked = true, variant = 'default' }: LogoProps) {
+export default function Logo({ className, linked = true }: LogoProps) {
   const src = '/logo.png';
   const img = (
     <Image
