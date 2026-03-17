@@ -175,7 +175,7 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
                       <label
                         key={opt.id}
                         className={cn(
-                          'flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-colors',
+                          'flex items-start gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-colors',
                           chosen ? 'border-[#3D006B] bg-[#F3E8FF]' : 'border-[#E5E7EB] hover:border-[#D1D5DB]',
                         )}
                       >
@@ -183,9 +183,9 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
                           type="checkbox"
                           checked={chosen}
                           onChange={() => toggleOption(q.id, opt.id)}
-                          className="accent-[#3D006B]"
+                          className="accent-[#3D006B] mt-0.5 shrink-0"
                         />
-                        <span className="font-body text-sm text-[#374151] flex-1 min-w-0">{opt.text}</span>
+                        <span className="font-body text-sm text-[#374151] min-w-0 break-words">{opt.text}</span>
                       </label>
                     );
                   })}
@@ -228,15 +228,15 @@ function MarkedQuestionRow({ question, index, isCourseQuiz }: { question: Marked
               <div
                 key={opt.id}
                 className={cn(
-                  'flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-body',
+                  'flex items-start gap-3 px-4 py-3 rounded-xl border text-sm font-body',
                   question.isCorrect && opt.wasChosen ? 'border-green-500 bg-green-50 text-green-800' :
                   !question.isCorrect && opt.wasChosen ? 'border-red-400 bg-red-50 text-red-700' :
                   'border-[#E5E7EB] text-[#6B7280]',
                 )}
               >
-                <span className="flex-1 min-w-0">{opt.text}</span>
-                {question.isCorrect && opt.wasChosen && <CheckCircle size={14} className="text-green-600 shrink-0" />}
-                {!question.isCorrect && opt.wasChosen && <XCircle size={14} className="text-red-500 shrink-0" />}
+                <span className="flex-1 min-w-0 break-words">{opt.text}</span>
+                {question.isCorrect && opt.wasChosen && <CheckCircle size={14} className="text-green-600 shrink-0 mt-0.5" />}
+                {!question.isCorrect && opt.wasChosen && <XCircle size={14} className="text-red-500 shrink-0 mt-0.5" />}
               </div>
             );
           }
@@ -254,9 +254,9 @@ function MarkedQuestionRow({ question, index, isCourseQuiz }: { question: Marked
                 !opt.wasChosen && (!opt.isCorrect || autoAwarded) && 'border-[#E5E7EB] text-[#6B7280]',
               )}
             >
-              <span className="flex-1">{opt.text}</span>
-              {opt.wasChosen && (opt.isCorrect || autoAwarded) && <CheckCircle size={14} className="text-green-600 shrink-0" />}
-              {!opt.isCorrect && opt.wasChosen && !question.isCorrect && <XCircle size={14} className="text-red-500 shrink-0" />}
+              <span className="flex-1 min-w-0 break-words">{opt.text}</span>
+              {opt.wasChosen && (opt.isCorrect || autoAwarded) && <CheckCircle size={14} className="text-green-600 shrink-0 mt-0.5" />}
+              {!opt.isCorrect && opt.wasChosen && !question.isCorrect && <XCircle size={14} className="text-red-500 shrink-0 mt-0.5" />}
             </div>
           );
         })}
