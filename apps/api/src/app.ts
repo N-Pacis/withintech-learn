@@ -47,17 +47,17 @@ app.get('/health/full', async (_req, res) => {
 
   try {
     await prisma.$queryRaw`SELECT 1`;
-    checks.postgres = 'up';
+    checks.database = 'up';
   } catch {
-    checks.postgres = 'down';
+    checks.database = 'down';
     degraded = true;
   }
 
   try {
     await redis.ping();
-    checks.redis = 'up';
+    checks.cache = 'up';
   } catch {
-    checks.redis = 'down';
+    checks.cache = 'down';
     degraded = true;
   }
 

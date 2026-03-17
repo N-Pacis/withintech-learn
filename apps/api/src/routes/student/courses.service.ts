@@ -2,6 +2,7 @@ import { prisma } from '../../db/prisma';
 import { getSignedUrl } from '../../services/storage.service';
 import { notFound, badRequest, forbidden } from '../../utils/errors';
 import { upsertCertificate } from './certificates.service';
+import { getCachedCourse, getCachedModule, buildAndCacheCourse } from '../../services/course-cache.service';
 
 const withThumbnailUrl = async <T extends { thumbnailKey: string | null }>(course: T) => {
   if (!course.thumbnailKey) return { ...course, thumbnailUrl: null };
@@ -101,69 +102,60 @@ export const listPublishedCourses = async ({
 
 // Returns course info + module list with completion status
 export const getPublishedCourseBySlug = async (slug: string, userId: string) => {
-  const course = await prisma.course.findFirst({
-    where: { slug, status: 'published' },
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-      description: true,
-      thumbnailKey: true,
-      status: true,
-      modules: {
-        orderBy: { orderIndex: 'asc' },
-        select: { id: true, title: true, orderIndex: true },
-      },
-      quiz: {
-        select: {
-          id: true,
-          title: true,
-          passingScore: true,
-          questions: {
-            orderBy: { orderIndex: 'asc' },
-            select: {
-              id: true,
-              text: true,
-              orderIndex: true,
-              options: {
-                orderBy: { orderIndex: 'asc' },
-                select: { id: true, text: true, orderIndex: true },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-  if (!course) throw notFound('Course not found');
+  // Try cache first; fall back to DB and populate cache on miss
+  let cached = await getCachedCourse(slug);
+  if (!cached) {
+    const dbCourse = await prisma.course.findFirst({ where: { slug, status: 'published' }, select: { id: true } });
+    if (!dbCourse) throw notFound('Course not found');
+    await buildAndCacheCourse(dbCourse.id);
+    cached = await getCachedCourse(slug);
+  }
+  if (!cached) throw notFound('Course not found');
 
   const enrollment = await prisma.studentCourse.findUnique({
-    where: { studentId_courseId: { studentId: userId, courseId: course.id } },
+    where: { studentId_courseId: { studentId: userId, courseId: cached.id } },
     select: { status: true, enrolledAt: true },
   });
   if (!enrollment) throw forbidden('You must be enrolled to access this course');
 
   const [completedSet, lastCourseQuizAttempt] = await Promise.all([
     prisma.moduleProgress.findMany({
-      where: { userId, moduleId: { in: course.modules.map((m) => m.id) } },
+      where: { userId, moduleId: { in: cached.moduleIds } },
       select: { moduleId: true },
     }).then((rows) => new Set(rows.map((r) => r.moduleId))),
-    course.quiz
+    cached.quiz
       ? prisma.quizAttempt.findFirst({
-          where: { userId, quizId: course.quiz.id },
+          where: { userId, quizId: cached.quiz.id },
           orderBy: { createdAt: 'desc' },
           select: { id: true, score: true, status: true, createdAt: true },
         })
       : null,
   ]);
 
-  const { thumbnailKey, ...rest } = course;
+  // Modules in cache are ordered; fetch titles from cache via module keys
+  const modules = await Promise.all(
+    cached.moduleIds.map(async (moduleId) => {
+      const mod = await getCachedModule(moduleId);
+      return {
+        id: moduleId,
+        title: mod?.title ?? '',
+        orderIndex: mod?.orderIndex ?? 0,
+        isCompleted: completedSet.has(moduleId),
+      };
+    }),
+  );
+
   return {
-    ...rest,
-    ...(await withThumbnailUrl({ thumbnailKey })),
+    id: cached.id,
+    title: cached.title,
+    slug: cached.slug,
+    description: cached.description,
+    status: 'published',
+    ...(await withThumbnailUrl({ thumbnailKey: cached.thumbnailKey })),
     enrollment_status: enrollment.status,
     enrolled_at: enrollment.enrolledAt,
-    modules: course.modules.map((m) => ({ ...m, isCompleted: completedSet.has(m.id) })),
+    modules,
+    quiz: cached.quiz ?? null,
     lastCourseQuizAttempt: lastCourseQuizAttempt ?? null,
   };
 };
@@ -206,61 +198,47 @@ export const completeCourse = async (slug: string, userId: string) => {
 
 // Returns a single module with blocks + quiz (no isCorrect) + last attempt
 export const getStudentModule = async (slug: string, moduleId: string, userId: string) => {
-  const course = await prisma.course.findFirst({
-    where: { slug, status: 'published' },
-    select: { id: true },
-  });
-  if (!course) throw notFound('Course not found');
+  // Verify enrollment via course cache (or DB fallback)
+  let cachedCourse = await getCachedCourse(slug);
+  if (!cachedCourse) {
+    const dbCourse = await prisma.course.findFirst({ where: { slug, status: 'published' }, select: { id: true } });
+    if (!dbCourse) throw notFound('Course not found');
+    await buildAndCacheCourse(dbCourse.id);
+    cachedCourse = await getCachedCourse(slug);
+  }
+  if (!cachedCourse) throw notFound('Course not found');
 
   const enrollment = await prisma.studentCourse.findUnique({
-    where: { studentId_courseId: { studentId: userId, courseId: course.id } },
+    where: { studentId_courseId: { studentId: userId, courseId: cachedCourse.id } },
   });
   if (!enrollment) throw forbidden('You must be enrolled to access this course');
 
-  const mod = await prisma.module.findFirst({
-    where: { id: moduleId, courseId: course.id },
-    include: {
-      blocks: { orderBy: { orderIndex: 'asc' } },
-      quiz: {
-        select: {
-          id: true,
-          title: true,
-          passingScore: true,
-          questions: {
-            orderBy: { orderIndex: 'asc' },
-            select: {
-              id: true,
-              text: true,
-              orderIndex: true,
-              options: {
-                orderBy: { orderIndex: 'asc' },
-                select: { id: true, text: true, orderIndex: true }, // isCorrect intentionally excluded
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-  if (!mod) throw notFound('Module not found');
+  // Try module cache; fall back to DB
+  let cachedMod = await getCachedModule(moduleId);
+  if (!cachedMod) {
+    await buildAndCacheCourse(cachedCourse.id);
+    cachedMod = await getCachedModule(moduleId);
+  }
+  if (!cachedMod || !cachedCourse.moduleIds.includes(moduleId)) throw notFound('Module not found');
 
+  // Signed URLs for image blocks are generated fresh (presigned URLs expire in 1h)
   const [blocks, lastAttempt] = await Promise.all([
     Promise.all(
-      mod.blocks.map(async (b) => ({
+      cachedMod.blocks.map(async (b) => ({
         ...b,
         url: b.type === 'image' && b.storageKey ? await getSignedUrl(b.storageKey) : null,
       })),
     ),
-    mod.quiz
+    cachedMod.quiz
       ? prisma.quizAttempt.findFirst({
-          where: { userId, quizId: mod.quiz.id },
+          where: { userId, quizId: cachedMod.quiz!.id },
           orderBy: { createdAt: 'desc' },
           select: { id: true, score: true, status: true, createdAt: true },
         })
       : null,
   ]);
 
-  return { ...mod, blocks, lastAttempt: lastAttempt ?? null };
+  return { ...cachedMod, blocks, lastAttempt: lastAttempt ?? null };
 };
 
 export const completeModule = async (slug: string, moduleId: string, userId: string) => {

@@ -1,6 +1,7 @@
 import { prisma } from '../../db/prisma';
 import { badRequest, notFound } from '../../utils/errors';
 import { uploadToS3, deleteFromS3, getSignedUrl } from '../../services/storage.service';
+import { buildAndCacheCourse, invalidateCourseCache } from '../../services/course-cache.service';
 
 const toSlug = (title: string) =>
   title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -77,14 +78,18 @@ export const publishCourse = async (id: string) => {
   if (course.modules.length === 0) throw badRequest('Cannot publish a course with no modules');
   const emptyModule = course.modules.find(m => m.blocks.length === 0);
   if (emptyModule) throw badRequest(`Module "${emptyModule.title}" has no blocks`);
-  return prisma.course.update({ where: { id }, data: { status: 'published' } });
+  const updated = await prisma.course.update({ where: { id }, data: { status: 'published' } });
+  await buildAndCacheCourse(id);
+  return updated;
 };
 
 export const archiveCourse = async (id: string) => {
   const course = await prisma.course.findUnique({ where: { id } });
   if (!course) throw notFound('Course not found');
   if (course.status !== 'published') throw badRequest('Only published courses can be archived');
-  return prisma.course.update({ where: { id }, data: { status: 'archived' } });
+  const updated = await prisma.course.update({ where: { id }, data: { status: 'archived' } });
+  await invalidateCourseCache(course.slug);
+  return updated;
 };
 
 export const uploadThumbnail = async (id: string, file: Express.Multer.File) => {

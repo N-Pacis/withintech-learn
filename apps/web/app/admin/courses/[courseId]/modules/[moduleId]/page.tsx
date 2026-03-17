@@ -126,17 +126,7 @@ export default function ModuleDetailPage() {
         isDraft ? (
           <QuizBuilder moduleId={moduleId} />
         ) : (
-          <div className="flex flex-col items-center text-center py-12 border-2 border-dashed border-[#E5E7EB] rounded-xl">
-            <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center mb-3">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
-            </div>
-            <h3 className="font-heading font-bold text-sm text-[#0F0F0F] mb-1">Quiz locked</h3>
-            <p className="font-body text-xs text-[#9CA3AF] max-w-xs">
-              This course is {course?.status}. Quizzes cannot be added or modified after a course is published.
-            </p>
-          </div>
+          <QuizBuilder moduleId={moduleId} readOnly />
         )
       )}
 

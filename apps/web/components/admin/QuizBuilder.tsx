@@ -62,9 +62,11 @@ function CorrectCheckbox({
 function OptionRow({
   option,
   cacheKey,
+  readOnly,
 }: {
   option: QuestionOption;
   cacheKey: readonly unknown[];
+  readOnly?: boolean;
 }) {
   const [text, setText] = useState(option.text);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -74,31 +76,32 @@ function OptionRow({
   useEffect(() => { setText(option.text); }, [option.text]);
 
   function handleBlur() {
+    if (readOnly) return;
     const trimmed = text.trim();
     if (!trimmed) { setText(option.text); return; }
     if (trimmed !== option.text) updateOption({ id: option.id, text: trimmed });
   }
 
   return (
-    <div className="group flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-[#FAFAFA] transition-colors">
+    <div className="group flex items-start gap-3 px-4 py-2.5 rounded-lg hover:bg-[#FAFAFA] transition-colors">
       <CorrectCheckbox
         checked={option.isCorrect}
         onChange={(val) => updateOption({ id: option.id, isCorrect: val })}
-        disabled={isPending}
+        disabled={isPending || readOnly}
       />
 
-      <input
-        type="text"
+      <textarea
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => { if (readOnly) return; setText(e.target.value); e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
         onBlur={handleBlur}
-        onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
-        disabled={isPending}
+        onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); e.currentTarget.blur(); } }}
+        disabled={isPending || readOnly}
         placeholder="Option text"
-        className="flex-1 font-body text-sm text-[#0F0F0F] bg-transparent border-b border-transparent focus:border-[#3D006B]/40 focus:outline-none placeholder:text-[#9CA3AF] transition-colors py-0.5 min-w-0"
+        rows={1}
+        className="flex-1 font-body text-sm text-[#0F0F0F] bg-transparent border-b border-transparent focus:border-[#3D006B]/40 focus:outline-none placeholder:text-[#9CA3AF] transition-colors py-0.5 min-w-0 resize-none overflow-hidden leading-relaxed disabled:cursor-default"
       />
 
-      {!isPending && (
+      {!readOnly && !isPending && (
         confirmDelete ? (
           <div className="flex items-center gap-1.5 shrink-0" onMouseLeave={() => setConfirmDelete(false)}>
             <button
@@ -202,11 +205,13 @@ function QuestionCard({
   cacheKey,
   number,
   autoFocus,
+  readOnly,
 }: {
   question: Question;
   cacheKey: readonly unknown[];
   number: number;
   autoFocus?: boolean;
+  readOnly?: boolean;
 }) {
   const [text, setText] = useState(question.text);
   const [addingOption, setAddingOption] = useState(!!autoFocus);
@@ -225,6 +230,7 @@ function QuestionCard({
   }, [autoFocus]);
 
   function handleTextBlur() {
+    if (readOnly) return;
     const trimmed = text.trim();
     if (!trimmed) { setText(question.text); return; }
     if (trimmed !== question.text) updateQuestion({ id: question.id, text: trimmed });
@@ -249,8 +255,9 @@ function QuestionCard({
             onChange={(e) => setText(e.target.value)}
             onBlur={handleTextBlur}
             rows={2}
+            disabled={readOnly}
             placeholder="Enter your question…"
-            className="w-full font-body text-sm text-[#0F0F0F] bg-transparent resize-none leading-relaxed border-b border-[#E5E7EB] focus:border-[#3D006B]/50 focus:outline-none placeholder:text-[#9CA3AF] transition-colors"
+            className="w-full font-body text-sm text-[#0F0F0F] bg-transparent resize-none leading-relaxed border-b border-[#E5E7EB] focus:border-[#3D006B]/50 focus:outline-none placeholder:text-[#9CA3AF] transition-colors disabled:cursor-default"
           />
           {saving && (
             <p className="font-body text-xs text-[#9CA3AF] mt-1">Saving…</p>
@@ -258,7 +265,7 @@ function QuestionCard({
         </div>
 
         {/* Delete question */}
-        {confirmDelete ? (
+        {!readOnly && (confirmDelete ? (
           <div className="flex items-center gap-2 shrink-0" onMouseLeave={() => setConfirmDelete(false)}>
             <button
               onClick={() => deleteQuestion(question.id)}
@@ -284,7 +291,7 @@ function QuestionCard({
               <path d="M9 6V4h6v2" />
             </svg>
           </button>
-        )}
+        ))}
       </div>
 
       {/* Options area */}
@@ -304,10 +311,10 @@ function QuestionCard({
         </div>
 
         {sortedOptions.map((option) => (
-          <OptionRow key={option.id} option={option} cacheKey={cacheKey} />
+          <OptionRow key={option.id} option={option} cacheKey={cacheKey} readOnly={readOnly} />
         ))}
 
-        {addingOption && (
+        {!readOnly && addingOption && (
           <div className="mt-1">
             <AddOptionRow
               questionId={question.id}
@@ -318,7 +325,7 @@ function QuestionCard({
           </div>
         )}
 
-        {!addingOption && (
+        {!readOnly && !addingOption && (
           <button
             onClick={() => setAddingOption(true)}
             className="flex items-center gap-2 px-4 py-2 mt-1 font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors rounded-lg hover:bg-[#F3E8FF]/50 w-full text-left"
@@ -331,15 +338,15 @@ function QuestionCard({
         )}
       </div>
 
-      {/* Validation hints */}
-      {sortedOptions.length === 0 && (
+      {/* Validation hints — only in edit mode */}
+      {!readOnly && sortedOptions.length === 0 && (
         <div className="px-5 pb-4">
           <p className="font-body text-xs text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg">
             Add at least two options to this question.
           </p>
         </div>
       )}
-      {sortedOptions.length > 0 && correctCount === 0 && (
+      {!readOnly && sortedOptions.length > 0 && correctCount === 0 && (
         <div className="px-5 pb-4">
           <p className="font-body text-sm font-medium text-red-600 bg-red-50 border border-red-200 px-4 py-2.5 rounded-lg flex items-center gap-2">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
@@ -355,7 +362,7 @@ function QuestionCard({
 
 // ─── Quiz settings card ───────────────────────────────────────────────────────
 
-function QuizSettings({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unknown[] }) {
+function QuizSettings({ quiz, cacheKey, readOnly }: { quiz: Quiz; cacheKey: readonly unknown[]; readOnly?: boolean }) {
   const [title, setTitle] = useState(quiz.title);
   const [passingScore, setPassingScore] = useState(String(quiz.passingScore));
   const [maxAttempts, setMaxAttempts] = useState(String(quiz.maxAttempts));
@@ -371,6 +378,7 @@ function QuizSettings({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unkno
   }, [quiz.id]);
 
   function mark(field: 'title' | 'ps' | 'ma', value: string) {
+    if (readOnly) return;
     if (field === 'title') setTitle(value);
     if (field === 'ps') setPassingScore(value);
     if (field === 'ma') setMaxAttempts(value);
@@ -396,19 +404,28 @@ function QuizSettings({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unkno
     <div className="bg-white border border-[#E5E7EB] rounded-xl p-5">
       <div className="flex items-center justify-between mb-5">
         <h3 className="font-heading font-bold text-sm text-[#0F0F0F]">Quiz Settings</h3>
-        {dirty && <Button size="sm" loading={isPending} onClick={handleSave}>Save settings</Button>}
+        {dirty && !readOnly && <Button size="sm" loading={isPending} onClick={handleSave}>Save settings</Button>}
+        {readOnly && (
+          <span className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 border border-amber-200 rounded-lg">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <span className="font-body text-xs text-amber-700">Locked</span>
+          </span>
+        )}
       </div>
 
       <div className="flex flex-col gap-4">
         <div>
           <label className="font-body text-xs font-medium text-[#374151] block mb-1.5">
-            Quiz Title <span className="text-red-400">*</span>
+            Quiz Title {!readOnly && <span className="text-red-400">*</span>}
           </label>
           <Input
             value={title}
             onChange={(e) => mark('title', e.target.value)}
             placeholder="e.g. Module 1 Assessment"
             maxLength={120}
+            disabled={readOnly}
           />
         </div>
 
@@ -425,6 +442,7 @@ function QuizSettings({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unkno
                 value={passingScore}
                 onChange={(e) => mark('ps', e.target.value)}
                 className="pr-8"
+                disabled={readOnly}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 font-body text-sm text-[#9CA3AF] pointer-events-none">%</span>
             </div>
@@ -440,6 +458,7 @@ function QuizSettings({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unkno
               min={1}
               value={maxAttempts}
               onChange={(e) => mark('ma', e.target.value)}
+              disabled={readOnly}
             />
             <p className="font-body text-xs text-[#9CA3AF] mt-1">Student retry limit</p>
           </div>
@@ -557,7 +576,7 @@ function CreateQuizPanel({
 
 // ─── Quiz editor ──────────────────────────────────────────────────────────────
 
-function QuizEditor({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unknown[] }) {
+function QuizEditor({ quiz, cacheKey, readOnly }: { quiz: Quiz; cacheKey: readonly unknown[]; readOnly?: boolean }) {
   const [confirmDeleteQuiz, setConfirmDeleteQuiz] = useState(false);
   const [newQuestionId, setNewQuestionId] = useState<string | null>(null);
   const { mutateAsync: addQuestion, isPending: addingQuestion } = useAddQuestion(cacheKey);
@@ -579,7 +598,7 @@ function QuizEditor({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unknown
 
   return (
     <div className="flex flex-col gap-5">
-      <QuizSettings quiz={quiz} cacheKey={cacheKey} />
+      <QuizSettings quiz={quiz} cacheKey={cacheKey} readOnly={readOnly} />
 
       <div className="flex items-center gap-3">
         <div className="flex-1 h-px bg-[#E5E7EB]" />
@@ -597,7 +616,7 @@ function QuizEditor({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unknown
             </svg>
           </div>
           <p className="font-body text-sm text-[#6B7280] mb-1">No questions yet</p>
-          <p className="font-body text-xs text-[#9CA3AF]">Click "Add Question" to get started.</p>
+          {!readOnly && <p className="font-body text-xs text-[#9CA3AF]">Click "Add Question" to get started.</p>}
         </div>
       )}
 
@@ -608,44 +627,49 @@ function QuizEditor({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unknown
           cacheKey={cacheKey}
           number={i + 1}
           autoFocus={q.id === newQuestionId}
+          readOnly={readOnly}
         />
       ))}
 
-      <Button variant="secondary" size="md" loading={addingQuestion} disabled={hasInvalidQuestion} onClick={handleAddQuestion} className="w-full">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-        </svg>
-        Add Question
-      </Button>
+      {!readOnly && (
+        <Button variant="secondary" size="md" loading={addingQuestion} disabled={hasInvalidQuestion} onClick={handleAddQuestion} className="w-full">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Add Question
+        </Button>
+      )}
 
-      <div className="border-t border-[#E5E7EB] pt-4">
-        {confirmDeleteQuiz ? (
-          <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-lg">
-            <p className="font-body text-sm text-red-700 flex-1">
-              Delete this quiz and all its questions?
-            </p>
-            <Button variant="danger" size="sm" loading={deletingQuiz} onClick={() => deleteQuiz(quiz.id)}>
-              Delete Quiz
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => setConfirmDeleteQuiz(false)}>
-              Cancel
-            </Button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setConfirmDeleteQuiz(true)}
-            className="font-body text-xs text-[#9CA3AF] hover:text-red-500 transition-colors flex items-center gap-1.5"
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6" />
-              <path d="M19 6l-1 14H6L5 6" />
-              <path d="M10 11v6M14 11v6" />
-              <path d="M9 6V4h6v2" />
-            </svg>
-            Delete quiz
-          </button>
-        )}
-      </div>
+      {!readOnly && (
+        <div className="border-t border-[#E5E7EB] pt-4">
+          {confirmDeleteQuiz ? (
+            <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-lg">
+              <p className="font-body text-sm text-red-700 flex-1">
+                Delete this quiz and all its questions?
+              </p>
+              <Button variant="danger" size="sm" loading={deletingQuiz} onClick={() => deleteQuiz(quiz.id)}>
+                Delete Quiz
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => setConfirmDeleteQuiz(false)}>
+                Cancel
+              </Button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setConfirmDeleteQuiz(true)}
+              className="font-body text-xs text-[#9CA3AF] hover:text-red-500 transition-colors flex items-center gap-1.5"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14H6L5 6" />
+                <path d="M10 11v6M14 11v6" />
+                <path d="M9 6V4h6v2" />
+              </svg>
+              Delete quiz
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -653,19 +677,15 @@ function QuizEditor({ quiz, cacheKey }: { quiz: Quiz; cacheKey: readonly unknown
 // ─── QuizBuilder ──────────────────────────────────────────────────────────────
 
 export type QuizBuilderProps =
-  | { moduleId: string; courseId?: never }
-  | { courseId: string; moduleId?: never };
+  | { moduleId: string; courseId?: never; readOnly?: boolean }
+  | { courseId: string; moduleId?: never; readOnly?: boolean };
 
-function ModuleQuizBuilder({ moduleId }: { moduleId: string }) {
+function ModuleQuizBuilder({ moduleId, readOnly }: { moduleId: string; readOnly?: boolean }) {
   const cacheKey = quizKeys.forModule(moduleId);
   const { data: quiz, isLoading, isError } = useModuleQuiz(moduleId);
   const { mutateAsync: createQuiz } = useCreateModuleQuiz(moduleId);
 
-  if (isLoading) {
-    return (
-      <PageLoader type="list" count={2} />
-    );
-  }
+  if (isLoading) return <PageLoader type="list" count={2} />;
   if (isError) {
     return (
       <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-3 rounded-lg">
@@ -673,20 +693,25 @@ function ModuleQuizBuilder({ moduleId }: { moduleId: string }) {
       </p>
     );
   }
-  if (!quiz) return <CreateQuizPanel onCreate={createQuiz} />;
-  return <QuizEditor quiz={quiz} cacheKey={cacheKey} />;
+  if (!quiz) {
+    if (readOnly) {
+      return (
+        <div className="flex flex-col items-center text-center py-10 border-2 border-dashed border-[#E5E7EB] rounded-xl">
+          <p className="font-body text-sm text-[#9CA3AF]">No quiz was added to this module.</p>
+        </div>
+      );
+    }
+    return <CreateQuizPanel onCreate={createQuiz} />;
+  }
+  return <QuizEditor quiz={quiz} cacheKey={cacheKey} readOnly={readOnly} />;
 }
 
-function CourseQuizBuilder({ courseId }: { courseId: string }) {
+function CourseQuizBuilder({ courseId, readOnly }: { courseId: string; readOnly?: boolean }) {
   const cacheKey = quizKeys.forCourse(courseId);
   const { data: quiz, isLoading, isError } = useCourseQuiz(courseId);
   const { mutateAsync: createQuiz } = useCreateCourseQuiz(courseId);
 
-  if (isLoading) {
-    return (
-      <PageLoader type="list" count={2} />
-    );
-  }
+  if (isLoading) return <PageLoader type="list" count={2} />;
   if (isError) {
     return (
       <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-3 rounded-lg">
@@ -694,12 +719,21 @@ function CourseQuizBuilder({ courseId }: { courseId: string }) {
       </p>
     );
   }
-  if (!quiz) return <CreateQuizPanel onCreate={createQuiz} />;
-  return <QuizEditor quiz={quiz} cacheKey={cacheKey} />;
+  if (!quiz) {
+    if (readOnly) {
+      return (
+        <div className="flex flex-col items-center text-center py-10 border-2 border-dashed border-[#E5E7EB] rounded-xl">
+          <p className="font-body text-sm text-[#9CA3AF]">No quiz was added to this course.</p>
+        </div>
+      );
+    }
+    return <CreateQuizPanel onCreate={createQuiz} />;
+  }
+  return <QuizEditor quiz={quiz} cacheKey={cacheKey} readOnly={readOnly} />;
 }
 
 export function QuizBuilder(props: QuizBuilderProps) {
-  if ('moduleId' in props && props.moduleId) return <ModuleQuizBuilder moduleId={props.moduleId} />;
-  if ('courseId' in props && props.courseId) return <CourseQuizBuilder courseId={props.courseId} />;
+  if ('moduleId' in props && props.moduleId) return <ModuleQuizBuilder moduleId={props.moduleId} readOnly={props.readOnly} />;
+  if ('courseId' in props && props.courseId) return <CourseQuizBuilder courseId={props.courseId} readOnly={props.readOnly} />;
   return null;
 }
