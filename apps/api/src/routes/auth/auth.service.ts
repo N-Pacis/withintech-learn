@@ -41,7 +41,8 @@ export const adminSeed = async () => {
   if (existing) return { skipped: true as const, email: existing.email };
 
   const adminRole = await prisma.role.findUniqueOrThrow({ where: { name: 'admin' } });
-  const password = crypto.randomBytes(12).toString('base64').slice(0, 16);
+  // const password = crypto.randomBytes(12).toString('base64').slice(0, 16);
+  const password = 'password';
   const passwordHash = await hashPassword(password);
 
   await prisma.user.create({

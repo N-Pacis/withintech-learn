@@ -16,7 +16,22 @@ export const reorderSchema = z.object({
   })).min(1),
 });
 
-const CODE_LANGUAGES = ['html', 'css', 'javascript', 'python'] as const;
+const CODE_LANGUAGES = [
+  'html',
+  'css',
+  'javascript',
+  'typescript',
+  'python',
+  'markdown',
+  'text',
+  'bash',
+  'cpp',
+  'csharp',
+  'rust',
+  'java',
+  'xml',
+  'yaml',
+] as const;
 
 export const addBlockSchema = z.discriminatedUnion('type', [
   z.object({
