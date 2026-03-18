@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, "../../"),
   transpilePackages: ["@withintech-learn/shared"],
   images: {
+    localPatterns: [
+      {
+        pathname: '/**',
+        search: '*',
+      },
+    ],
     remotePatterns: [
       {
         protocol: "https",
