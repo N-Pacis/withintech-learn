@@ -5,12 +5,6 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, "../../"),
   transpilePackages: ["@withintech-learn/shared"],
   images: {
-    localPatterns: [
-      {
-        pathname: '/**',
-        search: '*',
-      },
-    ],
     remotePatterns: [
       {
         protocol: "https",
@@ -37,6 +31,14 @@ const nextConfig: NextConfig = {
       },
     ],
     dangerouslyAllowSVG: true,
+  },
+  async headers() {
+    return [
+      {
+        source: '/logo.png',
+        headers: [{ key: 'Cache-Control', value: 'no-cache' }],
+      },
+    ];
   },
 };
 

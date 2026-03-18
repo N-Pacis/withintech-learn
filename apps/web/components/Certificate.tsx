@@ -120,7 +120,7 @@ export function Certificate({ data, domId }: CertificateProps) {
         {/* Logo */}
         <div style={{ marginBottom: em(12) }}>
           <Image
-            src="/logo.png?v=2"
+            src="/logo.png"
             alt="WithinTech Learn"
             width={200}
             height={200}

@@ -11,7 +11,7 @@ interface LogoProps {
 }
 
 export default function Logo({ className, linked = true }: LogoProps) {
-  const src = '/logo.png?v=2';
+  const src = '/logo.png';
   const img = (
     <Image
       src={src}
@@ -20,6 +20,7 @@ export default function Logo({ className, linked = true }: LogoProps) {
       height={1000}
       className={cn('w-auto', className ?? 'h-20')}
       priority
+      unoptimized
     />
   );
 
