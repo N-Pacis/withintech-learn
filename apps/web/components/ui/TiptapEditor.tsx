@@ -308,7 +308,7 @@ export function TiptapEditor({ content, onChange, placeholder = 'Start writingâ€
 
   return (
     <div className={cn('border border-[#E5E7EB] rounded-lg overflow-hidden focus-within:border-[#3D006B] focus-within:ring-2 focus-within:ring-[#3D006B]/10 transition-all', className)}>
-      <style jsx global>{`
+      <style>{`
         .tiptap-editor .tiptap, .tiptap-viewer .tiptap {
           table {
             border-collapse: collapse;
@@ -440,7 +440,7 @@ export function TiptapViewer({ content, className }: TiptapViewerProps) {
 
   return (
     <div className={className}>
-      <style jsx global>{`
+      <style>{`
         .tiptap-editor .tiptap, .tiptap-viewer .tiptap {
           table {
             border-collapse: collapse;
