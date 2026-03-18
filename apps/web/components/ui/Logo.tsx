@@ -11,7 +11,7 @@ interface LogoProps {
 }
 
 export default function Logo({ className, linked = true }: LogoProps) {
-  const src = '/logo.png';
+  const src = '/logo.png?v=2';
   const img = (
     <Image
       src={src}
