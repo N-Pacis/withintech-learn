@@ -13,6 +13,7 @@ import adminModulesRouter from './admin/modules.routes';
 import adminQuizzesRouter from './admin/quizzes.routes';
 import adminUsersRouter from './admin/users.routes';
 import adminEnrollmentsRouter from './admin/enrollments.routes';
+import adminAnalyticsRouter from './admin/analytics.routes';
 import studentCoursesRouter from './student/courses.routes';
 import studentQuizRouter from './student/quiz.routes';
 import certificatesRouter from './student/certificates.routes';
@@ -37,6 +38,7 @@ router.use(adminModulesRouter);
 router.use(adminQuizzesRouter);
 router.use(adminUsersRouter);
 router.use(adminEnrollmentsRouter);
+router.use(adminAnalyticsRouter);
 
 // ── Student routes ────────────────────────────────────────────────────────────
 router.use('/student', authenticate);
