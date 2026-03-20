@@ -7,7 +7,7 @@ import * as enrollmentsService from './enrollments.service';
 
 const listQuerySchema = z.object({
   search: z.string().optional(),
-  course: z.string().optional(),
+  courseId: z.string().optional(),
 });
 
 const router = Router();

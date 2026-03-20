@@ -20,4 +20,6 @@ export { default as Logo } from './Logo';
 export { PasswordInput } from './PasswordInput';
 export { Pagination } from './Pagination';
 export { Table } from './Table';
-export type { Column } from './Table';
+export type { Column, CellValue } from './Table';
+export { Select } from './Select';
+export type { SelectOption } from './Select';

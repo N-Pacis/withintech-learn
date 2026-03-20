@@ -33,7 +33,7 @@ export interface EnrollmentProgress {
 
 export const enrollmentKeys = {
   all: ['enrollments'] as const,
-  list: (params: { search?: string; course?: string }) =>
+  list: (params: { search?: string; courseId?: string }) =>
     [...enrollmentKeys.all, 'list', params] as const,
   progress: (enrollmentId: string) =>
     [...enrollmentKeys.all, 'progress', enrollmentId] as const,
@@ -41,13 +41,13 @@ export const enrollmentKeys = {
 
 // ─── Hooks ───────────────────────────────────────────────────────────────────
 
-export function useEnrollments(params: { search?: string; course?: string }) {
+export function useEnrollments(params: { search?: string; courseId?: string }) {
   return useQuery({
     queryKey: enrollmentKeys.list(params),
     queryFn: async () => {
       const qs = new URLSearchParams();
       if (params.search) qs.set('search', params.search);
-      if (params.course) qs.set('course', params.course);
+      if (params.courseId) qs.set('courseId', params.courseId);
       const res = await apiFetch<Enrollment[]>(`/admin/enrollments?${qs.toString()}`);
       return res.data as Enrollment[];
     },
