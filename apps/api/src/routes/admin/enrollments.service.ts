@@ -2,10 +2,10 @@ import { prisma } from '../../db/prisma';
 
 export interface ListEnrollmentsOptions {
   search?: string;
-  course?: string;
+  courseId?: string;
 }
 
-export async function listEnrollments({ search, course }: ListEnrollmentsOptions) {
+export async function listEnrollments({ search, courseId }: ListEnrollmentsOptions) {
   const enrollments = await prisma.studentCourse.findMany({
     where: {
       ...(search
@@ -18,9 +18,7 @@ export async function listEnrollments({ search, course }: ListEnrollmentsOptions
             },
           }
         : {}),
-      ...(course
-        ? { course: { title: { contains: course, mode: 'insensitive' } } }
-        : {}),
+      ...(courseId ? { courseId } : {}),
     },
     include: {
       student: { select: { id: true, firstName: true, lastName: true } },

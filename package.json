@@ -5,7 +5,7 @@
     "dev": "pnpm --parallel -r dev",
     "build": "pnpm --parallel -r build",
     "lint": "pnpm --parallel -r lint",
-    "backend": "pnpm --filter @withintech-learn/api dev",
+    "backend": "pnpm --filter @withintech-learn/api exec prisma generate && pnpm --filter @withintech-learn/api dev",
     "frontend": "pnpm --filter @withintech-learn/web dev"
   },
   "devDependencies": {
