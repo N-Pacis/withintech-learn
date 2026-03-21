@@ -132,17 +132,3 @@ export async function retention(): Promise<RetentionStats> {
   };
 }
 
-// All three queries run in parallel — total latency = slowest query.
-export async function getAnalytics() {
-  const [trend, courses, ret] = await Promise.all([
-    enrollmentTrend(12),
-    topCourses(5),
-    retention(),
-  ]);
-
-  return {
-    enrollmentTrend: trend,
-    topCourses: courses,
-    retention: ret,
-  };
-}
