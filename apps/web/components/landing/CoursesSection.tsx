@@ -1,8 +1,18 @@
 'use client';
 
 import Link from 'next/link';
+import { MoveRight } from 'lucide-react';
 import { useTopCourses } from '@/hooks/queries/courses';
 import { CourseCard } from '@/components/CourseCard';
+
+const EnrollButton = (
+  <Link
+    href="/sign-in"
+    className="w-full inline-flex items-center justify-center gap-2 font-body font-medium text-sm bg-[#3D006B] text-white px-4 py-2 rounded-md hover:bg-[#2A004A] transition-colors"
+  >
+    Enroll Now <MoveRight size={18} />
+  </Link>
+);
 
 export default function CoursesSection() {
   const { data: courses, isLoading } = useTopCourses();
@@ -32,22 +42,24 @@ export default function CoursesSection() {
           </Link>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-4 items-stretch">
-          {/* Featured card — wider */}
-          <div className="lg:w-[58%]">
+        {/* Cards — stretch when there are enough to fill the row, fixed otherwise */}
+        <div className="flex flex-col lg:flex-row gap-4 lg:items-start">
+          {/* Featured card */}
+          <div className={`w-full shrink-0 ${rest.length > 0 ? 'lg:flex-1' : 'lg:max-w-[520px]'}`}>
             <CourseCard
               course={featured}
               href="/sign-in"
               badge={{ variant: 'orange', label: 'Most Popular' }}
               featured
+              footer={EnrollButton}
             />
           </div>
 
           {/* Remaining cards — stacked */}
           {rest.length > 0 && (
-            <div className="lg:w-[42%] flex flex-col gap-4">
+            <div className={`flex flex-col gap-4 w-full shrink-0 ${rest.length >= 2 ? 'lg:w-[42%]' : 'lg:max-w-[340px]'}`}>
               {rest.map((course) => (
-                <CourseCard key={course.id} course={course} href="/sign-in" />
+                <CourseCard key={course.id} course={course} href="/sign-in" footer={EnrollButton} />
               ))}
             </div>
           )}
