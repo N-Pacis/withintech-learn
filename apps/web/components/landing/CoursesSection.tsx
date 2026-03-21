@@ -48,7 +48,7 @@ export default function CoursesSection() {
           <div className={`w-full shrink-0 ${rest.length > 0 ? 'lg:flex-1' : 'lg:max-w-[520px]'}`}>
             <CourseCard
               course={featured}
-              href="/sign-in"
+              href={`/courses/${featured.slug}`}
               badge={{ variant: 'orange', label: 'Most Popular' }}
               featured
               footer={EnrollButton}
@@ -59,7 +59,7 @@ export default function CoursesSection() {
           {rest.length > 0 && (
             <div className={`flex flex-col gap-4 w-full shrink-0 ${rest.length >= 2 ? 'lg:w-[42%]' : 'lg:max-w-[340px]'}`}>
               {rest.map((course) => (
-                <CourseCard key={course.id} course={course} href="/sign-in" footer={EnrollButton} />
+                <CourseCard key={course.id} course={course} href={`/courses/${course.slug}`} footer={EnrollButton} />
               ))}
             </div>
           )}
