@@ -1,29 +1,44 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminStats } from '@/hooks/queries/users';
 import { useEnrollmentTrend, useTopCourses, useRetention } from '@/hooks/queries/analytics';
 import { EnrollmentTrendChart } from './components/EnrollmentTrendChart';
 import { TopCoursesChart } from './components/TopCoursesChart';
+import { MonthRangePicker } from '@/components/ui';
 import type { RetentionStats } from '@/hooks/queries/analytics';
 
 // ─── Chart card ───────────────────────────────────────────────────────────────
 
-function ChartCard({ title, subtitle, children }: {
+function ChartCard({ title, subtitle, action, children }: {
   title: string;
   subtitle?: string;
+  action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <div className="bg-white rounded-xl border border-[#E5E7EB] px-6 py-5">
-      <div className="mb-4">
-        <p className="font-heading font-bold text-sm text-[#0F0F0F]">{title}</p>
-        {subtitle && <p className="font-body text-xs text-[#9CA3AF] mt-0.5">{subtitle}</p>}
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <p className="font-heading font-bold text-sm text-[#0F0F0F]">{title}</p>
+          {subtitle && <p className="font-body text-xs text-[#9CA3AF] mt-0.5">{subtitle}</p>}
+        </div>
+        {action && <div className="shrink-0">{action}</div>}
       </div>
       {children}
     </div>
   );
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const MIN_MONTH = '2026-03';
+
+function currentMonth() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
@@ -46,42 +61,69 @@ function ChartEmpty({ height = 260, message }: { height?: number; message: strin
 
 // ─── Retention ring ───────────────────────────────────────────────────────────
 
-function RetentionCard({ totalStudents, returningStudents, retentionRate }: RetentionStats) {
-  const radius = 54;
+function Ring({ rate, label }: { rate: number; label: string }) {
+  const radius = 40;
   const circ = 2 * Math.PI * radius;
-  const dash = (retentionRate / 100) * circ;
-
+  const dash = (rate / 100) * circ;
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-6 py-4">
-      <div className="relative">
-        <svg width="140" height="140" viewBox="0 0 140 140">
-          <circle cx="70" cy="70" r={radius} fill="none" stroke="#F3F4F6" strokeWidth="12" />
-          <circle
-            cx="70" cy="70" r={radius}
-            fill="none"
-            stroke="#3D006B"
-            strokeWidth="12"
-            strokeDasharray={`${dash} ${circ}`}
-            strokeLinecap="round"
-            transform="rotate(-90 70 70)"
-          />
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-heading font-black text-2xl text-[#0F0F0F]">{retentionRate}%</span>
-          <span className="font-body text-xs text-[#9CA3AF]">retention</span>
+    <div className="relative w-[100px] h-[100px] shrink-0">
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r={radius} fill="none" stroke="#F3F4F6" strokeWidth="10" />
+        <circle
+          cx="50" cy="50" r={radius}
+          fill="none" stroke="#3D006B" strokeWidth="10"
+          strokeDasharray={`${dash} ${circ}`}
+          strokeLinecap="round"
+          transform="rotate(-90 50 50)"
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="font-heading font-black text-lg text-[#0F0F0F]">{rate}%</span>
+        <span className="font-body text-[10px] text-[#9CA3AF] leading-tight text-center">{label}</span>
+      </div>
+    </div>
+  );
+}
+
+function StatRow({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
+  return (
+    <div className={`flex items-center justify-between px-4 py-2.5 rounded-lg ${highlight ? 'bg-[#F3E8FF]' : 'bg-[#F9FAFB]'}`}>
+      <span className={`font-body text-xs ${highlight ? 'text-[#3D006B]' : 'text-[#6B7280]'}`}>{label}</span>
+      <span className={`font-heading font-bold text-sm ${highlight ? 'text-[#3D006B]' : 'text-[#0F0F0F]'}`}>{value}</span>
+    </div>
+  );
+}
+
+function RetentionCard({ registeredStudents, enrolledStudents, enrollmentRate, returningStudents, retentionRate }: RetentionStats) {
+  return (
+    <div className="flex flex-col gap-5 py-2">
+
+      {/* Users → Enrollments */}
+      <div>
+        <p className="font-body text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-3">Users to Enrollments</p>
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <Ring rate={enrollmentRate} label="enrolled" />
+          <div className="flex flex-col gap-2 w-full min-w-0">
+            <StatRow label="Registered students" value={registeredStudents} />
+            <StatRow label="Enrolled in at least 1 course" value={enrolledStudents} highlight />
+          </div>
         </div>
       </div>
 
-      <div className="w-full flex flex-col gap-2">
-        <div className="flex items-center justify-between px-4 py-2.5 rounded-lg bg-[#F9FAFB]">
-          <span className="font-body text-xs text-[#6B7280]">Total students</span>
-          <span className="font-heading font-bold text-sm text-[#0F0F0F]">{totalStudents}</span>
-        </div>
-        <div className="flex items-center justify-between px-4 py-2.5 rounded-lg bg-[#F3E8FF]">
-          <span className="font-body text-xs text-[#3D006B]">Returned for 2nd course</span>
-          <span className="font-heading font-bold text-sm text-[#3D006B]">{returningStudents}</span>
+      <div className="border-t border-[#F3F4F6]" />
+
+      {/* Retention */}
+      <div>
+        <p className="font-body text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-3">Retention</p>
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <Ring rate={retentionRate} label="retained" />
+          <div className="flex flex-col gap-2 w-full min-w-0">
+            <StatRow label="Enrolled in at least 1 course" value={enrolledStudents} />
+            <StatRow label="Returned for 2nd course" value={returningStudents} highlight />
+          </div>
         </div>
       </div>
+
     </div>
   );
 }
@@ -92,8 +134,11 @@ export default function AdminDashboard() {
   const { user } = useAuth();
   const { data: stats } = useAdminStats();
 
+  const [trendFrom, setTrendFrom] = useState(MIN_MONTH);
+  const [trendTo,   setTrendTo  ] = useState(currentMonth);
+
   // Each chart fetches independently — they render as they resolve.
-  const { data: trend,     isLoading: trendLoading     } = useEnrollmentTrend();
+  const { data: trend,     isLoading: trendLoading     } = useEnrollmentTrend(trendFrom, trendTo);
   const { data: courses,   isLoading: coursesLoading   } = useTopCourses();
   const { data: retention, isLoading: retentionLoading } = useRetention();
 
@@ -132,17 +177,26 @@ export default function AdminDashboard() {
       {/* Analytics */}
       <div className="mb-6">
         <h2 className="font-heading font-bold text-lg text-[#0F0F0F]">Learning Analytics</h2>
-        <p className="font-body text-sm text-[#9CA3AF] mt-0.5">Last 12 months</p>
       </div>
 
       <div className="flex flex-col gap-4">
 
         {/* Enrollment trend */}
-        <ChartCard title="Enrollments Over Time" subtitle="New enrollments vs completions per month">
+        <ChartCard
+          title="Enrollments Over Time"
+          subtitle="New enrollments vs completions per month"
+          action={
+            <MonthRangePicker
+              from={trendFrom}
+              to={trendTo}
+              onChange={(f, t) => { setTrendFrom(f); setTrendTo(t); }}
+            />
+          }
+        >
           {trendLoading
             ? <ChartSkeleton />
             : !trend || trend.length === 0
-              ? <ChartEmpty message="No enrollment data yet." />
+              ? <ChartEmpty message="No enrollment data for this period." />
               : <EnrollmentTrendChart data={trend} />
           }
         </ChartCard>

@@ -1,0 +1,94 @@
+/* ─── Wrapper ─────────────────────────────────────────────────────────────── */
+.mrp-popper {
+  z-index: 9999;
+}
+
+.mrp-wrap .react-datepicker {
+  font-family: var(--font-dm-sans), sans-serif;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.10);
+  overflow: hidden;
+  background: #fff;
+}
+
+/* ─── Header ──────────────────────────────────────────────────────────────── */
+.mrp-wrap .react-datepicker__header {
+  background: #fff;
+  border-bottom: 1px solid #F3F4F6;
+  padding: 14px 12px 10px;
+}
+
+.mrp-wrap .react-datepicker__current-month {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0F0F0F;
+}
+
+/* ─── Navigation arrows ───────────────────────────────────────────────────── */
+.mrp-wrap .react-datepicker__navigation {
+  top: 12px;
+}
+
+.mrp-wrap .react-datepicker__navigation-icon::before {
+  border-color: #9CA3AF;
+  border-width: 2px 2px 0 0;
+  width: 7px;
+  height: 7px;
+}
+
+.mrp-wrap .react-datepicker__navigation:hover .react-datepicker__navigation-icon::before {
+  border-color: #3D006B;
+}
+
+/* ─── Month grid ──────────────────────────────────────────────────────────── */
+.mrp-wrap .react-datepicker__month-wrapper {
+  display: flex;
+}
+
+.mrp-wrap .react-datepicker__month .react-datepicker__month-text {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #374151;
+  border-radius: 8px;
+  padding: 6px 4px;
+  margin: 2px;
+  transition: background 0.1s, color 0.1s;
+  width: 4.5rem;
+}
+
+.mrp-wrap .react-datepicker__month .react-datepicker__month-text:hover {
+  background: #F3E8FF;
+  color: #3D006B;
+}
+
+/* Selected */
+.mrp-wrap .react-datepicker__month-text--selected,
+.mrp-wrap .react-datepicker__month-text--keyboard-selected {
+  background: #3D006B !important;
+  color: #fff !important;
+}
+
+.mrp-wrap .react-datepicker__month-text--selected:hover,
+.mrp-wrap .react-datepicker__month-text--keyboard-selected:hover {
+  background: #2a004a !important;
+  color: #fff !important;
+}
+
+/* Disabled / out-of-range */
+.mrp-wrap .react-datepicker__month-text--disabled {
+  color: #D1D5DB !important;
+  cursor: not-allowed;
+}
+
+.mrp-wrap .react-datepicker__month-text--disabled:hover {
+  background: transparent !important;
+  color: #D1D5DB !important;
+}
+
+/* Triangle/arrow pointer — hide it */
+.mrp-wrap .react-datepicker__triangle {
+  display: none;
+}
