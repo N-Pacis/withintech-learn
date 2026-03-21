@@ -334,6 +334,26 @@
             }
           }
         }
+      },
+      "TooManyRequests": {
+        "description": "Rate limit exceeded.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "Success": {
+        "description": "Success.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SuccessResponse"
+            }
+          }
+        }
       }
     }
   },
@@ -453,28 +473,19 @@
         },
         "responses": {
           "201": {
-            "description": "Account created and tokens returned.",
+            "description": "Account created — email verification OTP sent.",
             "content": {
               "application/json": {
                 "schema": {
                   "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SuccessResponse"
-                    },
+                    { "$ref": "#/components/schemas/SuccessResponse" },
                     {
                       "properties": {
                         "data": {
                           "type": "object",
                           "properties": {
-                            "accessToken": {
-                              "type": "string"
-                            },
-                            "refreshToken": {
-                              "type": "string"
-                            },
-                            "user": {
-                              "$ref": "#/components/schemas/User"
-                            }
+                            "requiresEmailVerification": { "type": "boolean", "example": true },
+                            "email": { "type": "string", "format": "email" }
                           }
                         }
                       }
@@ -489,7 +500,87 @@
           },
           "409": {
             "$ref": "#/components/responses/Conflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
           }
+        }
+      }
+    },
+    "/auth/email/verify": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Verify email with OTP",
+        "description": "Verifies the user's email using the 6-digit OTP sent during sign-up or login (unverified). Returns access and refresh tokens on success.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "otp"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "otp": { "type": "string", "minLength": 6, "maxLength": 6 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified — tokens returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/SuccessResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "accessToken": { "type": "string" },
+                            "refreshToken": { "type": "string" },
+                            "user": { "$ref": "#/components/schemas/User" }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
+        }
+      }
+    },
+    "/auth/email/resend": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Resend email verification OTP",
+        "description": "Sends a new verification OTP to the given email.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "429": { "$ref": "#/components/responses/TooManyRequests" }
         }
       }
     },
@@ -556,7 +647,7 @@
           "Auth"
         ],
         "summary": "Request a password reset OTP",
-        "description": "Sends a 6-digit OTP to the given email if an account exists. Always returns success to prevent email enumeration.",
+        "description": "Sends a 6-digit OTP to the given email if an account exists.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3075,6 +3166,22 @@
           "404": {
             "$ref": "#/components/responses/NotFound"
           }
+        }
+      }
+    },
+    "/admin/users/{id}/verify-email": {
+      "patch": {
+        "tags": ["Admin / Users"],
+        "summary": "Manually verify a user's email",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Email marked as verified." },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
         }
       }
     },

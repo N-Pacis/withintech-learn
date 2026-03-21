@@ -294,6 +294,26 @@ export function useEnrollInCourse() {
 
 // ─── Public queries ───────────────────────────────────────────────────────────
 
+export interface PublicCourseDetail {
+  title: string;
+  slug: string;
+  description: string | null;
+  thumbnailUrl: string | null;
+  modules: string[];
+}
+
+export function usePublicCourseDetail(slug: string) {
+  return useQuery({
+    queryKey: ['courses', 'public', 'detail', slug] as const,
+    queryFn: async (): Promise<PublicCourseDetail> => {
+      const res = await apiFetch<PublicCourseDetail>(`/public/courses/${slug}`);
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    enabled: !!slug,
+  });
+}
+
 export function useTopCourses() {
   return useQuery({
     queryKey: courseKeys.public.top,
