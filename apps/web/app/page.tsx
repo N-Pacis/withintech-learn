@@ -42,13 +42,13 @@ export default function Home() {
                 <br />
                 your pace.
                 <br />
-                Earn what you
+                Stay Ahead
                 <br />
-                deserve.
+                in the AI Era.
               </h1>
 
               <p className="font-body text-lg text-[#6B7280] leading-relaxed mb-8 max-w-sm">
-                Modules, quizzes, and real certificates. Study on your terms.
+                Experience hands-on learning, quizzes, and verified certificates.
               </p>
 
               <Link
