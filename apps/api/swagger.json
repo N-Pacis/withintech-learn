@@ -1136,7 +1136,7 @@
         "tags": [
           "Admin / Courses"
         ],
-        "summary": "Archive a published course (irreversible)",
+        "summary": "Archive a published course",
         "security": [
           {
             "bearerAuth": []
@@ -1156,6 +1156,61 @@
         "responses": {
           "200": {
             "description": "Course archived.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/courses/{id}/unarchive": {
+      "patch": {
+        "tags": [
+          "Admin / Courses"
+        ],
+        "summary": "Unarchive an archived course (republishes it)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Course unarchived.",
             "content": {
               "application/json": {
                 "schema": {
