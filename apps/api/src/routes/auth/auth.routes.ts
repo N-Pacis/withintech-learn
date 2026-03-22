@@ -14,6 +14,7 @@ import {
   postLogin,
   postSignUp,
   postRefreshToken,
+  postLogout,
   postRequestPasswordReset,
   postVerifyResetOtp,
   postResetPassword,
@@ -26,6 +27,7 @@ const router = Router();
 router.post('/auth/login', validate(loginSchema), postLogin);
 router.post('/auth/signup', validate(signupSchema), postSignUp);
 router.post('/auth/refresh', postRefreshToken);
+router.post('/auth/logout', postLogout);
 router.post('/auth/password-reset/request', validate(requestPasswordResetSchema), postRequestPasswordReset);
 router.post('/auth/password-reset/verify', validate(verifyResetOtpSchema), postVerifyResetOtp);
 router.post('/auth/password-reset/confirm', validate(resetPasswordSchema), postResetPassword);

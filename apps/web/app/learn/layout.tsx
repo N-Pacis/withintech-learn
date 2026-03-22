@@ -29,7 +29,7 @@ function StudentGuard({ children }: { children: React.ReactNode }) {
   if (!user || user.role === 'admin') return null;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex flex-col">
+    <div className="min-h-screen bg-dots flex flex-col">
       <StudentNavbar />
       <main className="flex-1">{children}</main>
     </div>

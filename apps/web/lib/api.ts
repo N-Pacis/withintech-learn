@@ -1,33 +1,17 @@
-import { getAccessToken, getRefreshToken, setTokens, clearTokens } from './auth';
-
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 // Deduplicate concurrent refresh calls
-let refreshPromise: Promise<string | null> | null = null;
+let refreshPromise: Promise<boolean> | null = null;
 
-async function doRefresh(): Promise<string | null> {
-  const refreshToken = getRefreshToken();
-  if (!refreshToken) return null;
-
+async function doRefresh(): Promise<boolean> {
   try {
     const res = await fetch(`${BASE}/auth/refresh`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken }),
+      credentials: 'include',
     });
-
-    if (!res.ok) {
-      clearTokens();
-      return null;
-    }
-
-    const json = await res.json();
-    const newAccess: string = json.data.accessToken;
-    setTokens(newAccess, refreshToken);
-    return newAccess;
+    return res.ok;
   } catch {
-    clearTokens();
-    return null;
+    return false;
   }
 }
 
@@ -35,7 +19,7 @@ export async function apiFetch<T = unknown>(
   path: string,
   options: RequestInit = {},
 ): Promise<{ success: boolean; message: string; data?: T }> {
-  const request = async (token: string | null) => {
+  const request = async () => {
     const headers: Record<string, string> = {
       ...(options.headers as Record<string, string>),
     };
@@ -43,12 +27,10 @@ export async function apiFetch<T = unknown>(
     if (!(options.body instanceof FormData)) {
       headers['Content-Type'] = 'application/json';
     }
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    return fetch(`${BASE}${path}`, { ...options, headers });
+    return fetch(`${BASE}${path}`, { ...options, headers, credentials: 'include' });
   };
 
-  let token = getAccessToken();
-  let res = await request(token);
+  let res = await request();
 
   if (res.status === 401) {
     if (!refreshPromise) {
@@ -57,14 +39,16 @@ export async function apiFetch<T = unknown>(
       });
     }
 
-    token = await refreshPromise;
+    const refreshed = await refreshPromise;
 
-    if (!token) {
-      if (typeof window !== 'undefined') window.location.href = '/sign-in';
+    if (!refreshed) {
+      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/sign-in')) {
+        window.location.href = '/sign-in';
+      }
       return { success: false, message: 'Session expired' };
     }
 
-    res = await request(token);
+    res = await request();
   }
 
   if (res.status === 403) {

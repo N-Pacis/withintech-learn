@@ -33,7 +33,8 @@ export default function UsersPage() {
   };
 
   const { user: currentUser } = useAuth();
-  const { data: users, isLoading, error } = useUsers(params);
+  const { data: usersPage, isLoading, error } = useUsers(params);
+  const users = usersPage?.users;
   const { mutateAsync: setActive } = useSetUserActive();
 
   const handleToggle = useCallback(async (userId: string, isActive: boolean) => {

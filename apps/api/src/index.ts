@@ -1,4 +1,6 @@
 import './instrument';
+import { validateEnv } from './env';
+validateEnv();
 import app from './app';
 import { configureBucketCors } from './services/storage.service';
 

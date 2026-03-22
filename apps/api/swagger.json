@@ -390,7 +390,7 @@
         },
         "responses": {
           "200": {
-            "description": "Login successful.",
+            "description": "Login successful. Sets `wt_access` (15m) and `wt_refresh` (7d) httpOnly cookies.",
             "content": {
               "application/json": {
                 "schema": {
@@ -403,12 +403,6 @@
                         "data": {
                           "type": "object",
                           "properties": {
-                            "accessToken": {
-                              "type": "string"
-                            },
-                            "refreshToken": {
-                              "type": "string"
-                            },
                             "user": {
                               "$ref": "#/components/schemas/User"
                             }
@@ -429,6 +423,27 @@
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logout",
+        "description": "Clears the `wt_access` and `wt_refresh` httpOnly cookies.",
+        "responses": {
+          "200": {
+            "description": "Logged out.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -590,47 +605,14 @@
           "Auth"
         ],
         "summary": "Refresh access token",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "refreshToken"
-                ],
-                "properties": {
-                  "refreshToken": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
+        "description": "Reads the `wt_refresh` httpOnly cookie. Sets a new `wt_access` cookie (15m). No request body required.",
         "responses": {
           "200": {
-            "description": "New access token issued.",
+            "description": "New access token issued via cookie.",
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SuccessResponse"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "accessToken": {
-                              "type": "string"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  ]
+                  "$ref": "#/components/schemas/SuccessResponse"
                 }
               }
             }

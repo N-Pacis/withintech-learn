@@ -44,7 +44,8 @@ export default function StudentsPage() {
     sortOrder,
   };
 
-  const { data: students, isLoading, error } = useStudents(params);
+  const { data: studentsPage, isLoading, error } = useStudents(params);
+  const students = studentsPage?.users;
   const { mutate: setActive } = useSetUserActive();
 
   function buildRow(u: AdminUser): Record<string, CellValue> {
