@@ -31,9 +31,16 @@ export interface EnrollmentProgress {
 
 // ─── Keys ────────────────────────────────────────────────────────────────────
 
+export interface EnrollmentsPage {
+  total: number;
+  page: number;
+  limit: number;
+  enrollments: Enrollment[];
+}
+
 export const enrollmentKeys = {
   all: ['enrollments'] as const,
-  list: (params: { search?: string; courseId?: string }) =>
+  list: (params: { search?: string; courseId?: string; page?: number; limit?: number }) =>
     [...enrollmentKeys.all, 'list', params] as const,
   progress: (enrollmentId: string) =>
     [...enrollmentKeys.all, 'progress', enrollmentId] as const,
@@ -41,15 +48,18 @@ export const enrollmentKeys = {
 
 // ─── Hooks ───────────────────────────────────────────────────────────────────
 
-export function useEnrollments(params: { search?: string; courseId?: string }) {
+export function useEnrollments(params: { search?: string; courseId?: string; page?: number; limit?: number }) {
   return useQuery({
     queryKey: enrollmentKeys.list(params),
-    queryFn: async () => {
+    queryFn: async (): Promise<EnrollmentsPage> => {
       const qs = new URLSearchParams();
-      if (params.search) qs.set('search', params.search);
+      if (params.search)   qs.set('search', params.search);
       if (params.courseId) qs.set('courseId', params.courseId);
-      const res = await apiFetch<Enrollment[]>(`/admin/enrollments?${qs.toString()}`);
-      return res.data as Enrollment[];
+      if (params.page)     qs.set('page', String(params.page));
+      if (params.limit)    qs.set('limit', String(params.limit));
+      const res = await apiFetch<EnrollmentsPage>(`/admin/enrollments?${qs.toString()}`);
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
     },
   });
 }

@@ -259,7 +259,7 @@ export default function CoursePage() {
   const certHref = `/certificates/${profile?.id}/${course.slug}`;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-dots">
 
       {/* Top bar */}
       <div className="bg-white border-b border-[#E5E7EB] px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">

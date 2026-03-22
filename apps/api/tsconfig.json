@@ -5,8 +5,7 @@
     "rootDir": ".",
     "baseUrl": ".",
     "declaration": false,
-    "declarationMap": false,
-    "noImplicitAny": false
+    "declarationMap": false
   },
   "include": ["src", "scripts"],
   "exclude": ["node_modules", "dist"]

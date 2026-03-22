@@ -147,10 +147,11 @@ export default function EnrollmentsPage() {
   }, [search]);
 
   const { data: coursesPage, isLoading: coursesLoading } = useCourses({ page: 1, limit: 100 });
-  const { data: enrollments, isLoading } = useEnrollments({
+  const { data: enrollmentsPage, isLoading } = useEnrollments({
     search: debouncedSearch || undefined,
     courseId: courseId || undefined,
   });
+  const enrollments = enrollmentsPage?.enrollments;
 
   function buildRow(e: Enrollment): Record<string, CellValue> {
     return {

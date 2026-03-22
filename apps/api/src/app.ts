@@ -3,6 +3,8 @@ import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const swaggerDocument = require('../swagger.json');
@@ -29,9 +31,11 @@ const allowedOrigins = [
   process.env.APP_URL,
   ...(process.env.NODE_ENV !== 'production' ? ['http://localhost:3000'] : []),
 ].filter(Boolean) as string[];
-app.use(cors({ origin: allowedOrigins }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(cookieParser());
 app.use(express.json());
 app.use(compression());
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 

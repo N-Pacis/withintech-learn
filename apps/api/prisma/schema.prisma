@@ -49,6 +49,8 @@ model OtpCode {
   expiresAt DateTime
   usedAt    DateTime?
   createdAt DateTime  @default(now())
+
+  @@index([userId, purpose])
 }
 
 enum CourseStatus {
@@ -78,6 +80,9 @@ model Course {
   certificates Certificate[]
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
+
+  @@index([status])
+  @@index([createdById])
 }
 
 enum EnrollmentStatus {
@@ -170,6 +175,8 @@ model QuizAttempt {
   score     Int
   status    AttemptStatus
   createdAt DateTime      @default(now())
+
+  @@index([userId, quizId])
 }
 
 model Question {

@@ -1,10 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
-import { setTokens, clearTokens, getAccessToken } from '@/lib/auth';
 import type { User } from '@/lib/auth';
 
 // ─── Query keys ──────────────────────────────────────────────────────────────
-// Centralised so every hook and manual cache update uses the same key.
 
 export const authKeys = {
   profile: ['auth', 'profile'] as const,
@@ -20,7 +18,6 @@ export function useProfile() {
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
-    enabled: !!getAccessToken(),
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -33,7 +30,7 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (credentials: { email: string; password: string }) => {
-      const res = await apiFetch<{ accessToken: string; refreshToken: string; user: User }>(
+      const res = await apiFetch<{ user: User }>(
         '/auth/login',
         { method: 'POST', body: JSON.stringify(credentials) },
       );
@@ -41,8 +38,7 @@ export function useLogin() {
       return res.data;
     },
     onSuccess: (data) => {
-      setTokens(data.accessToken, data.refreshToken);
-      // Seed the profile cache so any useProfile consumer is instantly updated
+      // Cookies are set by the server — just seed the profile cache
       queryClient.setQueryData(authKeys.profile, data.user);
     },
   });
@@ -53,7 +49,7 @@ export function useSignUp() {
 
   return useMutation({
     mutationFn: async (data: { firstName: string; lastName: string; email: string; password: string }) => {
-      const res = await apiFetch<{ accessToken: string; refreshToken: string; user: User }>(
+      const res = await apiFetch<{ user: User }>(
         '/auth/signup',
         { method: 'POST', body: JSON.stringify(data) },
       );
@@ -61,7 +57,6 @@ export function useSignUp() {
       return res.data;
     },
     onSuccess: (data) => {
-      setTokens(data.accessToken, data.refreshToken);
       queryClient.setQueryData(authKeys.profile, data.user);
     },
   });
@@ -96,7 +91,7 @@ export function useResetPassword() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ resetToken, newPassword }: { resetToken: string; newPassword: string }) => {
-      const res = await apiFetch<{ accessToken: string; refreshToken: string; user: User }>(
+      const res = await apiFetch<{ user: User }>(
         '/auth/password-reset/confirm',
         { method: 'POST', body: JSON.stringify({ resetToken, newPassword }) },
       );
@@ -104,7 +99,6 @@ export function useResetPassword() {
       return res.data;
     },
     onSuccess: (data) => {
-      setTokens(data.accessToken, data.refreshToken);
       queryClient.setQueryData(authKeys.profile, data.user);
     },
   });
@@ -113,8 +107,9 @@ export function useResetPassword() {
 export function useLogout() {
   const queryClient = useQueryClient();
   return () => {
-    clearTokens();
-    queryClient.clear();
-    window.location.href = '/sign-in';
+    apiFetch('/auth/logout', { method: 'POST' }).finally(() => {
+      queryClient.clear();
+      window.location.href = '/sign-in';
+    });
   };
 }
