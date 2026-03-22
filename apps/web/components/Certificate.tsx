@@ -172,11 +172,13 @@ export function Certificate({ data, domId }: CertificateProps) {
 
         {/* Recipient name */}
         <p style={{
-          fontFamily: 'Brush Script MT, cursive',
-          fontSize: em(48),
+          fontFamily: 'var(--font-syne), sans-serif',
+          fontWeight: 800,
+          fontSize: em(40),
           color: '#3D006B',
           textAlign: 'center',
           lineHeight: 1.2,
+          letterSpacing: '0.01em',
           marginBottom: em(8),
         }}>
           {data.recipientName}
