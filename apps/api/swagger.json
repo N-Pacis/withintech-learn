@@ -3647,6 +3647,24 @@
         }
       }
     },
+    "/student/courses/{slug}/modules/{moduleId}": {
+      "get": {
+        "tags": ["Student - Courses"],
+        "summary": "Get a single module's content",
+        "description": "Returns module blocks and quiz. Requires enrollment. Returns 403 if any previous module has not been completed (sequential progression enforced).",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "moduleId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Module content with blocks, quiz, and last attempt" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
     "/student/courses/{slug}/complete": {
       "post": {
         "tags": [
@@ -3694,7 +3712,7 @@
           "Student - Courses"
         ],
         "summary": "Mark a module as completed",
-        "description": "Saves module progress. If the module has a quiz, the student must have passed it first.",
+        "description": "Saves module progress. Requires all previous modules to be completed (sequential progression). If the module has a quiz, the student must have passed it first.",
         "security": [
           {
             "bearerAuth": []
