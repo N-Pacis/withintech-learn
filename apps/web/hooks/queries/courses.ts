@@ -468,3 +468,18 @@ export function useArchiveCourse() {
     },
   });
 }
+
+export function useUnarchiveCourse() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string): Promise<Course> => {
+      const res = await apiFetch<Course>(`/admin/courses/${id}/unarchive`, { method: 'PATCH' });
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    onSuccess: (updated) => {
+      queryClient.setQueryData(courseKeys.detail(updated.id), updated);
+      queryClient.invalidateQueries({ queryKey: courseKeys.lists() });
+    },
+  });
+}

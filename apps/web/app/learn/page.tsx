@@ -155,7 +155,7 @@ function StudentSidebar() {
   const completionRate = stats?.completionRate ?? 0;
 
   return (
-    <aside className="w-full lg:w-64 xl:w-72 shrink-0 flex flex-col gap-3">
+    <aside className="w-full lg:w-64 xl:w-72 shrink-0 flex flex-col gap-3 lg:sticky lg:top-6 lg:self-start">
 
       <p className="font-heading font-bold text-xs tracking-widest uppercase text-[#9CA3AF]">My Progress</p>
 
