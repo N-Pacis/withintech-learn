@@ -124,14 +124,14 @@ function CourseQuizStep({
   onPass: () => void;
 }) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center gap-3 px-5 py-4 rounded-xl bg-[#F3E8FF] border border-[#E9D5FF]">
-        <div className="w-10 h-10 rounded-full bg-[#3D006B] flex items-center justify-center shrink-0">
-          <Trophy size={18} className="text-white" />
+        <div className="w-9 h-9 rounded-full bg-[#3D006B] flex items-center justify-center shrink-0">
+          <Trophy size={16} className="text-white" />
         </div>
         <div>
-          <p className="font-heading font-bold text-base text-[#0F0F0F]">Final Course Quiz</p>
-          <p className="font-body text-sm text-[#6B7280]">Pass to complete the course. Answers are not revealed.</p>
+          <p className="font-heading font-bold text-sm text-[#0F0F0F]">Final Course Quiz</p>
+          <p className="font-body text-xs text-[#6B7280] mt-0.5">Pass to complete the course. Answers are not revealed.</p>
         </div>
       </div>
       {/* Reuse QuizSection — backend already strips isCorrect for course quizzes */}
@@ -270,12 +270,13 @@ export default function CoursePage() {
           <ArrowLeft size={15} />
           <span className="hidden sm:inline">All courses</span>
         </Link>
+        <span className="text-[#D1D5DB] hidden sm:inline select-none">/</span>
         <h1 className="font-heading font-bold text-sm sm:text-base text-[#0F0F0F] truncate">{course.title}</h1>
       </div>
 
       {/* Module roadmap */}
-      <div className="bg-white border-b border-[#E5E7EB] px-6 py-6">
-        <div className="max-w-4xl mx-auto overflow-x-auto">
+      <div className="bg-[#FAFAFA] border-b border-[#E5E7EB] px-4 sm:px-6 py-5">
+        <div className="max-w-4xl mx-auto overflow-x-auto scrollbar-none">
           <div className="min-w-max">
             <Stepper steps={steps} currentStep={currentIndex} onStepClick={handleStepClick} />
           </div>
@@ -288,16 +289,20 @@ export default function CoursePage() {
         {isOnQuizStep ? (
           // ── Course quiz step ──
           <>
-            <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-4 sm:mb-6">
-              Final Quiz
-            </p>
-            <CourseQuizStep
-              slug={slug}
-              quiz={course.quiz!}
-              lastAttempt={course.lastCourseQuizAttempt}
-              onPass={() => setCourseQuizPassed(true)}
-            />
-            <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-[#E5E7EB]">
+            <div className="flex items-center gap-2 mb-6">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F3E8FF] text-[#3D006B] font-body text-xs font-semibold">
+                <Trophy size={11} /> Final Quiz
+              </span>
+            </div>
+            <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6 sm:p-8">
+              <CourseQuizStep
+                slug={slug}
+                quiz={course.quiz!}
+                lastAttempt={course.lastCourseQuizAttempt}
+                onPass={() => setCourseQuizPassed(true)}
+              />
+            </div>
+            <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 mt-8 pt-6 border-t border-[#E5E7EB]">
               <Button variant="secondary" size="md" onClick={handlePrev} className="flex items-center justify-center gap-2">
                 <ChevronLeft size={16} /> Previous
               </Button>
@@ -321,18 +326,28 @@ export default function CoursePage() {
         ) : (
           // ── Module step ──
           <>
-            <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-6">
-              Module {currentIndex + 1} of {modules.length}
-            </p>
+            <div className="flex items-center justify-between mb-6">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#F3E8FF] text-[#3D006B] font-body text-xs font-semibold">
+                Module {currentIndex + 1} of {modules.length}
+              </span>
+              {isCurrentCompleted && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 text-green-700 font-body text-xs font-medium border border-green-200">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                  Completed
+                </span>
+              )}
+            </div>
 
-            <ModuleContent
-              key={currentModule!.id}
-              slug={slug}
-              moduleId={currentModule!.id}
-              onCanCompleteChange={handleCanCompleteChange}
-            />
+            <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6 sm:p-8">
+              <ModuleContent
+                key={currentModule!.id}
+                slug={slug}
+                moduleId={currentModule!.id}
+                onCanCompleteChange={handleCanCompleteChange}
+              />
+            </div>
 
-            <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-[#E5E7EB]">
+            <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 mt-8 pt-6 border-t border-[#E5E7EB]">
               <Button
                 variant="secondary"
                 size="md"

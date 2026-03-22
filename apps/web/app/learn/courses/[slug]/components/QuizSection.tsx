@@ -79,21 +79,21 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
   const alreadyPassed = lastAttempt?.status === 'pass' && !result;
 
   return (
-    <div className="mt-12 pt-10 border-t-2 border-[#E5E7EB]">
+    <div className="mt-10 pt-8 border-t border-[#E5E7EB]">
 
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
-          <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-1">Module Quiz</p>
+          <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-1.5">Module Quiz</p>
           <h3 className="font-heading font-bold text-xl text-[#0F0F0F]">{quiz.title}</h3>
           <p className="font-body text-sm text-[#6B7280] mt-1">
-            Pass score: {quiz.passingScore}% — {quiz.questions.length} question{quiz.questions.length !== 1 ? 's' : ''}
+            Pass score: {quiz.passingScore}% &middot; {quiz.questions.length} question{quiz.questions.length !== 1 ? 's' : ''}
           </p>
         </div>
         {alreadyPassed && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 text-green-700 shrink-0">
-            <Trophy size={14} />
-            <span className="font-body text-xs font-medium">Passed</span>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 text-green-700 border border-green-200 shrink-0">
+            <Trophy size={13} />
+            <span className="font-body text-xs font-semibold">Passed</span>
           </div>
         )}
       </div>
@@ -165,18 +165,23 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
           <div className="flex flex-col gap-8">
             {quiz.questions.map((q, i) => (
               <div key={q.id} className="flex flex-col gap-3">
-                <p className="font-body text-sm font-medium text-[#0F0F0F]">
-                  {i + 1}. {q.text}
-                </p>
-                <div className="flex flex-col gap-2">
+                <div className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-[#3D006B] text-white font-body text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    {i + 1}
+                  </span>
+                  <p className="font-body text-sm font-medium text-[#0F0F0F] pt-0.5">{q.text}</p>
+                </div>
+                <div className="flex flex-col gap-2 pl-9">
                   {q.options.map((opt) => {
                     const chosen = answers[q.id]?.has(opt.id) ?? false;
                     return (
                       <label
                         key={opt.id}
                         className={cn(
-                          'flex items-start gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-colors',
-                          chosen ? 'border-[#3D006B] bg-[#F3E8FF]' : 'border-[#E5E7EB] hover:border-[#D1D5DB]',
+                          'flex items-start gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-all',
+                          chosen
+                            ? 'border-[#3D006B] bg-[#F3E8FF] shadow-sm'
+                            : 'border-[#E5E7EB] hover:border-[#C4B5FD] hover:bg-[#FAFAFA]',
                         )}
                       >
                         <input
@@ -212,15 +217,16 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
 function MarkedQuestionRow({ question, index, isCourseQuiz }: { question: MarkedQuestion; index: number; isCourseQuiz: boolean }) {
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-2">
-        {question.isCorrect
-          ? <CheckCircle size={16} className="text-green-600 shrink-0" />
-          : <XCircle size={16} className="text-red-500 shrink-0" />}
-        <p className="font-body text-sm font-medium text-[#0F0F0F] min-w-0">
-          {index + 1}. {question.text}
-        </p>
+      <div className="flex items-start gap-3">
+        <span className={cn(
+          'w-6 h-6 rounded-full font-body text-xs font-bold flex items-center justify-center shrink-0 mt-0.5',
+          question.isCorrect ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600',
+        )}>
+          {index + 1}
+        </span>
+        <p className="font-body text-sm font-medium text-[#0F0F0F] min-w-0 pt-0.5">{question.text}</p>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 pl-9">
         {question.options.map((opt) => {
           // Course quiz: hide correct answer on failed questions
           if (isCourseQuiz) {
