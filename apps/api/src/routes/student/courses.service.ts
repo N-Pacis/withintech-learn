@@ -133,14 +133,18 @@ export const getPublishedCourseBySlug = async (slug: string, userId: string) => 
   ]);
 
   // Modules in cache are ordered; fetch titles from cache via module keys
+  const firstIncompleteIndex = cached.moduleIds.findIndex((id) => !completedSet.has(id));
+  const reachableUpTo = firstIncompleteIndex === -1 ? cached.moduleIds.length : firstIncompleteIndex;
+
   const modules = await Promise.all(
-    cached.moduleIds.map(async (moduleId) => {
+    cached.moduleIds.map(async (moduleId, i) => {
       const mod = await getCachedModule(moduleId);
       return {
         id: moduleId,
         title: mod?.title ?? '',
         orderIndex: mod?.orderIndex ?? 0,
         isCompleted: completedSet.has(moduleId),
+        isLocked: i > reachableUpTo,
       };
     }),
   );
@@ -221,6 +225,18 @@ export const getStudentModule = async (slug: string, moduleId: string, userId: s
   }
   if (!cachedMod || !cachedCourse.moduleIds.includes(moduleId)) throw notFound('Module not found');
 
+  // Enforce sequential progression: all previous modules must be completed
+  const moduleIndex = cachedCourse.moduleIds.indexOf(moduleId);
+  if (moduleIndex > 0) {
+    const previousIds = cachedCourse.moduleIds.slice(0, moduleIndex);
+    const completedCount = await prisma.moduleProgress.count({
+      where: { userId, moduleId: { in: previousIds } },
+    });
+    if (completedCount < previousIds.length) {
+      throw forbidden('You must complete previous modules before accessing this one');
+    }
+  }
+
   // Signed URLs for image blocks are generated fresh (presigned URLs expire in 1h)
   const [blocks, lastAttempt] = await Promise.all([
     Promise.all(
@@ -252,6 +268,24 @@ export const completeModule = async (slug: string, moduleId: string, userId: str
     where: { studentId_courseId: { studentId: userId, courseId: course.id } },
   });
   if (!enrollment) throw forbidden('You must be enrolled');
+
+  // Enforce sequential progression
+  const courseModules = await prisma.module.findMany({
+    where: { courseId: course.id },
+    orderBy: { orderIndex: 'asc' },
+    select: { id: true },
+  });
+  const moduleIndex = courseModules.findIndex((m) => m.id === moduleId);
+  if (moduleIndex === -1) throw notFound('Module not found');
+  if (moduleIndex > 0) {
+    const previousIds = courseModules.slice(0, moduleIndex).map((m) => m.id);
+    const completedCount = await prisma.moduleProgress.count({
+      where: { userId, moduleId: { in: previousIds } },
+    });
+    if (completedCount < previousIds.length) {
+      throw forbidden('You must complete previous modules first');
+    }
+  }
 
   const mod = await prisma.module.findFirst({
     where: { id: moduleId, courseId: course.id },

@@ -155,23 +155,18 @@ export default function CoursePage() {
   const { mutate: completeCourse, isPending: completingCourse } = useCompleteCourse(slug);
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
-  const [canComplete, setCanComplete] = useState(false);
   const [courseQuizPassed, setCourseQuizPassed] = useState(false);
+  const [canComplete, setCanComplete] = useState(false);
   const [readProgress, setReadProgress] = useState(0);
 
   const [prevCourseId, setPrevCourseId] = useState<string | undefined>(course?.id);
   if (course && course.id !== prevCourseId) {
-    const ids = new Set(course.modules.filter((m) => m.isCompleted).map((m) => m.id));
-    setCompletedIds(ids);
     setCourseQuizPassed(course.lastCourseQuizAttempt?.status === 'pass');
-
-    const allDone = course.modules.every((m) => m.isCompleted);
     const firstIncomplete = course.modules.findIndex((m) => !m.isCompleted);
-
+    const allDone = firstIncomplete === -1;
     if (allDone && course.quiz) {
       setCurrentIndex(course.modules.length);
-    } else if (firstIncomplete === -1) {
+    } else if (allDone) {
       setCurrentIndex(course.modules.length - 1);
     } else {
       setCurrentIndex(firstIncomplete);
@@ -214,6 +209,9 @@ export default function CoursePage() {
   if (!isOnQuizStep && !currentModule) return null;
 
   function handleStepClick(index: number) {
+    const isQuiz = index === quizStepIndex;
+    if (isQuiz && !allModulesDone) return;
+    if (!isQuiz && modules[index]?.isLocked) return;
     setCurrentIndex(index);
   }
 
@@ -223,7 +221,6 @@ export default function CoursePage() {
     const goToCert = isLast && !course!.quiz;
     completeModuleMutation(currentModule.id, {
       onSuccess: () => {
-        setCompletedIds((prev) => new Set([...prev, currentModule.id]));
         if (goToQuizStep) {
           setCurrentIndex(quizStepIndex);
         } else if (goToCert) {
@@ -253,12 +250,14 @@ export default function CoursePage() {
 
   const isFirst = currentIndex === 0;
   const isLast = !isOnQuizStep && currentIndex === modules.length - 1;
-  const isCurrentCompleted = currentModule ? completedIds.has(currentModule.id) : false;
+  const isCurrentCompleted = currentModule?.isCompleted ?? false;
   const isCoursePassed = course.enrollment_status === 'PASSED';
   const certHref = `/certificates/${profile?.id}/${course.slug}`;
 
+  const allModulesDone = modules.every((m) => m.isCompleted);
+
   const totalSteps = modules.length + (course.quiz ? 1 : 0);
-  const completedCount = completedIds.size + (courseQuizPassed ? 1 : 0);
+  const completedCount = modules.filter((m) => m.isCompleted).length + (courseQuizPassed ? 1 : 0);
   const overallProgress = totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0;
 
   return (
@@ -302,14 +301,18 @@ export default function CoursePage() {
           <nav className="flex-1 overflow-y-auto py-2">
             {modules.map((m, i) => {
               const isActive = !isOnQuizStep && currentIndex === i;
-              const isDone = completedIds.has(m.id);
+              const isDone = m.isCompleted;
+              const locked = m.isLocked;
               return (
                 <button
                   key={m.id}
                   onClick={() => handleStepClick(i)}
+                  disabled={locked}
                   className={cn(
                     'w-full flex items-start gap-3 px-4 py-3 text-left transition-colors',
-                    isActive
+                    locked
+                      ? 'opacity-40 cursor-not-allowed'
+                      : isActive
                       ? 'bg-[#F3E8FF]'
                       : 'hover:bg-[#FAFAFA]',
                   )}
@@ -337,9 +340,14 @@ export default function CoursePage() {
             {course.quiz && (
               <button
                 onClick={() => handleStepClick(quizStepIndex)}
+                disabled={!allModulesDone}
                 className={cn(
                   'w-full flex items-start gap-3 px-4 py-3 text-left transition-colors',
-                  isOnQuizStep ? 'bg-[#F3E8FF]' : 'hover:bg-[#FAFAFA]',
+                  !allModulesDone
+                    ? 'opacity-40 cursor-not-allowed'
+                    : isOnQuizStep
+                    ? 'bg-[#F3E8FF]'
+                    : 'hover:bg-[#FAFAFA]',
                 )}
               >
                 <span className={cn(
