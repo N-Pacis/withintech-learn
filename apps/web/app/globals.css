@@ -39,6 +39,7 @@ body {
 
 .font-heading {
   letter-spacing: -0.02em;
+  font-stretch: condensed;
 }
 
 /* ─── Tiptap shared prose styles ─────────────────────────────────────────── */

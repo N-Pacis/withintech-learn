@@ -4,6 +4,7 @@ import Navbar from "@/components/landing/Navbar";
 import Ticker from "@/components/landing/Ticker";
 import CertificateCard from "@/components/landing/CertificateCard";
 import CoursesSection from "@/components/landing/CoursesSection";
+import FeatureHighlights from "@/components/landing/FeatureHighlights";
 import { Logo } from "@/components/ui";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -95,10 +96,10 @@ export default function Home() {
         <Ticker />
       </section>
 
-      {/* ── 3. Top Courses ──────────────────────────────────────────────────── */}
       <CoursesSection />
 
-      {/* ── 5. Certificate Moment ───────────────────────────────────────────── */}
+      <FeatureHighlights />
+
       <section className="bg-[#3D006B] py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
@@ -127,7 +128,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 6. Steps — How It Works ─────────────────────────────────────────── */}
       <section id="how-it-works" className="bg-white py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <p className="font-heading text-xs tracking-widest uppercase text-[#3D006B] font-bold mb-4">
@@ -205,7 +205,56 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 7. Final CTA ────────────────────────────────────────────────────── */}
+      {/* ── 7. FAQ ──────────────────────────────────────────────────────────── */}
+      <section id="faq" className="bg-[#FAFAFA] border-y border-[#E5E7EB] py-20 lg:py-28">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <p className="font-heading text-xs tracking-widest uppercase text-[#3D006B] font-bold mb-4">
+            FAQ
+          </p>
+          <h2 className="font-heading font-black text-3xl lg:text-4xl text-[#0F0F0F] tracking-tight mb-14">
+            Common questions, answered.
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                q: "How do I get access to courses?",
+                a: "Your courses are assigned to your account by WithinTech Rwanda. Sign in and they'll be waiting on your dashboard — no setup needed.",
+              },
+              {
+                q: "Are the certificates official?",
+                a: "Yes. Each certificate is issued by WithinTech Rwanda and includes your full name, the course title, and your completion date. You can download and share it anytime.",
+              },
+              {
+                q: "Do I have to complete modules in order?",
+                a: "Modules unlock as you progress through a course. This keeps the learning structured — each module builds on the last, so the order matters.",
+              },
+              {
+                q: "Can I retake quizzes?",
+                a: "As many times as you need. There are no attempt limits. Every retry shows you exactly which answers were correct, incorrect, and which ones you missed — so you actually learn from the attempt.",
+              },
+              {
+                q: "What device can I use?",
+                a: "WithinTech Learn works on any device with a modern browser — laptop, tablet, or phone. No app to install.",
+              }
+            ].map(({ q, a }) => (
+              <div key={q} className="bg-white rounded-2xl border border-[#E5E7EB] p-6">
+                <p className="font-heading font-bold text-base text-[#0F0F0F] mb-3">{q}</p>
+                <p className="font-body text-sm text-[#6B7280] leading-relaxed">{a}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="font-body text-sm text-[#6B7280] mt-10">
+            Still have questions?{" "}
+            <a href="mailto:learn@withintech.org" className="text-[#3D006B] hover:underline font-medium">
+              Email us at learn@withintech.org
+            </a>
+          </p>
+        </div>
+      </section>
+
+      {/* ── 9. Final CTA ────────────────────────────────────────────────────── */}
       <section className="bg-white border-t border-[#E5E7EB] py-24 lg:py-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row lg:items-center gap-16">
@@ -250,7 +299,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 8. Footer ────────────────────────────────────────────────────────── */}
+      {/* ── 10. Footer ───────────────────────────────────────────────────────── */}
       <footer className="bg-white border-t border-[#E5E7EB] py-14">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -274,6 +323,7 @@ export default function Home() {
                   { label: "Home", href: "/" },
                   { label: "Start Learning", href: "/sign-in" },
                   { label: "How It Works", href: "#how-it-works" },
+                  { label: "FAQ", href: "#faq" },
                 ].map(({ label, href }) => (
                   <li key={label}>
                     <Link href={href} className="font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors">
@@ -291,8 +341,8 @@ export default function Home() {
               <p className="font-body text-sm text-[#6B7280] mb-3">
                 A WithinTech Rwanda product
               </p>
-              <a href="mailto:learn@withintech.rw" className="font-body text-sm text-[#3D006B] hover:underline">
-                learn@withintech.rw
+              <a href="mailto:learn@withintech.org" className="font-body text-sm text-[#3D006B] hover:underline">
+                learn@withintech.org
               </a>
             </div>
           </div>

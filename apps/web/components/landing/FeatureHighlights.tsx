@@ -230,7 +230,7 @@ function FeatureRow({ eyebrow, headline, body, bullets, mockup, reverse }: Featu
 
 export default function FeatureHighlights() {
   return (
-    <section className="bg-[#FAFAFA] py-20 lg:py-32 border-y border-[#E5E7EB]">
+    <section id="demo" className="bg-[#FAFAFA] py-20 lg:py-32 border-y border-[#E5E7EB]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
 
         {/* Section header */}
