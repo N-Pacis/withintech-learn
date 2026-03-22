@@ -38,13 +38,8 @@ export default function Home() {
             {/* Left: text */}
             <div className="lg:w-[55%] lg:pr-12 pb-20">
               <h1 className="font-heading font-black text-5xl sm:text-6xl lg:text-7xl text-[#0F0F0F] tracking-tight leading-[1.05] mb-6">
-                Learn at
-                <br />
-                your pace.
-                <br />
-                Stay Ahead
-                <br />
-                in the AI Era.
+                <span className="block">Stay Ahead</span>
+                <span className="block">in the AI Era.</span>
               </h1>
 
               <p className="font-body text-lg text-[#6B7280] leading-relaxed mb-8 max-w-sm">
