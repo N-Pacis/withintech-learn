@@ -18,6 +18,7 @@ async function doRefresh(): Promise<boolean> {
 export async function apiFetch<T = unknown>(
   path: string,
   options: RequestInit = {},
+  { redirectOn401 = true }: { redirectOn401?: boolean } = {},
 ): Promise<{ success: boolean; message: string; data?: T }> {
   const request = async () => {
     const headers: Record<string, string> = {
@@ -33,6 +34,10 @@ export async function apiFetch<T = unknown>(
   let res = await request();
 
   if (res.status === 401) {
+    if (!redirectOn401) {
+      return { success: false, message: 'Unauthenticated' };
+    }
+
     if (!refreshPromise) {
       refreshPromise = doRefresh().finally(() => {
         refreshPromise = null;
