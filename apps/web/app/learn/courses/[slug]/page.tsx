@@ -262,7 +262,7 @@ export default function CoursePage() {
     <div className="min-h-screen bg-dots">
 
       {/* Top bar */}
-      <div className="bg-white border-b border-[#E5E7EB] px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">
+      <div className="bg-white border-b border-[#E5E7EB] px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-3">
         <Link
           href="/learn"
           className="inline-flex items-center gap-1.5 font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors shrink-0"
@@ -271,12 +271,36 @@ export default function CoursePage() {
           <span className="hidden sm:inline">All courses</span>
         </Link>
         <span className="text-[#D1D5DB] hidden sm:inline select-none">/</span>
-        <h1 className="font-heading font-bold text-sm sm:text-base text-[#0F0F0F] truncate">{course.title}</h1>
+        <h1 className="font-heading font-bold text-xs sm:text-base text-[#0F0F0F] truncate min-w-0">{course.title}</h1>
       </div>
 
       {/* Module roadmap */}
-      <div className="bg-[#FAFAFA] border-b border-[#E5E7EB] px-4 sm:px-6 py-5">
-        <div className="max-w-4xl mx-auto overflow-x-auto scrollbar-none">
+      <div className="bg-[#FAFAFA] border-b border-[#E5E7EB] px-4 sm:px-6 py-4 sm:py-5">
+
+        {/* Mobile: compact progress bar */}
+        <div className="flex md:hidden flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="font-body text-xs font-semibold text-[#0F0F0F]">
+              {isOnQuizStep ? 'Final Quiz' : `Module ${currentIndex + 1} of ${modules.length}`}
+            </span>
+            <span className="font-body text-xs text-[#9CA3AF]">
+              {steps.filter(s => s.isCompleted).length}/{steps.length} done
+            </span>
+          </div>
+          <div className="h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#3D006B] rounded-full transition-all duration-500"
+              style={{ width: `${steps.length > 1 ? (currentIndex / (steps.length - 1)) * 100 : 100}%` }}
+            />
+          </div>
+          {/* Current step name */}
+          <p className="font-body text-xs text-[#6B7280] truncate">
+            {steps[currentIndex]?.label}
+          </p>
+        </div>
+
+        {/* Desktop: full stepper */}
+        <div className="hidden md:block max-w-4xl mx-auto overflow-x-auto scrollbar-none">
           <div className="min-w-max">
             <Stepper steps={steps} currentStep={currentIndex} onStepClick={handleStepClick} />
           </div>
