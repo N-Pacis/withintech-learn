@@ -14,7 +14,7 @@ export function useProfile() {
   return useQuery({
     queryKey: authKeys.profile,
     queryFn: async (): Promise<User> => {
-      const res = await apiFetch<User>('/auth/profile');
+      const res = await apiFetch<User>('/auth/profile', {}, { redirectOn401: false });
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
