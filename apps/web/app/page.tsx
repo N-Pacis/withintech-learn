@@ -98,7 +98,7 @@ export default function Home() {
       {/* ── 3. Top Courses ──────────────────────────────────────────────────── */}
       <CoursesSection />
 
-      {/* ── 5. Certificate Moment ───────────────────────────────────────────── */}
+      {/* ── 6. Certificate Moment ───────────────────────────────────────────── */}
       <section className="bg-[#3D006B] py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
@@ -205,7 +205,27 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 7. Final CTA ────────────────────────────────────────────────────── */}
+      {/* ── 7. Partners ─────────────────────────────────────────────────────── */}
+      <section className="bg-white border-y border-[#E5E7EB] py-12">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest text-center mb-10">
+            Partners
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-12 lg:gap-20">
+            {[
+              { src: '/partners/partner-1.png', alt: 'Partner 1' },
+              { src: '/partners/partner-2.png', alt: 'Partner 2' },
+              { src: '/partners/partner-3.png', alt: 'Partner 3' },
+            ].map(({ src, alt }) => (
+              <div key={alt} className="h-10 w-32 relative grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all">
+                <Image src={src} alt={alt} fill className="object-contain" unoptimized />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 8. Final CTA ────────────────────────────────────────────────────── */}
       <section className="bg-white border-t border-[#E5E7EB] py-24 lg:py-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row lg:items-center gap-16">
@@ -250,7 +270,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 8. Footer ────────────────────────────────────────────────────────── */}
+      {/* ── 9. Footer ────────────────────────────────────────────────────────── */}
       <footer className="bg-white border-t border-[#E5E7EB] py-14">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">

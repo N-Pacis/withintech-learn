@@ -1,11 +1,14 @@
-import crypto from 'crypto';
 import { prisma } from '../../db/prisma';
+import redis from '../../db/redis';
 import { sendEmail } from '../../services/email.service';
 import { otpEmailTemplate } from '../../templates/otp-email';
-import { unauthorized, forbidden, conflict, badRequest } from '../../utils/errors';
+import { unauthorized, forbidden, conflict, badRequest, tooManyRequests } from '../../utils/errors';
 import { signAccessToken, signRefreshToken, signResetToken, verifyResetToken, verifyToken } from '../../utils/jwt';
 import { hashPassword, comparePassword } from '../../utils/password';
 import { generateOtp, hashOtp, verifyOtp, otpExpiresAt } from '../../utils/otp';
+
+const EMAIL_OTP_MAX = 5;
+const EMAIL_OTP_WINDOW = 3600; // 1 hour in seconds
 
 const safeUser = (u: { id: string; email: string; firstName: string; lastName: string; role: { name: string } }) => ({
   id: u.id,
@@ -15,12 +18,42 @@ const safeUser = (u: { id: string; email: string; firstName: string; lastName: s
   role: u.role.name,
 });
 
+async function checkEmailOtpRateLimit(email: string) {
+  const key = `otp_email_rate:${email.toLowerCase()}`;
+  const count = await redis.incr(key);
+  if (count === 1) await redis.expire(key, EMAIL_OTP_WINDOW);
+  if (count > EMAIL_OTP_MAX) throw tooManyRequests('Too many verification emails sent. Please try again in an hour.');
+}
+
+async function sendOtp(user: { id: string; email: string; firstName: string }, purpose: string, subject: string, purposeLabel: string) {
+  await checkEmailOtpRateLimit(user.email);
+
+  const otp = generateOtp();
+  const code = await hashOtp(otp);
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { otpCode: code, otpPurpose: purpose, otpExpiresAt: otpExpiresAt() },
+  });
+
+  await sendEmail({
+    to: user.email,
+    subject,
+    html: otpEmailTemplate({ firstName: user.firstName, otp, purposeLabel }),
+  });
+}
+
 export const login = async ({ email, password }: { email: string; password: string }) => {
   const user = await prisma.user.findUnique({ where: { email }, include: { role: true } });
   if (!user || !(await comparePassword(password, user.passwordHash)))
     throw unauthorized('Invalid email or password');
   if (!user.isActive)
     throw forbidden('Your account has been deactivated. Please contact an administrator.');
+
+  if (!user.emailVerified) {
+    await sendOtp(user, 'email_verification', 'WithinTech Learn: Verify your email', 'Email Verification');
+    return { requiresEmailVerification: true as const, email: user.email };
+  }
+
   await prisma.user.update({ where: { id: user.id }, data: { lastLoggedIn: new Date() } });
   const payload = { userId: user.id, role: user.role.name };
   return { accessToken: signAccessToken(payload), refreshToken: signRefreshToken(payload), user: safeUser(user) };
@@ -30,6 +63,7 @@ export const refreshToken = async ({ refreshToken: token }: { refreshToken: stri
   const payload = verifyToken(token, process.env.JWT_REFRESH_SECRET as string);
   const user = await prisma.user.findUnique({ where: { id: payload.userId }, include: { role: true } });
   if (!user || !user.isActive) throw unauthorized('Invalid or expired token');
+  if (!user.emailVerified) throw unauthorized('Email verification required');
   return { accessToken: signAccessToken({ userId: user.id, role: user.role.name }) };
 };
 
@@ -41,7 +75,6 @@ export const adminSeed = async () => {
   if (existing) return { skipped: true as const, email: existing.email };
 
   const adminRole = await prisma.role.findUniqueOrThrow({ where: { name: 'admin' } });
-  // const password = crypto.randomBytes(12).toString('base64').slice(0, 16);
   const password = 'password';
   const passwordHash = await hashPassword(password);
 
@@ -53,6 +86,7 @@ export const adminSeed = async () => {
       passwordHash,
       roleId: adminRole.id,
       isActive: true,
+      emailVerified: true,
     },
   });
 
@@ -67,35 +101,44 @@ export const signUp = async ({ firstName, lastName, email, password }: { firstNa
 
   const passwordHash = await hashPassword(password);
   const user = await prisma.user.create({
-    data: { firstName, lastName, email, passwordHash, roleId: studentRole.id, isActive: true, lastLoggedIn: new Date() },
+    data: { firstName, lastName, email, passwordHash, roleId: studentRole.id, isActive: true, emailVerified: false },
     include: { role: true },
+  });
+
+  await sendOtp(user, 'email_verification', 'WithinTech Learn: Verify your email', 'Email Verification');
+  return { requiresEmailVerification: true as const, email: user.email };
+};
+
+export const verifyEmailOtp = async ({ email, otp }: { email: string; otp: string }) => {
+  const user = await prisma.user.findUnique({ where: { email }, include: { role: true } });
+  if (!user) throw badRequest('Invalid or expired OTP');
+
+  if (!user.otpCode || user.otpPurpose !== 'email_verification' || !user.otpExpiresAt || user.otpExpiresAt < new Date())
+    throw badRequest('Invalid or expired OTP');
+  if (!(await verifyOtp(otp, user.otpCode))) throw badRequest('Invalid or expired OTP');
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { emailVerified: true, otpCode: null, otpPurpose: null, otpExpiresAt: null, lastLoggedIn: new Date() },
   });
 
   const payload = { userId: user.id, role: user.role.name };
   return { accessToken: signAccessToken(payload), refreshToken: signRefreshToken(payload), user: safeUser(user) };
 };
 
+export const resendEmailVerification = async ({ email }: { email: string }) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user || user.emailVerified) return true; // no enumeration
+
+  await sendOtp(user, 'email_verification', 'WithinTech Learn: Verify your email', 'Email Verification');
+  return true;
+};
+
 export const requestPasswordReset = async ({ email }: { email: string }) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return true; // no enumeration
 
-  await prisma.otpCode.updateMany({
-    where: { userId: user.id, purpose: 'password_reset', usedAt: null },
-    data: { usedAt: new Date() },
-  });
-
-  const otp = generateOtp();
-  const code = await hashOtp(otp);
-  await prisma.otpCode.create({
-    data: { userId: user.id, code, purpose: 'password_reset', expiresAt: otpExpiresAt() },
-  });
-
-  await sendEmail({
-    to: user.email,
-    subject: 'WithinTech Learn: Your password reset code',
-    html: otpEmailTemplate({ firstName: user.firstName, otp, purposeLabel: 'Password Reset' }),
-  });
-
+  await sendOtp(user, 'password_reset', 'WithinTech Learn: Your password reset code', 'Password Reset');
   return true;
 };
 
@@ -103,17 +146,12 @@ export const verifyResetOtp = async ({ email, otp }: { email: string; otp: strin
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) throw badRequest('Invalid or expired OTP');
 
-  const record = await prisma.otpCode.findFirst({
-    where: { userId: user.id, purpose: 'password_reset', usedAt: null, expiresAt: { gt: new Date() } },
-    orderBy: { createdAt: 'desc' },
-  });
-  if (!record) throw badRequest('Invalid or expired OTP');
-  if (!(await verifyOtp(otp, record.code))) throw badRequest('Invalid or expired OTP');
+  if (!user.otpCode || user.otpPurpose !== 'password_reset' || !user.otpExpiresAt || user.otpExpiresAt < new Date())
+    throw badRequest('Invalid or expired OTP');
+  if (!(await verifyOtp(otp, user.otpCode))) throw badRequest('Invalid or expired OTP');
 
-  // Mark OTP as used
-  await prisma.otpCode.update({ where: { id: record.id }, data: { usedAt: new Date() } });
+  await prisma.user.update({ where: { id: user.id }, data: { otpCode: null, otpPurpose: null, otpExpiresAt: null } });
 
-  // Return a short-lived reset token (10 min) — no role, not a real session
   return { resetToken: signResetToken(user.id) };
 };
 
@@ -123,7 +161,8 @@ export const resetPassword = async ({ resetToken, newPassword }: { resetToken: s
   if (!user) throw unauthorized();
 
   const passwordHash = await hashPassword(newPassword);
-  await prisma.user.update({ where: { id: userId }, data: { passwordHash, isActive: true, lastLoggedIn: new Date() } });
+  // Mark email as verified — user proved ownership by receiving the reset OTP
+  await prisma.user.update({ where: { id: userId }, data: { passwordHash, isActive: true, emailVerified: true, lastLoggedIn: new Date() } });
 
   const payload = { userId: user.id, role: user.role.name };
   return { accessToken: signAccessToken(payload), refreshToken: signRefreshToken(payload), user: safeUser(user) };

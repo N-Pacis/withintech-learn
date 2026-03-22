@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { isDisposableEmail } from '@withintech-learn/shared';
+import { isAllowedEmail } from '@withintech-learn/shared';
 
 const emailField = z.string().email();
 const trustedEmailField = emailField.refine(
-  (v) => !isDisposableEmail(v),
-  { message: 'Please use a permanent email address.' },
+  (v) => isAllowedEmail(v),
+  { message: 'Please use a personal or school email address.' },
 );
 const passwordField = (min: number) => z.string().min(min);
 
@@ -42,4 +42,13 @@ export const resetPasswordSchema = z.object({
 export const changePasswordSchema = z.object({
   currentPassword: passwordField(6),
   newPassword: passwordField(8),
+});
+
+export const verifyEmailOtpSchema = z.object({
+  email: emailField,
+  otp: z.string().length(6),
+});
+
+export const resendEmailVerificationSchema = z.object({
+  email: emailField,
 });

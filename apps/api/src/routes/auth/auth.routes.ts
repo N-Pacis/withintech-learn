@@ -9,6 +9,8 @@ import {
   verifyResetOtpSchema,
   resetPasswordSchema,
   changePasswordSchema,
+  verifyEmailOtpSchema,
+  resendEmailVerificationSchema,
 } from './auth.schemas';
 import {
   postLogin,
@@ -19,6 +21,8 @@ import {
   postResetPassword,
   postChangePassword,
   getProfile,
+  postVerifyEmailOtp,
+  postResendEmailVerification,
 } from '../../controllers/auth.controller';
 
 const router = Router();
@@ -31,5 +35,7 @@ router.post('/auth/password-reset/verify', validate(verifyResetOtpSchema), postV
 router.post('/auth/password-reset/confirm', validate(resetPasswordSchema), postResetPassword);
 router.post('/auth/password/change', authenticate, validate(changePasswordSchema), postChangePassword);
 router.get('/auth/profile', authenticate, getProfile);
+router.post('/auth/email/verify', validate(verifyEmailOtpSchema), postVerifyEmailOtp);
+router.post('/auth/email/resend', validate(resendEmailVerificationSchema), postResendEmailVerification);
 
 export default router;

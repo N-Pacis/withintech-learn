@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Badge, PageLoader, Table, Select } from '@/components/ui';
 import type { Column, CellValue } from '@/components/ui';
-import { useStudents, useSetUserActive, AdminUser, UsersParams } from '@/hooks/queries/users';
+import { useStudents, useSetUserActive, useVerifyUserEmail, AdminUser, UsersParams } from '@/hooks/queries/users';
 import { cn } from '@/lib/utils';
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -27,6 +27,7 @@ function formatDate(date: string | null): CellValue {
 const columns: Column[] = [
   { key: 'user', header: 'Student' },
   { key: 'status', header: 'Status' },
+  { key: 'emailVerified', header: 'Email' },
   { key: 'lastLoggedIn', header: 'Last login' },
   { key: 'joined', header: 'Joined' },
   { key: 'actions', header: '' },
@@ -46,6 +47,7 @@ export default function StudentsPage() {
 
   const { data: students, isLoading, error } = useStudents(params);
   const { mutate: setActive } = useSetUserActive();
+  const { mutate: verifyEmail } = useVerifyUserEmail();
 
   function buildRow(u: AdminUser): Record<string, CellValue> {
     return {
@@ -64,20 +66,31 @@ export default function StudentsPage() {
         </div>
       ),
       status: <Badge variant={u.isActive ? 'success' : 'warning'}>{u.isActive ? 'Active' : 'Inactive'}</Badge>,
+      emailVerified: <Badge variant={u.emailVerified ? 'success' : 'warning'}>{u.emailVerified ? 'Verified' : 'Unverified'}</Badge>,
       lastLoggedIn: formatDate(u.lastLoggedIn),
       joined: formatDate(u.createdAt),
       actions: (
-        <button
-          onClick={() => setActive({ userId: u.id, isActive: !u.isActive })}
-          className={cn(
-            'font-body text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors',
-            u.isActive
-              ? 'text-red-600 border-red-200 hover:bg-red-50'
-              : 'text-[#3D006B] border-[#3D006B]/20 hover:bg-[#3D006B]/5',
+        <div className="flex items-center gap-2">
+          {!u.emailVerified && (
+            <button
+              onClick={() => verifyEmail(u.id)}
+              className="font-body text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors text-emerald-700 border-emerald-200 hover:bg-emerald-50"
+            >
+              Verify Email
+            </button>
           )}
-        >
-          {u.isActive ? 'Deactivate' : 'Activate'}
-        </button>
+          <button
+            onClick={() => setActive({ userId: u.id, isActive: !u.isActive })}
+            className={cn(
+              'font-body text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors',
+              u.isActive
+                ? 'text-red-600 border-red-200 hover:bg-red-50'
+                : 'text-[#3D006B] border-[#3D006B]/20 hover:bg-[#3D006B]/5',
+            )}
+          >
+            {u.isActive ? 'Deactivate' : 'Activate'}
+          </button>
+        </div>
       ),
     };
   }
