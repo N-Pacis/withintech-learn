@@ -7,7 +7,7 @@ import QueryProvider from "@/providers/QueryProvider";
 const syne = Syne({
   variable: "--font-syne",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["600", "700", "800"],
 });
 
 const dmSans = DM_Sans({

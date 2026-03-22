@@ -38,9 +38,10 @@ body {
 }
 
 .font-heading {
-  letter-spacing: -0.05em;
-  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-stretch: condensed;
 }
+
 
 /* ─── Tiptap shared prose styles ─────────────────────────────────────────── */
 .tiptap-editor .ProseMirror,
