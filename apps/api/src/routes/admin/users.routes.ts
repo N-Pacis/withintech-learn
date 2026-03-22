@@ -55,4 +55,9 @@ router.patch('/admin/users/:id/deactivate', asyncHandler(async (req, res) => {
   sendSuccess(res, user, 'Account deactivated');
 }));
 
+router.patch('/admin/users/:id/verify-email', asyncHandler(async (req, res) => {
+  const user = await usersService.verifyUserEmail({ userId: req.params.id });
+  sendSuccess(res, user, 'Email verified');
+}));
+
 export default router;

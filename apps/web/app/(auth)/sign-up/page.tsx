@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Logo, Button, Input, FormField, Card, PasswordInput } from '@/components/ui';
 import { useSignUp } from '@/hooks/queries/auth';
-import { isDisposableEmail } from '@withintech-learn/shared';
+import { isAllowedEmail } from '@withintech-learn/shared';
 
 function Req({ met, label }: { met: boolean; label: string }) {
   return (
@@ -75,7 +75,7 @@ export default function SignUpPage() {
     if (!form.firstName.trim()) errs.firstName = 'First name is required';
     if (!form.lastName.trim()) errs.lastName = 'Last name is required';
     if (!form.email) errs.email = 'Email is required';
-    else if (isDisposableEmail(form.email)) errs.email = 'Please use a permanent email address.';
+    else if (!isAllowedEmail(form.email)) errs.email = 'Please use a personal or school email address.';
     if (form.password.length < 6) errs.password = 'Password must be at least 6 characters';
     else if (!/\d/.test(form.password)) errs.password = 'Password must contain at least one number';
     if (form.confirmPassword !== form.password) errs.confirmPassword = 'Passwords do not match';
@@ -90,7 +90,7 @@ export default function SignUpPage() {
     setErrors({});
     try {
       await signUp({ firstName: form.firstName, lastName: form.lastName, email: form.email, password: form.password });
-      router.push('/learn');
+      router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
     } catch (err) {
       setServerError(err instanceof Error ? err.message : 'Something went wrong');
     }

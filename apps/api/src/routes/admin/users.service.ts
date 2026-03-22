@@ -37,7 +37,7 @@ function buildSearchConditions(search: string) {
   return conditions;
 }
 
-function formatUser(u: { id: string; firstName: string; lastName: string; email: string; role: { name: string }; isActive: boolean; createdAt: Date; lastLoggedIn: Date | null; createdById: string | null }) {
+function formatUser(u: { id: string; firstName: string; lastName: string; email: string; role: { name: string }; isActive: boolean; emailVerified: boolean; createdAt: Date; lastLoggedIn: Date | null; createdById: string | null }) {
   return {
     id: u.id,
     firstName: u.firstName,
@@ -45,6 +45,7 @@ function formatUser(u: { id: string; firstName: string; lastName: string; email:
     email: u.email,
     role: u.role.name,
     isActive: u.isActive,
+    emailVerified: u.emailVerified,
     createdAt: u.createdAt,
     lastLoggedIn: u.lastLoggedIn,
     createdById: u.createdById,
@@ -72,6 +73,17 @@ export const setUserActive = async ({ userId, isActive }: { userId: string; isAc
   const updated = await prisma.user.update({
     where: { id: userId },
     data: { isActive },
+    include: { role: true },
+  });
+  return formatUser(updated);
+};
+
+export const verifyUserEmail = async ({ userId }: { userId: string }) => {
+  const user = await prisma.user.findUnique({ where: { id: userId }, include: { role: true } });
+  if (!user) throw notFound('User not found');
+  const updated = await prisma.user.update({
+    where: { id: userId },
+    data: { emailVerified: true },
     include: { role: true },
   });
   return formatUser(updated);
@@ -105,6 +117,7 @@ export const createAdmin = async ({
       passwordHash,
       roleId: adminRole.id,
       isActive: true,
+      emailVerified: true,
       createdById,
     },
     include: { role: true },

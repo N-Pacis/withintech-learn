@@ -42,3 +42,13 @@ export const postChangePassword = asyncHandler(async (req: Request, res: Respons
   await authService.changePassword({ ...req.body, userId: req.user!.userId });
   sendSuccess(res, undefined, 'Password changed successfully');
 });
+
+export const postVerifyEmailOtp = asyncHandler(async (req: Request, res: Response) => {
+  const result = await authService.verifyEmailOtp(req.body);
+  sendSuccess(res, result, 'Email verified successfully');
+});
+
+export const postResendEmailVerification = asyncHandler(async (req: Request, res: Response) => {
+  await authService.resendEmailVerification(req.body);
+  sendSuccess(res, undefined, 'If that email exists and is unverified, a new code has been sent');
+});

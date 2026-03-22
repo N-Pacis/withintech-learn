@@ -28,41 +28,64 @@ export function useProfile() {
 
 // ─── Mutations ───────────────────────────────────────────────────────────────
 
+type AuthSuccess = { accessToken: string; refreshToken: string; user: User };
+type EmailVerificationRequired = { requiresEmailVerification: true; email: string };
+type LoginResult = AuthSuccess | EmailVerificationRequired;
+
 export function useLogin() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (credentials: { email: string; password: string }) => {
-      const res = await apiFetch<{ accessToken: string; refreshToken: string; user: User }>(
-        '/auth/login',
-        { method: 'POST', body: JSON.stringify(credentials) },
-      );
+    mutationFn: async (credentials: { email: string; password: string }): Promise<LoginResult> => {
+      const res = await apiFetch<LoginResult>('/auth/login', { method: 'POST', body: JSON.stringify(credentials) });
       if (!res.success || !res.data) throw new Error(res.message ?? 'Login failed');
       return res.data;
     },
     onSuccess: (data) => {
+      if ('requiresEmailVerification' in data) return;
       setTokens(data.accessToken, data.refreshToken);
-      // Seed the profile cache so any useProfile consumer is instantly updated
       queryClient.setQueryData(authKeys.profile, data.user);
     },
   });
 }
 
 export function useSignUp() {
+  return useMutation({
+    mutationFn: async (payload: { firstName: string; lastName: string; email: string; password: string }): Promise<EmailVerificationRequired> => {
+      const res = await apiFetch<EmailVerificationRequired>('/auth/signup', { method: 'POST', body: JSON.stringify(payload) });
+      if (!res.success || !res.data) throw new Error(res.message ?? 'Sign up failed');
+      return res.data;
+    },
+  });
+}
+
+export function useVerifyEmail() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: { firstName: string; lastName: string; email: string; password: string }) => {
-      const res = await apiFetch<{ accessToken: string; refreshToken: string; user: User }>(
-        '/auth/signup',
-        { method: 'POST', body: JSON.stringify(data) },
-      );
-      if (!res.success || !res.data) throw new Error(res.message ?? 'Sign up failed');
+    mutationFn: async ({ email, otp }: { email: string; otp: string }): Promise<AuthSuccess> => {
+      const res = await apiFetch<AuthSuccess>('/auth/email/verify', {
+        method: 'POST',
+        body: JSON.stringify({ email, otp }),
+      });
+      if (!res.success || !res.data) throw new Error(res.message ?? 'Invalid OTP');
       return res.data;
     },
     onSuccess: (data) => {
       setTokens(data.accessToken, data.refreshToken);
       queryClient.setQueryData(authKeys.profile, data.user);
+    },
+  });
+}
+
+export function useResendEmailVerification() {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const res = await apiFetch('/auth/email/resend', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+      if (!res.success) throw new Error(res.message ?? 'Failed to resend code');
     },
   });
 }
