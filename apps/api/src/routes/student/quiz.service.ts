@@ -1,5 +1,6 @@
 import { prisma } from '../../db/prisma';
 import { badRequest, notFound, forbidden } from '../../utils/errors';
+import { upsertCertificate } from './certificates.service';
 
 export interface SubmittedAnswer {
   questionId: string;
@@ -92,6 +93,17 @@ export const submitQuiz = async (userId: string, quizId: string, answers: Submit
     data: { userId, quizId, score, status },
     select: { id: true, score: true, status: true, quizId: true, createdAt: true },
   });
+
+  // Auto-complete course when a course quiz is passed
+  if (quiz.courseId && status === 'pass') {
+    await Promise.all([
+      prisma.studentCourse.update({
+        where: { studentId_courseId: { studentId: userId, courseId: quiz.courseId } },
+        data: { status: 'PASSED' },
+      }),
+      upsertCertificate(userId, quiz.courseId),
+    ]);
+  }
 
   return {
     attempt: {
