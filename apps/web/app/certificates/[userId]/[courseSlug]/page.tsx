@@ -37,15 +37,30 @@ export default function CertificatePage() {
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
+        scrollX: 0,
+        scrollY: -window.scrollY,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
+        onclone: (_doc, el) => {
+          el.style.boxShadow = 'none';
+        },
       });
 
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/png', 1.0);
+
+      // Size the PDF to exactly match the element's CSS dimensions.
+      // 1 CSS pixel = 25.4 / 96 mm at 96 DPI.
+      const PX_TO_MM = 25.4 / 96;
+      const pdfW = element.offsetWidth * PX_TO_MM;
+      const pdfH = element.offsetHeight * PX_TO_MM;
+
       const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'px',
-        format: [canvas.width / 3, canvas.height / 3],
+        orientation: pdfW > pdfH ? 'landscape' : 'portrait',
+        unit: 'mm',
+        format: [pdfW, pdfH],
       });
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 3, canvas.height / 3);
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
       pdf.save(`certificate-${cert!.courseSlug}.pdf`);
     } finally {
       setDownloading(false);

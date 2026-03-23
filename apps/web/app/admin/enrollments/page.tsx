@@ -98,7 +98,7 @@ function ProgressPopup({
                     {m.completed && (
                       <span className="font-body text-xs text-[#9CA3AF]">
                         {m.completedAt
-                          ? new Date(m.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                          ? new Date(m.completedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
                           : 'Done'}
                       </span>
                     )}
@@ -121,7 +121,7 @@ function ProgressPopup({
                       </span>
                       {data.finalQuiz.passed && data.finalQuiz.passedAt ? (
                         <span className="font-body text-xs text-[#9CA3AF]">
-                          {new Date(data.finalQuiz.passedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          {new Date(data.finalQuiz.passedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </span>
                       ) : (
                         <span className={`font-body text-xs font-medium px-2 py-0.5 rounded-full ${data.finalQuiz.passed ? 'bg-green-50 text-green-700' : 'bg-[#F3F4F6] text-[#9CA3AF]'}`}>

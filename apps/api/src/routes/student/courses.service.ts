@@ -304,12 +304,35 @@ export const completeModule = async (slug: string, moduleId: string, userId: str
     }
   }
 
-  return prisma.moduleProgress.upsert({
+  const progress = await prisma.moduleProgress.upsert({
     where: { userId_moduleId: { userId, moduleId } },
     create: { userId, moduleId },
     update: {},
     select: { id: true, completedAt: true },
   });
+
+  // Auto-complete course if this was the last module and the course has no final quiz
+  const courseWithQuiz = await prisma.course.findUnique({
+    where: { id: course.id },
+    select: { quiz: { select: { id: true } } },
+  });
+
+  if (!courseWithQuiz?.quiz) {
+    const completedCount = await prisma.moduleProgress.count({
+      where: { userId, moduleId: { in: courseModules.map((m) => m.id) } },
+    });
+    if (completedCount === courseModules.length) {
+      await Promise.all([
+        prisma.studentCourse.update({
+          where: { studentId_courseId: { studentId: userId, courseId: course.id } },
+          data: { status: 'PASSED' },
+        }),
+        upsertCertificate(userId, course.id),
+      ]);
+    }
+  }
+
+  return progress;
 };
 
 export const getStudentStats = async (userId: string) => {
