@@ -9,7 +9,6 @@ import {
   usePublishedCourse,
   useStudentModule,
   useCompleteModule,
-  useCompleteCourse,
   type StudentBlock,
   type StudentModuleDetail,
   type StudentModuleQuiz,
@@ -152,10 +151,10 @@ export default function CoursePage() {
   const { data: course, isLoading, isError } = usePublishedCourse(slug);
   const { data: profile } = useProfile();
   const { mutate: completeModuleMutation, isPending: completing } = useCompleteModule(slug);
-  const { mutate: completeCourse, isPending: completingCourse } = useCompleteCourse(slug);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [courseQuizPassed, setCourseQuizPassed] = useState(false);
+  const [localCoursePassed, setLocalCoursePassed] = useState(false);
   const [canComplete, setCanComplete] = useState(false);
   const [readProgress, setReadProgress] = useState(0);
 
@@ -224,11 +223,9 @@ export default function CoursePage() {
         if (goToQuizStep) {
           setCurrentIndex(quizStepIndex);
         } else if (goToCert) {
-          completeCourse(undefined, {
-            onSuccess: () => {
-              window.open(`/certificates/${profile!.id}/${course!.slug}`, '_blank');
-            },
-          });
+          // Backend auto-completes the course — just navigate to certificate
+          setLocalCoursePassed(true);
+          window.open(`/certificates/${profile!.id}/${course!.slug}`, '_blank');
         } else {
           setCurrentIndex(currentIndex + 1);
         }
@@ -241,17 +238,14 @@ export default function CoursePage() {
   }
 
   function handleCompleteCourse() {
-    completeCourse(undefined, {
-      onSuccess: () => {
-        window.open(`/certificates/${profile!.id}/${course!.slug}`, '_blank');
-      },
-    });
+    setLocalCoursePassed(true);
+    window.open(`/certificates/${profile!.id}/${course!.slug}`, '_blank');
   }
 
   const isFirst = currentIndex === 0;
   const isLast = !isOnQuizStep && currentIndex === modules.length - 1;
   const isCurrentCompleted = currentModule?.isCompleted ?? false;
-  const isCoursePassed = course.enrollment_status === 'PASSED';
+  const isCoursePassed = course.enrollment_status === 'PASSED' || localCoursePassed;
   const certHref = `/certificates/${profile?.id}/${course.slug}`;
 
   const allModulesDone = modules.every((m) => m.isCompleted);
@@ -422,7 +416,7 @@ export default function CoursePage() {
                     slug={slug}
                     quiz={course.quiz!}
                     lastAttempt={course.lastCourseQuizAttempt}
-                    onPass={() => setCourseQuizPassed(true)}
+                    onPass={() => { setCourseQuizPassed(true); setLocalCoursePassed(true); }}
                   />
                 </div>
                 {/* Desktop nav */}
@@ -432,7 +426,6 @@ export default function CoursePage() {
                     isCoursePassed={isCoursePassed}
                     courseQuizPassed={courseQuizPassed}
                     certHref={certHref}
-                    completingCourse={completingCourse}
                     onComplete={handleCompleteCourse}
                   />
                 </div>
@@ -471,7 +464,6 @@ export default function CoursePage() {
                     certHref={certHref}
                     canComplete={canComplete}
                     completing={completing}
-                    completingCourse={completingCourse}
                     onNext={handleNext}
                     onGoToQuiz={() => setCurrentIndex(quizStepIndex)}
                     onCompleteCourse={handleCompleteCourse}
@@ -496,7 +488,6 @@ export default function CoursePage() {
             isCoursePassed={isCoursePassed}
             courseQuizPassed={courseQuizPassed}
             certHref={certHref}
-            completingCourse={completingCourse}
             onComplete={handleCompleteCourse}
             compact
           />
@@ -509,7 +500,6 @@ export default function CoursePage() {
             certHref={certHref}
             canComplete={canComplete}
             completing={completing}
-            completingCourse={completingCourse}
             onNext={handleNext}
             onGoToQuiz={() => setCurrentIndex(quizStepIndex)}
             onCompleteCourse={handleCompleteCourse}
@@ -540,7 +530,7 @@ function NavPrev({ onClick, disabled, compact }: { onClick: () => void; disabled
 
 function NavModuleRight({
   isLast, isCurrentCompleted, isCoursePassed, hasQuiz, certHref,
-  canComplete, completing, completingCourse,
+  canComplete, completing,
   onNext, onGoToQuiz, onCompleteCourse, compact,
 }: {
   isLast: boolean;
@@ -550,7 +540,6 @@ function NavModuleRight({
   certHref: string;
   canComplete: boolean;
   completing: boolean;
-  completingCourse: boolean;
   onNext: () => void;
   onGoToQuiz: () => void;
   onCompleteCourse: () => void;
@@ -578,8 +567,6 @@ function NavModuleRight({
         <Button
           size="md"
           onClick={onCompleteCourse}
-          disabled={completingCourse}
-          loading={completingCourse}
           className={cn('flex items-center gap-2', compact && 'px-3')}
         >
           {!compact && 'Complete course'} <Trophy size={16} />
@@ -590,8 +577,8 @@ function NavModuleRight({
       <Button
         size="md"
         onClick={onNext}
-        disabled={!canComplete || completing || completingCourse}
-        loading={completing || completingCourse}
+        disabled={!canComplete || completing}
+        loading={completing}
         className={cn('flex items-center gap-2', compact && 'px-3')}
       >
         {!compact && (hasQuiz ? 'Complete module' : 'Complete course')} <Trophy size={16} />
@@ -613,16 +600,15 @@ function NavModuleRight({
 }
 
 function NavQuizRight({
-  isCoursePassed, courseQuizPassed, certHref, completingCourse, onComplete, compact,
+  isCoursePassed, courseQuizPassed, certHref, onComplete, compact,
 }: {
   isCoursePassed: boolean;
   courseQuizPassed: boolean;
   certHref: string;
-  completingCourse: boolean;
   onComplete: () => void;
   compact?: boolean;
 }) {
-  if (!isCoursePassed) {
+  if (isCoursePassed || courseQuizPassed) {
     return (
       <Button size="md" asChild className={cn('flex items-center gap-2 bg-green-600 hover:bg-green-700 border-0', compact && 'px-3')}>
         <Link href={certHref} target="_blank" rel="noopener noreferrer">
@@ -635,8 +621,7 @@ function NavQuizRight({
     <Button
       size="md"
       onClick={onComplete}
-      disabled={!courseQuizPassed || completingCourse}
-      loading={completingCourse}
+      disabled={!courseQuizPassed}
       className={cn('flex items-center gap-2', compact && 'px-3')}
     >
       {!compact && 'Complete course'} <Trophy size={16} />
