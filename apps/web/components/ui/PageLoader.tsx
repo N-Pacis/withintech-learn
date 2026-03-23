@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 // ─── Primitive ────────────────────────────────────────────────────────────────
@@ -185,6 +186,26 @@ function ListLoader({ rows = 5 }: { rows?: number }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ─── Auth / session loader ────────────────────────────────────────────────────
+
+/** Full-screen white page with the logo centred and pulsing — shown while the
+ *  session is being established (profile fetch / token refresh). */
+export function AuthLoader() {
+  return (
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <Image
+        src="/logo.png"
+        alt="WithinTech Learn"
+        width={1000}
+        height={1000}
+        priority
+        unoptimized
+        className="h-20 w-auto animate-pulse"
+      />
     </div>
   );
 }
