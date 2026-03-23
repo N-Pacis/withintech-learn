@@ -297,7 +297,7 @@ export default function Home() {
       {/* ── 10. Footer ───────────────────────────────────────────────────────── */}
       <footer className="bg-white border-t border-[#E5E7EB] py-14">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
 
             <div>
               <div className="mb-4 py-1">
@@ -319,6 +319,25 @@ export default function Home() {
                   { label: "Start Learning", href: "/sign-in" },
                   { label: "How It Works", href: "#how-it-works" },
                   { label: "FAQ", href: "#faq" },
+                ].map(({ label, href }) => (
+                  <li key={label}>
+                    <Link href={href} className="font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors">
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <p className="font-heading text-xs tracking-widest uppercase text-[#0F0F0F] font-bold mb-5">
+                Legal
+              </p>
+              <ul className="flex flex-col gap-3">
+                {[
+                  { label: "Terms of Service", href: "/legal" },
+                  { label: "Privacy Policy", href: "/legal#privacy" },
+                  { label: "Acceptable Use", href: "/legal#acceptable-use" },
                 ].map(({ label, href }) => (
                   <li key={label}>
                     <Link href={href} className="font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors">
