@@ -43,6 +43,63 @@ export default function CertificatePage() {
         windowHeight: element.scrollHeight,
         onclone: (_doc, el) => {
           el.style.boxShadow = 'none';
+
+          const moduleSection = el.querySelector('[data-pdf-modules]') as HTMLElement | null;
+          if (moduleSection) {
+            const titles = Array.from(
+              moduleSection.querySelectorAll('[data-pdf-module-title]'),
+            ).map((n) => n.textContent ?? '');
+
+            const cols = titles.length > 3 ? 2 : 1;
+            moduleSection.innerHTML = `
+              <p style="
+                font-family: var(--font-syne), sans-serif;
+                font-weight: 700;
+                font-size: 10px;
+                color: #9CA3AF;
+                text-transform: uppercase;
+                letter-spacing: 0.18em;
+                text-align: center;
+                margin: 0 0 14px;
+              ">Covering the following modules</p>
+              <ol style="
+                list-style: none;
+                margin: 0 auto;
+                padding: 0;
+                max-width: ${cols > 1 ? '100%' : '420px'};
+                column-count: ${cols};
+                column-gap: 40px;
+                column-rule: 1px solid #E9D5FF;
+              ">
+                ${titles.map((t, i) => `
+                  <li style="
+                    display: flex;
+                    align-items: baseline;
+                    gap: 8px;
+                    margin-bottom: 6px;
+                    break-inside: avoid;
+                  ">
+                    <span style="
+                      font-family: var(--font-syne), sans-serif;
+                      font-weight: 700;
+                      font-size: 12px;
+                      color: #7C3AED;
+                      min-width: 20px;
+                      text-align: right;
+                      flex-shrink: 0;
+                      line-height: 1.6;
+                    ">${i + 1}.</span>
+                    <span style="
+                      font-family: var(--font-dm-sans), sans-serif;
+                      font-size: 12px;
+                      color: #1F0A3C;
+                      line-height: 1.6;
+                    ">${t}</span>
+                  </li>
+                `).join('')}
+              </ol>
+            `;
+          }
         },
       });
 
