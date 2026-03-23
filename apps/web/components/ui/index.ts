@@ -8,7 +8,7 @@ export { default as Spinner } from './Spinner';
 export { FileUpload } from './FileUpload';
 export { Tabs } from './Tabs';
 export type { Tab } from './Tabs';
-export { PageLoader } from './PageLoader';
+export { PageLoader, AuthLoader } from './PageLoader';
 export type { PageLoaderType } from './PageLoader';
 export { CodeEditor } from './CodeEditor';
 export type { CodeLanguage } from './CodeEditor';
