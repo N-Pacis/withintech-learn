@@ -233,39 +233,47 @@ export function Certificate({ data, domId }: CertificateProps) {
             }}>
               Covering the following modules
             </p>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: modules.length > 3 ? '1fr 1fr' : '1fr',
-              gap: `${em(8)} ${em(32)}`,
-              maxWidth: modules.length <= 3 ? em(400) : '100%',
-              margin: '0 auto',
-            }}>
-              {modules.map((m, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: em(10) }}>
-                  <span style={{
-                    width: em(20), height: em(20), borderRadius: '50%',
-                    backgroundColor: '#3D006B',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    flexShrink: 0,
-                  }}>
-                    <span style={{
-                      fontFamily: 'var(--font-syne), sans-serif',
-                      fontWeight: 700,
-                      fontSize: em(9),
-                      color: '#ffffff',
-                      lineHeight: 1,
-                    }}>
-                      {i + 1}
-                    </span>
-                  </span>
-                  <span data-pdf-module-title style={{
-                    fontFamily: 'var(--font-dm-sans), sans-serif',
-                    fontSize: em(12),
-                    color: '#374151',
-                    lineHeight: 1.4,
-                  }}>
-                    {m}
-                  </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: em(8) }}>
+              {Array.from({ length: Math.ceil(modules.length / 3) }, (_, rowIdx) => (
+                <div key={rowIdx} style={{ display: 'flex', gap: em(10) }}>
+                  {modules.slice(rowIdx * 3, rowIdx * 3 + 3).map((m, j) => {
+                    const i = rowIdx * 3 + j;
+                    return (
+                      <div key={i} style={{
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'baseline',
+                        gap: em(6),
+                        padding: `${em(6)} ${em(10)}`,
+                        backgroundColor: '#F5F3FF',
+                        borderRadius: em(6),
+                      }}>
+                        <span style={{
+                          fontFamily: 'var(--font-syne), sans-serif',
+                          fontWeight: 700,
+                          fontSize: em(11),
+                          color: '#7C3AED',
+                          flexShrink: 0,
+                          lineHeight: 1.5,
+                        }}>
+                          {i + 1}.
+                        </span>
+                        <span data-pdf-module-title style={{
+                          fontFamily: 'var(--font-dm-sans), sans-serif',
+                          fontSize: em(11),
+                          color: '#1F0A3C',
+                          lineHeight: 1.5,
+                        }}>
+                          {m}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  {modules.slice(rowIdx * 3, rowIdx * 3 + 3).length < 3 &&
+                    Array.from({ length: 3 - modules.slice(rowIdx * 3, rowIdx * 3 + 3).length }, (_, k) => (
+                      <div key={`empty-${k}`} style={{ flex: 1 }} />
+                    ))
+                  }
                 </div>
               ))}
             </div>

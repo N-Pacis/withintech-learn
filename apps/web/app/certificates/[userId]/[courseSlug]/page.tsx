@@ -50,7 +50,12 @@ export default function CertificatePage() {
               moduleSection.querySelectorAll('[data-pdf-module-title]'),
             ).map((n) => n.textContent ?? '');
 
-            const cols = titles.length > 3 ? 2 : 1;
+            // Chunk into rows of 3
+            const rows: { title: string; index: number }[][] = [];
+            for (let i = 0; i < titles.length; i += 3) {
+              rows.push(titles.slice(i, i + 3).map((title, j) => ({ title, index: i + j })));
+            }
+
             moduleSection.innerHTML = `
               <p style="
                 font-family: var(--font-syne), sans-serif;
@@ -62,39 +67,36 @@ export default function CertificatePage() {
                 text-align: center;
                 margin: 0 0 14px;
               ">Covering the following modules</p>
-              <ol style="
-                list-style: none;
-                margin: 0 auto;
-                padding: 0;
-                max-width: ${cols > 1 ? '100%' : '420px'};
-                column-count: ${cols};
-                column-gap: 40px;
-                column-rule: 1px solid #E9D5FF;
-              ">
-                ${titles.map((t, i) => `
-                  <li style="
-                    display: flex;
-                    align-items: baseline;
-                    gap: 8px;
-                    margin-bottom: 6px;
-                    break-inside: avoid;
-                  ">
-                    <span style="
-                      font-family: var(--font-syne), sans-serif;
-                      font-weight: 700;
-                      font-size: 12px;
-                      color: #7C3AED;
-                      min-width: 20px;
-                      text-align: right;
-                      flex-shrink: 0;
-                      line-height: 1.6;
-                    ">${i + 1}.</span>
-                    <span style="
-                      font-family: var(--font-dm-sans), sans-serif;
-                      font-size: 12px;
-                      color: #1F0A3C;
-                      line-height: 1.6;
-                    ">${t}</span>
+              <ol style="list-style: none; margin: 0; padding: 0;">
+                ${rows.map((row) => `
+                  <li style="display: flex; gap: 16px; margin-bottom: 8px;">
+                    ${row.map(({ title, index }) => `
+                      <div style="
+                        flex: 1;
+                        display: flex;
+                        align-items: baseline;
+                        gap: 6px;
+                        padding: 6px 10px;
+                        background: #F5F3FF;
+                        border-radius: 6px;
+                      ">
+                        <span style="
+                          font-family: var(--font-syne), sans-serif;
+                          font-weight: 700;
+                          font-size: 11px;
+                          color: #7C3AED;
+                          flex-shrink: 0;
+                          line-height: 1.5;
+                        ">${index + 1}.</span>
+                        <span style="
+                          font-family: var(--font-dm-sans), sans-serif;
+                          font-size: 11px;
+                          color: #1F0A3C;
+                          line-height: 1.5;
+                        ">${title}</span>
+                      </div>
+                    `).join('')}
+                    ${row.length < 3 ? Array(3 - row.length).fill('<div style="flex:1"></div>').join('') : ''}
                   </li>
                 `).join('')}
               </ol>
