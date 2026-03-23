@@ -3421,8 +3421,19 @@
                               "id": { "type": "string" },
                               "title": { "type": "string" },
                               "orderIndex": { "type": "integer" },
-                              "completed": { "type": "boolean" }
+                              "completed": { "type": "boolean" },
+                              "completedAt": { "type": "string", "format": "date-time", "nullable": true }
                             }
+                          }
+                        },
+                        "finalQuiz": {
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "string" },
+                            "title": { "type": "string" },
+                            "passed": { "type": "boolean" },
+                            "passedAt": { "type": "string", "format": "date-time", "nullable": true }
                           }
                         }
                       }

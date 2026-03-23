@@ -18,6 +18,7 @@ export interface EnrollmentProgressModule {
   title: string;
   orderIndex: number;
   completed: boolean;
+  completedAt: string | null;
 }
 
 export interface EnrollmentProgress {
@@ -27,6 +28,7 @@ export interface EnrollmentProgress {
   totalModules: number;
   completedModules: number;
   modules: EnrollmentProgressModule[];
+  finalQuiz: { id: string; title: string; passed: boolean; passedAt: string | null } | null;
 }
 
 // ─── Keys ────────────────────────────────────────────────────────────────────
