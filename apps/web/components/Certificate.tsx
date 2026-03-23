@@ -221,7 +221,7 @@ export function Certificate({ data, domId }: CertificateProps) {
 
         {/* Modules */}
         {modules.length > 0 && (
-          <div style={{ width: '100%', marginBottom: em(32) }}>
+          <div data-pdf-modules style={{ width: '100%', marginBottom: em(32) }}>
             <p style={{
               fontFamily: 'var(--font-dm-sans), sans-serif',
               fontSize: em(12),
@@ -258,7 +258,7 @@ export function Certificate({ data, domId }: CertificateProps) {
                       {i + 1}
                     </span>
                   </span>
-                  <span style={{
+                  <span data-pdf-module-title style={{
                     fontFamily: 'var(--font-dm-sans), sans-serif',
                     fontSize: em(12),
                     color: '#374151',

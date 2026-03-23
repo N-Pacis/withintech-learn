@@ -33,6 +33,7 @@ export function useLogin() {
       const res = await apiFetch<{ user: User }>(
         '/auth/login',
         { method: 'POST', body: JSON.stringify(credentials) },
+        { redirectOn401: false },
       );
       if (!res.success || !res.data) throw new Error(res.message ?? 'Login failed');
       return res.data;
