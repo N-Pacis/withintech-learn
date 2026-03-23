@@ -34,10 +34,8 @@ export async function apiFetch<T = unknown>(
   let res = await request();
 
   if (res.status === 401) {
-    if (!redirectOn401) {
-      return { success: false, message: 'Unauthenticated' };
-    }
-
+    // Always attempt a token refresh — redirectOn401 only controls whether we
+    // redirect to sign-in after a failed refresh, not whether we try to refresh.
     if (!refreshPromise) {
       refreshPromise = doRefresh().finally(() => {
         refreshPromise = null;
@@ -47,7 +45,7 @@ export async function apiFetch<T = unknown>(
     const refreshed = await refreshPromise;
 
     if (!refreshed) {
-      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/sign-in')) {
+      if (redirectOn401 && typeof window !== 'undefined' && !window.location.pathname.startsWith('/sign-in')) {
         window.location.href = '/sign-in';
       }
       return { success: false, message: 'Session expired' };
