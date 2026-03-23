@@ -18,7 +18,10 @@ async function doRefresh(): Promise<boolean> {
 export async function apiFetch<T = unknown>(
   path: string,
   options: RequestInit = {},
-  { redirectOn401 = true }: { redirectOn401?: boolean } = {},
+  {
+    skipRefresh = false,
+    redirectOn401 = true,
+  }: { skipRefresh?: boolean; redirectOn401?: boolean } = {},
 ): Promise<{ success: boolean; message: string; data?: T }> {
   const request = async () => {
     const headers: Record<string, string> = {
@@ -34,9 +37,8 @@ export async function apiFetch<T = unknown>(
   let res = await request();
 
   if (res.status === 401) {
-    // When redirectOn401 is false (e.g. login), don't attempt a refresh —
-    // the 401 carries the real error message (e.g. "Invalid email or password").
-    if (!redirectOn401) {
+    // skipRefresh: the 401 carries the real error (e.g. "Invalid email or password") — return it as-is.
+    if (skipRefresh) {
       return res.json();
     }
 
@@ -49,7 +51,8 @@ export async function apiFetch<T = unknown>(
     const refreshed = await refreshPromise;
 
     if (!refreshed) {
-      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/sign-in')) {
+      // redirectOn401: only hard-redirect from protected pages, not public ones.
+      if (redirectOn401 && typeof window !== 'undefined' && !window.location.pathname.startsWith('/sign-in')) {
         window.location.href = '/sign-in';
       }
       return { success: false, message: 'Session expired' };
