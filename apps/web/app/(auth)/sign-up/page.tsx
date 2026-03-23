@@ -59,12 +59,13 @@ function PasswordMatchHint({ password, confirm }: { password: string; confirm: s
 
 export default function SignUpPage() {
   const router = useRouter();
-  const { mutateAsync: signUp, isPending } = useSignUp();
+  const { mutateAsync: signUp } = useSignUp();
 
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -90,11 +91,13 @@ export default function SignUpPage() {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setErrors({});
+    setIsSubmitting(true);
     try {
       await signUp({ firstName: form.firstName, lastName: form.lastName, email: form.email, password: form.password });
       router.push('/learn');
     } catch (err) {
       setServerError(err instanceof Error ? err.message : 'Something went wrong');
+      setIsSubmitting(false);
     }
   }
 
@@ -240,7 +243,7 @@ export default function SignUpPage() {
             <Button
               type="submit"
               fullWidth
-              loading={isPending}
+              loading={isSubmitting}
               disabled={
                 !form.firstName.trim() ||
                 !form.lastName.trim() ||
