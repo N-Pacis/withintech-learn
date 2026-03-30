@@ -28,6 +28,10 @@ function clearAuthCookies(res: Response) {
 
 export const postLogin = asyncHandler(async (req: Request, res: Response) => {
   const result = await authService.login(req.body);
+  if (result.requiresEmailVerification) {
+    sendSuccess(res, { requiresEmailVerification: true, email: result.email }, 'Email verification required');
+    return;
+  }
   setAuthCookies(res, result.accessToken, result.refreshToken);
   sendSuccess(res, { user: result.user }, 'Logged in successfully');
 });
@@ -47,8 +51,7 @@ export const postLogout = asyncHandler(async (_req: Request, res: Response) => {
 
 export const postSignUp = asyncHandler(async (req: Request, res: Response) => {
   const result = await authService.signUp(req.body);
-  setAuthCookies(res, result.accessToken, result.refreshToken);
-  sendSuccess(res, { user: result.user }, 'Account created successfully', 201);
+  sendSuccess(res, { requiresEmailVerification: true, email: result.email }, 'Account created. Please verify your email.', 201);
 });
 
 export const postRequestPasswordReset = asyncHandler(async (req: Request, res: Response) => {
