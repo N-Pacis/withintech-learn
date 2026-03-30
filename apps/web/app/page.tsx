@@ -94,6 +94,7 @@ export default function Home() {
 
       <CoursesSection />
 
+      {/* ── 6. Certificate Moment ───────────────────────────────────────────── */}
       <FeatureHighlights />
 
       <ShowcaseSection />
@@ -203,6 +204,27 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── 7. Partners ─────────────────────────────────────────────────────── */}
+      <section className="bg-white border-y border-[#E5E7EB] py-12">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest text-center mb-10">
+            Partners
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-12 lg:gap-20">
+            {[
+              { src: '/partners/partner-1.png', alt: 'Partner 1' },
+              { src: '/partners/partner-2.png', alt: 'Partner 2' },
+              { src: '/partners/partner-3.png', alt: 'Partner 3' },
+            ].map(({ src, alt }) => (
+              <div key={alt} className="h-10 w-32 relative grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all">
+                <Image src={src} alt={alt} fill className="object-contain" unoptimized />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 8. Final CTA ────────────────────────────────────────────────────── */}
       {/* ── 7. FAQ ──────────────────────────────────────────────────────────── */}
       <section id="faq" className="bg-[#FAFAFA] border-y border-[#E5E7EB] py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
@@ -297,6 +319,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── 9. Footer ────────────────────────────────────────────────────────── */}
       {/* ── 10. Footer ───────────────────────────────────────────────────────── */}
       <footer className="bg-white border-t border-[#E5E7EB] py-14">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">

@@ -28,6 +28,10 @@ export default function SignInPage() {
     setIsSubmitting(true);
     try {
       const data = await login({ email, password });
+      if ('requiresEmailVerification' in data) {
+        router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
+        return;
+      }
       router.push(data.user.role === 'admin' ? '/admin' : '/learn');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Invalid email or password');
