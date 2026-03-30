@@ -40,7 +40,6 @@ export function useLogin() {
     },
     onSuccess: (data) => {
       if ('requiresEmailVerification' in data) return;
-      setTokens(data.accessToken, data.refreshToken);
       queryClient.setQueryData(authKeys.profile, data.user);
     },
   });
