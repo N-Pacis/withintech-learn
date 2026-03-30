@@ -37,9 +37,17 @@ body {
   color: var(--foreground);
 }
 
+.bg-dots {
+  background-color: #FAFAFA;
+  background-image: radial-gradient(#3D006B18 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
 .font-heading {
   letter-spacing: -0.02em;
+  font-stretch: condensed;
 }
+
 
 /* ─── Tiptap shared prose styles ─────────────────────────────────────────── */
 .tiptap-editor .ProseMirror,

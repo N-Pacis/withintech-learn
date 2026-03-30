@@ -96,10 +96,41 @@ function ProgressPopup({
                       {m.orderIndex}. {m.title}
                     </span>
                     {m.completed && (
-                      <span className="font-body text-xs text-[#3D006B] font-medium">Done</span>
+                      <span className="font-body text-xs text-[#9CA3AF]">
+                        {m.completedAt
+                          ? new Date(m.completedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                          : 'Done'}
+                      </span>
                     )}
                   </div>
                 ))}
+
+                {data.finalQuiz && (
+                  <>
+                    <div className="my-2 border-t border-dashed border-[#E5E7EB]" />
+                    <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#F9FAFB]">
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${data.finalQuiz.passed ? 'bg-[#3D006B]' : 'border-2 border-[#D1D5DB]'}`}>
+                        {data.finalQuiz.passed && (
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        )}
+                      </div>
+                      <span className={`font-body text-sm flex-1 ${data.finalQuiz.passed ? 'text-[#374151]' : 'text-[#9CA3AF]'}`}>
+                        {data.finalQuiz.title}
+                      </span>
+                      {data.finalQuiz.passed && data.finalQuiz.passedAt ? (
+                        <span className="font-body text-xs text-[#9CA3AF]">
+                          {new Date(data.finalQuiz.passedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      ) : (
+                        <span className={`font-body text-xs font-medium px-2 py-0.5 rounded-full ${data.finalQuiz.passed ? 'bg-green-50 text-green-700' : 'bg-[#F3F4F6] text-[#9CA3AF]'}`}>
+                          {data.finalQuiz.passed ? 'Passed' : 'Not passed'}
+                        </span>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             </>
           )}
@@ -147,10 +178,11 @@ export default function EnrollmentsPage() {
   }, [search]);
 
   const { data: coursesPage, isLoading: coursesLoading } = useCourses({ page: 1, limit: 100 });
-  const { data: enrollments, isLoading } = useEnrollments({
+  const { data: enrollmentsPage, isLoading } = useEnrollments({
     search: debouncedSearch || undefined,
     courseId: courseId || undefined,
   });
+  const enrollments = enrollmentsPage?.enrollments;
 
   function buildRow(e: Enrollment): Record<string, CellValue> {
     return {

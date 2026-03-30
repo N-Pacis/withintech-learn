@@ -10,7 +10,7 @@ import { useProfile } from '@/hooks/queries/auth';
 
 export default function SignInPage() {
   const router = useRouter();
-  const { mutateAsync: login, isPending } = useLogin();
+  const { mutateAsync: login } = useLogin();
   const { data: profile } = useProfile();
 
   useEffect(() => {
@@ -20,10 +20,12 @@ export default function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError('');
+    setIsSubmitting(true);
     try {
       const data = await login({ email, password });
       if ('requiresEmailVerification' in data) {
@@ -33,6 +35,7 @@ export default function SignInPage() {
       router.push(data.user.role === 'admin' ? '/admin' : '/learn');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Invalid email or password');
+      setIsSubmitting(false);
     }
   }
 
@@ -105,7 +108,7 @@ export default function SignInPage() {
               </p>
             )}
 
-            <Button type="submit" fullWidth loading={isPending} className="mt-1 py-3 rounded-lg">
+            <Button type="submit" fullWidth loading={isSubmitting} className="mt-1 py-3 rounded-lg">
               Sign In
             </Button>
           </form>

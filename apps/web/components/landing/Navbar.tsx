@@ -9,7 +9,9 @@ import { useProfile } from '@/hooks/queries/auth';
 
 const links = [
   { label: 'Courses',      href: '#courses'      },
+  { label: 'Demo',         href: '#demo'         },
   { label: 'How It Works', href: '#how-it-works' },
+  { label: 'FAQ',          href: '#faq'          },
 ];
 
 export default function Navbar() {

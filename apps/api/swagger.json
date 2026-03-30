@@ -390,7 +390,7 @@
         },
         "responses": {
           "200": {
-            "description": "Login successful.",
+            "description": "Login successful. Sets `wt_access` (15m) and `wt_refresh` (7d) httpOnly cookies.",
             "content": {
               "application/json": {
                 "schema": {
@@ -403,12 +403,6 @@
                         "data": {
                           "type": "object",
                           "properties": {
-                            "accessToken": {
-                              "type": "string"
-                            },
-                            "refreshToken": {
-                              "type": "string"
-                            },
                             "user": {
                               "$ref": "#/components/schemas/User"
                             }
@@ -429,6 +423,27 @@
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logout",
+        "description": "Clears the `wt_access` and `wt_refresh` httpOnly cookies.",
+        "responses": {
+          "200": {
+            "description": "Logged out.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -590,47 +605,14 @@
           "Auth"
         ],
         "summary": "Refresh access token",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "refreshToken"
-                ],
-                "properties": {
-                  "refreshToken": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
+        "description": "Reads the `wt_refresh` httpOnly cookie. Sets a new `wt_access` cookie (15m). No request body required.",
         "responses": {
           "200": {
-            "description": "New access token issued.",
+            "description": "New access token issued via cookie.",
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SuccessResponse"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "accessToken": {
-                              "type": "string"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  ]
+                  "$ref": "#/components/schemas/SuccessResponse"
                 }
               }
             }
@@ -1136,7 +1118,7 @@
         "tags": [
           "Admin / Courses"
         ],
-        "summary": "Archive a published course (irreversible)",
+        "summary": "Archive a published course",
         "security": [
           {
             "bearerAuth": []
@@ -1156,6 +1138,61 @@
         "responses": {
           "200": {
             "description": "Course archived.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/courses/{id}/unarchive": {
+      "patch": {
+        "tags": [
+          "Admin / Courses"
+        ],
+        "summary": "Unarchive an archived course (republishes it)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Course unarchived.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3384,8 +3421,19 @@
                               "id": { "type": "string" },
                               "title": { "type": "string" },
                               "orderIndex": { "type": "integer" },
-                              "completed": { "type": "boolean" }
+                              "completed": { "type": "boolean" },
+                              "completedAt": { "type": "string", "format": "date-time", "nullable": true }
                             }
+                          }
+                        },
+                        "finalQuiz": {
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "string" },
+                            "title": { "type": "string" },
+                            "passed": { "type": "boolean" },
+                            "passedAt": { "type": "string", "format": "date-time", "nullable": true }
                           }
                         }
                       }
@@ -3610,6 +3658,24 @@
         }
       }
     },
+    "/student/courses/{slug}/modules/{moduleId}": {
+      "get": {
+        "tags": ["Student - Courses"],
+        "summary": "Get a single module's content",
+        "description": "Returns module blocks and quiz. Requires enrollment. Returns 403 if any previous module has not been completed (sequential progression enforced).",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "moduleId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Module content with blocks, quiz, and last attempt" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
     "/student/courses/{slug}/complete": {
       "post": {
         "tags": [
@@ -3657,7 +3723,7 @@
           "Student - Courses"
         ],
         "summary": "Mark a module as completed",
-        "description": "Saves module progress. If the module has a quiz, the student must have passed it first.",
+        "description": "Saves module progress. Requires all previous modules to be completed (sequential progression). If the module has a quiz, the student must have passed it first.",
         "security": [
           {
             "bearerAuth": []

@@ -59,11 +59,13 @@ function PasswordMatchHint({ password, confirm }: { password: string; confirm: s
 
 export default function SignUpPage() {
   const router = useRouter();
-  const { mutateAsync: signUp, isPending } = useSignUp();
+  const { mutateAsync: signUp } = useSignUp();
 
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -79,6 +81,7 @@ export default function SignUpPage() {
     if (form.password.length < 6) errs.password = 'Password must be at least 6 characters';
     else if (!/\d/.test(form.password)) errs.password = 'Password must contain at least one number';
     if (form.confirmPassword !== form.password) errs.confirmPassword = 'Passwords do not match';
+    if (!agreedToTerms) errs.terms = 'You must agree to the Terms of Service to continue';
     return errs;
   }
 
@@ -88,11 +91,13 @@ export default function SignUpPage() {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setErrors({});
+    setIsSubmitting(true);
     try {
       await signUp({ firstName: form.firstName, lastName: form.lastName, email: form.email, password: form.password });
       router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
     } catch (err) {
       setServerError(err instanceof Error ? err.message : 'Something went wrong');
+      setIsSubmitting(false);
     }
   }
 
@@ -184,13 +189,71 @@ export default function SignUpPage() {
               <PasswordMatchHint password={form.password} confirm={form.confirmPassword} />
             </FormField>
 
+            {/* Terms agreement */}
+            <div className="flex flex-col gap-1">
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <div className="relative mt-0.5 flex-shrink-0">
+                  <input
+                    type="checkbox"
+                    id="terms"
+                    checked={agreedToTerms}
+                    onChange={(e) => {
+                      setAgreedToTerms(e.target.checked);
+                      if (errors.terms) setErrors((prev) => ({ ...prev, terms: '' }));
+                    }}
+                    className="sr-only"
+                  />
+                  <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
+                    agreedToTerms
+                      ? 'bg-[#3D006B] border-[#3D006B]'
+                      : errors.terms
+                      ? 'border-red-400 bg-white'
+                      : 'border-[#D1D5DB] bg-white group-hover:border-[#3D006B]'
+                  }`}>
+                    {agreedToTerms && (
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                <span className="font-body text-xs text-[#6B7280] leading-relaxed">
+                  I agree to WithinTech Learn&apos;s{' '}
+                  <Link href="/legal" target="_blank" className="text-[#3D006B] hover:underline font-medium">
+                    Terms of Service
+                  </Link>
+                  {' '}and{' '}
+                  <Link href="/legal#privacy" target="_blank" className="text-[#3D006B] hover:underline font-medium">
+                    Privacy Policy
+                  </Link>
+                  , including the collection of my usage data and receiving course-related emails.
+                </span>
+              </label>
+              {errors.terms && (
+                <p className="font-body text-xs text-red-500 pl-7">{errors.terms}</p>
+              )}
+            </div>
+
             {serverError && (
               <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-2.5 rounded-lg">
                 {serverError}
               </p>
             )}
 
-            <Button type="submit" fullWidth loading={isPending} className="mt-1 py-3 rounded-lg">
+            <Button
+              type="submit"
+              fullWidth
+              loading={isSubmitting}
+              disabled={
+                !form.firstName.trim() ||
+                !form.lastName.trim() ||
+                !form.email.trim() ||
+                !form.password ||
+                !form.confirmPassword ||
+                !agreedToTerms
+              }
+              className="mt-1 py-3 rounded-lg"
+            >
               Get Started
             </Button>
           </form>

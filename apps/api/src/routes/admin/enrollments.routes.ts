@@ -6,8 +6,10 @@ import { badRequest, notFound } from '../../utils/errors';
 import * as enrollmentsService from './enrollments.service';
 
 const listQuerySchema = z.object({
-  search: z.string().optional(),
+  search:   z.string().optional(),
   courseId: z.string().optional(),
+  page:     z.coerce.number().int().min(1).default(1),
+  limit:    z.coerce.number().int().min(1).max(100).default(50),
 });
 
 const router = Router();

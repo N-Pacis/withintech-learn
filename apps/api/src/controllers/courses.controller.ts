@@ -42,6 +42,11 @@ export const patchArchiveCourse = asyncHandler(async (req: Request, res: Respons
   sendSuccess(res, result, 'Course archived');
 });
 
+export const patchUnarchiveCourse = asyncHandler(async (req: Request, res: Response) => {
+  const result = await service.unarchiveCourse(req.params.id);
+  sendSuccess(res, result, 'Course unarchived');
+});
+
 export const postUploadThumbnail = asyncHandler(async (req: Request, res: Response) => {
   if (!req.file) throw badRequest('Image file required');
   const result = await service.uploadThumbnail(req.params.id, req.file);

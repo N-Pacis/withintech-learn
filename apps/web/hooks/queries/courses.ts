@@ -48,6 +48,7 @@ export interface StudentCourseModule {
   title: string;
   orderIndex: number;
   isCompleted: boolean;
+  isLocked: boolean;
 }
 
 export interface StudentCourse {
@@ -235,13 +236,27 @@ export function usePublishedCourses(
 
 export function useCompleteModule(slug: string) {
   const queryClient = useQueryClient();
+  const courseKey = [...courseKeys.student.lists(), slug] as const;
   return useMutation({
     mutationFn: async (moduleId: string) => {
       const res = await apiFetch(`/student/courses/${slug}/modules/${moduleId}/progress`, { method: 'POST' });
       if (!res.success) throw new Error(res.message);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [...courseKeys.student.lists(), slug] });
+    onSuccess: (_, moduleId) => {
+      // Optimistically update isCompleted + recompute isLocked for all modules
+      queryClient.setQueryData(courseKey, (old: StudentCourse | undefined) => {
+        if (!old) return old;
+        const updated = old.modules.map((m) =>
+          m.id === moduleId ? { ...m, isCompleted: true } : m,
+        );
+        const firstIncomplete = updated.findIndex((m) => !m.isCompleted);
+        const reachableUpTo = firstIncomplete === -1 ? updated.length : firstIncomplete;
+        return {
+          ...old,
+          modules: updated.map((m, i) => ({ ...m, isLocked: i > reachableUpTo })),
+        };
+      });
+      queryClient.invalidateQueries({ queryKey: courseKey });
     },
   });
 }
@@ -459,6 +474,21 @@ export function useArchiveCourse() {
   return useMutation({
     mutationFn: async (id: string): Promise<Course> => {
       const res = await apiFetch<Course>(`/admin/courses/${id}/archive`, { method: 'PATCH' });
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    onSuccess: (updated) => {
+      queryClient.setQueryData(courseKeys.detail(updated.id), updated);
+      queryClient.invalidateQueries({ queryKey: courseKeys.lists() });
+    },
+  });
+}
+
+export function useUnarchiveCourse() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string): Promise<Course> => {
+      const res = await apiFetch<Course>(`/admin/courses/${id}/unarchive`, { method: 'PATCH' });
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
