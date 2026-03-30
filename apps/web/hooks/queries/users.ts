@@ -8,6 +8,7 @@ export interface AdminUser {
   email: string;
   role: string;
   isActive: boolean;
+  emailVerified: boolean;
   createdAt: string;
   lastLoggedIn: string | null;
   createdById: string | null;
@@ -90,6 +91,21 @@ export function useAdminStats() {
       const res = await apiFetch<AdminStats>('/admin/stats');
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
+    },
+  });
+}
+
+export function useVerifyUserEmail() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string): Promise<AdminUser> => {
+      const res = await apiFetch<AdminUser>(`/admin/users/${userId}/verify-email`, { method: 'PATCH' });
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
     },
   });
 }

@@ -26,31 +26,21 @@ model User {
   email          String           @unique
   passwordHash   String
   isActive       Boolean          @default(false)
+  emailVerified  Boolean          @default(false)
   lastLoggedIn   DateTime?
   createdById    String?
-  createdBy      User?            @relation("AdminCreatedBy", fields: [createdById], references: [id])
+  createdBy      User?            @relation("AdminCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   createdAdmins  User[]           @relation("AdminCreatedBy")
+  otpCode        String?
+  otpPurpose     String?
+  otpExpiresAt   DateTime?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-  otpCodes       OtpCode[]
   courses        Course[]
   enrollments    StudentCourse[]
   quizAttempts   QuizAttempt[]
   moduleProgress ModuleProgress[]
   certificates   Certificate[]
-}
-
-model OtpCode {
-  id        String    @id @default(uuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  code      String
-  purpose   String
-  expiresAt DateTime
-  usedAt    DateTime?
-  createdAt DateTime  @default(now())
-
-  @@index([userId, purpose])
 }
 
 enum CourseStatus {
@@ -73,7 +63,7 @@ model Course {
   thumbnailKey String?
   status       CourseStatus    @default(draft)
   createdById  String
-  createdBy    User            @relation(fields: [createdById], references: [id])
+  createdBy    User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
   modules      Module[]
   quiz         Quiz?
   enrollments  StudentCourse[]
@@ -94,7 +84,7 @@ enum EnrollmentStatus {
 model StudentCourse {
   id         String           @id @default(uuid())
   studentId  String
-  student    User             @relation(fields: [studentId], references: [id])
+  student    User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
   courseId   String
   course     Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
   status     EnrollmentStatus @default(ENROLLED)
@@ -107,7 +97,7 @@ model StudentCourse {
 model ModuleProgress {
   id          String   @id @default(uuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   moduleId    String
   module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   completedAt DateTime @default(now())
@@ -169,7 +159,7 @@ enum AttemptStatus {
 model QuizAttempt {
   id        String        @id @default(uuid())
   userId    String
-  user      User          @relation(fields: [userId], references: [id])
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   quizId    String
   quiz      Quiz          @relation(fields: [quizId], references: [id], onDelete: Cascade)
   score     Int
@@ -208,7 +198,7 @@ model QuestionOption {
 model Certificate {
   id          String   @id @default(uuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   courseId    String
   course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   completedAt DateTime @default(now())
