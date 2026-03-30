@@ -210,10 +210,9 @@ export default function Home() {
           <div className="flex flex-wrap items-center justify-center gap-12 lg:gap-20">
             {[
               { src: '/partners/partner-1.png', alt: 'Partner 1' },
-              { src: '/partners/partner-2.png', alt: 'Partner 2' },
-              { src: '/partners/partner-3.png', alt: 'Partner 3' },
+              { src: '/partners/partner-2.png', alt: 'Partner 2' }
             ].map(({ src, alt }) => (
-              <div key={alt} className="h-10 w-32 relative grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all">
+              <div key={alt} className="h-16 w-48 relative">
                 <Image src={src} alt={alt} fill className="object-contain" unoptimized />
               </div>
             ))}

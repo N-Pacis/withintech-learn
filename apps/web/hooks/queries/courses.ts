@@ -329,11 +329,23 @@ export function usePublicCourseDetail(slug: string) {
   });
 }
 
+export interface TopCourse {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  thumbnailKey: string | null;
+  thumbnailUrl: string | null;
+  status: 'published';
+  createdAt: string;
+  tag: 'popular' | 'new' | null;
+}
+
 export function useTopCourses() {
   return useQuery({
     queryKey: courseKeys.public.top,
-    queryFn: async (): Promise<PublishedCourse[]> => {
-      const res = await apiFetch<PublishedCourse[]>('/public/courses');
+    queryFn: async (): Promise<TopCourse[]> => {
+      const res = await apiFetch<TopCourse[]>('/public/courses');
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },

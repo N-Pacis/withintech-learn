@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { MoveRight } from 'lucide-react';
-import { useTopCourses } from '@/hooks/queries/courses';
+import { useTopCourses, type TopCourse } from '@/hooks/queries/courses';
 import { CourseCard } from '@/components/CourseCard';
 
 const EnrollButton = (
@@ -13,6 +13,12 @@ const EnrollButton = (
     Enroll Now <MoveRight size={18} />
   </Link>
 );
+
+function tagBadge(tag: TopCourse['tag']) {
+  if (tag === 'popular') return { variant: 'orange' as const, label: 'Popular' };
+  if (tag === 'new') return { variant: 'success' as const, label: 'New' };
+  return undefined;
+}
 
 export default function CoursesSection() {
   const { data: courses, isLoading } = useTopCourses();
@@ -49,7 +55,7 @@ export default function CoursesSection() {
             <CourseCard
               course={featured}
               href={`/courses/${featured.slug}`}
-              badge={{ variant: 'orange', label: 'Most Popular' }}
+              badge={tagBadge(featured.tag)}
               featured
               footer={EnrollButton}
             />
@@ -59,7 +65,7 @@ export default function CoursesSection() {
           {rest.length > 0 && (
             <div className={`flex flex-col gap-4 w-full shrink-0 ${rest.length >= 2 ? 'lg:w-[42%]' : 'lg:max-w-[340px]'}`}>
               {rest.map((course) => (
-                <CourseCard key={course.id} course={course} href={`/courses/${course.slug}`} footer={EnrollButton} />
+                <CourseCard key={course.id} course={course} href={`/courses/${course.slug}`} badge={tagBadge(course.tag)} footer={EnrollButton} />
               ))}
             </div>
           )}

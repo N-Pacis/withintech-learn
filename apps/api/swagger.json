@@ -3455,7 +3455,7 @@
           "Public"
         ],
         "summary": "List top published courses (public)",
-        "description": "Returns up to 3 published courses ordered by creation date (newest first). No authentication required.",
+        "description": "Returns up to 3 published courses: (1) most enrolled, (2) latest by creation date, (3) a random pick from the rest. No authentication required.",
         "responses": {
           "200": {
             "description": "Top published courses.",
@@ -3500,6 +3500,11 @@
                                 "enum": [
                                   "published"
                                 ]
+                              },
+                              "tag": {
+                                "type": "string",
+                                "enum": ["popular", "new"],
+                                "nullable": true
                               },
                               "createdAt": {
                                 "type": "string",

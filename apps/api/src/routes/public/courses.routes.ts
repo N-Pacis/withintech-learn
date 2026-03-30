@@ -8,23 +8,57 @@ import { notFound } from '../../utils/errors';
 const router = Router();
 
 router.get('/public/courses', asyncHandler(async (_req: Request, res: Response) => {
-  const courses = await prisma.course.findMany({
+  const courseSelect = {
+    id: true,
+    title: true,
+    slug: true,
+    description: true,
+    thumbnailKey: true,
+    status: true,
+    createdAt: true,
+    _count: { select: { enrollments: true } },
+  } as const;
+
+  const allCourses = await prisma.course.findMany({
     where: { status: 'published' },
-    orderBy: { createdAt: 'desc' },
-    take: 3,
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-      description: true,
-      thumbnailKey: true,
-      status: true,
-    },
+    select: courseSelect,
   });
 
+  const chosen: typeof allCourses = [];
+  const remaining = [...allCourses];
+
+  // 1. Most enrolled
+  const mostEnrolled = remaining.reduce((best, c) =>
+    c._count.enrollments > (best?._count.enrollments ?? -1) ? c : best,
+    remaining[0] ?? null,
+  );
+  if (mostEnrolled) {
+    chosen.push(mostEnrolled);
+    remaining.splice(remaining.indexOf(mostEnrolled), 1);
+  }
+
+  // 2. Latest course (not already chosen)
+  const latest = remaining.reduce((best, c) =>
+    !best || c.createdAt > best.createdAt ? c : best,
+    remaining[0] ?? null,
+  );
+  if (latest) {
+    chosen.push(latest);
+    remaining.splice(remaining.indexOf(latest), 1);
+  }
+
+  // 3. Random from the rest
+  if (remaining.length > 0) {
+    const randomIndex = Math.floor(Math.random() * remaining.length);
+    chosen.push(remaining[randomIndex]);
+  }
+
+  const tags: ('popular' | 'new' | null)[] = ['popular', 'new', null];
+
   const coursesWithUrls = await Promise.all(
-    courses.map(async (c) => ({
+    chosen.map(async ({ _count: _c, ...c }, i) => ({
       ...c,
+      tag: tags[i] ?? null,
       thumbnailUrl: c.thumbnailKey ? await getSignedUrl(c.thumbnailKey) : null,
     })),
   );
