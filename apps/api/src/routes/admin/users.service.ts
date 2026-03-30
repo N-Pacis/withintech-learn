@@ -10,6 +10,8 @@ export interface ListUsersParams {
   role?: 'admin' | 'student';
   status?: 'active' | 'inactive';
   sortOrder?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
 }
 
 function buildSearchConditions(search: string) {
@@ -52,19 +54,25 @@ function formatUser(u: { id: string; firstName: string; lastName: string; email:
   };
 }
 
-export const listUsers = async ({ search, role, status, sortOrder = 'desc' }: ListUsersParams = {}) => {
-  const users = await prisma.user.findMany({
-    where: {
-      AND: [
-        search ? { OR: buildSearchConditions(search) } : {},
-        role ? { role: { name: role } } : {},
-        status !== undefined ? { isActive: status === 'active' } : {},
-      ],
-    },
-    include: { role: true },
-    orderBy: { createdAt: sortOrder },
-  });
-  return users.map(formatUser);
+export const listUsers = async ({ search, role, status, sortOrder = 'desc', page = 1, limit = 50 }: ListUsersParams = {}) => {
+  const where = {
+    AND: [
+      search ? { OR: buildSearchConditions(search) } : {},
+      role ? { role: { name: role } } : {},
+      status !== undefined ? { isActive: status === 'active' } : {},
+    ],
+  };
+  const [total, users] = await Promise.all([
+    prisma.user.count({ where }),
+    prisma.user.findMany({
+      where,
+      include: { role: true },
+      orderBy: { createdAt: sortOrder },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+  ]);
+  return { total, page, limit, users: users.map(formatUser) };
 };
 
 export const setUserActive = async ({ userId, isActive }: { userId: string; isActive: boolean }) => {

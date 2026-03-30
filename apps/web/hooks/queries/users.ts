@@ -19,6 +19,15 @@ export interface UsersParams {
   role?: 'admin' | 'student' | '';
   status?: 'active' | 'inactive' | '';
   sortOrder?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+}
+
+export interface UsersPage {
+  total: number;
+  page: number;
+  limit: number;
+  users: AdminUser[];
 }
 
 export const usersKeys = {
@@ -28,15 +37,17 @@ export const usersKeys = {
 export function useUsers(params: UsersParams = {}) {
   return useQuery({
     queryKey: usersKeys.list(params),
-    queryFn: async (): Promise<AdminUser[]> => {
+    queryFn: async (): Promise<UsersPage> => {
       const qs = new URLSearchParams();
       if (params.search)    qs.set('search', params.search);
       if (params.role)      qs.set('role', params.role);
       if (params.status)    qs.set('status', params.status);
       if (params.sortOrder) qs.set('sortOrder', params.sortOrder);
+      if (params.page)      qs.set('page', String(params.page));
+      if (params.limit)     qs.set('limit', String(params.limit));
 
       const query = qs.toString() ? `?${qs.toString()}` : '';
-      const res = await apiFetch<AdminUser[]>(`/admin/users${query}`);
+      const res = await apiFetch<UsersPage>(`/admin/users${query}`);
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },

@@ -46,7 +46,8 @@ export default function AdminsPage() {
   };
 
   const { user: currentUser } = useAuth();
-  const { data: admins, isLoading, error } = useAdmins(params);
+  const { data: adminsPage, isLoading, error } = useAdmins(params);
+  const admins = adminsPage?.users;
   const { mutate: setActive } = useSetUserActive();
 
   function buildRow(u: AdminUser): Record<string, CellValue> {

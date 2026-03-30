@@ -7,10 +7,12 @@ import { prisma } from '../../db/prisma';
 import * as usersService from './users.service';
 
 const listUsersQuerySchema = z.object({
-  search: z.string().optional(),
-  role: z.enum(['admin', 'student']).optional(),
-  status: z.enum(['active', 'inactive']).optional(),
+  search:    z.string().optional(),
+  role:      z.enum(['admin', 'student']).optional(),
+  status:    z.enum(['active', 'inactive']).optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
+  page:      z.coerce.number().int().min(1).default(1),
+  limit:     z.coerce.number().int().min(1).max(100).default(50),
 });
 
 const createAdminSchema = z.object({
@@ -33,8 +35,8 @@ router.get('/admin/stats', asyncHandler(async (_req, res) => {
 router.get('/admin/users', asyncHandler(async (req, res) => {
   const parsed = listUsersQuerySchema.safeParse(req.query);
   if (!parsed.success) throw badRequest('Invalid query parameters');
-  const users = await usersService.listUsers(parsed.data);
-  sendSuccess(res, users);
+  const result = await usersService.listUsers(parsed.data);
+  sendSuccess(res, result);
 }));
 
 router.post('/admin/admins', asyncHandler(async (req, res) => {
