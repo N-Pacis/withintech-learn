@@ -226,6 +226,64 @@ function FeatureRow({ eyebrow, headline, body, bullets, mockup, reverse }: Featu
   );
 }
 
+// ─── Mock UI: Showcase preview ────────────────────────────────────────────────
+
+function ShowcaseMockupSmall() {
+  const cards = [
+    { title: 'AquaTrack Rwanda', cat: 'Water', likes: 24, tags: ['React', 'IoT'] },
+    { title: 'SolarGrid Monitor', cat: 'Energy', likes: 18, tags: ['Python', 'Arduino'] },
+  ];
+
+  return (
+    <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-xl overflow-hidden">
+      <div className="px-5 py-4 border-b border-[#F3F4F6] flex items-center justify-between">
+        <span className="font-heading font-bold text-sm text-[#0F0F0F]">Student Showcase</span>
+        <span className="font-body text-xs text-[#9CA3AF]">12 projects</span>
+      </div>
+
+      <div className="p-4 flex flex-col gap-3">
+        {cards.map(({ title, cat, likes, tags }) => (
+          <div key={title} className="flex gap-3 p-3 rounded-xl border border-[#F3F4F6] bg-[#FAFAFA]">
+            <div className="w-16 h-12 rounded-lg bg-gradient-to-br from-[#3D006B]/10 to-[#7C3AED]/10 shrink-0 flex items-center justify-center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <polyline points="21 15 16 10 5 21" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-body text-xs font-semibold text-[#0F0F0F] truncate">{title}</p>
+              <p className="font-body text-[10px] text-[#9CA3AF] mb-1.5">{cat}</p>
+              <div className="flex items-center gap-1.5">
+                {tags.map((t) => (
+                  <span key={t} className="text-[9px] font-body bg-[#F3F4F6] text-[#374151] px-1.5 py-0.5 rounded">{t}</span>
+                ))}
+                <span className="ml-auto text-[10px] font-body text-[#9CA3AF] flex items-center gap-0.5">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
+                  {likes}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        <div className="flex items-center justify-between mt-1">
+          <div className="flex gap-1.5">
+            {['All', 'Water', 'Energy', 'Health'].map((f, i) => (
+              <span key={f} className={`text-[9px] font-body px-2 py-0.5 rounded-full border ${i === 0 ? 'bg-[#3D006B] text-white border-[#3D006B]' : 'border-[#E5E7EB] text-[#9CA3AF]'}`}>
+                {f}
+              </span>
+            ))}
+          </div>
+          <span className="text-[10px] font-body text-[#3D006B] font-medium">View all →</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Section export ───────────────────────────────────────────────────────────
 
 export default function FeatureHighlights() {
@@ -279,6 +337,19 @@ export default function FeatureHighlights() {
               'Completion rate updated instantly as you progress',
             ]}
             mockup={<ProgressMockup />}
+          />
+
+          <FeatureRow
+            eyebrow="Showcase"
+            headline="Build something that matters."
+            body="Apply what you learn to real problems in Rwanda. Submit a project targeting healthcare, water, energy, or any of ten challenge sectors — get reviewed, go public, and earn community recognition."
+            bullets={[
+              'Submit projects across up to five challenge categories',
+              'Admin review ensures quality before projects go live',
+              'Community likes and featured spots reward standout work',
+            ]}
+            mockup={<ShowcaseMockupSmall />}
+            reverse
           />
         </div>
       </div>

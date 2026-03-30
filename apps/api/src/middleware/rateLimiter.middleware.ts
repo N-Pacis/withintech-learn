@@ -83,3 +83,12 @@ export const quizAttemptLimiter = createRateLimiter({
   identifierFn: getUserId,
   message: 'Quiz attempt limit reached, please try again in an hour.',
 });
+
+/** POST /student/showcase — 5 projects per user per 24 h */
+export const projectCreateLimiter = createRateLimiter({
+  windowMs: 24 * HOUR,
+  max: 5,
+  keyPrefix: 'showcase-create',
+  identifierFn: getUserId,
+  message: 'You can only submit 5 showcase projects per day.',
+});

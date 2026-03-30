@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { label: 'My Courses', href: '/learn' },
   { label: 'Certificates', href: '/learn/certificates' },
+  { label: 'Showcase', href: '/learn/showcase' },
 ];
 
 export default function StudentNavbar() {

@@ -5,6 +5,7 @@ import Ticker from "@/components/landing/Ticker";
 import CertificateCard from "@/components/landing/CertificateCard";
 import CoursesSection from "@/components/landing/CoursesSection";
 import FeatureHighlights from "@/components/landing/FeatureHighlights";
+import ShowcaseSection from "@/components/landing/ShowcaseSection";
 import { Logo } from "@/components/ui";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -94,6 +95,8 @@ export default function Home() {
       <CoursesSection />
 
       <FeatureHighlights />
+
+      <ShowcaseSection />
 
       <section className="bg-[#3D006B] py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">

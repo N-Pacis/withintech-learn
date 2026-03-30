@@ -28,7 +28,7 @@ export default function CertificateCard() {
           Awarded to
         </p>
         <p className="font-heading font-bold text-xl text-[#0F0F0F] mb-5">
-          Uwimana Clarisse
+          John Doe
         </p>
 
         {/* Course */}

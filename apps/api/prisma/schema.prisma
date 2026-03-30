@@ -37,7 +37,9 @@ model User {
   enrollments    StudentCourse[]
   quizAttempts   QuizAttempt[]
   moduleProgress ModuleProgress[]
-  certificates   Certificate[]
+  certificates     Certificate[]
+  showcaseProjects ShowcaseProject[] @relation("ShowcaseAuthor")
+  showcaseLikes    ShowcaseLike[]    @relation("ShowcaseLikes")
 }
 
 model OtpCode {
@@ -214,4 +216,100 @@ model Certificate {
   completedAt DateTime @default(now())
 
   @@unique([userId, courseId])
+}
+
+// ─── Showcase ─────────────────────────────────────────────────────────────────
+
+enum ShowcaseStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+enum ChallengeCategory {
+  Agriculture
+  Healthcare
+  Education
+  Water
+  Energy
+  Finance
+  Transport
+  Environment
+  Employment
+  Digital
+}
+
+model ShowcaseProject {
+  id                 String                @id @default(uuid())
+  authorId           String
+  author             User                  @relation("ShowcaseAuthor", fields: [authorId], references: [id])
+  title              String
+  description        String?
+  problemStatement   String
+  githubUrl          String?
+  demoUrl            String?
+  thumbnailKey       String?
+  aiUsageDescription String?
+  status             ShowcaseStatus        @default(PENDING)
+  rejectionReason    String?
+  featuredAt         DateTime?
+  categories         ShowcaseCategoryTag[]
+  images             ShowcaseImage[]
+  likes              ShowcaseLike[]
+  techTags           ShowcaseTechTag[]
+  aiTools            ShowcaseAITool[]
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+
+  @@index([authorId])
+  @@index([status])
+}
+
+model ShowcaseCategoryTag {
+  projectId String
+  category  ChallengeCategory
+  project   ShowcaseProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, category])
+  @@index([category])
+}
+
+model ShowcaseImage {
+  id         String          @id @default(uuid())
+  projectId  String
+  project    ShowcaseProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  storageKey String
+  orderIndex Int
+  createdAt  DateTime        @default(now())
+
+  @@unique([projectId, orderIndex])
+  @@index([projectId])
+}
+
+model ShowcaseTechTag {
+  projectId String
+  name      String
+  project   ShowcaseProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, name])
+  @@index([name])
+}
+
+model ShowcaseAITool {
+  projectId String
+  name      String
+  project   ShowcaseProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, name])
+}
+
+model ShowcaseLike {
+  projectId String
+  userId    String
+  project   ShowcaseProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User            @relation("ShowcaseLikes", fields: [userId], references: [id])
+  createdAt DateTime        @default(now())
+
+  @@id([projectId, userId])
 }

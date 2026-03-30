@@ -358,6 +358,196 @@
     }
   },
   "paths": {
+    "/student/showcase": {
+      "get": {
+        "tags": ["Showcase - Student"],
+        "summary": "List own showcase projects",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+          {"name": "limit", "in": "query", "schema": {"type": "integer", "default": 20}},
+          {"name": "status", "in": "query", "schema": {"type": "string", "enum": ["PENDING","APPROVED","REJECTED"]}}
+        ],
+        "responses": {"200": {"$ref": "#/components/responses/Success"}}
+      },
+      "post": {
+        "tags": ["Showcase - Student"],
+        "summary": "Create showcase project (5/day rate limit)",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "problemStatement"],
+                "properties": {
+                  "title": {"type": "string", "maxLength": 120},
+                  "description": {"type": "string"},
+                  "problemStatement": {"type": "string"},
+                  "challengeCategory": {"type": "string", "enum": ["Agriculture","Healthcare","Education","Water","Energy","Finance","Transport","Environment","Employment","Digital"]},
+                  "githubUrl": {"type": "string", "format": "uri"},
+                  "demoUrl": {"type": "string", "format": "uri"},
+                  "aiUsageDescription": {"type": "string"},
+                  "techTags": {"type": "array", "items": {"type": "string"}},
+                  "aiTools": {"type": "array", "items": {"type": "string"}}
+                }
+              }
+            }
+          }
+        },
+        "responses": {"201": {"$ref": "#/components/responses/Success"}, "429": {"description": "Rate limit exceeded"}}
+      }
+    },
+    "/student/showcase/{id}": {
+      "get": {
+        "tags": ["Showcase - Student"],
+        "summary": "Get own showcase project",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}],
+        "responses": {"200": {"$ref": "#/components/responses/Success"}, "404": {"$ref": "#/components/responses/NotFound"}}
+      },
+      "patch": {
+        "tags": ["Showcase - Student"],
+        "summary": "Update showcase project (PENDING or REJECTED only)",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}],
+        "requestBody": {"content": {"application/json": {"schema": {"type": "object"}}}},
+        "responses": {"200": {"$ref": "#/components/responses/Success"}, "403": {"description": "Cannot edit approved project"}}
+      },
+      "delete": {
+        "tags": ["Showcase - Student"],
+        "summary": "Delete own showcase project",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}],
+        "responses": {"200": {"$ref": "#/components/responses/Success"}}
+      }
+    },
+    "/student/showcase/{id}/upload-thumbnail": {
+      "post": {
+        "tags": ["Showcase - Student"],
+        "summary": "Upload project thumbnail",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}],
+        "requestBody": {"required": true, "content": {"multipart/form-data": {"schema": {"type": "object", "properties": {"image": {"type": "string", "format": "binary"}}}}}},
+        "responses": {"200": {"$ref": "#/components/responses/Success"}}
+      }
+    },
+    "/student/showcase/{id}/upload-image": {
+      "post": {
+        "tags": ["Showcase - Student"],
+        "summary": "Add gallery image (max 10 per project)",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}],
+        "requestBody": {"required": true, "content": {"multipart/form-data": {"schema": {"type": "object", "properties": {"image": {"type": "string", "format": "binary"}}}}}},
+        "responses": {"201": {"$ref": "#/components/responses/Success"}, "400": {"description": "Max 10 gallery images"}}
+      }
+    },
+    "/student/showcase/{id}/images/{imageId}": {
+      "delete": {
+        "tags": ["Showcase - Student"],
+        "summary": "Remove gallery image",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}},
+          {"name": "imageId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}
+        ],
+        "responses": {"200": {"$ref": "#/components/responses/Success"}}
+      }
+    },
+    "/showcase/{id}/like": {
+      "post": {
+        "tags": ["Showcase - Public"],
+        "summary": "Toggle like on an approved project (requires auth)",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}],
+        "responses": {"200": {"$ref": "#/components/responses/Success"}, "400": {"description": "Project not approved"}}
+      }
+    },
+    "/public/showcase": {
+      "get": {
+        "tags": ["Showcase - Public"],
+        "summary": "List approved showcase projects",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+          {"name": "limit", "in": "query", "schema": {"type": "integer", "default": 20}},
+          {"name": "category", "in": "query", "schema": {"type": "string", "enum": ["Agriculture","Healthcare","Education","Water","Energy","Finance","Transport","Environment","Employment","Digital"]}},
+          {"name": "search", "in": "query", "schema": {"type": "string"}},
+          {"name": "sort", "in": "query", "schema": {"type": "string", "enum": ["newest","mostLiked"], "default": "newest"}}
+        ],
+        "responses": {"200": {"$ref": "#/components/responses/Success"}}
+      }
+    },
+    "/public/showcase/{id}": {
+      "get": {
+        "tags": ["Showcase - Public"],
+        "summary": "Get approved project detail",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}],
+        "responses": {"200": {"$ref": "#/components/responses/Success"}, "404": {"$ref": "#/components/responses/NotFound"}}
+      }
+    },
+    "/admin/showcase": {
+      "get": {
+        "tags": ["Showcase - Admin"],
+        "summary": "List all showcase projects",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "default": 1}},
+          {"name": "limit", "in": "query", "schema": {"type": "integer", "default": 20}},
+          {"name": "status", "in": "query", "schema": {"type": "string", "enum": ["PENDING","APPROVED","REJECTED"]}},
+          {"name": "category", "in": "query", "schema": {"type": "string"}},
+          {"name": "search", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"$ref": "#/components/responses/Success"}}
+      }
+    },
+    "/admin/showcase/{id}": {
+      "get": {
+        "tags": ["Showcase - Admin"],
+        "summary": "Get showcase project detail (admin)",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}],
+        "responses": {"200": {"$ref": "#/components/responses/Success"}, "404": {"$ref": "#/components/responses/NotFound"}}
+      },
+      "delete": {
+        "tags": ["Showcase - Admin"],
+        "summary": "Delete showcase project",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}],
+        "responses": {"200": {"$ref": "#/components/responses/Success"}}
+      }
+    },
+    "/admin/showcase/{id}/approve": {
+      "patch": {
+        "tags": ["Showcase - Admin"],
+        "summary": "Approve showcase project",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}],
+        "responses": {"200": {"$ref": "#/components/responses/Success"}, "400": {"description": "Not a pending project"}}
+      }
+    },
+    "/admin/showcase/{id}/reject": {
+      "patch": {
+        "tags": ["Showcase - Admin"],
+        "summary": "Reject showcase project with reason",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}],
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"type": "object", "required": ["reason"], "properties": {"reason": {"type": "string", "maxLength": 500}}}}}
+        },
+        "responses": {"200": {"$ref": "#/components/responses/Success"}}
+      }
+    },
+    "/admin/showcase/{id}/feature": {
+      "patch": {
+        "tags": ["Showcase - Admin"],
+        "summary": "Toggle featured status on approved project",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}],
+        "responses": {"200": {"$ref": "#/components/responses/Success"}, "400": {"description": "Project not approved"}}
+      }
+    },
     "/auth/login": {
       "post": {
         "tags": [
