@@ -100,16 +100,14 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 222
+          command_timeout: 5m
           script_stop: true
           script: |
             cd $HOME/withintech-learn
-            # Resolve failed migration state if any
-            docker compose run --rm --no-deps api \
-              npx prisma migrate resolve --applied 20260317115741_init || true
-            docker compose run --rm --no-deps api \
-              npx prisma migrate deploy
-            docker compose run --rm --no-deps api \
+            docker compose run --rm --no-deps api sh -c "
+              npx prisma migrate deploy &&
               node --max-old-space-size=512 dist/scripts/seed.js
+            "
 
       # ── 6. Zero-downtime cutover via docker-rollout ──────────────────────────
       - name: Zero-downtime cutover
