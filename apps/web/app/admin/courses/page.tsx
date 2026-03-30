@@ -7,6 +7,7 @@ import {
   useDeleteCourse,
   usePublishCourse,
   useArchiveCourse,
+  useUnarchiveCourse,
   type Course,
   type CourseStatus,
 } from '@/hooks/queries/courses';
@@ -90,6 +91,7 @@ function CourseActions({ course, onDelete }: { course: Course; onDelete: (id: st
   const [confirmPublish, setConfirmPublish] = useState(false);
   const { mutate: publish, isPending: publishing } = usePublishCourse();
   const { mutate: archive, isPending: archiving } = useArchiveCourse();
+  const { mutate: unarchive, isPending: unarchiving } = useUnarchiveCourse();
 
   if (course.status === 'draft') return (
     <>
@@ -140,9 +142,14 @@ function CourseActions({ course, onDelete }: { course: Course; onDelete: (id: st
   );
 
   return (
-    <Button variant="secondary" size="sm" asChild>
-      <Link href={`/admin/courses/${course.id}`}>View</Link>
-    </Button>
+    <>
+      <Button variant="secondary" size="sm" asChild>
+        <Link href={`/admin/courses/${course.id}`}>View</Link>
+      </Button>
+      <Button variant="ghost" size="sm" loading={unarchiving} onClick={() => unarchive(course.id)}>
+        Unarchive
+      </Button>
+    </>
   );
 }
 

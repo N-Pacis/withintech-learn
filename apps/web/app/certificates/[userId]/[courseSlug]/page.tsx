@@ -37,15 +37,89 @@ export default function CertificatePage() {
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
+        scrollX: 0,
+        scrollY: -window.scrollY,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
+        onclone: (_doc, el) => {
+          el.style.boxShadow = 'none';
+
+          const moduleSection = el.querySelector('[data-pdf-modules]') as HTMLElement | null;
+          if (moduleSection) {
+            const titles = Array.from(
+              moduleSection.querySelectorAll('[data-pdf-module-title]'),
+            ).map((n) => n.textContent ?? '');
+
+            // Chunk into rows of 3
+            const rows: { title: string; index: number }[][] = [];
+            for (let i = 0; i < titles.length; i += 3) {
+              rows.push(titles.slice(i, i + 3).map((title, j) => ({ title, index: i + j })));
+            }
+
+            moduleSection.innerHTML = `
+              <p style="
+                font-family: var(--font-syne), sans-serif;
+                font-weight: 700;
+                font-size: 10px;
+                color: #9CA3AF;
+                text-transform: uppercase;
+                letter-spacing: 0.18em;
+                text-align: center;
+                margin: 0 0 14px;
+              ">Covering the following modules</p>
+              <ol style="list-style: none; margin: 0; padding: 0;">
+                ${rows.map((row) => `
+                  <li style="display: flex; gap: 16px; margin-bottom: 8px;">
+                    ${row.map(({ title, index }) => `
+                      <div style="
+                        flex: 1;
+                        display: flex;
+                        align-items: baseline;
+                        gap: 6px;
+                        padding: 6px 10px;
+                        background: #F5F3FF;
+                        border-radius: 6px;
+                      ">
+                        <span style="
+                          font-family: var(--font-syne), sans-serif;
+                          font-weight: 700;
+                          font-size: 11px;
+                          color: #7C3AED;
+                          flex-shrink: 0;
+                          line-height: 1.5;
+                        ">${index + 1}.</span>
+                        <span style="
+                          font-family: var(--font-dm-sans), sans-serif;
+                          font-size: 11px;
+                          color: #1F0A3C;
+                          line-height: 1.5;
+                        ">${title}</span>
+                      </div>
+                    `).join('')}
+                    ${row.length < 3 ? Array(3 - row.length).fill('<div style="flex:1"></div>').join('') : ''}
+                  </li>
+                `).join('')}
+              </ol>
+            `;
+          }
+        },
       });
 
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/png', 1.0);
+
+      // Size the PDF to exactly match the element's CSS dimensions.
+      // 1 CSS pixel = 25.4 / 96 mm at 96 DPI.
+      const PX_TO_MM = 25.4 / 96;
+      const pdfW = element.offsetWidth * PX_TO_MM;
+      const pdfH = element.offsetHeight * PX_TO_MM;
+
       const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'px',
-        format: [canvas.width / 3, canvas.height / 3],
+        orientation: pdfW > pdfH ? 'landscape' : 'portrait',
+        unit: 'mm',
+        format: [pdfW, pdfH],
       });
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 3, canvas.height / 3);
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
       pdf.save(`certificate-${cert!.courseSlug}.pdf`);
     } finally {
       setDownloading(false);

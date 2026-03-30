@@ -92,6 +92,15 @@ export const archiveCourse = async (id: string) => {
   return updated;
 };
 
+export const unarchiveCourse = async (id: string) => {
+  const course = await prisma.course.findUnique({ where: { id } });
+  if (!course) throw notFound('Course not found');
+  if (course.status !== 'archived') throw badRequest('Only archived courses can be unarchived');
+  const updated = await prisma.course.update({ where: { id }, data: { status: 'published' } });
+  await buildAndCacheCourse(id);
+  return updated;
+};
+
 export const uploadThumbnail = async (id: string, file: Express.Multer.File) => {
   const course = await prisma.course.findUnique({ where: { id } });
   if (!course) throw notFound('Course not found');

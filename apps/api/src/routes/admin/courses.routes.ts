@@ -13,6 +13,7 @@ router.patch('/admin/courses/:id', validate(updateCourseSchema), ctrl.patchUpdat
 router.delete('/admin/courses/:id', ctrl.deleteCourse);
 router.patch('/admin/courses/:id/publish', ctrl.patchPublishCourse);
 router.patch('/admin/courses/:id/archive', ctrl.patchArchiveCourse);
+router.patch('/admin/courses/:id/unarchive', ctrl.patchUnarchiveCourse);
 router.post('/admin/courses/:id/upload-thumbnail', uploadImage, ctrl.postUploadThumbnail);
 
 export default router;

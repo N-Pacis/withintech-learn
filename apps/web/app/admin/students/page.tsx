@@ -45,7 +45,8 @@ export default function StudentsPage() {
     sortOrder,
   };
 
-  const { data: students, isLoading, error } = useStudents(params);
+  const { data: studentsPage, isLoading, error } = useStudents(params);
+  const students = studentsPage?.users;
   const { mutate: setActive } = useSetUserActive();
   const { mutate: verifyEmail } = useVerifyUserEmail();
 
