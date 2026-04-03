@@ -204,7 +204,7 @@ export function AuthLoader() {
         height={1000}
         priority
         unoptimized
-        className="h-20 w-auto animate-pulse"
+        className="h-20 w-auto animate-logo-bump"
       />
     </div>
   );

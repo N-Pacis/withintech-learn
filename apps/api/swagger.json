@@ -3352,6 +3352,120 @@
         }
       }
     },
+    "/admin/analytics/daily-active-learners": {
+      "get": {
+        "tags": ["Admin / Analytics"],
+        "summary": "Daily active learners",
+        "description": "Distinct students who completed at least one module per day. Max 30-day window.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "from", "in": "query", "required": true, "schema": { "type": "string", "example": "2026-03-01" } },
+          { "name": "to",   "in": "query", "required": true, "schema": { "type": "string", "example": "2026-03-30" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of daily active learner counts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "date":   { "type": "string", "example": "2026-03-15" },
+                          "active": { "type": "integer" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/admin/analytics/users-over-time": {
+      "get": {
+        "tags": ["Admin / Analytics"],
+        "summary": "Users over time",
+        "description": "New user registrations per day. Max 30-day window.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "from", "in": "query", "required": true, "schema": { "type": "string", "example": "2026-03-01" } },
+          { "name": "to",   "in": "query", "required": true, "schema": { "type": "string", "example": "2026-03-30" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of daily registration counts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "date":  { "type": "string", "example": "2026-03-15" },
+                          "users": { "type": "integer" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/admin/analytics/course-completion-duration": {
+      "get": {
+        "tags": ["Admin / Analytics"],
+        "summary": "Courses by avg completion time",
+        "description": "Published courses ranked by average days from enrollment to passing (fastest first). Only includes courses with at least one passing student.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Array of courses with completion duration stats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id":          { "type": "string" },
+                          "title":       { "type": "string" },
+                          "passedCount": { "type": "integer" },
+                          "avgDays":     { "type": "integer" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
     "/admin/enrollments": {
       "get": {
         "tags": ["Admin / Enrollments"],

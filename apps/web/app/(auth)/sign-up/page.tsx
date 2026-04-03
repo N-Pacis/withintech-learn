@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { GoogleLogin } from '@react-oauth/google';
-import { Logo, Button, Input, FormField, PasswordInput } from '@/components/ui';
-import { useSignUp, useGoogleAuth } from '@/hooks/queries/auth';
+import { Logo, Button, Input, FormField, PasswordInput, AuthLoader } from '@/components/ui';
+import { useSignUp, useGoogleAuth, useProfile } from '@/hooks/queries/auth';
 import { isAllowedEmail } from '@withintech-learn/shared';
 
 function Req({ met, label }: { met: boolean; label: string }) {
@@ -31,6 +31,14 @@ export default function SignUpPage() {
   const router = useRouter();
   const { mutateAsync: signUp } = useSignUp();
   const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
+  const { data: profile, isLoading: profileLoading } = useProfile();
+
+  useEffect(() => {
+    if (!profile) return;
+    router.replace(profile.role === 'admin' ? '/admin' : '/learn');
+  }, [profile, router]);
+
+  if (profileLoading) return <AuthLoader />;
 
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
   const [agreedToTerms, setAgreedToTerms] = useState(false);

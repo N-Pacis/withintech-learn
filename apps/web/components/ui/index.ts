@@ -24,3 +24,4 @@ export type { Column, CellValue } from './Table';
 export { Select } from './Select';
 export type { SelectOption } from './Select';
 export { MonthRangePicker } from './MonthRangePicker';
+export { DayRangePicker } from './DayRangePicker';

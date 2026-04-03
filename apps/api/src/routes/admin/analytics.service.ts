@@ -1,5 +1,22 @@
 import { prisma } from '../../db/prisma';
 
+export interface DailyActivePoint {
+  date: string;    // "YYYY-MM-DD"
+  active: number;  // distinct users who interacted with a module that day
+}
+
+export interface UsersOverTimePoint {
+  date: string;  // "YYYY-MM-DD"
+  users: number; // new registrations that day
+}
+
+export interface CourseCompletionDuration {
+  id: string;
+  title: string;
+  passedCount: number;
+  avgDays: number; // average days from enrollment to PASSED
+}
+
 export interface TrendPoint {
   month: string;     // "2024-01"
   enrolled: number;
@@ -20,6 +37,18 @@ export interface RetentionStats {
   enrollmentRate: number;     // enrolledStudents / registeredStudents %
   returningStudents: number;  // enrolled in 2+ courses
   retentionRate: number;      // returningStudents / enrolledStudents %
+}
+
+// Parse "YYYY-MM-DD" → local midnight (inclusive start).
+function dayStart(ymd: string): Date {
+  const [y, m, d] = ymd.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+// Parse "YYYY-MM-DD" → local midnight of the NEXT day (exclusive upper bound).
+function dayEnd(ymd: string): Date {
+  const [y, m, d] = ymd.split('-').map(Number);
+  return new Date(y, m - 1, d + 1);
 }
 
 // Parse "YYYY-MM" → first millisecond of that month.
@@ -89,6 +118,81 @@ export async function topCourses(limit = 5): Promise<TopCourse[]> {
       Number(r.enrolled) > 0
         ? Math.round((Number(r.completed) / Number(r.enrolled)) * 100)
         : 0,
+  }));
+}
+
+// Distinct students who completed or enrolled in at least one module per day.
+// "Active" = has a ModuleProgress record on that day.
+export async function dailyActiveLearners(from: string, to: string): Promise<DailyActivePoint[]> {
+  const fromDate = dayStart(from);
+  const toDate   = dayEnd(to);
+
+  const rows = await prisma.$queryRaw<{ date: string; active: number }[]>`
+    SELECT
+      TO_CHAR("completedAt"::date, 'YYYY-MM-DD') AS date,
+      COUNT(DISTINCT "userId")::int               AS active
+    FROM "ModuleProgress"
+    WHERE "completedAt" >= ${fromDate} AND "completedAt" < ${toDate}
+    GROUP BY "completedAt"::date
+    ORDER BY "completedAt"::date ASC
+  `;
+
+  return rows.map((r) => ({ date: r.date, active: Number(r.active) }));
+}
+
+// New user registrations per day for a given date range.
+export async function usersOverTime(from: string, to: string): Promise<UsersOverTimePoint[]> {
+  const fromDate = dayStart(from);
+  const toDate   = dayEnd(to);
+
+  const rows = await prisma.$queryRaw<{ date: string; users: number }[]>`
+    SELECT
+      TO_CHAR("createdAt"::date, 'YYYY-MM-DD') AS date,
+      COUNT(*)::int                             AS users
+    FROM "User"
+    WHERE "createdAt" >= ${fromDate} AND "createdAt" < ${toDate}
+    GROUP BY "createdAt"::date
+    ORDER BY "createdAt"::date ASC
+  `;
+
+  return rows.map((r) => ({ date: r.date, users: Number(r.users) }));
+}
+
+// Published courses ranked by average days from enrollment to PASSED status (fastest first).
+// Only includes courses that have at least one passing student.
+export async function courseCompletionDuration(): Promise<CourseCompletionDuration[]> {
+  const rows = await prisma.$queryRaw<{
+    id: string;
+    title: string;
+    passed_count: number;
+    avg_days: number;
+  }[]>`
+    WITH top_courses AS (
+      SELECT "courseId"
+      FROM "StudentCourse"
+      GROUP BY "courseId"
+      ORDER BY COUNT(*) DESC
+      LIMIT 5
+    )
+    SELECT
+      c.id,
+      c.title,
+      COUNT(sc.id)::int                                                                  AS passed_count,
+      ROUND(AVG(EXTRACT(EPOCH FROM (sc."updatedAt" - sc."enrolledAt")) / 86400))::int   AS avg_days
+    FROM "Course" c
+    JOIN top_courses tc ON tc."courseId" = c.id
+    JOIN "StudentCourse" sc ON sc."courseId" = c.id AND sc.status = 'PASSED'
+    WHERE c.status = 'published'
+    GROUP BY c.id, c.title
+    HAVING COUNT(sc.id) >= 1
+    ORDER BY avg_days ASC
+  `;
+
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    passedCount: Number(r.passed_count),
+    avgDays: Number(r.avg_days),
   }));
 }
 

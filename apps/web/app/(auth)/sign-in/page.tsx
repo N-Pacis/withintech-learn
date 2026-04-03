@@ -4,7 +4,7 @@ import { FormEvent, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { GoogleLogin } from '@react-oauth/google';
-import { Logo } from '@/components/ui';
+import { Logo, AuthLoader } from '@/components/ui';
 import { useLogin, useGoogleAuth, useProfile } from '@/hooks/queries/auth';
 import { Button, Input, FormField, PasswordInput } from '@/components/ui';
 
@@ -18,12 +18,14 @@ export default function SignInPage() {
   const router = useRouter();
   const { mutateAsync: login } = useLogin();
   const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
-  const { data: profile } = useProfile();
+  const { data: profile, isLoading: profileLoading } = useProfile();
 
   useEffect(() => {
     if (!profile) return;
     router.replace(profile.role === 'admin' ? '/admin' : '/learn');
   }, [profile, router]);
+
+  if (profileLoading) return <AuthLoader />;
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
