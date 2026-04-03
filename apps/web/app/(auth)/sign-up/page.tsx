@@ -32,6 +32,11 @@ export default function SignUpPage() {
   const { mutateAsync: signUp } = useSignUp();
   const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
   const { data: profile, isLoading: profileLoading } = useProfile();
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [serverError, setServerError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!profile) return;
@@ -39,12 +44,6 @@ export default function SignUpPage() {
   }, [profile, router]);
 
   if (profileLoading) return <AuthLoader />;
-
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [serverError, setServerError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
