@@ -21,6 +21,13 @@
   --color-muted: #6b7280;
   --color-border-default: #e5e7eb;
   --animate-ticker: ticker 40s linear infinite;
+  --animate-logo-bump: logo-bump 0.8s ease-in-out infinite;
+}
+
+@keyframes logo-bump {
+  0%, 100% { transform: translateY(0); }
+  40%       { transform: translateY(-14px); }
+  60%       { transform: translateY(-8px); }
 }
 
 @keyframes ticker {

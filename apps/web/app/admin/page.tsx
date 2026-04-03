@@ -4,10 +4,13 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminStats } from '@/hooks/queries/users';
-import { useEnrollmentTrend, useTopCourses, useRetention } from '@/hooks/queries/analytics';
+import { useEnrollmentTrend, useTopCourses, useRetention, useDailyActiveLearners, useUsersOverTime, useCourseCompletionDuration } from '@/hooks/queries/analytics';
 import { EnrollmentTrendChart } from './components/EnrollmentTrendChart';
 import { TopCoursesChart } from './components/TopCoursesChart';
-import { MonthRangePicker } from '@/components/ui';
+import { DailyActiveLearnersChart } from './components/DailyActiveLearnersChart';
+import { UsersOverTimeChart } from './components/UsersOverTimeChart';
+import { CourseCompletionChart } from './components/CourseCompletionChart';
+import { MonthRangePicker, DayRangePicker } from '@/components/ui';
 import type { RetentionStats } from '@/hooks/queries/analytics';
 
 // ─── Chart card ───────────────────────────────────────────────────────────────
@@ -40,6 +43,13 @@ function currentMonth() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
+
+function toIso(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function todayIso() { return toIso(new Date()); }
+function daysAgoIso(n: number) { const d = new Date(); d.setDate(d.getDate() - n); return toIso(d); }
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -136,11 +146,18 @@ export default function AdminDashboard() {
 
   const [trendFrom, setTrendFrom] = useState(MIN_MONTH);
   const [trendTo,   setTrendTo  ] = useState(currentMonth);
+  const [dalFrom,   setDalFrom  ] = useState(() => daysAgoIso(29));
+  const [dalTo,     setDalTo    ] = useState(() => todayIso());
+  const [uotFrom,   setUotFrom  ] = useState(() => daysAgoIso(29));
+  const [uotTo,     setUotTo    ] = useState(() => todayIso());
 
   // Each chart fetches independently — they render as they resolve.
-  const { data: trend,     isLoading: trendLoading     } = useEnrollmentTrend(trendFrom, trendTo);
-  const { data: courses,   isLoading: coursesLoading   } = useTopCourses();
-  const { data: retention, isLoading: retentionLoading } = useRetention();
+  const { data: trend,      isLoading: trendLoading      } = useEnrollmentTrend(trendFrom, trendTo);
+  const { data: courses,    isLoading: coursesLoading    } = useTopCourses();
+  const { data: retention,  isLoading: retentionLoading  } = useRetention();
+  const { data: dal,        isLoading: dalLoading        } = useDailyActiveLearners(dalFrom, dalTo);
+  const { data: uot,        isLoading: uotLoading        } = useUsersOverTime(uotFrom, uotTo);
+  const { data: completion, isLoading: completionLoading } = useCourseCompletionDuration();
 
   const statCards = [
     { label: 'Total Students',      value: stats?.totalStudents      ?? '—', href: '/admin/students' },
@@ -181,23 +198,23 @@ export default function AdminDashboard() {
 
       <div className="flex flex-col gap-4">
 
-        {/* Enrollment trend */}
+        {/* Users over time — primary full-width chart */}
         <ChartCard
-          title="Enrollments Over Time"
-          subtitle="New enrollments vs completions per month"
+          title="Users Over Time"
+          subtitle="New student registrations per day"
           action={
-            <MonthRangePicker
-              from={trendFrom}
-              to={trendTo}
-              onChange={(f, t) => { setTrendFrom(f); setTrendTo(t); }}
+            <DayRangePicker
+              from={uotFrom}
+              to={uotTo}
+              onChange={(f, t) => { setUotFrom(f); setUotTo(t); }}
             />
           }
         >
-          {trendLoading
+          {uotLoading
             ? <ChartSkeleton />
-            : !trend || trend.length === 0
-              ? <ChartEmpty message="No enrollment data for this period." />
-              : <EnrollmentTrendChart data={trend} />
+            : !uot || uot.length === 0
+              ? <ChartEmpty message="No registrations in this period." />
+              : <UsersOverTimeChart data={uot} />
           }
         </ChartCard>
 
@@ -225,6 +242,63 @@ export default function AdminDashboard() {
           </ChartCard>
 
         </div>
+
+        {/* DAL + Enrollments over time */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+          <ChartCard
+            title="Daily Active Learners"
+            subtitle="Distinct students who completed a module each day"
+            action={
+              <DayRangePicker
+                from={dalFrom}
+                to={dalTo}
+                onChange={(f, t) => { setDalFrom(f); setDalTo(t); }}
+              />
+            }
+          >
+            {dalLoading
+              ? <ChartSkeleton height={220} />
+              : !dal || dal.length === 0
+                ? <ChartEmpty height={220} message="No module activity in this period." />
+                : <DailyActiveLearnersChart data={dal} />
+            }
+          </ChartCard>
+
+          <ChartCard
+            title="Enrollments Over Time"
+            subtitle="New enrollments vs completions per month"
+            action={
+              <MonthRangePicker
+                from={trendFrom}
+                to={trendTo}
+                onChange={(f, t) => { setTrendFrom(f); setTrendTo(t); }}
+              />
+            }
+          >
+            {trendLoading
+              ? <ChartSkeleton height={220} />
+              : !trend || trend.length === 0
+                ? <ChartEmpty height={220} message="No enrollment data for this period." />
+                : <EnrollmentTrendChart data={trend} />
+            }
+          </ChartCard>
+
+        </div>
+
+        {/* Course completion duration */}
+        <ChartCard
+          title="Courses by Avg Completion Time"
+          subtitle="Published courses ranked fastest to slowest — days from enrollment to passing"
+        >
+          {completionLoading
+            ? <ChartSkeleton />
+            : !completion || completion.length === 0
+              ? <ChartEmpty message="No courses with passing students yet." />
+              : <CourseCompletionChart data={completion} />
+          }
+        </ChartCard>
+
       </div>
 
     </div>
