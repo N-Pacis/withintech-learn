@@ -24,7 +24,8 @@ model User {
   firstName      String
   lastName       String
   email          String           @unique
-  passwordHash   String
+  provider       String           @default("email")
+  passwordHash   String?
   isActive       Boolean          @default(false)
   emailVerified  Boolean          @default(false)
   lastLoggedIn   DateTime?

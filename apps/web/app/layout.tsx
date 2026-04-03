@@ -18,20 +18,20 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://learn.withintech.org"),
-  title: "WithinTech Learn — Study at your pace",
+  title: "WithinTech Learn: Study at your pace",
   description:
     "A product of WithinTech Rwanda designed to provide a vast array of courses necessary to thrive in this AI-driven technological era.",
   openGraph: {
     type: "website",
     url: "https://learn.withintech.org",
     siteName: "WithinTech Learn",
-      title: "WithinTech Learn — Study at your pace",
+      title: "WithinTech Learn: Study at your pace",
       description:
       "A product of WithinTech Rwanda designed to provide a vast array of courses necessary to thrive in this AI-driven technological era.",
   },
   twitter: {
     card: "summary",
-    title: "WithinTech Learn — Study at your pace",
+    title: "WithinTech Learn: Study at your pace",
     description:
       "A product of WithinTech Rwanda designed to provide a vast array of courses necessary to thrive in this AI-driven technological era.",
   },

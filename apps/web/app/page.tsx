@@ -111,7 +111,7 @@ export default function Home() {
                 officially recognized.
               </h2>
               <p className="font-body text-lg text-[#C4B5D4] leading-relaxed max-w-md">
-                Your name, your course, your date. A real document — issued
+                Your name, your course, your date. A real document issued
                 by WithinTech Rwanda.
               </p>
             </div>
@@ -235,7 +235,7 @@ export default function Home() {
             {[
               {
                 q: "How do I get access to courses?",
-                a: "Your courses are assigned to your account by WithinTech Rwanda. Sign in and they'll be waiting on your dashboard — no setup needed.",
+                a: "Your courses are assigned to your account by WithinTech Rwanda. Sign in and they'll be waiting on your dashboard, no setup needed.",
               },
               {
                 q: "Are the certificates official?",
@@ -243,15 +243,15 @@ export default function Home() {
               },
               {
                 q: "Do I have to complete modules in order?",
-                a: "Modules unlock as you progress through a course. This keeps the learning structured — each module builds on the last, so the order matters.",
+                a: "Modules unlock as you progress through a course. This keeps the learning structured. Each module builds on the last, so the order matters.",
               },
               {
                 q: "Can I retake quizzes?",
-                a: "As many times as you need. There are no attempt limits. Every retry shows you exactly which answers were correct, incorrect, and which ones you missed — so you actually learn from the attempt.",
+                a: "As many times as you need. There are no attempt limits. Every retry shows you exactly which answers were correct, incorrect, and which ones you missed, so you actually learn from the attempt.",
               },
               {
                 q: "What device can I use?",
-                a: "WithinTech Learn works on any device with a modern browser — laptop, tablet, or phone. No app to install.",
+                a: "WithinTech Learn works on any device with a modern browser: laptop, tablet, or phone. No app to install.",
               }
             ].map(({ q, a }) => (
               <div key={q} className="bg-white rounded-2xl border border-[#E5E7EB] p-6">

@@ -133,7 +133,7 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
           >
             {result.attempt.status === 'pass' ? <CheckCircle size={16} /> : <XCircle size={16} />}
             You scored <strong>{result.attempt.score}%</strong>
-            &nbsp;—&nbsp;
+            &nbsp;
             {result.attempt.status === 'pass' ? 'Passed! You can continue.' : 'Failed. Review and try again.'}
           </div>
 
@@ -158,7 +158,7 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
           {lastAttempt && (
             <div className="flex items-center gap-2 px-4 py-3 rounded-xl mb-6 font-body text-sm bg-red-50 text-red-600">
               <XCircle size={16} />
-              Last attempt: <strong>{lastAttempt.score}%</strong> — Failed
+              Last attempt: <strong>{lastAttempt.score}%</strong> (Failed)
             </div>
           )}
 

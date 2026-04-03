@@ -140,7 +140,7 @@ export function Certificate({ data, domId }: CertificateProps) {
           marginBottom: em(24),
           textAlign: 'center',
         }}>
-          WithinTech Learn — Official Certificate
+          WithinTech Learn: Official Certificate
         </p>
 
         <Divider />
@@ -338,7 +338,7 @@ export function Certificate({ data, domId }: CertificateProps) {
               Certificate ID
             </p>
             <p style={{
-              fontFamily: 'monospace',
+              fontFamily: 'var(--font-dm-sans), sans-serif',
               fontSize: em(11),
               color: '#6B7280',
               wordBreak: 'break-all',

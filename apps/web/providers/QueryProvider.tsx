@@ -1,6 +1,7 @@
 'use client';
 
 import { QueryClient, QueryClientProvider, MutationCache } from '@tanstack/react-query';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useState } from 'react';
 import { Toaster, toast } from 'sonner';
 
@@ -23,6 +24,7 @@ export default function QueryProvider({ children }: { children: React.ReactNode 
   );
 
   return (
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ''}>
     <QueryClientProvider client={queryClient}>
       {children}
       <Toaster
@@ -37,5 +39,6 @@ export default function QueryProvider({ children }: { children: React.ReactNode 
         }}
       />
     </QueryClientProvider>
+    </GoogleOAuthProvider>
   );
 }

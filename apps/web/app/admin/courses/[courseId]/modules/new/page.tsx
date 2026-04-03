@@ -85,7 +85,7 @@ function StepInfo({
               <span className="text-[#0F0F0F] font-medium">module {nextOrder}</span>
               {modules && modules.length > 0
                 ? `, after "${modules[modules.length - 1].title}"`
-                : ' — the first module in this course'}
+                : ', the first module in this course'}
               .
             </p>
           </div>
@@ -98,7 +98,7 @@ function StepInfo({
         </CardBody>
         <CardFooter className="flex items-center justify-end">
           <Button type="submit" size="md" loading={isPending} disabled={!title.trim()}>
-            Next — Add Content
+            Next: Add Content
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14" /><path d="M12 5l7 7-7 7" />
             </svg>
@@ -134,7 +134,7 @@ function StepBlocks({
             Back
           </Button>
           <Button size="md" onClick={onNext}>
-            Next — Quiz
+            Next: Quiz
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14" /><path d="M12 5l7 7-7 7" />
             </svg>

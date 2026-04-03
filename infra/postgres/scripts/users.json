@@ -1,0 +1,3352 @@
+[{
+  "_id": {
+    "$oid": "66b3bf10317f194ab2e92313"
+  },
+  "firstName": "Admin",
+  "lastName": "Hope",
+  "email": "gakundohope5@gmail.com",
+  "phone": 798736159,
+  "password": "$2a$10$Ppi0uHJhzZrRoAI9ZZzd4O69UOXLovjONYRyEp1UICnthBS91OxZi",
+  "role": "ADMIN",
+  "image": "http://res.cloudinary.com/dcok6eu4s/image/upload/v1723055887/0798736159.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "__v": 8,
+  "classes": [],
+  "interestedCourses": [
+    {
+      "$oid": "68658847230610618965d041"
+    }
+  ],
+  "createdAt": {
+    "$date": "2024-08-07T18:38:08.000Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-12T09:50:42.821Z"
+  },
+  "googleId": "110431104436380116937",
+  "biography": "# Founder and CEO at BYOSE Tech\n## Fullstack Software Developer",
+  "gallery": [
+    "http://res.cloudinary.com/ddsojj7zo/image/upload/v1757226771/user_gallery_bacademy_image_1757226770129_0.jpg",
+    "http://res.cloudinary.com/ddsojj7zo/image/upload/v1757226770/user_gallery_bacademy_image_1757226770213_1.webp"
+  ],
+  "posts": [
+    {
+      "$oid": "68bab911bd87d3cd6131a43f"
+    }
+  ],
+  "skills": [
+    "Javascript",
+    "python"
+  ],
+  "socials": [
+    {
+      "$oid": "69164823f8c56f9666e4568f"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "66e84bbb7361ece46a81e744"
+  },
+  "firstName": "odile",
+  "lastName": "Dusenge",
+  "email": "dus.odile@gmail.com",
+  "phone": 783712462,
+  "password": "$2a$10$ZaHsyW04AG1dH9HK4AOGDO3Wyv3zzkWt4950A3DQKUesHjXi646sO",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/dcok6eu4s/image/upload/v1726499770/783712462.png",
+  "isVerified": true,
+  "subscribed": false,
+  "__v": 1,
+  "classes": [],
+  "interestedCourses": [],
+  "createdAt": {
+    "$date": "2024-09-16T15:16:11.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:51:58.782Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67713fe319a1190bdde923d2"
+  },
+  "firstName": "makombe ",
+  "lastName": "kenny",
+  "email": "makombekenny05@gmail.com",
+  "phone": 791933098,
+  "password": "$2a$10$ApKNyWLbEaWD.Q9v/3ZbNuYQ7W.aN8icCQCSx/6TYp/n7pH7Fp/7G",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/dcok6eu4s/image/upload/v1735475170/791933098.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "__v": 1,
+  "classes": [
+    {
+      "$oid": "6782c7053d0d28a56559fe1f"
+    },
+    {
+      "$oid": "6782c8783d0d28a56559fe39"
+    }
+  ],
+  "interestedCourses": [],
+  "createdAt": {
+    "$date": "2024-12-29T12:26:11.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-11T07:47:03.253Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6781197405327f564cbd2846"
+  },
+  "firstName": "Bruce",
+  "lastName": "NKUNDABAGENZI ",
+  "email": "brucenkundabagenzi@gmail.com",
+  "phone": 795067913,
+  "password": "$2a$10$UsZPnH9Sccwm/M2uj1xt1uuj1Gj2gmdiPaTQObtA.VRQ4ot3joj.S",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/dcok6eu4s/image/upload/v1736513907/0788775320.png",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "677d52337dcad00642e43140"
+    },
+    {
+      "$oid": "6782ce7b3d0d28a56559fe73"
+    },
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    }
+  ],
+  "__v": 3,
+  "createdAt": {
+    "$date": "2025-01-10T12:58:28.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-11T05:09:42.981Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6786c347ca37a59d2be55bc2"
+  },
+  "firstName": "Gasore Corene",
+  "lastName": "TURINUMUGISHA",
+  "email": "corenegasore@gmail.com",
+  "phone": 250729023495,
+  "password": "$2a$10$Az7VSFm.wLcQwGRATXTlaOc8H4tMluW707OjoXZPZRXz9xkry0tBC",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736885062/250729023495.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-01-14T20:04:23.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:51:59.732Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6786c3ecca37a59d2be55bff"
+  },
+  "firstName": "Bonheur",
+  "lastName": "Christian",
+  "email": "mbonheurc23@gmail.com",
+  "phone": 795680055,
+  "password": "$2a$10$/DBQejs8yVc4So2QxlrPH.boUKZKHGvkTHUG5DETDa8GUcyA05rX2",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736885227/795680055.avif",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782cd233d0d28a56559fe5f"
+    },
+    {
+      "$oid": "6782ce7b3d0d28a56559fe73"
+    }
+  ],
+  "__v": 1,
+  "createdAt": {
+    "$date": "2025-01-14T20:07:08.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-06T20:46:04.591Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6786c516ca37a59d2be55c0e"
+  },
+  "firstName": "MUCYO",
+  "lastName": "Honorine",
+  "email": "honorinemucyo4b@gmail.com",
+  "phone": 794804101,
+  "password": "$2a$10$JfGo/HUZwHruTA4E9YYphue2Dn2in1zfi0FAWmLVcCaTRAelqwYZO",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736885525/794804101.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-01-14T20:12:06.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:00.383Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6787292ceaf7c287140734cb"
+  },
+  "firstName": "Kayumba",
+  "lastName": "Jean Marie Vianney",
+  "email": "kayumbaj88@gmail.com",
+  "phone": 790368869,
+  "password": "$2a$10$Xl1Adc4RITFKSr2pQFZbxenYIrLBJSJJxjglP5Xtj3IXtFrOWv/eC",
+  "role": "SPECIAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736911147/0790368869.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782ce7b3d0d28a56559fe73"
+    },
+    {
+      "$oid": "6782c7053d0d28a56559fe1f"
+    },
+    {
+      "$oid": "6782c8783d0d28a56559fe39"
+    },
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    },
+    {
+      "$oid": "6782cd233d0d28a56559fe5f"
+    },
+    {
+      "$oid": "6782cbc73d0d28a56559fe4f"
+    },
+    {
+      "$oid": "6782cd973d0d28a56559fe68"
+    },
+    {
+      "$oid": "67d3faeca6186e90da76666d"
+    },
+    {
+      "$oid": "6782cf333d0d28a56559fe7c"
+    }
+  ],
+  "__v": 2,
+  "createdAt": {
+    "$date": "2025-01-15T03:19:08.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:01.164Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "678729e9eaf7c287140734de"
+  },
+  "firstName": "ISHIMWE",
+  "lastName": "Prince Arnaud",
+  "email": "princeishimwe754@gmail.com",
+  "phone": 795198946,
+  "password": "$2a$10$2KiGf8rCqs8iAaRJ1jCd2OZ9XOK/9oaht1dJitpZwgobJy9zZ7b/q",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736911336/795198946.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-01-15T03:22:17.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-07T09:03:55.588Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "678744a017e94deeaa29f7b5"
+  },
+  "firstName": "Naome",
+  "lastName": "Tuyishime",
+  "email": "tuyishimenaome27@gmail.com",
+  "phone": 793099726,
+  "password": "$2a$10$Runfbaow3Drn4oj3TmMECe6UNzpEbS1fkCnvFjpy20Yg7UBaFTpSW",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736918175/793099726.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782ce7b3d0d28a56559fe73"
+    },
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    }
+  ],
+  "__v": 4,
+  "createdAt": {
+    "$date": "2025-01-15T05:16:16.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:02.863Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "678746cd17e94deeaa29f80b"
+  },
+  "firstName": "Ange Kevine",
+  "lastName": "UWAYO",
+  "email": "angeekevinee@gmail.com",
+  "phone": 788880387,
+  "password": "$2a$10$lQ6eFGtdM8MXSHfUK5tbpueI4/r0.YkNX94FtpuWedqutbZd9guHu",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736918732/0788880387.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    }
+  ],
+  "__v": 1,
+  "createdAt": {
+    "$date": "2025-01-15T05:25:33.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:03.516Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "678746d917e94deeaa29f816"
+  },
+  "firstName": "IHIMBAZWE",
+  "lastName": "Kevine",
+  "email": "niyikorakevine@gmail.com",
+  "phone": 793106509,
+  "password": "$2a$10$KMcAN3oEyq07Fhfnpx/KcexGmmpwrzLQM78PVQH7ET2rjAY4wVkYO",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736918744/793106509.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-01-15T05:25:45.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:04.120Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67874fa8e9ca99bc2e3488b3"
+  },
+  "firstName": "USANASE",
+  "lastName": "A. Queen Doris",
+  "email": "usanasequeen@gmail.com",
+  "phone": 791603545,
+  "password": "$2a$10$HmEqAX6n5GWL53QDupCIW.iZL9M/Ko.KhdkCifONrJGzGS1MqVK/S",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736920999/0791603545.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    }
+  ],
+  "__v": 2,
+  "createdAt": {
+    "$date": "2025-01-15T06:03:20.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:04.433Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67875156e9ca99bc2e348909"
+  },
+  "firstName": "ISHIMWE Amani",
+  "lastName": "Samuel",
+  "email": "amaniishimwe36@gmail.com",
+  "phone": 791515013,
+  "password": "$2a$10$qQLZLv.ouhG8qHu010U.ruOqnJL0m04XLJiY4PxPLPF/qt5xasBJe",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736921429/791515013.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782ce7b3d0d28a56559fe73"
+    }
+  ],
+  "__v": 2,
+  "createdAt": {
+    "$date": "2025-01-15T06:10:30.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:05.045Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67875754e9ca99bc2e348946"
+  },
+  "firstName": "BYIRINGIRO",
+  "lastName": "Aloys",
+  "email": "byiringiroaloys8@gmail.com",
+  "phone": 7285508897,
+  "password": "$2a$10$OmbZ3IeilZnsZnycATCeqOcTde4CfwjdHjSz1XUsXWSa91zhu9WcW",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736922963/7285508897.png",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782ce7b3d0d28a56559fe73"
+    }
+  ],
+  "__v": 2,
+  "createdAt": {
+    "$date": "2025-01-15T06:36:04.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:05.365Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6787745d0833278cc73dc972"
+  },
+  "firstName": "Mushimiyimana ",
+  "lastName": "Henriette",
+  "email": "henriettemayor@gmail.com",
+  "phone": 796029263,
+  "password": "$2a$10$QMQPGkqCMjlY2Ue/OItSguzFBce2ae7I3dhc8YRhp5mMt43xpDC.e",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736930397/796029263.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782ce7b3d0d28a56559fe73"
+    }
+  ],
+  "__v": 2,
+  "createdAt": {
+    "$date": "2025-01-15T08:39:57.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:05.665Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6787aff4e08b74eed83a8be1"
+  },
+  "firstName": "IRASUBIZA NTWARI",
+  "lastName": "Gloria",
+  "email": "gloriantwari@gmail.com",
+  "phone": 792599402,
+  "password": "$2a$10$hFfgldj7G2bavBb7sjsMNee/yd9xUb4hHYYL4zYCUBRFlWY0iThBq",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736945651/792599402.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-01-15T12:54:12.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:06.302Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6787b03ae08b74eed83a8bf1"
+  },
+  "firstName": "Keren ",
+  "lastName": "IGIRANEZA",
+  "email": "igiranezakkeren16@gmail.com",
+  "phone": 729958312,
+  "password": "$2a$10$UZAIfTCyAeOCxBuaaOWpT.budr7fwvwQT0V2lvpkIk0nfTchHRCLO",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736945721/0729958312.png",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-01-15T12:55:22.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:06.606Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6787f4e470f3aa23fab5ee32"
+  },
+  "firstName": "Vieira",
+  "lastName": "Ntwali Isimbi",
+  "email": "ntwaliisimbivieira@gmail.com",
+  "phone": 737467471,
+  "password": "$2a$10$S9P0lBWmgj5xSvSXS7EM5etquS2k83dmsa5Eu40zqkmUM4OL5Xms.",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736963299/737467471.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-01-15T17:48:20.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:07.310Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6788014d70f3aa23fab5eefc"
+  },
+  "firstName": "Nyumbayire",
+  "lastName": "Laurent",
+  "email": "laulanyumbayire@gmail.com",
+  "phone": 794971311,
+  "password": "$2a$10$cNXhL9kOeqB/KerOyB8YhuW4jo7BjcPloezRIumdAbqefVbYJX6yi",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736966476/0794971311.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-01-15T18:41:17.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:10.380Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6788047870f3aa23fab5ef33"
+  },
+  "firstName": "Shema",
+  "lastName": "Leandre",
+  "email": "iamshemaleandre@gmail.com",
+  "phone": 793373953,
+  "password": "$2a$10$MWlIhc11rAwvsXWlgoSDguxoA4wp4Tyl.mvf5.7mwGSs4kMCbi6vO",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736967287/793373953.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782cd233d0d28a56559fe5f"
+    },
+    {
+      "$oid": "6782cd973d0d28a56559fe68"
+    }
+  ],
+  "__v": 1,
+  "createdAt": {
+    "$date": "2025-01-15T18:54:48.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:10.758Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "678812a0c29e80d069d1041d"
+  },
+  "firstName": "Love",
+  "lastName": " ISHEMA NKERABAHIZI",
+  "email": "ishemalove@gmail.com",
+  "phone": 795024100,
+  "password": "$2a$10$opzFEo55qcMH9mCCtVtIr.j8GMV/IoGzxK6aMokYarvAArL/l19ia",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1736970911/0795024100.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-01-15T19:55:12.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:11.088Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67908b59da297ce7696af372"
+  },
+  "firstName": "Byukusenge",
+  "lastName": "Andre",
+  "email": "andrewbyukusenge4@gmail.com",
+  "phone": 739163667,
+  "password": "$2a$10$.Kub4TAvHUiGp1g.8FNLleAb//62zdvfKlFJrV.Emu2xE8tbLdbMe",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1737526104/739163667.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782ce7b3d0d28a56559fe73"
+    }
+  ],
+  "__v": 1,
+  "createdAt": {
+    "$date": "2025-01-22T06:08:25.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:11.925Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6795f33d86b96024a5ba909d"
+  },
+  "firstName": "ally",
+  "lastName": "bashir",
+  "email": "cyubahirobashir@gmail.com",
+  "phone": 798361010,
+  "password": "$2a$10$leURotUnwxYodBW8Hk.FSudwoI37PwAae.vSvr4cQgIy99XXVmbom",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1737880379/0798361010.png",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c7053d0d28a56559fe1f"
+    },
+    {
+      "$oid": "6782c8783d0d28a56559fe39"
+    }
+  ],
+  "__v": 2,
+  "createdAt": {
+    "$date": "2025-01-26T08:33:01.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-19T22:20:05.584Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cad29a6bf67376b69ce152"
+  },
+  "firstName": "Hirwa",
+  "lastName": "Joric",
+  "email": "hirwajoric@gmail.com",
+  "phone": 792408820,
+  "password": "$2a$10$qcWBtc1rmTJ8au/BkHHxXOq6ku7MzmBRZPmi5clB782uVHteVqYJW",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1741345433/792408820.png",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-07T11:03:54.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:12.766Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "680d2e4a39dcb56e10563b05"
+  },
+  "firstName": "Leo",
+  "lastName": "kafuruka",
+  "email": "kafurukaleo66@gmail.com",
+  "phone": 791096892,
+  "password": "$2a$10$rGy3InJ0wdnsW3BFVOP9BOIaHLTI4XRdZ3hNpuLNMBKXBN8p9oNY.",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1745694281/0791096892.png",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-04-26T19:04:42.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:13.066Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "680d3b1e37169c4ef28bccb6"
+  },
+  "firstName": "Silver",
+  "lastName": "Hope",
+  "email": "hopehirwa50@gmail.com",
+  "phone": 798736100,
+  "password": "$2a$10$64W/8T6Wd2o/5qqqYpkX.ul7cEvjjAcQVqu8w0xQGxPVNt/7ZJv..",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1745697565/798736100.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [
+    {
+      "$oid": "6866f28a6e9a24ecda800102"
+    }
+  ],
+  "classes": [
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    },
+    {
+      "$oid": "6782cd973d0d28a56559fe68"
+    },
+    {
+      "$oid": "6782cbc73d0d28a56559fe4f"
+    },
+    {
+      "$oid": "6782cd233d0d28a56559fe5f"
+    },
+    {
+      "$oid": "6782c7053d0d28a56559fe1f"
+    },
+    {
+      "$oid": "6782c8783d0d28a56559fe39"
+    },
+    {
+      "$oid": "6782cf333d0d28a56559fe7c"
+    },
+    {
+      "$oid": "6782ce7b3d0d28a56559fe73"
+    },
+    {
+      "$oid": "684801cac184e520174fe2cd"
+    },
+    {
+      "$oid": "67d3faeca6186e90da76666d"
+    },
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    },
+    {
+      "$oid": "68bd4bc5bc5f5347555f3b91"
+    },
+    {
+      "$oid": "69123a210f455b03f4d9b37b"
+    }
+  ],
+  "__v": 9,
+  "createdAt": {
+    "$date": "2025-04-26T19:59:26.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-12T09:23:29.320Z"
+  },
+  "googleId": "106972198249127905270",
+  "biography": "-",
+  "gallery": [],
+  "posts": [],
+  "skills": [],
+  "socials": []
+},
+{
+  "_id": {
+    "$oid": "681e1ec39f20e33753db2f82"
+  },
+  "firstName": "Lucas",
+  "lastName": "Gertel",
+  "email": "itsme@lucasgertel.com",
+  "phone": 42,
+  "password": "$2a$10$Gxk5gUnil4dndaHUYw4ToOhr2Fwn4fGBuGBJfSJxgIxZM8IP06Fw.",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1746804418/42.png",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-05-09T15:26:59.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:13.700Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "681e537da9fbcf3b37391341"
+  },
+  "firstName": "asdasdadsasd",
+  "lastName": "asdasd",
+  "email": "user@gmail.com",
+  "phone": 189247812374,
+  "password": "$2a$10$cPvjotBJcTXcJwt5HzUiVeOKyrxGeG7s5lPB5r6LArummljz.99JW",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1746817916/189247812374.jpg",
+  "isVerified": false,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-05-09T19:11:57.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:14.004Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "683aa43822f41d640b0c808c"
+  },
+  "firstName": "Daniella",
+  "lastName": "Ganza",
+  "email": "daniellaganza30@gmail.com",
+  "phone": 796469291,
+  "password": "$2a$10$scQv.N2V321dQrHjFyLP4eqFER2BB7NAhtw7vHdEK39KZszJ05dEC",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1748673591/796469291.png",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    }
+  ],
+  "__v": 1,
+  "createdAt": {
+    "$date": "2025-05-31T06:39:52.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T06:52:14.304Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "683cd937c1514aea839fc3f2"
+  },
+  "firstName": "RUKUNDO",
+  "lastName": "HOPE",
+  "email": "hirwahope5@gmail.com",
+  "phone": 789005335,
+  "password": "$2a$10$X4yYRNPdNvjxpGI0nGANneyc/oAcX67bnTAinDKEK8YDfkxn0PEI.",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1748818230/789005335.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782cf333d0d28a56559fe7c"
+    },
+    {
+      "$oid": "6782ce7b3d0d28a56559fe73"
+    }
+  ],
+  "__v": 1,
+  "createdAt": {
+    "$date": "2025-06-01T22:50:31.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-19T16:32:36.833Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "683ef201ec4847c38d0aeb8a"
+  },
+  "firstName": "Innocent",
+  "lastName": "MUGISHA SHAMI",
+  "email": "shamiinnocent123@gmail.com",
+  "phone": 793734668,
+  "password": "$2a$10$IlMmD/kOgg/B9dX98FpbGeY9rn0sB3itF3.d9cZFIU9WQBbDCE9Y2",
+  "role": "SPECIAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1748955648/793734668.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c7053d0d28a56559fe1f"
+    },
+    {
+      "$oid": "6782c8783d0d28a56559fe39"
+    },
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    },
+    {
+      "$oid": "6782cbc73d0d28a56559fe4f"
+    },
+    {
+      "$oid": "6782cd233d0d28a56559fe5f"
+    },
+    {
+      "$oid": "6782cd973d0d28a56559fe68"
+    },
+    {
+      "$oid": "6782ce7b3d0d28a56559fe73"
+    },
+    {
+      "$oid": "6782cf333d0d28a56559fe7c"
+    },
+    {
+      "$oid": "67d3faeca6186e90da76666d"
+    }
+  ],
+  "__v": 2,
+  "createdAt": {
+    "$date": "2025-06-03T13:00:49.000Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-18T19:33:48.580Z"
+  },
+  "googleId": "100507754749700103960",
+  "biography": "-",
+  "gallery": [],
+  "posts": [],
+  "skills": [],
+  "socials": []
+},
+{
+  "_id": {
+    "$oid": "6850244059383c2f947e73d4"
+  },
+  "firstName": "manzi",
+  "lastName": "prince",
+  "email": "chrissmanzi1@gmail.com",
+  "phone": 75526660,
+  "password": "$2a$10$mG9waip2ARd3CKPIYL8y5O2knm8Pfo.4A4zrR3COYXvLz4Nc7lWny",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1750082623/075526660.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782cbc73d0d28a56559fe4f"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-06-16T14:03:44.713Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-16T18:49:53.784Z"
+  },
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "686ad7c2153beed8e5c8f961"
+  },
+  "firstName": "Angele Marie",
+  "lastName": "ASIFIWE",
+  "email": "asifiwemarie2006@gmail.com",
+  "phone": 798978831,
+  "password": "$2a$10$ozHwoeUaCZh3T5/SGRQtH.DvZOBFkL2w8JtgCUVbn76UP4kN7kRWG",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1751832513/798978831.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-06T20:08:34.759Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-06T20:10:36.503Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "686e896bfae9bb7870e3372b"
+  },
+  "firstName": "Xile",
+  "lastName": "Ep",
+  "email": "xilep68611@bulmp3.com",
+  "phone": 788656766,
+  "password": "$2a$10$U6JZPNOTa9UYcg4.DXb0GeVuL/0pYTQYCfbK6GjQ7It/GD4Qmm0/u",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1752074602/788656766.png",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-09T15:23:23.564Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-09T15:25:58.039Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687092e6e262fc9cda4d6fc5"
+  },
+  "firstName": "Iradukunda",
+  "lastName": "Bertin",
+  "email": "iradukundabertin082@gmail.com",
+  "phone": 795472743,
+  "password": "$2a$10$OlX.LEJwhGEv3.gsQFMftuD9eGjq.I73iEHSHecqZdSFcNc7IPzhm",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1752208101/795472743.png",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-11T04:28:22.674Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-12T12:37:41.439Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6872c6be185e501e11570ec7"
+  },
+  "firstName": "Peace",
+  "lastName": "Ishimwe",
+  "email": "peaceishimwem@gmail.com",
+  "phone": 793092863,
+  "password": "$2a$10$cZTqrKcexOaqKkQKHWDONOrxOBToKnwQ4oMXy3ArGlmvdVrJyUfna",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1752352445/793092863.png",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-12T20:34:06.763Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-14T18:49:32.305Z"
+  },
+  "__v": 2,
+  "biography": "-",
+  "gallery": [],
+  "googleId": "107920603753740716252",
+  "posts": [],
+  "skills": [],
+  "socials": []
+},
+{
+  "_id": {
+    "$oid": "6874005bea3a6dd89b8af570"
+  },
+  "firstName": "Leandra",
+  "lastName": "Day",
+  "email": "tydibo@mailinator.com",
+  "phone": 17,
+  "password": "$2a$10$L2S.3s0fjKNEwrFI1V8Kj.EFNryx1e7Jp27jay8Op9Bx6OV.PV40a",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1752432730/17.jpg",
+  "isVerified": false,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-13T18:52:11.887Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-13T18:52:11.887Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687400b9ea3a6dd89b8af589"
+  },
+  "firstName": "Latifah",
+  "lastName": "Anthony",
+  "email": "zoxar@mailinator.com",
+  "phone": 23,
+  "password": "$2a$10$IKaWi.tk92VH4Lg9oRG7euTkxaPBzsr6p1wPllqdPDLg0MkdV.xxG",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1752432824/23.png",
+  "isVerified": false,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-13T18:53:45.280Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-13T18:53:45.280Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68740117ea3a6dd89b8af5b1"
+  },
+  "firstName": "NSENGIYUMVA",
+  "lastName": "NICOLA",
+  "email": "fatepepe66@gmail.com",
+  "phone": 798380645,
+  "password": "$2a$10$Dcc/Lc1Hq/vYCYqfEusZw.Lze3BxkLIzaRHHDtJKBzGTpw7ztNBHi",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1752432919/798380645.jpg",
+  "isVerified": false,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-13T18:55:19.974Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-13T18:55:19.974Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68740393ea3a6dd89b8af5cf"
+  },
+  "firstName": "Heritier",
+  "lastName": "Bagumire",
+  "email": "heritierbagumire367@gmail.com",
+  "phone": 78864567,
+  "password": "$2a$10$wIB5pzZHV4phGQk/YvP6CuB9PMM8s8xlyg4hzohsE.Jxd2x0TSIDS",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1752433555/078864567.png",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-13T19:05:55.683Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-13T19:07:58.603Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68741db32c2192067ee90d2e"
+  },
+  "firstName": "Bills",
+  "lastName": "Bells",
+  "email": "billsbells78@gmail.com",
+  "phone": 722958265,
+  "password": "$2a$10$IZz3twY02yDH2m.1bYQ0R.yIwFrhZ7KGTY8bB/KZzhtu0zcERQvNm",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1752440242/722958265.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-13T20:57:23.778Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-13T21:00:28.403Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "688090e4ca052c8f788d345d"
+  },
+  "firstName": "Sonia",
+  "lastName": "Mehlord",
+  "email": "snowgirlcrash@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "102433419256486397350",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLRY7fZv-s91TYLEH6iNY_I8y7vAR3mF13Ech97PrxMehywtbNT=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T07:36:04.041Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:15:27.064Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809140ca052c8f788d346d"
+  },
+  "firstName": "Nancy",
+  "lastName": "Teta kwizera",
+  "email": "nancytetakwizera@gmail.com",
+  "phone": null,
+  "password": "$2a$10$EsuSajlvnVnve8NfZi2kYe0ufQrq1d8.xNdW8xcOegz3FPuX3FjIu",
+  "googleId": "111726394073476498236",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKgR0sDr8WGXTydfsE8Uef4zo2q1qYN3pI1yEU7acRlWf2mp8w=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    },
+    {
+      "$oid": "68bd4bc5bc5f5347555f3b91"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T07:37:36.271Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-07T09:30:57.746Z"
+  },
+  "__v": 3,
+  "biography": "-",
+  "gallery": [],
+  "posts": [],
+  "skills": [],
+  "socials": []
+},
+{
+  "_id": {
+    "$oid": "68809166ca052c8f788d347a"
+  },
+  "firstName": "Sammy",
+  "lastName": "Manzi",
+  "email": "sammymanzi8@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "117894125553049458842",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocIRDCiDTFJjwQUIUHWJ3EMNkoziqHxloF4INYuMVMUJIcdO0DY=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    },
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    },
+    {
+      "$oid": "6782cd233d0d28a56559fe5f"
+    },
+    {
+      "$oid": "6782cbc73d0d28a56559fe4f"
+    },
+    {
+      "$oid": "6782cd973d0d28a56559fe68"
+    },
+    {
+      "$oid": "6782cf333d0d28a56559fe7c"
+    },
+    {
+      "$oid": "6782ce7b3d0d28a56559fe73"
+    },
+    {
+      "$oid": "67d3faeca6186e90da76666d"
+    },
+    {
+      "$oid": "684801cac184e520174fe2cd"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T07:38:14.770Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:15:22.668Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809212ca052c8f788d3493"
+  },
+  "firstName": "mucunguzi",
+  "lastName": "Kelly salvator",
+  "email": "mucunguzikellysalvator@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "117640014218147867593",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocIar7t14iCcxPgmuVYM6B7bJZTyaGd1WN-SEOlTtPzezgvh4Q=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    },
+    {
+      "$oid": "6782ce7b3d0d28a56559fe73"
+    },
+    {
+      "$oid": "6782cd233d0d28a56559fe5f"
+    },
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    },
+    {
+      "$oid": "684801cac184e520174fe2cd"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T07:41:06.801Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:42:46.575Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809323ca052c8f788d34c6"
+  },
+  "firstName": "IHIRWE",
+  "lastName": "Sandra",
+  "email": "sandraihirwe007@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "102091412682327349799",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocI_wdoC2IpM7RGyiZ7SlGadStLOxLp84i-WupZHy64MGErYQg=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T07:45:39.411Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-06T07:09:05.318Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809417ca052c8f788d34f1"
+  },
+  "firstName": "Ishimwe",
+  "lastName": "justin",
+  "email": "ishimwejustin67@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "111419704447486261694",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocJm2WKismpz2rov5mRIL0CK1DHoe9wQeCsVQJR7B9e99InBLxOU=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T07:49:43.898Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-05T14:19:52.138Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809443ca052c8f788d350b"
+  },
+  "firstName": "niyigena",
+  "lastName": "arsene",
+  "email": "arseneniyigena60@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "104058679837953573149",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLvt_o-MEYrxwxOSndTb5RtlzLgSBYuI3vEQB3hLT5-muvzDyA=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T07:50:27.468Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-05T17:53:36.183Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809483ca052c8f788d352c"
+  },
+  "firstName": "OZANA",
+  "lastName": "TV",
+  "email": "ozanadanny@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "116878301421824821739",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocIIfz2BqYSsjC5IAYCMIDWWBN94zK3hgcDJ8obVWYeVV_YkzN8=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T07:51:31.601Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:31:07.495Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "688094d8ca052c8f788d3545"
+  },
+  "firstName": "Nadia",
+  "lastName": "igirimbabazi",
+  "email": "igirimbabazinadia574@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "117031815561567371221",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocIVX2Z9SkTcoNmK9xDZrcWtVnnW305N5YrmfnGMmHU54HSFeA=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-23T07:52:56.560Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T07:52:56.560Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "688094fcca052c8f788d3554"
+  },
+  "firstName": "Gisigo",
+  "lastName": "Teta keicy",
+  "email": "gtetakeicy@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "107290369372668395025",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKfGrGAtf548ym8cWsZXC2ltpxMfbWytNAg_ePxVGtCOUFFPdky=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T07:53:32.407Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:17:18.507Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809597ca052c8f788d357a"
+  },
+  "firstName": "Ntwari",
+  "lastName": "Jibril",
+  "email": "jibrilntwari@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "108640045177374303198",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocILoepcyPRsXzeHudzdrZFmT-g_SPrI0BckMT3pLlMHNBtaug=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-23T07:56:07.075Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T07:56:07.075Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "688095d8ca052c8f788d3586"
+  },
+  "firstName": "KEZAKASE",
+  "lastName": "Marie Kessy",
+  "email": "kezakasemariekessy@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "111790492069099086781",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLMwTqRq0rIvAH95RZhni-KHrzWvyKGLeoPIyR04rndLEat-A=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T07:57:12.377Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:16:22.606Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809607ca052c8f788d35a0"
+  },
+  "firstName": "Emelyne",
+  "lastName": "Niwemutoni",
+  "email": "emelyneniwemutoni6@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "106473515937755777839",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocJD5hWcpOb_4RRavTmV63HIAamT6_yjdw44DF_7qDRk3nQsqQ=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T07:57:59.898Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T20:30:41.589Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809610ca052c8f788d35b3"
+  },
+  "firstName": "Niyomana",
+  "lastName": "Agabu",
+  "email": "agabuniyomana@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "107281286009527920504",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocIf6FUwpiTHGZ94Ez_KE5bqpgsPay_567W8XrtbtSeX8_vNFDw=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T07:58:08.635Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:23:07.215Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "688096a3ca052c8f788d35df"
+  },
+  "firstName": "Parfait",
+  "lastName": "Rukundo",
+  "email": "rukundoparfait07@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "102691115376910639108",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKCEytqfvlpi8GnKdkgux0xEMjyn0ji7vP9QhFh_rWgAA2CGTY=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:00:35.848Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:29:59.410Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "688096d9ca052c8f788d35fb"
+  },
+  "firstName": "aime",
+  "lastName": "Loīc",
+  "email": "kingaime132@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "106780962567825611810",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocIlmEut4O96MnPKlAxgLYimHKu5P0fAEpq6IMWmcqW8vt4hw2fg=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    },
+    {
+      "$oid": "684801cac184e520174fe2cd"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:01:29.543Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:16:14.714Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "688097d9ca052c8f788d3636"
+  },
+  "firstName": "Kankindi",
+  "lastName": "Christine",
+  "email": "kankindic90@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "116097562096493972197",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLR4FCpXf737sp3pgSKZETceYCqqOJbk9nZpIvBXDWwBkrELw=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    },
+    {
+      "$oid": "684801cac184e520174fe2cd"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:05:45.522Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:23:11.788Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "688097eaca052c8f788d3640"
+  },
+  "firstName": "Gitangaza",
+  "lastName": "Ornella samuella",
+  "email": "ornellasamuellagitangaza@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "101436136788392223095",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocJESjf697gI6vhhzpMB0N_HvhWqfm4fYuPp96RLih1NSSLujA=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "684801cac184e520174fe2cd"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:06:02.728Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:34:21.999Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809840ca052c8f788d3651"
+  },
+  "firstName": "Mutegarugori",
+  "lastName": "Angelique",
+  "email": "mutegarugoriangelique933@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "106558103098929618194",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLKX6FZge0Wq7yUvNE9A4nGAllAPtgKUzBApu-zhcWlHI870w=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:07:28.084Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:16:18.394Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809873ca052c8f788d3664"
+  },
+  "firstName": "MICOMYIZA",
+  "lastName": "Raissa",
+  "email": "micomyizaraissa@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "101761436907479293620",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKYo9u4LWQ52RUXpBudeSgWjCkQFgcRiXOQGvcp-4WMy75G=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:08:19.613Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:30:03.162Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6880994aca052c8f788d368e"
+  },
+  "firstName": "Mugisha",
+  "lastName": "Kayitare",
+  "email": "mugishakayitare161@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "114509794865905652169",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocIqnRCsd3Vk6tBjFsFLaK-_mbMtCMrfuq0kapiEatQ5f8kmcw8=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782cd233d0d28a56559fe5f"
+    },
+    {
+      "$oid": "6782cd973d0d28a56559fe68"
+    },
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    },
+    {
+      "$oid": "684801cac184e520174fe2cd"
+    },
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:11:54.552Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:34:16.765Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809970ca052c8f788d369c"
+  },
+  "firstName": "knox_",
+  "lastName": "ever",
+  "email": "knoxever250@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "117847187749596541590",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLNitoJypc4-odSTWoEdWmmZJgZUQF6vM3J7i28CkK7SfKw2n4=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-23T08:12:32.140Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:12:32.140Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68809975ca052c8f788d36a7"
+  },
+  "firstName": "Wayne",
+  "lastName": "Hwati",
+  "email": "waynehwati@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "108050508977019755223",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLkhn-t99cpz-UCYZtN_Rvw1vCSQepTcTBstl5pT4q30zrrsQ=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:12:37.494Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:18:49.116Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "688099faca052c8f788d370a"
+  },
+  "firstName": "Sharif",
+  "lastName": "Ineza",
+  "email": "sharifineza@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "118446357947929942601",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKQncGYt_i9XqxlRrn-A1mUqn7BGJgLev5Qbsd9JVL44bIpw696=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c8783d0d28a56559fe39"
+    },
+    {
+      "$oid": "6782c7053d0d28a56559fe1f"
+    },
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    },
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:14:50.586Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:29:54.934Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809b08ca052c8f788d37d7"
+  },
+  "firstName": "ineza",
+  "lastName": "keza",
+  "email": "inezakeza71@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "103241088695353118223",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLZ6Bz07w70gnuJS2RNv7Op7uMQf38i_QYJMDmYB_UL0U5c7w=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:19:20.117Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:23:15.886Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809b3bca052c8f788d37e3"
+  },
+  "firstName": "Usengamungu",
+  "lastName": "Gabriella",
+  "email": "gabriellausengamungu@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "104267359798913259515",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKlmeEg447ayj0lZADUSeFw4P0ep2msD36Vh38GnWSDIFTTpA=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:20:11.400Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:30:11.257Z"
+  },
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "68809dd6ca052c8f788d39c5"
+  },
+  "firstName": "traos",
+  "lastName": "THEGAMER",
+  "email": "traosthegamer@gmail.com",
+  "phone": null,
+  "password": "$2a$10$gK1vQrTkYWD6MVynPCt3Oewpk7GZPec7S2Knz/PyrMf9bglcTvF9i",
+  "googleId": "113932998251828884221",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLhT929CFEM_FpeHyMJ6ZFtWeDEwOYoKYdMrt-HbIlQumE9xQ=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:31:18.022Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-25T08:07:37.526Z"
+  },
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "68809de2ca052c8f788d39e3"
+  },
+  "firstName": "mayar",
+  "lastName": "dhieu",
+  "email": "mayardhieu561@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "103157465895245891002",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLuyIbZFsz6heX-h2RG-XD435DsMTotEy5rpqIosf920pj4Vg=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:31:30.749Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:42:41.417Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68809df0ca052c8f788d39ed"
+  },
+  "firstName": "irakoze",
+  "lastName": "elise",
+  "email": "irakozeelise440@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "114854157747100081318",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKuwmgAnh2GnH9OKWmJZaCsuaY-vx3Ckh9q1Auj50Fw9gm9rQ=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-23T08:31:44.168Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:31:44.168Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68809fbfca052c8f788d3bdf"
+  },
+  "firstName": "Hirwa",
+  "lastName": "Darly",
+  "email": "darlyhirwa@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "105267512935279734358",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocI8oqkopiQVtx50h4AerSfqtJg22S7BBomLB8eB0GSqX2lnYIOD=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T08:39:27.918Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T08:42:50.607Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "6880bea837c466afd13f61ed"
+  },
+  "firstName": "Niyikora",
+  "lastName": "Frank",
+  "email": "niyikorafrank@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "109621753112168370886",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLJ64mpb6agoFJ99DDoRNJj6XlxK8KVyjdT320A3vepOut77Q=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-23T10:51:20.026Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T10:51:20.026Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6880ceadd8bffc7d4166cbcd"
+  },
+  "firstName": "daprinceb",
+  "lastName": "official",
+  "email": "daprincebofficial@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "112618959467525778986",
+  "role": "NORMAL",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-23T11:59:41.929Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T11:59:41.929Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68813ea93457d3f5cb0a915f"
+  },
+  "firstName": "Christian",
+  "lastName": "Alain",
+  "email": "christianalin0035@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "116346831943888644044",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLy_J9GrYuy9-WrOgEe-Kl6H44n_u-cOvYSmTBwYXO9StHXjQ=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T19:57:29.971Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T20:30:47.561Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "688149d43457d3f5cb0a924c"
+  },
+  "firstName": "KURUKUNDWE",
+  "lastName": "KELLYNE",
+  "email": "kurukundwekellyne@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "110833258121939094081",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKnbWuzjiM6HFJ4QHXEqBIUVBNGkgkFyET5M-Q_lUosJzDPMQ=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-23T20:45:08.474Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T21:09:07.871Z"
+  },
+  "__v": 4
+},
+{
+  "_id": {
+    "$oid": "6881e12c0c970d052b1b58f7"
+  },
+  "firstName": "Nezerwa ",
+  "lastName": "Ellis Grace",
+  "email": "nezellis15@gmail.com",
+  "phone": 794705174,
+  "password": "$2a$10$flW/BR0H/fahu1//UPBnSeCZfEfy6b0uMbipm6BTtE1qXVh1JDu/2",
+  "googleId": "108161966108972798199",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLvg6eWJLhQBf9xH1Q81LC303vWYkM-5MxPR-TFk-ib4-8Lqw=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-07-24T07:30:52.744Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-06T19:26:11.344Z"
+  },
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6881e7540c970d052b1b59a1"
+  },
+  "firstName": "jabo",
+  "lastName": "leonce",
+  "email": "leoncejabo@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "111893125642485507113",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKktvwWT0TqxlM2dW5pJuciY8hiqUVhob_C4Gba0mcgt69ISg=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-07-24T07:57:08.632Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-24T07:57:08.632Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "689072f861d9ff6058bd0019"
+  },
+  "firstName": "Aurea",
+  "lastName": "Ashimwe Gikundiro",
+  "email": "aureashimwe@gmail.com",
+  "phone": null,
+  "password": "$2a$10$eGD929q4QTu0N.CiuyiV/uLfo2SPk3B8c70uIWlbVnn.Ot5iUhqGe",
+  "googleId": "102197876154596736000",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocK1WGEpX0vfo-oRfhFL_joEapm0GYgeBy80fKUIwml2sibChQ=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-08-04T08:44:40.267Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-06T07:17:08.616Z"
+  },
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "6892203b07f7343586eb7c32"
+  },
+  "firstName": "Prince",
+  "lastName": "B",
+  "email": "ishimweprinceb@gmail.com",
+  "phone": 722848299,
+  "password": "$2a$10$uOv5MwZZQ9huOavbVKnRp.g.ls2XlbsNhdSaz3h0iY4OQN6phnPCO",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1754406970/722848299.jpg",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-08-05T15:16:11.737Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-05T15:18:13.287Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68927be7dde5fbf4747b3eda"
+  },
+  "firstName": "Manzi",
+  "lastName": "Lucky",
+  "email": "manziluckyregis@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "116251264110326719904",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKZ3Zz240mDrtpRfJw8lb7MWyIKrAp482rcee-gucp7rr1BtQ=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-08-05T21:47:19.307Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-05T21:47:19.307Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6893b2f33d1f15b4c89017b9"
+  },
+  "firstName": "aldo",
+  "lastName": "paladis",
+  "email": "aldopaladis34@gmail.com",
+  "phone": 793833978,
+  "password": "$2a$10$oyr1z7FgDu4vDG8dtlW8/uiGrJftCjIUiqikBX1RP8AyAXY/VK1Na",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1754510067/793833978.jpg",
+  "isVerified": false,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-08-06T19:54:27.939Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-06T19:54:27.939Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6899bd0e0df89f9fa588bc5a"
+  },
+  "firstName": "Pacis",
+  "lastName": "Nkubito",
+  "email": "pacisnkubito@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "112177333686040452561",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocISz3EBpCnpHuQj_M6MM1un1q0IghX8YFO02ZWecZrD0rDIjcNW=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-08-11T09:51:10.288Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-11T09:51:10.288Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "689b1a200e419ccb0a8aa0ac"
+  },
+  "firstName": "MUDAHEMUKA",
+  "lastName": "Alexis",
+  "email": "mudahemuka2020@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "106175812052619926826",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocJgkthgk3Dyy5kpzehYvdxAJXoIV76QDv9wCZM1BBWwrMojMV4=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "createdAt": {
+    "$date": "2025-08-12T10:40:32.719Z"
+  },
+  "updatedAt": {
+    "$date": "2025-08-12T10:40:32.719Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68b5bf2cededbf0745de3ef1"
+  },
+  "firstName": "MURANGWA",
+  "lastName": "Shami Yanice",
+  "email": "mshamiyanice@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "113782092461147650242",
+  "role": "ADMIN",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocJ3hfZQLXmXOLLqGGxE0HmtZ-V5JgRoe0j5GtF6fWHHHMVYXE1P=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c9fc3d0d28a56559fe44"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-09-01T15:43:40.077Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-01T15:46:08.456Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68b98b2a8da033fe6a267364"
+  },
+  "firstName": "ERIC",
+  "lastName": "SHEMA NDAMAGE",
+  "email": "ndamageshemaeric@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "117025845385914172277",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKMoecwe5Llz2pmAhBc1CZ9aDBOEfAU5puW3jpRagsP9mul-g=s96-c",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-09-04T12:50:50.413Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-04T12:50:50.413Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68bb5ab6531a10b0d2203cbd"
+  },
+  "firstName": "kanyesaro",
+  "lastName": "luc",
+  "email": "luckanyesaro@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "101679962891107031477",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocJf0dkacqvWin95nEnHvtonBIL-XUal9ElDvQ3QwuXfB-2tsCFf=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-09-05T21:48:38.909Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-05T21:48:38.909Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68c3f396911158478e8ce374"
+  },
+  "firstName": "Ntwari",
+  "lastName": "Licky",
+  "email": "ntwarilicky75@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "113434799333270468221",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLZM746enouPZL9PxUj_Xyt-OeG3odzPN1kskmC8OHPT1BY4w=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "684801cac184e520174fe2cd"
+    },
+    {
+      "$oid": "68802b14b7fdc288a47f364c"
+    }
+  ],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-09-12T10:19:02.668Z"
+  },
+  "updatedAt": {
+    "$date": "2025-09-12T10:27:35.317Z"
+  },
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "68f74bb57708f56f3f39f50f"
+  },
+  "firstName": "Manzi",
+  "lastName": "Christian",
+  "email": "manzichriss6@gmail.com",
+  "phone": 795526660,
+  "password": "$2a$10$wx4INZeE5.tZs9ZOvzRwh.yETJ0NJD4YsCJyHtc4txHTpCegKRGSi",
+  "role": "ADMIN",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1761037236/0795526660.jpg",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-10-21T09:00:37.187Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-25T18:39:46.464Z"
+  },
+  "__v": 0,
+  "googleId": "103745304795442792173"
+},
+{
+  "_id": {
+    "$oid": "6900457f82d0e8bc1a847159"
+  },
+  "firstName": "Aine",
+  "lastName": "Dushimire",
+  "email": "ainedushimire@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "114809062959740686066",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKsPt12to-rXnRtZGU8nhxPVc7BCirOaX_9E3SvsYZaCVjs1yg=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-10-28T04:24:31.269Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-28T04:24:31.269Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6915a7f80c169c9c47c94e3d"
+  },
+  "firstName": "Hirwa",
+  "lastName": "Hope",
+  "email": "hirwahope.photos@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "111373302217087198758",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocK8f08dVZFtyYOz3YeTS-G8T_tamcrvkIg3mcXzu_wQXMZJhfA=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c7053d0d28a56559fe1f"
+    }
+  ],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-11-13T09:42:16.497Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-13T14:48:16.780Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "691736f7114870aa00f93079"
+  },
+  "firstName": "ganza",
+  "lastName": "darcy",
+  "email": "gzdarcy@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "102823011255652272380",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocK_KUKhs87na037SlYf0Ea4yR8fXT_RxVe8FqsBau1wbT4Ibg=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-11-14T14:04:39.721Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-14T14:04:39.721Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691736f9114870aa00f93083"
+  },
+  "firstName": "Martha",
+  "lastName": "Mulungi",
+  "email": "marthamulungi6@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "111657142669213180023",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKcAp01cpZuxAbHR8qnsuZ4X17dT0MJkjCo9g43ijNy_HZ6BcE=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-11-14T14:04:41.677Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-14T14:04:41.677Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6917373e114870aa00f930b3"
+  },
+  "firstName": "King",
+  "lastName": "Sayinzoga",
+  "email": "sayinzogaking@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "102866973895648633407",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocK_llZhT8_qquHrNCVPLDCYPVKXhEa263R_FabKSfXYVODsQrVB=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "68bd4bc5bc5f5347555f3b91"
+    }
+  ],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-11-14T14:05:50.557Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-15T07:37:52.709Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "691737ab114870aa00f930df"
+  },
+  "firstName": "Sangwa",
+  "lastName": "Bizimana Benit",
+  "email": "bizimanabenitsangwa@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "115762504040284509235",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKabCzsT6HPKw5810Y7T1BetPMif73Ud_xiYJYDkPP4WGMp7A=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-11-14T14:07:39.717Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-14T14:07:39.717Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691737b0114870aa00f930ea"
+  },
+  "firstName": "pacific",
+  "lastName": "irakoze",
+  "email": "irakozepacific882@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "105056261955843905552",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocJVICRAQrYqIqOLgcpe1hNOu-20AiTQecDgZKI0HmK5LSjlOJQ=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-11-14T14:07:44.712Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-14T14:07:44.712Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69182417ba06d33941f7cc08"
+  },
+  "firstName": "Ineza",
+  "lastName": "Mucyo Jean Luc",
+  "email": "inezamucyojeanluc7@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "117590500461313337935",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocJciKZBMKLyqneN9ExsjpVSrC1YbD01xf-iCZufdyuyUQYolw=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-11-15T06:56:23.745Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-15T06:56:23.745Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691c0fecde05019e27736c1b"
+  },
+  "firstName": "Einstein",
+  "lastName": "Kalisa",
+  "email": "alberteinsteinkalisa@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "104276416379625040409",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocIIsmphv9DRTWkrD1Xm0e4A1PqGbDhFv5xGhw0ybVS_RDrDow=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-11-18T06:19:24.432Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-18T06:19:24.432Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "692896f3acc9ee00ef48b3c0"
+  },
+  "firstName": "Bonheur",
+  "lastName": "Christian",
+  "email": "bonheurchristian16@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "111252294164157488102",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLsZ0RNMJYZ59t8y0FNeA88yAhaFh8dxDcQqTmeGtSKjko6SIU=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-11-27T18:22:43.905Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-27T18:22:43.905Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693557b77d4d8b56691ca325"
+  },
+  "firstName": "Mazin",
+  "lastName": "Yassir Ibrahim Alwan",
+  "email": "kingmazen355@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "108756563595667274573",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocJr81uU0gTlw9LBTqu8-r8K6LeI9eY1xneetj3SoAz3Gt9UwEhk=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "69123a210f455b03f4d9b37b"
+    }
+  ],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-12-07T10:32:23.240Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-07T10:39:37.513Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "693558497d4d8b56691ca352"
+  },
+  "firstName": "Mohamed",
+  "lastName": "Isam",
+  "email": "mohamedisam988@gmail.com",
+  "phone": null,
+  "password": "",
+  "googleId": "107875943814974677596",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKL-q0K8AShuRsSl4cJang2C4OurADqz9T_jeI4dzBVAOCQ2Q=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "69123a210f455b03f4d9b37b"
+    }
+  ],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-12-07T10:34:49.031Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-07T10:39:31.301Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "69355c237d4d8b56691ca460"
+  },
+  "firstName": "salem",
+  "lastName": "alamin",
+  "email": "salem023learning@gmail.com",
+  "phone": 795215797,
+  "password": "$2a$10$9lb.sASc19ClRSAyfBDQwOlhftljWNUUJNNIdKEja/9rHvRtd/U4G",
+  "role": "NORMAL",
+  "image": "http://res.cloudinary.com/ddsojj7zo/image/upload/v1765104674/795215797.png",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "69123a210f455b03f4d9b37b"
+    }
+  ],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-12-07T10:51:15.451Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-07T10:53:17.527Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "693aece13e334884236b18c2"
+  },
+  "firstName": "Yassir",
+  "lastName": "Ibrahim Alwan MAZIN",
+  "email": "ug2527574@ines.ac.rw",
+  "phone": null,
+  "password": "",
+  "googleId": "108583850332202278604",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKViX09okxdwTmXOeyWFCRBN1SattW-1o0xM7kVr_vSFjoVZMM=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-12-11T16:10:09.826Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-11T16:10:09.826Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6946db305e12e9696ed58b6a"
+  },
+  "firstName": "Promesse",
+  "lastName": "Shimwa Mugiraneza",
+  "email": "promesseshimwa@gmail.com",
+  "phone": 721824969,
+  "password": null,
+  "googleId": "106281148893463651972",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKkSCjqQfj7N3WsWC7e5DWxdmD8-v3qlE6R4pQxcZg7f8AL7A=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-12-20T17:21:52.721Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-20T17:21:52.721Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6950061535dac537290d4467"
+  },
+  "firstName": "wilson",
+  "lastName": "shema",
+  "email": "shemawilson006@gmail.com",
+  "phone": 754613893,
+  "password": null,
+  "googleId": "107590515434451277997",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocIX-bp2Ldq6gtr6mROhs1S-9ZooezKHcQpNrlS44rFrc-4WfRww=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "69123a210f455b03f4d9b37b"
+    }
+  ],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2025-12-27T16:15:17.445Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-02T07:48:25.869Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6979a0899db73ad366472f8c"
+  },
+  "firstName": "JUSTIN",
+  "lastName": "IRATUZI MBONYINSHUTI",
+  "email": "justiniratuzimbonyinshuti@gmail.com",
+  "phone": 789074380,
+  "password": null,
+  "googleId": "108210339816006746973",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocJThRDn5iT2-3kMZvU3i_lI-1dIwde2jVzhwPFQhEvEbQbjEg=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c8783d0d28a56559fe39"
+    },
+    {
+      "$oid": "6782c7053d0d28a56559fe1f"
+    }
+  ],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2026-01-28T05:37:13.689Z"
+  },
+  "updatedAt": {
+    "$date": "2026-01-28T05:37:44.393Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "699f011bca12190828889f90"
+  },
+  "firstName": "Ocean",
+  "lastName": "Dredge",
+  "email": "ocean.dredge2010@gmail.com",
+  "phone": 740481425,
+  "password": null,
+  "googleId": "112968337182053580825",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocLsTf6RHct4KL4qM2vvldUDaxu95sHx_EVhW3t8ps5Gwdk1I-Q=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2026-02-25T14:03:07.511Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-25T14:03:07.511Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69a0556b16c267dc9aaffcfa"
+  },
+  "firstName": "RUGEMA",
+  "lastName": "EAN",
+  "email": "rugemaean@gmail.com",
+  "phone": 728697765,
+  "password": null,
+  "googleId": "102800797326626522809",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocL8V3-TAUdnM8bLMqQKkTpgmSDgfCj_uRviYU8NvABUrcb4QZs=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c8783d0d28a56559fe39"
+    },
+    {
+      "$oid": "6782c7053d0d28a56559fe1f"
+    }
+  ],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2026-02-26T14:15:07.212Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-26T14:22:26.746Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69a0556e16c267dc9aaffd04"
+  },
+  "firstName": "Hirwa",
+  "lastName": "Christian",
+  "email": "hirwachristian533@gmail.com",
+  "phone": 705222862,
+  "password": null,
+  "googleId": "101848205142651985449",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKwXv0MCrkUrlAvIGECp3ZqTHSVkepsc5_-IJq7rpSkjnKxe6o=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c8783d0d28a56559fe39"
+    }
+  ],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2026-02-26T14:15:10.178Z"
+  },
+  "updatedAt": {
+    "$date": "2026-02-26T14:16:47.321Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ac3253e240f70e9790b875"
+  },
+  "firstName": "isimbi",
+  "lastName": "queen",
+  "email": "queenisimbi18@gmail.com",
+  "phone": 771595583,
+  "password": null,
+  "googleId": "103292078060480331960",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocL0Hg51_c3f1WvU9Nbj0XfmzIj9S7LlYP4m1lUp4FokpSBrBlA=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2026-03-07T14:12:35.837Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-07T14:12:35.837Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ac3257e240f70e9790b888"
+  },
+  "firstName": "umuragwa",
+  "lastName": "001",
+  "email": "umuragwa001@gmail.com",
+  "phone": 743734339,
+  "password": null,
+  "googleId": "114954253093752027863",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocL9f-KYgdRFgeEkIEmzMsYGXNfEYedkEobNNJzCMGYoEdbtmw=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2026-03-07T14:12:39.144Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-07T14:12:39.144Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ac3274e240f70e9790b8fc"
+  },
+  "firstName": "Dushime",
+  "lastName": "Nani Chris",
+  "email": "dushimenani007@gmail.com",
+  "phone": 701173041,
+  "password": null,
+  "googleId": "104507576860265026794",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocKZ6cKy6SLMAw1Ts2gIOhSvcDCnXtBc2XbrstuJnK9JzbZTpw=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2026-03-07T14:13:08.452Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-07T14:13:08.452Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ac3317e240f70e9790bac2"
+  },
+  "firstName": "Manzi",
+  "lastName": "Lucky",
+  "email": "manziluckyun@gmail.com",
+  "phone": 764978489,
+  "password": null,
+  "googleId": "100882517163122844547",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocJ_jtpJy38yo-wxCO2jdmtorIFF-BEE62EMTlF8uRqabpFwDw=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2026-03-07T14:15:51.967Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-07T14:15:51.967Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69ac3a03e937ffde8d3c9f67"
+  },
+  "firstName": "IGIRANEZA",
+  "lastName": "Dieu aime",
+  "email": "igiranezadieuaime7@gmail.com",
+  "phone": 778199030,
+  "password": null,
+  "googleId": "107631294480606901398",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocJZdqE-_RHlluZA510dG4hcaQcunx-48xiyQdfTACDwAoEHETk=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c7053d0d28a56559fe1f"
+    },
+    {
+      "$oid": "6782c8783d0d28a56559fe39"
+    }
+  ],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2026-03-07T14:45:23.184Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-07T14:48:46.339Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69b6420294fe1a2c2ec76720"
+  },
+  "firstName": "N.",
+  "lastName": "Sam",
+  "email": "sammiendoli@gmail.com",
+  "phone": 798872660,
+  "password": null,
+  "googleId": "114617014307969879650",
+  "role": "NORMAL",
+  "image": "https://lh3.googleusercontent.com/a/ACg8ocJumxMtYBK9KcKL8gYr6APLHnsSBdeKH0iJNjYNeOM5qQcFmMYfjg=s96-c",
+  "biography": "-",
+  "isVerified": true,
+  "subscribed": false,
+  "interestedCourses": [],
+  "classes": [
+    {
+      "$oid": "6782c8783d0d28a56559fe39"
+    }
+  ],
+  "posts": [],
+  "socials": [],
+  "gallery": [],
+  "skills": [],
+  "createdAt": {
+    "$date": "2026-03-15T05:22:10.608Z"
+  },
+  "updatedAt": {
+    "$date": "2026-03-15T05:28:27.995Z"
+  },
+  "__v": 0
+}]
