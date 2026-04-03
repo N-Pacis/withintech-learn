@@ -19,6 +19,10 @@ export default function SignInPage() {
   const { mutateAsync: login } = useLogin();
   const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
   const { data: profile, isLoading: profileLoading } = useProfile();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!profile) return;
@@ -26,11 +30,6 @@ export default function SignInPage() {
   }, [profile, router]);
 
   if (profileLoading) return <AuthLoader />;
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
