@@ -61,6 +61,8 @@ jobs:
             BCRYPT_ROUNDS=${{ secrets.BCRYPT_ROUNDS }}
             SENTRY_DSN=${{ secrets.SENTRY_DSN }}
             REDIS_URL=${{ secrets.REDIS_URL }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
 
       # ── 3. Install docker-rollout (idempotent) ───────────────────────────────
       - name: Install docker-rollout

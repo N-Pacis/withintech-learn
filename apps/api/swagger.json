@@ -599,6 +599,32 @@
         }
       }
     },
+    "/auth/google": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Sign in / sign up with Google",
+        "description": "Verifies a Google ID token. Creates an account if none exists. Rejects if email is registered with email/password. Sets httpOnly auth cookies on success.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["idToken"],
+                "properties": {
+                  "idToken": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/Success" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
     "/auth/refresh": {
       "post": {
         "tags": [

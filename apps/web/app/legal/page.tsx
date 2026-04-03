@@ -141,8 +141,8 @@ export default function LegalPage() {
         {/* ── 4. Intellectual Property ────────────────────────────────────────── */}
         <Section id="intellectual-property" title="4. Intellectual Property">
           <P>
-            All course content on WithinTech Learn — including but not limited to videos, text, quizzes,
-            assessments, module materials, and certificates — is the <strong>proprietary property of
+            All course content on WithinTech Learn, including but not limited to videos, text, quizzes,
+            assessments, module materials, and certificates, is the <strong>proprietary property of
             WithinTech</strong> or its licensed content providers. All rights reserved.
           </P>
           <P>
@@ -201,7 +201,7 @@ export default function LegalPage() {
           <P>
             To the fullest extent permitted by applicable law, WithinTech, its directors, employees,
             partners, and agents shall not be liable for any indirect, incidental, special, consequential,
-            or punitive damages arising out of or relating to your use of — or inability to use — the platform
+            or punitive damages arising out of or relating to your use of, or inability to use, the platform
             or its content.
           </P>
           <P>

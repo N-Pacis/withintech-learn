@@ -11,6 +11,7 @@ import {
   changePasswordSchema,
   verifyEmailOtpSchema,
   resendEmailVerificationSchema,
+  googleAuthSchema,
 } from './auth.schemas';
 import {
   postLogin,
@@ -24,6 +25,7 @@ import {
   getProfile,
   postVerifyEmailOtp,
   postResendEmailVerification,
+  postGoogleAuth,
 } from '../../controllers/auth.controller';
 
 const router = Router();
@@ -39,5 +41,6 @@ router.post('/auth/password/change', authenticate, validate(changePasswordSchema
 router.get('/auth/profile', authenticate, getProfile);
 router.post('/auth/email/verify', validate(verifyEmailOtpSchema), postVerifyEmailOtp);
 router.post('/auth/email/resend', validate(resendEmailVerificationSchema), postResendEmailVerification);
+router.post('/auth/google', validate(googleAuthSchema), postGoogleAuth);
 
 export default router;

@@ -46,7 +46,7 @@ function ModuleMockup() {
         </div>
 
         {/* Code block */}
-        <div className="bg-[#0F172A] rounded-xl p-4 font-mono text-[11px] leading-relaxed">
+        <div className="bg-[#0F172A] rounded-xl p-4 font-body text-[11px] leading-relaxed">
           <span className="text-[#7DD3FC]">fetch</span>
           <span className="text-white">(</span>
           <span className="text-[#86EFAC]">&apos;/api/courses&apos;</span>
@@ -114,7 +114,7 @@ function QuizMockup() {
 
         <div className="mt-2 pt-3 border-t border-[#F3F4F6] flex items-center justify-between">
           <span className="font-body text-xs text-[#6B7280]">Your score</span>
-          <span className="font-heading font-bold text-base text-green-600">75% — Passed</span>
+          <span className="font-heading font-bold text-base text-green-600">75% · Passed</span>
         </div>
       </div>
     </div>
@@ -247,7 +247,7 @@ export default function FeatureHighlights() {
           <FeatureRow
             eyebrow="Content"
             headline="Rich modules, not walls of text."
-            body="Every module combines written explanations, real images, and syntax-highlighted code so concepts stick — not just scroll past."
+            body="Every module combines written explanations, real images, and syntax-highlighted code so concepts stick, not just scroll past."
             bullets={[
               'Formatted text with clear structure',
               'Diagrams and images embedded inline',
@@ -259,11 +259,11 @@ export default function FeatureHighlights() {
           <FeatureRow
             eyebrow="Quizzes"
             headline="Questions that teach, not just grade."
-            body="After each module, a quiz shows you exactly what you got right, what you missed, and what you should have chosen — so every attempt makes you sharper."
+            body="After each module, a quiz shows you exactly what you got right, what you missed, and what you should have chosen, so every attempt makes you sharper."
             bullets={[
               'Multiple-choice with multi-select support',
               'Instant feedback: correct, incorrect, and missed answers highlighted',
-              'Retry as many times as you need — no attempt limits',
+              'Retry as many times as you need, no attempt limits',
             ]}
             mockup={<QuizMockup />}
             reverse
@@ -272,7 +272,7 @@ export default function FeatureHighlights() {
           <FeatureRow
             eyebrow="Progress"
             headline="Always know where you stand."
-            body="A live dashboard shows your enrolled courses, modules finished, and overall completion rate — so you can see momentum build in real time."
+            body="A live dashboard shows your enrolled courses, modules finished, and overall completion rate, so you can see momentum build in real time."
             bullets={[
               'Enrolled and completed course counts at a glance',
               'Total modules finished across all courses',

@@ -1,3 +1,4 @@
+import { OAuth2Client } from 'google-auth-library';
 import { prisma } from '../../db/prisma';
 import redis from '../../db/redis';
 import { sendEmail } from '../../services/email.service';
@@ -6,6 +7,8 @@ import { unauthorized, forbidden, conflict, badRequest, tooManyRequests } from '
 import { signAccessToken, signRefreshToken, signResetToken, verifyResetToken, verifyToken } from '../../utils/jwt';
 import { hashPassword, comparePassword } from '../../utils/password';
 import { generateOtp, hashOtp, verifyOtp, otpExpiresAt } from '../../utils/otp';
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const EMAIL_OTP_MAX = 5;
 const EMAIL_OTP_WINDOW = 3600; // 1 hour in seconds
@@ -44,7 +47,8 @@ async function sendOtp(user: { id: string; email: string; firstName: string }, p
 
 export const login = async ({ email, password }: { email: string; password: string }) => {
   const user = await prisma.user.findUnique({ where: { email }, include: { role: true } });
-  if (!user || !(await comparePassword(password, user.passwordHash)))
+  if (user?.provider === 'google') throw unauthorized('This account uses Google Sign-In. Please use the Google button to sign in.');
+  if (!user || !(await comparePassword(password, user.passwordHash ?? '')))
     throw unauthorized('Invalid email or password');
   if (!user.isActive)
     throw forbidden('Your account has been deactivated. Please contact an administrator.');
@@ -177,7 +181,51 @@ export const getProfile = async ({ userId }: { userId: string }) => {
 export const changePassword = async ({ userId, currentPassword, newPassword }: { userId: string; currentPassword: string; newPassword: string }) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw unauthorized();
-  if (!(await comparePassword(currentPassword, user.passwordHash))) throw unauthorized('Current password is incorrect');
+  if (user.provider === 'google') throw forbidden('Google accounts cannot change password here.');
+  if (!(await comparePassword(currentPassword, user.passwordHash ?? ''))) throw unauthorized('Current password is incorrect');
   await prisma.user.update({ where: { id: userId }, data: { passwordHash: await hashPassword(newPassword) } });
   return true;
+};
+
+export const googleAuth = async ({ idToken }: { idToken: string }) => {
+  const ticket = await googleClient.verifyIdToken({
+    idToken,
+    audience: process.env.GOOGLE_CLIENT_ID,
+  });
+
+  const payload = ticket.getPayload();
+  if (!payload?.email) throw unauthorized('Invalid Google token');
+
+  const { email, given_name, family_name } = payload;
+
+  let user = await prisma.user.findUnique({ where: { email }, include: { role: true } });
+
+  if (user && user.provider === 'email') {
+    throw conflict('An account with this email already exists. Please sign in with your email and password.');
+  }
+
+  if (!user) {
+    const studentRole = await prisma.role.findUnique({ where: { name: 'student' } });
+    if (!studentRole) throw badRequest('Registration is currently unavailable. Please try again later.');
+
+    user = await prisma.user.create({
+      data: {
+        firstName: given_name ?? 'User',
+        lastName: family_name ?? '',
+        email,
+        provider: 'google',
+        roleId: studentRole.id,
+        isActive: true,
+        emailVerified: true,
+      },
+      include: { role: true },
+    });
+  }
+
+  if (!user.isActive) throw forbidden('Your account has been deactivated. Please contact an administrator.');
+
+  await prisma.user.update({ where: { id: user.id }, data: { lastLoggedIn: new Date(), emailVerified: true } });
+
+  const tokenPayload = { userId: user.id, role: user.role.name };
+  return { accessToken: signAccessToken(tokenPayload), refreshToken: signRefreshToken(tokenPayload), user: safeUser(user) };
 };

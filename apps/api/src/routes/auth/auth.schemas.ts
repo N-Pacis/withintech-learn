@@ -52,3 +52,7 @@ export const verifyEmailOtpSchema = z.object({
 export const resendEmailVerificationSchema = z.object({
   email: emailField,
 });
+
+export const googleAuthSchema = z.object({
+  idToken: z.string().min(1),
+});

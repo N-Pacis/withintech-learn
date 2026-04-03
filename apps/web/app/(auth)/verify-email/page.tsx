@@ -2,9 +2,11 @@
 
 import { useRef, useState, KeyboardEvent, ClipboardEvent, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { Logo, Button, Card } from '@/components/ui';
 import { useVerifyEmail, useResendEmailVerification } from '@/hooks/queries/auth';
+import { apiFetch } from '@/lib/api';
 
 function OtpInput({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
   const refs = useRef<(HTMLInputElement | null)[]>([]);
@@ -79,6 +81,7 @@ function VerifyEmailContent() {
   const [resendSuccess, setResendSuccess] = useState(false);
   const [countdown, setCountdown] = useState(60);
 
+  const queryClient = useQueryClient();
   const { mutateAsync: verifyEmail, isPending: verifyPending } = useVerifyEmail();
   const { mutateAsync: resend, isPending: resendPending } = useResendEmailVerification();
 
@@ -98,8 +101,10 @@ function VerifyEmailContent() {
     const code = otp.join('');
     if (code.length < 6) { setError('Please enter all 6 digits'); return; }
     try {
-      const data = await verifyEmail({ email, otp: code });
-      router.push(data.user.role === 'admin' ? '/admin' : '/learn');
+      await verifyEmail({ email, otp: code });
+      await apiFetch('/auth/logout', { method: 'POST' });
+      queryClient.clear();
+      router.push('/sign-in');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Invalid code');
       setOtp(Array(6).fill(''));

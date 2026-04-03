@@ -29,6 +29,20 @@ type AuthSuccess = { accessToken: string; refreshToken: string; user: User };
 type EmailVerificationRequired = { requiresEmailVerification: true; email: string };
 type LoginResult = AuthSuccess | EmailVerificationRequired;
 
+export function useGoogleAuth() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (idToken: string) => {
+      const res = await apiFetch<{ user: User }>('/auth/google', { method: 'POST', body: JSON.stringify({ idToken }) });
+      if (!res.success || !res.data) throw new Error(res.message ?? 'Google sign-in failed');
+      return res.data;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(authKeys.profile, data.user);
+    },
+  });
+}
+
 export function useLogin() {
   const queryClient = useQueryClient();
 

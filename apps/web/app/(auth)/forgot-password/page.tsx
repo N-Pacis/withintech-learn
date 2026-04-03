@@ -234,7 +234,7 @@ export default function ForgotPasswordPage() {
             <>
               <h1 className="font-heading font-black text-2xl text-[#0F0F0F] mb-1">Set new password</h1>
               <p className="font-body text-sm text-[#6B7280] mb-8">
-                Choose a strong password — at least 8 characters.
+                Choose a strong password, at least 8 characters.
               </p>
               <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-5">
                 <FormField label="New password" htmlFor="new-password" required>

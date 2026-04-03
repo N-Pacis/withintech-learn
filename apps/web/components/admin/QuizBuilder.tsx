@@ -306,7 +306,7 @@ function QuestionCard({
       <div className="px-2 py-3">
         <div className="flex items-center gap-2 px-3 mb-2">
           <p className="font-body text-xs text-[#9CA3AF]">
-            Multiple choice — check all correct answers
+            Multiple choice: check all correct answers
           </p>
           {sortedOptions.length > 0 && (
             <span className={cn(

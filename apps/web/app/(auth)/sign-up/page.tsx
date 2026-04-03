@@ -3,20 +3,21 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Logo, Button, Input, FormField, Card, PasswordInput } from '@/components/ui';
-import { useSignUp } from '@/hooks/queries/auth';
+import { GoogleLogin } from '@react-oauth/google';
+import { Logo, Button, Input, FormField, PasswordInput } from '@/components/ui';
+import { useSignUp, useGoogleAuth } from '@/hooks/queries/auth';
 import { isAllowedEmail } from '@withintech-learn/shared';
 
 function Req({ met, label }: { met: boolean; label: string }) {
   return (
     <li className="flex items-center gap-1.5">
-      <span className={met ? 'text-green-500' : 'text-[#9CA3AF]'}>
+      <span className={met ? 'text-green-500' : 'text-[#D1D5DB]'}>
         {met ? (
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="20 6 9 17 4 12" />
           </svg>
         ) : (
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
           </svg>
         )}
@@ -26,40 +27,10 @@ function Req({ met, label }: { met: boolean; label: string }) {
   );
 }
 
-function PasswordRequirements({ password }: { password: string }) {
-  const hasMinLength = password.length >= 6;
-  const hasNumber = /\d/.test(password);
-
-  return (
-    <ul className="flex flex-col gap-1 mt-1">
-      <Req met={hasMinLength} label="At least 6 characters" />
-      <Req met={hasNumber} label="Contains a number" />
-    </ul>
-  );
-}
-
-function PasswordMatchHint({ password, confirm }: { password: string; confirm: string }) {
-  if (!confirm) return null;
-  const matches = password === confirm;
-  return (
-    <p className={`font-body text-xs flex items-center gap-1.5 mt-1 ${matches ? 'text-green-600' : 'text-red-500'}`}>
-      {matches ? (
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
-      ) : (
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      )}
-      {matches ? 'Passwords match' : 'Passwords do not match'}
-    </p>
-  );
-}
-
 export default function SignUpPage() {
   const router = useRouter();
   const { mutateAsync: signUp } = useSignUp();
+  const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
 
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -74,12 +45,12 @@ export default function SignUpPage() {
 
   function validate() {
     const errs: Record<string, string> = {};
-    if (!form.firstName.trim()) errs.firstName = 'First name is required';
-    if (!form.lastName.trim()) errs.lastName = 'Last name is required';
+    if (!form.firstName.trim()) errs.firstName = 'Required';
+    if (!form.lastName.trim()) errs.lastName = 'Required';
     if (!form.email) errs.email = 'Email is required';
     else if (!isAllowedEmail(form.email)) errs.email = 'Please use a personal or school email address.';
-    if (form.password.length < 6) errs.password = 'Password must be at least 6 characters';
-    else if (!/\d/.test(form.password)) errs.password = 'Password must contain at least one number';
+    if (form.password.length < 6) errs.password = 'At least 6 characters';
+    else if (!/\d/.test(form.password)) errs.password = 'Must contain a number';
     if (form.confirmPassword !== form.password) errs.confirmPassword = 'Passwords do not match';
     if (!agreedToTerms) errs.terms = 'You must agree to the Terms of Service to continue';
     return errs;
@@ -101,172 +72,193 @@ export default function SignUpPage() {
     }
   }
 
+  async function handleGoogle(credential: string) {
+    setServerError('');
+    try {
+      const data = await googleAuth(credential);
+      router.push(data.user.role === 'admin' ? '/admin' : '/learn');
+    } catch (err) {
+      setServerError(err instanceof Error ? err.message : 'Google sign-in failed');
+    }
+  }
+
+  const hasMinLength = form.password.length >= 6;
+  const hasNumber = /\d/.test(form.password);
+  const passwordsMatch = form.confirmPassword !== '' && form.password === form.confirmPassword;
+
   return (
-    <div
-      className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden py-8"
-      style={{
-        backgroundImage: 'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
-        backgroundSize: '22px 22px',
-      }}
-    >
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at center, transparent 40%, white 100%)' }}
-      />
+    <div className="min-h-screen flex">
 
-      <Link
-        href="/"
-        className="absolute top-6 left-6 z-10 flex items-center gap-2 text-[#6B7280] hover:text-[#3D006B] transition-colors font-body text-sm"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
-        </svg>
-        Back
-      </Link>
+      {/* ── Left brand panel ─────────────────────────────────────── */}
+      <div className="hidden lg:flex lg:w-[38%] xl:w-[34%] flex-col bg-[#3D006B] relative overflow-hidden">
+        {/* Dot grid */}
+        <div
+          className="absolute inset-0 opacity-[0.15]"
+          style={{
+            backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+          }}
+        />
+        {/* Large blurred orbs */}
+        <div className="absolute top-[-80px] right-[-80px] w-72 h-72 rounded-full bg-white opacity-[0.05] blur-3xl" />
+        <div className="absolute bottom-[-60px] left-[-60px] w-80 h-80 rounded-full bg-white opacity-[0.06] blur-3xl" />
+        {/* Gradient fade at bottom */}
+        <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#2A004A] to-transparent" />
 
-      <div className="relative z-10 w-full max-w-lg mx-4">
-        <Card shadow="lg" className="px-8 py-10 ring-1 ring-[#E5E7EB] rounded-2xl">
-
-          <div className="mb-6 py-2">
-            <Logo className="h-16" linked={false} />
+        <div className="relative z-10 flex flex-col h-full px-10 py-10">
+          <div className="flex-1 flex flex-col justify-center">
+            <p className="font-heading font-black text-white text-4xl leading-tight tracking-tight mb-4">
+              Your tech<br />journey starts<br />here.
+            </p>
+            <p className="font-body text-white/60 text-sm leading-relaxed max-w-xs">
+              Join thousands of learners building real skills for the AI era, at your own pace.
+            </p>
           </div>
 
-          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] mb-1">Get Started</h1>
-          <p className="font-body text-sm text-[#6B7280] mb-8">Create your account to start learning.</p>
+          <p className="relative z-10 font-body text-xs text-white/30">
+            © {new Date().getFullYear()} WithinTech Rwanda
+          </p>
+        </div>
+      </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            <div className="grid grid-cols-2 gap-4">
+      {/* ── Right form panel ─────────────────────────────────────── */}
+      <div className="flex-1 flex flex-col items-center justify-center bg-white px-6 py-12 relative overflow-y-auto">
+        <Link
+          href="/"
+          className="absolute top-6 left-6 flex items-center gap-1.5 text-[#9CA3AF] hover:text-[#3D006B] transition-colors font-body text-sm"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5" /><path d="M12 19l-7-7 7-7" />
+          </svg>
+          Back
+        </Link>
+
+        <div className="w-full max-w-md">
+          <div className="flex justify-center mb-10">
+            <Logo className="h-20" linked={false} />
+          </div>
+          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] mb-1">Get Started</h1>
+          <p className="font-body text-sm text-[#6B7280] mb-6">Create your account to start learning.</p>
+
+          {/* Google — hidden until enabled */}
+          {/* <div
+            className="flex justify-center mb-5"
+            style={{ opacity: googlePending ? 0.6 : 1, pointerEvents: googlePending ? 'none' : 'auto' }}
+          >
+            <GoogleLogin
+              onSuccess={(res) => { if (res.credential) handleGoogle(res.credential); }}
+              onError={() => setServerError('Google sign-in failed. Please try again.')}
+              width="448"
+              theme="outline"
+              size="large"
+              text="signup_with"
+              shape="rectangular"
+            />
+          </div>
+          <div className="flex items-center gap-3 mb-5">
+            <div className="flex-1 h-px bg-[#F3F4F6]" />
+            <span className="font-body text-xs text-[#D1D5DB]">or</span>
+            <div className="flex-1 h-px bg-[#F3F4F6]" />
+          </div> */}
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <FormField label="First Name" htmlFor="firstName" required error={errors.firstName}>
-                <Input
-                  id="firstName"
-                  placeholder="Jane"
-                  value={form.firstName}
-                  onChange={set('firstName')}
-                  error={errors.firstName}
-                />
+                <Input id="firstName" placeholder="Jane" value={form.firstName} onChange={set('firstName')} error={errors.firstName} />
               </FormField>
               <FormField label="Last Name" htmlFor="lastName" required error={errors.lastName}>
-                <Input
-                  id="lastName"
-                  placeholder="Doe"
-                  value={form.lastName}
-                  onChange={set('lastName')}
-                  error={errors.lastName}
-                />
+                <Input id="lastName" placeholder="Doe" value={form.lastName} onChange={set('lastName')} error={errors.lastName} />
               </FormField>
             </div>
 
             <FormField label="Email" htmlFor="email" required error={errors.email}>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={form.email}
-                onChange={set('email')}
-                error={errors.email}
-              />
+              <Input id="email" type="email" placeholder="you@example.com" value={form.email} onChange={set('email')} error={errors.email} />
             </FormField>
 
-            <FormField label="Password" htmlFor="password" required error={errors.password}>
-              <PasswordInput
-                id="password"
-                placeholder="••••••••"
-                value={form.password}
-                onChange={set('password')}
-                error={errors.password}
-              />
-              <PasswordRequirements password={form.password} />
-            </FormField>
-
-            <FormField label="Confirm Password" htmlFor="confirmPassword" required error={errors.confirmPassword}>
-              <PasswordInput
-                id="confirmPassword"
-                placeholder="••••••••"
-                value={form.confirmPassword}
-                onChange={set('confirmPassword')}
-                error={errors.confirmPassword}
-              />
-              <PasswordMatchHint password={form.password} confirm={form.confirmPassword} />
-            </FormField>
-
-            {/* Terms agreement */}
-            <div className="flex flex-col gap-1">
-              <label className="flex items-start gap-3 cursor-pointer group">
-                <div className="relative mt-0.5 flex-shrink-0">
-                  <input
-                    type="checkbox"
-                    id="terms"
-                    checked={agreedToTerms}
-                    onChange={(e) => {
-                      setAgreedToTerms(e.target.checked);
-                      if (errors.terms) setErrors((prev) => ({ ...prev, terms: '' }));
-                    }}
-                    className="sr-only"
-                  />
-                  <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
-                    agreedToTerms
-                      ? 'bg-[#3D006B] border-[#3D006B]'
-                      : errors.terms
-                      ? 'border-red-400 bg-white'
-                      : 'border-[#D1D5DB] bg-white group-hover:border-[#3D006B]'
-                  }`}>
-                    {agreedToTerms && (
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <FormField label="Password" htmlFor="password" required error={errors.password}>
+                  <PasswordInput id="password" placeholder="••••••••" value={form.password} onChange={set('password')} error={errors.password} />
+                </FormField>
+                {form.password && (
+                  <ul className="flex flex-col gap-0.5 mt-1.5">
+                    <Req met={hasMinLength} label="6+ characters" />
+                    <Req met={hasNumber} label="Contains a number" />
+                  </ul>
+                )}
+              </div>
+              <div>
+                <FormField label="Confirm Password" htmlFor="confirmPassword" required error={errors.confirmPassword}>
+                  <PasswordInput id="confirmPassword" placeholder="••••••••" value={form.confirmPassword} onChange={set('confirmPassword')} error={errors.confirmPassword} />
+                </FormField>
+                {form.confirmPassword && (
+                  <p className={`font-body text-xs flex items-center gap-1 mt-1.5 ${passwordsMatch ? 'text-green-600' : 'text-red-500'}`}>
+                    {passwordsMatch ? (
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    ) : (
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                     )}
-                  </div>
-                </div>
-                <span className="font-body text-xs text-[#6B7280] leading-relaxed">
-                  I agree to WithinTech Learn&apos;s{' '}
-                  <Link href="/legal" target="_blank" className="text-[#3D006B] hover:underline font-medium">
-                    Terms of Service
-                  </Link>
-                  {' '}and{' '}
-                  <Link href="/legal#privacy" target="_blank" className="text-[#3D006B] hover:underline font-medium">
-                    Privacy Policy
-                  </Link>
-                  , including the collection of my usage data and receiving course-related emails.
-                </span>
-              </label>
-              {errors.terms && (
-                <p className="font-body text-xs text-red-500 pl-7">{errors.terms}</p>
-              )}
+                    {passwordsMatch ? 'Passwords match' : 'Do not match'}
+                  </p>
+                )}
+              </div>
             </div>
 
+            {/* Terms */}
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <div className="relative mt-0.5 shrink-0">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  checked={agreedToTerms}
+                  onChange={(e) => {
+                    setAgreedToTerms(e.target.checked);
+                    if (errors.terms) setErrors((prev) => ({ ...prev, terms: '' }));
+                  }}
+                  className="sr-only"
+                />
+                <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
+                  agreedToTerms ? 'bg-[#3D006B] border-[#3D006B]' : errors.terms ? 'border-red-400 bg-white' : 'border-[#D1D5DB] bg-white group-hover:border-[#3D006B]'
+                }`}>
+                  {agreedToTerms && (
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </div>
+              </div>
+              <span className="font-body text-xs text-[#6B7280] leading-relaxed">
+                I agree to WithinTech Learn&apos;s{' '}
+                <Link href="/legal" target="_blank" className="text-[#3D006B] hover:underline font-medium">Terms of Service</Link>
+                {' '}and{' '}
+                <Link href="/legal#privacy" target="_blank" className="text-[#3D006B] hover:underline font-medium">Privacy Policy</Link>
+                , including the collection of my usage data and receiving course-related emails.
+              </span>
+            </label>
+            {errors.terms && <p className="font-body text-xs text-red-500 -mt-2 pl-7">{errors.terms}</p>}
+
             {serverError && (
-              <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-2.5 rounded-lg">
-                {serverError}
-              </p>
+              <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-2.5 rounded-lg">{serverError}</p>
             )}
 
             <Button
               type="submit"
               fullWidth
               loading={isSubmitting}
-              disabled={
-                !form.firstName.trim() ||
-                !form.lastName.trim() ||
-                !form.email.trim() ||
-                !form.password ||
-                !form.confirmPassword ||
-                !agreedToTerms
-              }
-              className="mt-1 py-3 rounded-lg"
+              disabled={!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.password || !form.confirmPassword || !agreedToTerms}
+              className="py-3 rounded-lg"
             >
               Get Started
             </Button>
           </form>
 
-          <p className="font-body text-sm text-[#6B7280] text-center mt-6">
+          <p className="font-body text-sm text-[#9CA3AF] text-center mt-5">
             Already have an account?{' '}
-            <Link href="/sign-in" className="text-[#3D006B] font-medium hover:underline">
-              Sign In
-            </Link>
+            <Link href="/sign-in" className="text-[#3D006B] font-medium hover:underline">Sign In</Link>
           </p>
-
-        </Card>
+        </div>
       </div>
+
     </div>
   );
 }

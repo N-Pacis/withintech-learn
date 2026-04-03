@@ -89,3 +89,9 @@ export const postResendEmailVerification = asyncHandler(async (req: Request, res
   await authService.resendEmailVerification(req.body);
   sendSuccess(res, undefined, 'If that email exists and is unverified, a new code has been sent');
 });
+
+export const postGoogleAuth = asyncHandler(async (req: Request, res: Response) => {
+  const result = await authService.googleAuth(req.body);
+  setAuthCookies(res, result.accessToken, result.refreshToken);
+  sendSuccess(res, { user: result.user }, 'Signed in with Google');
+});
