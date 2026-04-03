@@ -8,8 +8,7 @@
     "start": "node dist/src/index.js",
     "lint": "eslint src",
     "seed": "node dist/scripts/seed.js",
-    "migrate": "ts-node-dev --transpile-only scripts/migrate.ts",
-    "seed:users": "ts-node-dev --transpile-only scripts/seed-users.ts"
+    "migrate": "ts-node-dev --transpile-only scripts/migrate.ts"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.4",
