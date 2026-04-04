@@ -12,7 +12,8 @@ import (
 )
 
 // maxConcurrent caps the number of in-flight Judge0 requests at once.
-const maxConcurrent = 20
+// Set to 1 to match the single Judge0 worker — queuing more just adds overhead.
+const maxConcurrent = 1
 
 // ExecuteHandler handles POST /execute.
 type ExecuteHandler struct {
