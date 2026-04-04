@@ -1,4 +1,4 @@
-version: '3.9'
+name: withintech-judge0
 
 # Judge0 code execution engine for withintech-learn challenges.
 # Run: docker compose -f docker-compose.judge0.yml up -d
@@ -22,6 +22,12 @@ services:
         condition: service_started
     environment:
       RAILS_ENV: production
+      SECRET_KEY_BASE: ${JUDGE0_SECRET_KEY_BASE}
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
 
   judge0-worker:
     image: judge0/judge0:1.13.1
@@ -37,6 +43,12 @@ services:
         condition: service_started
     environment:
       RAILS_ENV: production
+      SECRET_KEY_BASE: ${JUDGE0_SECRET_KEY_BASE}
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
 
   judge0-db:
     image: postgres:16.2-alpine
