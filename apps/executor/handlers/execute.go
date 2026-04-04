@@ -99,7 +99,7 @@ func runBatchedTestCases(
 	timeLimit int,
 ) models.ExecuteResponse {
 	cpuLimit := minFloat64(float64(timeLimit), 15.0)
-	wallLimit := minFloat64(float64(timeLimit*len(testCases)*2), 120.0)
+	wallLimit := minFloat64(maxFloat64(cpuLimit+1, float64(timeLimit)*2), 20.0)
 
 	subReq := judge0.SubmissionRequest{
 		LanguageID:    langID,
@@ -403,6 +403,13 @@ func countPassed(results []models.TestCaseResult) int {
 
 func minFloat64(a float64, b float64) float64 {
 	if a < b {
+		return a
+	}
+	return b
+}
+
+func maxFloat64(a float64, b float64) float64 {
+	if a > b {
 		return a
 	}
 	return b
