@@ -1,0 +1,3 @@
+ALTER TABLE "Challenge"
+ADD COLUMN IF NOT EXISTS "functionParams" JSONB,
+ADD COLUMN IF NOT EXISTS "returnType" TEXT;
