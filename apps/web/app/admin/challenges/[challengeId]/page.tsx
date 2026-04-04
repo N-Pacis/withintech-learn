@@ -15,7 +15,7 @@ import {
   type StarterCode,
   type ChallengeTestCase,
 } from '@/hooks/queries/challenges';
-import { Button, Badge, FormField, Textarea, PageLoader } from '@/components/ui';
+import { Button, Badge, FormField, PageLoader, TiptapEditor, Textarea } from '@/components/ui';
 import { ChallengeEditor } from '@/components/ui/ChallengeEditor';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -199,6 +199,8 @@ export default function EditChallengePage() {
     }
   }, [challenge, initialized]);
 
+  const hasDescriptionText = (html: string) => html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+
   if (isLoading) return <div className="p-6 max-w-4xl mx-auto"><PageLoader type="form" /></div>;
 
   if (!challenge) {
@@ -311,17 +313,28 @@ export default function EditChallengePage() {
         <div className="bg-white rounded-xl border border-[#E5E7EB] p-6 flex flex-col gap-5">
           <FormField
             label="Description"
-            hint="Describe the problem, constraints, and I/O format. Students see this exactly as typed."
+            hint="Describe the problem, constraints, and I/O format. Rich text, tables, links, and headings are supported. Images are disabled for now."
             required
           >
-            <Textarea value={description} onChange={e => setDescription(e.target.value)} rows={12} />
+            <TiptapEditor
+              content={description}
+              onChange={(html) => setDescription(html)}
+              placeholder="Write a Rwanda-themed challenge, like optimizing stops on a Kigali moto route, and use tables for examples if needed."
+              className="bg-white"
+            />
           </FormField>
           <div className="flex justify-end">
             <Button
               variant="primary"
               size="md"
               loading={updateMutation.isPending}
-              onClick={handleSaveDetails}
+              onClick={() => {
+                if (!hasDescriptionText(description)) {
+                  toast.error('Description is required.');
+                  return;
+                }
+                handleSaveDetails();
+              }}
             >
               {detailsSaved
                 ? <><CheckCircle2 size={14} className="mr-1.5" />Saved</>

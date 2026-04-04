@@ -30,6 +30,16 @@ const navItems = [
     ),
   },
   {
+    label: 'Challenges',
+    href: '/admin/challenges',
+    exact: false,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
+      </svg>
+    ),
+  },
+  {
     label: 'Admins',
     href: '/admin/admins',
     exact: false,

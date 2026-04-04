@@ -12,7 +12,7 @@ import {
   type ChallengeStatus,
   type Difficulty,
 } from '@/hooks/queries/challenges';
-import { Button, Badge } from '@/components/ui';
+import { Button, Badge, Select, Tabs, type Tab } from '@/components/ui';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -28,6 +28,8 @@ const STATUS_BADGE: Record<ChallengeStatus, { variant: 'gray' | 'purple'; label:
   draft:     { variant: 'gray',   label: 'Draft'     },
   published: { variant: 'purple', label: 'Published' },
 };
+
+type StatusTabValue = ChallengeStatus;
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -107,18 +109,34 @@ function ConfirmDeleteModal({ title, onConfirm, onCancel, loading }: {
   );
 }
 
+function useStatusTabCounts() {
+  const draft = useAdminChallenges({ page: 1, limit: 1, status: 'draft' });
+  const published = useAdminChallenges({ page: 1, limit: 1, status: 'published' });
+
+  return {
+    draft: draft.data?.total,
+    published: published.data?.total,
+  };
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AdminChallengesPage() {
   const [page, setPage]         = useState(1);
   const [difficulty, setDiff]   = useState<Difficulty | undefined>();
-  const [status, setStatus]     = useState<ChallengeStatus | undefined>();
+  const [statusTab, setStatusTab] = useState<StatusTabValue>('draft');
   const [deleting, setDeleting] = useState<AdminChallenge | null>(null);
 
-  const { data, isLoading }  = useAdminChallenges({ page, limit: 20, difficulty, status });
+  const counts = useStatusTabCounts();
+  const { data, isLoading }  = useAdminChallenges({ page, limit: 20, difficulty, status: statusTab });
   const deleteMutation       = useDeleteChallenge();
   const publishMutation      = usePublishChallenge();
   const unpublishMutation    = useUnpublishChallenge();
+
+  const tabs: Tab<StatusTabValue>[] = [
+    { label: 'Draft', value: 'draft', count: counts.draft },
+    { label: 'Published', value: 'published', count: counts.published },
+  ];
 
   const handleDelete = async () => {
     if (!deleting) return;
@@ -168,27 +186,28 @@ export default function AdminChallengesPage() {
           </Link>
         </div>
 
+        {/* Status tabs */}
+        <Tabs
+          tabs={tabs}
+          value={statusTab}
+          onChange={(v) => { setStatusTab(v); setPage(1); }}
+          className="mb-5"
+        />
+
         {/* Filters */}
         <div className="flex gap-3 mb-5 flex-wrap">
-          <select
-            value={difficulty ?? ''}
-            onChange={e => { setDiff((e.target.value as Difficulty) || undefined); setPage(1); }}
-            className="px-3 py-2 rounded-lg border border-[#E5E7EB] font-body text-sm text-[#374151] bg-white focus:outline-none focus:border-[#3D006B] transition-colors"
-          >
-            <option value="">All Difficulties</option>
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-          <select
-            value={status ?? ''}
-            onChange={e => { setStatus((e.target.value as ChallengeStatus) || undefined); setPage(1); }}
-            className="px-3 py-2 rounded-lg border border-[#E5E7EB] font-body text-sm text-[#374151] bg-white focus:outline-none focus:border-[#3D006B] transition-colors"
-          >
-            <option value="">All Statuses</option>
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-          </select>
+          <Select
+            options={[
+              { value: 'easy', label: 'Easy' },
+              { value: 'medium', label: 'Medium' },
+              { value: 'hard', label: 'Hard' },
+            ]}
+            value={difficulty ?? null}
+            onChange={(v) => { setDiff((v as Difficulty) || undefined); setPage(1); }}
+            placeholder="All Difficulties"
+            isClearable
+            className="w-[190px]"
+          />
         </div>
 
         {/* Table */}

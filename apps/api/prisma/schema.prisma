@@ -235,7 +235,7 @@ model Challenge {
   id          String          @id @default(uuid())
   title       String
   slug        String          @unique
-  description String          // Markdown
+  description String          // Rich text HTML
   difficulty  Difficulty
   status      ChallengeStatus @default(draft)
   // starterCode: { python: "...", java: "...", javascript: "...", c: "...", cpp: "...", go: "..." }

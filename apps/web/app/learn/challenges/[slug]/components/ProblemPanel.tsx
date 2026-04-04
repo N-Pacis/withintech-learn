@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from '@/components/ui';
+import { Badge, TiptapViewer } from '@/components/ui';
 import type { Difficulty, VisibleTestCase } from '@/hooks/queries/challenges';
 
 const DIFFICULTY_BADGE: Record<Difficulty, { variant: 'success' | 'warning' | 'danger'; label: string }> = {
@@ -32,9 +32,7 @@ export function ProblemPanel({ title, description, difficulty, visibleTestCases 
       {/* Scrollable body */}
       <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-6">
         {/* Description */}
-        <div className="font-body text-sm text-[#374151] leading-[1.75] whitespace-pre-wrap">
-          {description}
-        </div>
+        <TiptapViewer content={description} className="tiptap-viewer text-[#0F0F0F]" />
 
         {/* Examples */}
         {visibleTestCases.length > 0 && (
