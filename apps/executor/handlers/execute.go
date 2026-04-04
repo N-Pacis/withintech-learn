@@ -98,12 +98,16 @@ func runBatchedTestCases(
 	batchedInput string,
 	timeLimit int,
 ) models.ExecuteResponse {
+	cpuLimit := minFloat64(float64(timeLimit), 15.0)
+	wallLimit := minFloat64(float64(timeLimit*len(testCases)*2), 120.0)
+
 	subReq := judge0.SubmissionRequest{
-		LanguageID:   langID,
-		SourceCode:   code,
-		Stdin:        batchedInput,
-		CPUTimeLimit: float64(timeLimit * len(testCases)),
-		MemoryLimit:  262144, // 256 MB
+		LanguageID:    langID,
+		SourceCode:    code,
+		Stdin:         batchedInput,
+		CPUTimeLimit:  cpuLimit,
+		WallTimeLimit: wallLimit,
+		MemoryLimit:   262144, // 256 MB
 	}
 
 	sub, err := client.Submit(subReq)
@@ -395,6 +399,13 @@ func countPassed(results []models.TestCaseResult) int {
 		}
 	}
 	return passed
+}
+
+func minFloat64(a float64, b float64) float64 {
+	if a < b {
+		return a
+	}
+	return b
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {

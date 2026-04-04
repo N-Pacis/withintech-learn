@@ -6,6 +6,7 @@ type SubmissionRequest struct {
 	SourceCode    string  `json:"source_code"`
 	Stdin         string  `json:"stdin"`
 	CPUTimeLimit  float64 `json:"cpu_time_limit"`
+	WallTimeLimit float64 `json:"wall_time_limit,omitempty"`
 	MemoryLimit   int     `json:"memory_limit"` // KB
 }
 
@@ -30,18 +31,18 @@ type SubmissionResponse struct {
 // Judge0 status IDs
 // https://github.com/judge0/judge0/blob/master/docs/api/statuses-and-languages.md
 const (
-	StatusIDInQueue         = 1
-	StatusIDProcessing      = 2
-	StatusIDAccepted        = 3
-	StatusIDWrongAnswer     = 4
-	StatusIDTLE             = 5
-	StatusIDCompileError    = 6
+	StatusIDInQueue             = 1
+	StatusIDProcessing          = 2
+	StatusIDAccepted            = 3
+	StatusIDWrongAnswer         = 4
+	StatusIDTLE                 = 5
+	StatusIDCompileError        = 6
 	StatusIDRuntimeErrorSIGSEGV = 7
 	StatusIDRuntimeErrorSIGXFSZ = 8
 	StatusIDRuntimeErrorSIGFPE  = 9
 	StatusIDRuntimeErrorSIGABRT = 10
 	StatusIDRuntimeErrorNZEC    = 11
 	StatusIDRuntimeErrorOther   = 12
-	StatusIDInternalError   = 13
-	StatusIDExecFormatError = 14
+	StatusIDInternalError       = 13
+	StatusIDExecFormatError     = 14
 )
