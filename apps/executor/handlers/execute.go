@@ -207,6 +207,8 @@ func submitOne(
 	}
 	if sub.Status.ID == judge0.StatusIDTLE {
 		r.ActualOutput = "Time Limit Exceeded"
+	} else if sub.Status.ID == judge0.StatusIDInternalError || sub.Status.ID == judge0.StatusIDExecFormatError {
+		r.ActualOutput = "Internal Error"
 	} else if sub.Status.ID >= judge0.StatusIDRuntimeErrorSIGSEGV {
 		r.ActualOutput = "Runtime Error"
 	}
@@ -218,6 +220,9 @@ func overallStatus(results []models.TestCaseResult) models.ExecutionStatus {
 	for _, r := range results {
 		if r.ActualOutput == "Time Limit Exceeded" {
 			return models.StatusTimeLimitExceeded
+		}
+		if r.ActualOutput == "Internal Error" {
+			return models.StatusRuntimeError // surface as runtime_error to the API
 		}
 		if r.ActualOutput == "Runtime Error" {
 			return models.StatusRuntimeError

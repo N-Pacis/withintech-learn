@@ -38,6 +38,7 @@ services:
     command: ['./scripts/workers']
     volumes:
       - ./judge0.conf:/judge0.conf:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
     privileged: true
     restart: always
     depends_on:
