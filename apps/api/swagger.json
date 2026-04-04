@@ -4186,6 +4186,197 @@
           }
         }
       }
+    },
+    "/admin/challenges": {
+      "post": {
+        "tags": ["Admin - Challenges"],
+        "summary": "Create a challenge",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "description", "difficulty"],
+                "properties": {
+                  "title":       { "type": "string" },
+                  "description": { "type": "string" },
+                  "difficulty":  { "type": "string", "enum": ["easy", "medium", "hard"] },
+                  "timeLimit":   { "type": "integer", "default": 5 },
+                  "orderIndex":  { "type": "integer", "default": 0 },
+                  "starterCode": { "type": "object" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Challenge created" },
+          "400": { "description": "Validation error" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" }
+        }
+      },
+      "get": {
+        "tags": ["Admin - Challenges"],
+        "summary": "List all challenges",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "page",       "in": "query", "schema": { "type": "integer" } },
+          { "name": "limit",      "in": "query", "schema": { "type": "integer" } },
+          { "name": "difficulty", "in": "query", "schema": { "type": "string", "enum": ["easy", "medium", "hard"] } },
+          { "name": "status",     "in": "query", "schema": { "type": "string", "enum": ["draft", "published"] } }
+        ],
+        "responses": {
+          "200": { "description": "Paginated challenge list" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/admin/challenges/{id}": {
+      "get": {
+        "tags": ["Admin - Challenges"],
+        "summary": "Get a challenge with test cases",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Challenge detail" },
+          "404": { "description": "Not found" }
+        }
+      },
+      "patch": {
+        "tags": ["Admin - Challenges"],
+        "summary": "Update a challenge",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Challenge updated" } }
+      },
+      "delete": {
+        "tags": ["Admin - Challenges"],
+        "summary": "Delete a draft challenge",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Challenge deleted" } }
+      }
+    },
+    "/admin/challenges/{id}/publish": {
+      "patch": {
+        "tags": ["Admin - Challenges"],
+        "summary": "Publish a challenge",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Challenge published" } }
+      }
+    },
+    "/admin/challenges/{id}/unpublish": {
+      "patch": {
+        "tags": ["Admin - Challenges"],
+        "summary": "Unpublish a challenge",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Challenge unpublished" } }
+      }
+    },
+    "/admin/challenges/{id}/test-cases": {
+      "post": {
+        "tags": ["Admin - Challenges"],
+        "summary": "Add a test case to a challenge",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["expectedOutput", "orderIndex"],
+                "properties": {
+                  "input":          { "type": "string" },
+                  "expectedOutput": { "type": "string" },
+                  "isHidden":       { "type": "boolean", "default": true },
+                  "orderIndex":     { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Test case added" } }
+      }
+    },
+    "/admin/test-cases/{testCaseId}": {
+      "patch": {
+        "tags": ["Admin - Challenges"],
+        "summary": "Update a test case",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "testCaseId", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Test case updated" } }
+      },
+      "delete": {
+        "tags": ["Admin - Challenges"],
+        "summary": "Delete a test case",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "testCaseId", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Test case deleted" } }
+      }
+    },
+    "/student/challenges": {
+      "get": {
+        "tags": ["Student - Challenges"],
+        "summary": "List published challenges with completion status",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "page",       "in": "query", "schema": { "type": "integer" } },
+          { "name": "limit",      "in": "query", "schema": { "type": "integer" } },
+          { "name": "difficulty", "in": "query", "schema": { "type": "string", "enum": ["easy", "medium", "hard"] } }
+        ],
+        "responses": { "200": { "description": "Paginated challenge list" } }
+      }
+    },
+    "/student/challenges/{slug}": {
+      "get": {
+        "tags": ["Student - Challenges"],
+        "summary": "Get challenge detail with visible test cases",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Challenge detail" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/student/challenges/{slug}/submit": {
+      "post": {
+        "tags": ["Student - Challenges"],
+        "summary": "Submit a solution",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["language", "code"],
+                "properties": {
+                  "language": { "type": "string", "enum": ["python", "java", "javascript", "c", "cpp", "go"] },
+                  "code":     { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Submission result with per-test-case verdict" },
+          "429": { "description": "Rate limit exceeded" }
+        }
+      }
+    },
+    "/student/challenges/{slug}/submissions": {
+      "get": {
+        "tags": ["Student - Challenges"],
+        "summary": "Get my submission history for a challenge",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "List of past submissions" } }
+      }
     }
   }
 }

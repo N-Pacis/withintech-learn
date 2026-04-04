@@ -8,8 +8,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { label: 'My Courses', href: '/learn' },
-  { label: 'Certificates', href: '/learn/certificates' },
+  { label: 'My Courses',  href: '/learn'                  },
+  { label: 'Certificates', href: '/learn/certificates'    },
 ];
 
 export default function StudentNavbar() {

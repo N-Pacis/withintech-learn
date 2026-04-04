@@ -18,30 +18,33 @@ model Role {
 }
 
 model User {
-  id             String           @id @default(uuid())
-  roleId         Int
-  role           Role             @relation(fields: [roleId], references: [id])
-  firstName      String
-  lastName       String
-  email          String           @unique
-  provider       String           @default("email")
-  passwordHash   String?
-  isActive       Boolean          @default(false)
-  emailVerified  Boolean          @default(false)
-  lastLoggedIn   DateTime?
-  createdById    String?
-  createdBy      User?            @relation("AdminCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  createdAdmins  User[]           @relation("AdminCreatedBy")
-  otpCode        String?
-  otpPurpose     String?
-  otpExpiresAt   DateTime?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  courses        Course[]
-  enrollments    StudentCourse[]
-  quizAttempts   QuizAttempt[]
-  moduleProgress ModuleProgress[]
-  certificates   Certificate[]
+  id                   String                @id @default(uuid())
+  roleId               Int
+  role                 Role                  @relation(fields: [roleId], references: [id])
+  firstName            String
+  lastName             String
+  email                String                @unique
+  provider             String                @default("email")
+  passwordHash         String?
+  isActive             Boolean               @default(false)
+  emailVerified        Boolean               @default(false)
+  lastLoggedIn         DateTime?
+  createdById          String?
+  createdBy            User?                 @relation("AdminCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAdmins        User[]                @relation("AdminCreatedBy")
+  otpCode              String?
+  otpPurpose           String?
+  otpExpiresAt         DateTime?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  courses              Course[]
+  enrollments          StudentCourse[]
+  quizAttempts         QuizAttempt[]
+  moduleProgress       ModuleProgress[]
+  certificates         Certificate[]
+  createdChallenges    Challenge[]
+  challengeSubmissions ChallengeSubmission[]
+  challengeProgress    ChallengeProgress[]
 }
 
 enum CourseStatus {
@@ -205,4 +208,90 @@ model Certificate {
   completedAt DateTime @default(now())
 
   @@unique([userId, courseId])
+}
+
+// ─── Challenges ───────────────────────────────────────────────────────────────
+
+enum Difficulty {
+  easy
+  medium
+  hard
+}
+
+enum ChallengeStatus {
+  draft
+  published
+}
+
+enum SubmissionStatus {
+  accepted
+  wrong_answer
+  time_limit_exceeded
+  runtime_error
+  compile_error
+}
+
+model Challenge {
+  id          String          @id @default(uuid())
+  title       String
+  slug        String          @unique
+  description String          // Markdown
+  difficulty  Difficulty
+  status      ChallengeStatus @default(draft)
+  // starterCode: { python: "...", java: "...", javascript: "...", c: "...", cpp: "...", go: "..." }
+  starterCode Json
+  timeLimit   Int             @default(5) // seconds per test case
+  orderIndex  Int             @default(0)
+  createdById String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  createdBy   User                  @relation(fields: [createdById], references: [id])
+  testCases   ChallengeTestCase[]
+  submissions ChallengeSubmission[]
+  progress    ChallengeProgress[]
+
+  @@index([status])
+}
+
+model ChallengeTestCase {
+  id             String    @id @default(uuid())
+  challengeId    String
+  input          String
+  expectedOutput String
+  isHidden       Boolean   @default(true)
+  orderIndex     Int
+
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, orderIndex])
+}
+
+model ChallengeSubmission {
+  id          String           @id @default(uuid())
+  userId      String
+  challengeId String
+  language    String
+  code        String
+  status      SubmissionStatus
+  testsPassed Int
+  totalTests  Int
+  submittedAt DateTime         @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@index([userId, challengeId])
+}
+
+model ChallengeProgress {
+  id          String   @id @default(uuid())
+  userId      String
+  challengeId String
+  completedAt DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
 }

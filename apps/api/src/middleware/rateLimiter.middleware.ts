@@ -83,3 +83,12 @@ export const quizAttemptLimiter = createRateLimiter({
   identifierFn: getUserId,
   message: 'Quiz attempt limit reached, please try again in an hour.',
 });
+
+/** POST /student/challenges/:slug/submit — 10 req / hour by user ID */
+export const challengeSubmitLimiter = createRateLimiter({
+  windowMs: HOUR,
+  max: 10,
+  keyPrefix: 'challenge-submit',
+  identifierFn: getUserId,
+  message: 'Submission limit reached, please try again in an hour.',
+});

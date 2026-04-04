@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 import path from "path";
+import { config as loadEnv } from "dotenv";
+
+// Load root .env so all NEXT_PUBLIC_* vars are available without a local .env
+loadEnv({ path: path.resolve(__dirname, "../../.env") });
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, "../../"),
