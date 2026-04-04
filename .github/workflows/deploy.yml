@@ -63,6 +63,9 @@ jobs:
             REDIS_URL=${{ secrets.REDIS_URL }}
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            EXECUTOR_URL=${{ secrets.EXECUTOR_URL }}
+            EXECUTOR_SECRET=${{ secrets.EXECUTOR_SECRET }}
+            JUDGE0_SECRET_KEY_BASE=${{ secrets.JUDGE0_SECRET_KEY_BASE }}
 
       # ── 3. Install docker-rollout (idempotent) ───────────────────────────────
       - name: Install docker-rollout
@@ -128,6 +131,9 @@ jobs:
 
             # Bring up the Judge0 execution stack used by coding challenges.
             docker compose -f docker-compose.judge0.yml up -d
+
+            # Bring up the executor (code runner bridge).
+            docker compose up -d --no-build executor
 
             # docker-rollout handles: scale up, health check, old container removal.
             # It uses the Docker HEALTHCHECK defined in docker-compose.yml.
