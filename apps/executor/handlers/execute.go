@@ -5,15 +5,19 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/withintech-learn/executor/judge0"
 	"github.com/withintech-learn/executor/models"
 )
 
+// maxConcurrent caps the number of in-flight Judge0 requests at once.
+const maxConcurrent = 20
+
 // ExecuteHandler handles POST /execute.
 type ExecuteHandler struct {
-	judge0  *judge0.Client
-	secret  string
+	judge0 *judge0.Client
+	secret string
 }
 
 // NewExecuteHandler creates a handler backed by the given Judge0 client.
@@ -48,7 +52,6 @@ func (h *ExecuteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Default time limit
 	if req.TimeLimit <= 0 || req.TimeLimit > 15 {
 		req.TimeLimit = 5
 	}
@@ -75,6 +78,14 @@ func validateRequest(req models.ExecuteRequest) error {
 	return nil
 }
 
+// tcOutcome carries the result for one test case back from its goroutine.
+type tcOutcome struct {
+	index        int
+	result       models.TestCaseResult
+	compileError string // non-empty means this submission failed to compile
+}
+
+// runTestCases submits all test cases to Judge0 concurrently and aggregates results.
 func runTestCases(
 	client *judge0.Client,
 	code string,
@@ -82,88 +93,124 @@ func runTestCases(
 	testCases []models.TestCase,
 	timeLimit int,
 ) models.ExecuteResponse {
-	results := make([]models.TestCaseResult, 0, len(testCases))
-	passed := 0
+	n := len(testCases)
+	results := make([]models.TestCaseResult, n)
 
-	for _, tc := range testCases {
-		subReq := judge0.SubmissionRequest{
-			LanguageID:   langID,
-			SourceCode:   code,
-			Stdin:        tc.Input,
-			CPUTimeLimit: float64(timeLimit),
-			MemoryLimit:  262144, // 256 MB
+	// sem limits concurrent in-flight HTTP requests to Judge0.
+	sem := make(chan struct{}, maxConcurrent)
+	out := make(chan tcOutcome, n)
+
+	var wg sync.WaitGroup
+	for i, tc := range testCases {
+		wg.Add(1)
+		go func(i int, tc models.TestCase) {
+			defer wg.Done()
+			sem <- struct{}{}
+			defer func() { <-sem }()
+
+			out <- submitOne(client, code, langID, i, tc, timeLimit)
+		}(i, tc)
+	}
+
+	// Close the channel once all goroutines are done.
+	go func() {
+		wg.Wait()
+		close(out)
+	}()
+
+	// Collect results preserving original order.
+	compileErr := ""
+	for o := range out {
+		results[o.index] = o.result
+		if o.compileError != "" && compileErr == "" {
+			compileErr = o.compileError
 		}
+	}
 
-		sub, err := client.Submit(subReq)
-		if err != nil {
-			// Judge0 unreachable — fail gracefully
-			results = append(results, models.TestCaseResult{
+	if compileErr != "" {
+		return models.ExecuteResponse{
+			Status:       models.StatusCompileError,
+			TestsPassed:  0,
+			TotalTests:   n,
+			Results:      results,
+			CompileError: compileErr,
+		}
+	}
+
+	passed := 0
+	for _, r := range results {
+		if r.Passed {
+			passed++
+		}
+	}
+
+	return models.ExecuteResponse{
+		Status:      overallStatus(results),
+		TestsPassed: passed,
+		TotalTests:  n,
+		Results:     results,
+	}
+}
+
+// submitOne runs a single test case against Judge0 and returns its outcome.
+func submitOne(
+	client *judge0.Client,
+	code string,
+	langID int,
+	index int,
+	tc models.TestCase,
+	timeLimit int,
+) tcOutcome {
+	subReq := judge0.SubmissionRequest{
+		LanguageID:   langID,
+		SourceCode:   code,
+		Stdin:        tc.Input,
+		CPUTimeLimit: float64(timeLimit),
+		MemoryLimit:  262144, // 256 MB
+	}
+
+	sub, err := client.Submit(subReq)
+	if err != nil {
+		return tcOutcome{index: index, result: models.TestCaseResult{
+			Passed:         false,
+			Input:          tc.Input,
+			ActualOutput:   "",
+			ExpectedOutput: tc.ExpectedOutput,
+			Stderr:         fmt.Sprintf("execution engine error: %v", err),
+		}}
+	}
+
+	if sub.Status.ID == judge0.StatusIDCompileError {
+		return tcOutcome{
+			index:        index,
+			compileError: strings.TrimSpace(sub.CompileOutput),
+			result: models.TestCaseResult{
 				Passed:         false,
 				Input:          tc.Input,
 				ActualOutput:   "",
 				ExpectedOutput: tc.ExpectedOutput,
-				Stderr:         fmt.Sprintf("execution engine error: %v", err),
-			})
-			continue
+				Stderr:         "compile error",
+			},
 		}
-
-		// Compile error — stop all remaining test cases
-		if sub.Status.ID == judge0.StatusIDCompileError {
-			compileMsg := strings.TrimSpace(sub.CompileOutput)
-			// Pad remaining test cases as failed
-			for i := len(results); i < len(testCases); i++ {
-				results = append(results, models.TestCaseResult{
-					Passed:         false,
-					Input:          testCases[i].Input,
-					ActualOutput:   "",
-					ExpectedOutput: testCases[i].ExpectedOutput,
-					Stderr:         "compile error",
-				})
-			}
-			return models.ExecuteResponse{
-				Status:       models.StatusCompileError,
-				TestsPassed:  0,
-				TotalTests:   len(testCases),
-				Results:      results,
-				CompileError: compileMsg,
-			}
-		}
-
-		actual := strings.TrimRight(sub.Stdout, "\n")
-		expected := strings.TrimRight(tc.ExpectedOutput, "\n")
-		testPassed := actual == expected
-
-		if testPassed {
-			passed++
-		}
-
-		tcResult := models.TestCaseResult{
-			Passed:         testPassed,
-			Input:          tc.Input,
-			ActualOutput:   actual,
-			ExpectedOutput: expected,
-			Stderr:         strings.TrimSpace(sub.Stderr),
-		}
-
-		// Override actual output display for non-accepted verdicts
-		if sub.Status.ID == judge0.StatusIDTLE {
-			tcResult.ActualOutput = "Time Limit Exceeded"
-		} else if sub.Status.ID >= judge0.StatusIDRuntimeErrorSIGSEGV {
-			tcResult.ActualOutput = "Runtime Error"
-		}
-
-		results = append(results, tcResult)
 	}
 
-	// Determine overall status
-	status := overallStatus(results)
+	actual := strings.TrimRight(sub.Stdout, "\n")
+	expected := strings.TrimRight(tc.ExpectedOutput, "\n")
 
-	return models.ExecuteResponse{
-		Status:      status,
-		TestsPassed: passed,
-		TotalTests:  len(testCases),
-		Results:     results,
+	r := models.TestCaseResult{
+		Passed:         actual == expected,
+		Input:          tc.Input,
+		ActualOutput:   actual,
+		ExpectedOutput: expected,
+		Stderr:         strings.TrimSpace(sub.Stderr),
 	}
+	if sub.Status.ID == judge0.StatusIDTLE {
+		r.ActualOutput = "Time Limit Exceeded"
+	} else if sub.Status.ID >= judge0.StatusIDRuntimeErrorSIGSEGV {
+		r.ActualOutput = "Runtime Error"
+	}
+
+	return tcOutcome{index: index, result: r}
 }
 
 func overallStatus(results []models.TestCaseResult) models.ExecutionStatus {

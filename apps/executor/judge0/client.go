@@ -17,11 +17,20 @@ type Client struct {
 }
 
 // NewClient creates a Judge0 client pointing at baseURL (e.g. "http://localhost:2358").
+// The underlying transport is tuned for high-concurrency: up to 50 idle connections,
+// 30 s idle timeout, and disabled compression (Judge0 responses are small JSON).
 func NewClient(baseURL string) *Client {
+	transport := &http.Transport{
+		MaxIdleConns:        50,
+		MaxIdleConnsPerHost: 50,
+		IdleConnTimeout:     30 * time.Second,
+		DisableCompression:  true,
+	}
 	return &Client{
 		baseURL: strings.TrimRight(baseURL, "/"),
 		httpClient: &http.Client{
-			Timeout: 60 * time.Second,
+			Transport: transport,
+			Timeout:   90 * time.Second, // generous: compile + run + Judge0 queue
 		},
 	}
 }

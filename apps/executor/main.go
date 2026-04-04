@@ -4,12 +4,19 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"runtime"
 
 	"github.com/withintech-learn/executor/handlers"
 	"github.com/withintech-learn/executor/judge0"
 )
 
 func main() {
+	// Cap Go scheduler threads. The executor is I/O-bound (waiting on Judge0),
+	// so 2 OS threads is plenty and avoids stealing CPU from Judge0 workers.
+	if maxProcs := getEnv("GOMAXPROCS", ""); maxProcs == "" {
+		runtime.GOMAXPROCS(2)
+	}
+
 	judge0URL := getEnv("JUDGE0_URL", "http://localhost:2358")
 	port := getEnv("PORT", "4001")
 
