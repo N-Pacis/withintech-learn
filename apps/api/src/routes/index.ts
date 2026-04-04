@@ -14,8 +14,10 @@ import adminQuizzesRouter from './admin/quizzes.routes';
 import adminUsersRouter from './admin/users.routes';
 import adminEnrollmentsRouter from './admin/enrollments.routes';
 import adminAnalyticsRouter from './admin/analytics.routes';
+import adminChallengesRouter from './admin/challenges.routes';
 import studentCoursesRouter from './student/courses.routes';
 import studentQuizRouter from './student/quiz.routes';
+import studentChallengesRouter from './student/challenges.routes';
 import certificatesRouter from './student/certificates.routes';
 import publicCoursesRouter from './public/courses.routes';
 
@@ -39,11 +41,13 @@ router.use(adminQuizzesRouter);
 router.use(adminUsersRouter);
 router.use(adminEnrollmentsRouter);
 router.use(adminAnalyticsRouter);
+router.use(adminChallengesRouter);
 
 // ── Student routes ────────────────────────────────────────────────────────────
 router.use('/student', authenticate);
 router.use(studentCoursesRouter);
 router.use(studentQuizRouter);
+router.use(studentChallengesRouter);
 
 // ── Certificate routes ────────────────────────────────────────────────────────
 router.use(certificatesRouter);

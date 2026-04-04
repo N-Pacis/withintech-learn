@@ -6,7 +6,10 @@
     "build": "pnpm --parallel -r build",
     "lint": "pnpm --parallel -r lint",
     "backend": "pnpm --filter @withintech-learn/api exec prisma generate && pnpm --filter @withintech-learn/api dev",
-    "frontend": "pnpm --filter @withintech-learn/web dev"
+    "frontend": "pnpm --filter @withintech-learn/web dev",
+    "executor": "cd apps/executor && set -a && source ../../.env && set +a && go run main.go",
+    "judge0:up": "docker compose -f docker-compose.judge0.yml up -d",
+    "judge0:down": "docker compose -f docker-compose.judge0.yml down"
   },
   "devDependencies": {
     "typescript": "^5.4.0"

@@ -1,0 +1,62 @@
+version: '3.9'
+
+# Judge0 code execution engine for withintech-learn challenges.
+# Run: docker compose -f docker-compose.judge0.yml up -d
+# Judge0 API available at: http://localhost:2358
+#
+# Uses its own isolated PostgreSQL + Redis — does NOT share app DB.
+
+services:
+  judge0-server:
+    image: judge0/judge0:1.13.1
+    volumes:
+      - ./judge0.conf:/judge0.conf:ro
+    ports:
+      - '2358:2358'
+    privileged: true
+    restart: always
+    depends_on:
+      judge0-db:
+        condition: service_healthy
+      judge0-redis:
+        condition: service_started
+    environment:
+      RAILS_ENV: production
+
+  judge0-worker:
+    image: judge0/judge0:1.13.1
+    command: ['./scripts/workers']
+    volumes:
+      - ./judge0.conf:/judge0.conf:ro
+    privileged: true
+    restart: always
+    depends_on:
+      judge0-db:
+        condition: service_healthy
+      judge0-redis:
+        condition: service_started
+    environment:
+      RAILS_ENV: production
+
+  judge0-db:
+    image: postgres:16.2-alpine
+    env_file: ./judge0.conf
+    volumes:
+      - judge0-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U judge0']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  judge0-redis:
+    image: redis:7.4.0-alpine
+    command: ['redis-server', '--requirepass', 'judge0redis']
+    volumes:
+      - judge0-redis-data:/data
+    restart: always
+
+volumes:
+  judge0-db-data:
+  judge0-redis-data:
