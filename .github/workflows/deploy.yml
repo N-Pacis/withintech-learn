@@ -126,6 +126,9 @@ jobs:
             # Recreate postgres/redis/nginx if their image or config changed
             docker compose up -d --no-build postgres redis nginx
 
+            # Bring up the Judge0 execution stack used by coding challenges.
+            docker compose -f docker-compose.judge0.yml up -d
+
             # docker-rollout handles: scale up, health check, old container removal.
             # It uses the Docker HEALTHCHECK defined in docker-compose.yml.
             docker rollout -f docker-compose.yml api

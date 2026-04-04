@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { useCreateChallenge, type Difficulty } from '@/hooks/queries/challenges';
-import { Button, FormField, Input, Textarea } from '@/components/ui';
+import { Button, FormField, Input, TiptapEditor } from '@/components/ui';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -25,10 +25,12 @@ export default function NewChallengePage() {
   const [timeLimit, setTimeLimit]   = useState(5);
   const [errors, setErrors]         = useState<{ title?: string; description?: string }>({});
 
+  const hasDescriptionText = (html: string) => html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+
   const validate = () => {
     const e: typeof errors = {};
     if (!title.trim())       e.title       = 'Title is required.';
-    if (!description.trim()) e.description = 'Description is required.';
+    if (!hasDescriptionText(description)) e.description = 'Description is required.';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -37,7 +39,7 @@ export default function NewChallengePage() {
     e.preventDefault();
     if (!validate()) return;
 
-    const res = await createMutation.mutateAsync({ title: title.trim(), description: description.trim(), difficulty, timeLimit });
+    const res = await createMutation.mutateAsync({ title: title.trim(), description, difficulty, timeLimit });
     if (res.success && res.data) {
       toast.success('Challenge created — add starter code and test cases next.');
       router.push(`/admin/challenges/${(res.data as { id: string }).id}`);
@@ -69,7 +71,7 @@ export default function NewChallengePage() {
             <Input
               value={title}
               onChange={e => { setTitle(e.target.value); setErrors(v => ({ ...v, title: undefined })); }}
-              placeholder="e.g. Two Sum"
+              placeholder="e.g. Kigali Bus Fare Split"
               autoFocus
             />
           </FormField>
@@ -77,14 +79,14 @@ export default function NewChallengePage() {
           <FormField
             label="Description"
             required
-            hint="Describe the problem clearly. Include constraints, input format, and output format. Plain text."
+            hint="Describe the problem clearly. Rich text, tables, links, and headings are supported. Images are disabled for now."
             error={errors.description}
           >
-            <Textarea
-              value={description}
-              onChange={e => { setDesc(e.target.value); setErrors(v => ({ ...v, description: undefined })); }}
-              placeholder={`Given an array of integers nums and a target integer, return the indices of the two numbers that add up to target.\n\nInput: First line is n (size), second line is n space-separated integers, third line is target.\nOutput: Two space-separated indices (0-indexed).`}
-              rows={9}
+            <TiptapEditor
+              content={description}
+              onChange={(html) => { setDesc(html); setErrors(v => ({ ...v, description: undefined })); }}
+              placeholder="Write a Rwanda-themed challenge, like planning parcel deliveries across Kigali neighborhoods, and use tables for examples if needed."
+              className="bg-white"
             />
           </FormField>
         </div>

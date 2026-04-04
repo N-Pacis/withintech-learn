@@ -25,3 +25,4 @@ export { Select } from './Select';
 export type { SelectOption } from './Select';
 export { MonthRangePicker } from './MonthRangePicker';
 export { DayRangePicker } from './DayRangePicker';
+export { TiptapEditor, TiptapViewer } from './TiptapEditor';
