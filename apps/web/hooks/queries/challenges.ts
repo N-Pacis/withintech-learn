@@ -107,7 +107,7 @@ export interface TestCaseResult {
 }
 
 export interface SubmissionResult {
-  submissionId: string;
+  submissionId: string | null;
   status:       SubmissionStatus;
   testsPassed:  number;
   totalTests:   number;
@@ -264,6 +264,16 @@ export function useDeleteTestCase(challengeId: string) {
     mutationFn: (testCaseId: string) =>
       apiFetch(`/admin/test-cases/${testCaseId}`, { method: 'DELETE' }),
     onSuccess: () => qc.invalidateQueries({ queryKey: challengeKeys.adminOne(challengeId) }),
+  });
+}
+
+export function useRunAdminChallenge(id: string) {
+  return useMutation({
+    mutationFn: (body: { language: ChallengeLanguage; code: string }) =>
+      apiFetch<SubmissionResult>(`/admin/challenges/${id}/run`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
   });
 }
 

@@ -6,6 +6,7 @@ import {
   listChallengesSchema,
   createTestCaseSchema,
   updateTestCaseSchema,
+  runChallengeSchema,
 } from './challenges.schemas';
 import * as ctrl from '../../controllers/adminChallenges.controller';
 
@@ -19,6 +20,7 @@ router.patch('/admin/challenges/:id', validate(updateChallengeSchema), ctrl.patc
 router.delete('/admin/challenges/:id', ctrl.deleteChallenge);
 router.patch('/admin/challenges/:id/publish',   ctrl.patchPublishChallenge);
 router.patch('/admin/challenges/:id/unpublish', ctrl.patchUnpublishChallenge);
+router.post('/admin/challenges/:id/run', validate(runChallengeSchema), ctrl.postRunChallenge);
 
 // ── Test Cases ────────────────────────────────────────────────────────────────
 router.post('/admin/challenges/:id/test-cases',   validate(createTestCaseSchema), ctrl.postAddTestCase);

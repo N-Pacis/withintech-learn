@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Trash2, Eye, EyeOff, Save, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Eye, EyeOff, Save, ChevronDown, CheckCircle2, Play, FlaskConical, Send, Pencil } from 'lucide-react';
 import {
   useAdminChallenge,
   useUpdateChallenge,
@@ -11,25 +11,21 @@ import {
   useUnpublishChallenge,
   useAddTestCase,
   useDeleteTestCase,
+  useRunAdminChallenge,
   type ChallengeLanguage,
   type StarterCode,
   type ChallengeTestCase,
+  type SubmissionResult,
 } from '@/hooks/queries/challenges';
-import { Button, Badge, FormField, PageLoader, TiptapEditor, Textarea } from '@/components/ui';
+import { Button, Badge, FormField, PageLoader, TiptapEditor, TiptapViewer, Textarea } from '@/components/ui';
 import { ChallengeEditor } from '@/components/ui/ChallengeEditor';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { CHALLENGE_LANGUAGES, DEFAULT_STARTER_CODE, normalizeVisibleChallengeCode } from '@/lib/challenges';
+import { ProblemPanel } from '@/app/learn/challenges/[slug]/components/ProblemPanel';
+import { SubmissionResults } from '@/app/learn/challenges/[slug]/components/SubmissionResults';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-
-const LANGUAGES: { value: ChallengeLanguage; label: string }[] = [
-  { value: 'python',     label: 'Python 3'   },
-  { value: 'java',       label: 'Java'       },
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'c',          label: 'C'          },
-  { value: 'cpp',        label: 'C++'        },
-  { value: 'go',         label: 'Go'         },
-];
 
 // ─── Test case row ────────────────────────────────────────────────────────────
 
@@ -173,7 +169,7 @@ function AddTestCaseForm({ challengeId, nextIndex }: { challengeId: string; next
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-type Tab = 'details' | 'starter' | 'tests';
+type Tab = 'details' | 'tests' | 'sandbox';
 
 export default function EditChallengePage() {
   const { challengeId }                      = useParams<{ challengeId: string }>();
@@ -182,19 +178,29 @@ export default function EditChallengePage() {
   const publishMutation                      = usePublishChallenge();
   const unpublishMutation                    = useUnpublishChallenge();
   const deleteTestCaseMutation               = useDeleteTestCase(challengeId);
+  const runChallengeMutation                 = useRunAdminChallenge(challengeId);
 
   const [activeTab, setActiveTab]           = useState<Tab>('details');
-  const [starterLang, setStarterLang]       = useState<ChallengeLanguage>('python');
-  const [starterCode, setStarterCode]       = useState<StarterCode>({ python: '', java: '', javascript: '', c: '', cpp: '', go: '' });
+  const [sandboxLang, setSandboxLang]       = useState<ChallengeLanguage>('python');
+  const [sandboxCode, setSandboxCode]       = useState<StarterCode>(DEFAULT_STARTER_CODE);
   const [description, setDescription]      = useState('');
   const [initialized, setInitialized]      = useState(false);
   const [detailsSaved, setDetailsSaved]    = useState(false);
-  const [starterSaved, setStarterSaved]    = useState(false);
+  const [sandboxResult, setSandboxResult]  = useState<SubmissionResult | null>(null);
+  const [isEditingProblem, setIsEditingProblem] = useState(false);
 
   useEffect(() => {
     if (challenge && !initialized) {
       setDescription(challenge.description);
-      setStarterCode(challenge.starterCode as StarterCode);
+      const starter = challenge.starterCode as Partial<StarterCode>;
+      setSandboxCode({
+        python: normalizeVisibleChallengeCode('python', starter.python),
+        java: normalizeVisibleChallengeCode('java', starter.java),
+        javascript: normalizeVisibleChallengeCode('javascript', starter.javascript),
+        c: normalizeVisibleChallengeCode('c', starter.c),
+        cpp: normalizeVisibleChallengeCode('cpp', starter.cpp),
+        go: normalizeVisibleChallengeCode('go', starter.go),
+      });
       setInitialized(true);
     }
   }, [challenge, initialized]);
@@ -216,13 +222,12 @@ export default function EditChallengePage() {
 
   const handleSaveDetails = async () => {
     const res = await updateMutation.mutateAsync({ description });
-    if (res.success) { toast.success('Details saved'); setDetailsSaved(true); setTimeout(() => setDetailsSaved(false), 2000); }
-    else toast.error(res.message ?? 'Failed to save');
-  };
-
-  const handleSaveStarterCode = async () => {
-    const res = await updateMutation.mutateAsync({ starterCode });
-    if (res.success) { toast.success('Starter code saved'); setStarterSaved(true); setTimeout(() => setStarterSaved(false), 2000); }
+    if (res.success) {
+      toast.success('Problem saved');
+      setDetailsSaved(true);
+      setIsEditingProblem(false);
+      setTimeout(() => setDetailsSaved(false), 2000);
+    }
     else toast.error(res.message ?? 'Failed to save');
   };
 
@@ -244,12 +249,52 @@ export default function EditChallengePage() {
     else toast.error(res.message ?? 'Failed to delete');
   };
 
+  const handleRunSandbox = async () => {
+    const code = sandboxCode[sandboxLang];
+    if (!code.trim()) {
+      toast.error('Write some code before running the sandbox.');
+      return;
+    }
+
+    const toastId = toast.loading('Running the challenge sandbox…');
+    try {
+      const res = await runChallengeMutation.mutateAsync({ language: sandboxLang, code });
+      toast.dismiss(toastId);
+
+      if (!res.data) {
+        toast.error(res.message ?? 'Sandbox run failed.');
+        return;
+      }
+
+      setSandboxResult(res.data);
+      if (res.data.status === 'accepted') {
+        toast.success(`Accepted — ${res.data.testsPassed}/${res.data.totalTests} tests passed`);
+      } else if (res.data.status === 'compile_error') {
+        toast.error('Compile error — check the generated starter and expected solution flow.');
+      } else {
+        toast.error(`${res.data.testsPassed}/${res.data.totalTests} tests passed.`);
+      }
+    } catch {
+      toast.dismiss(toastId);
+      toast.error('Something went wrong while running the sandbox.');
+    }
+  };
+
   const nextIndex = challenge.testCases?.length ?? 0;
+  const visibleTestCases = challenge.testCases
+    .filter(tc => !tc.isHidden)
+    .map(tc => ({
+      id: tc.id,
+      input: tc.input,
+      expectedOutput: tc.expectedOutput,
+      orderIndex: tc.orderIndex,
+    }));
+  const hiddenCount = challenge.testCases.length - visibleTestCases.length;
 
   const tabItems: { id: Tab; label: string; badge?: string | number }[] = [
     { id: 'details', label: 'Problem' },
-    { id: 'starter', label: 'Starter Code' },
     { id: 'tests',   label: 'Test Cases', badge: challenge.testCases?.length ?? 0 },
+    { id: 'sandbox', label: 'Sandbox' },
   ];
 
   return (
@@ -311,85 +356,176 @@ export default function EditChallengePage() {
       {/* ── Details tab ─────────────────────────────────────────────────────── */}
       {activeTab === 'details' && (
         <div className="bg-white rounded-xl border border-[#E5E7EB] p-6 flex flex-col gap-5">
-          <FormField
-            label="Description"
-            hint="Describe the problem, constraints, and I/O format. Rich text, tables, links, and headings are supported. Images are disabled for now."
-            required
-          >
-            <TiptapEditor
-              content={description}
-              onChange={(html) => setDescription(html)}
-              placeholder="Write a Rwanda-themed challenge, like optimizing stops on a Kigali moto route, and use tables for examples if needed."
-              className="bg-white"
-            />
-          </FormField>
-          <div className="flex justify-end">
-            <Button
-              variant="primary"
-              size="md"
-              loading={updateMutation.isPending}
-              onClick={() => {
-                if (!hasDescriptionText(description)) {
-                  toast.error('Description is required.');
-                  return;
-                }
-                handleSaveDetails();
-              }}
-            >
-              {detailsSaved
-                ? <><CheckCircle2 size={14} className="mr-1.5" />Saved</>
-                : <><Save size={14} className="mr-1.5" />Save Details</>}
-            </Button>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h2 className="font-heading font-semibold text-lg text-[#0F0F0F]">Problem</h2>
+              <p className="font-body text-sm text-[#6B7280] mt-1">
+                Review the current problem statement, then edit only when you need to.
+              </p>
+            </div>
+
+            {!isEditingProblem && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setIsEditingProblem(true)}
+              >
+                <Pencil size={14} className="mr-1.5" />
+                Edit Problem
+              </Button>
+            )}
           </div>
+
+          {isEditingProblem ? (
+            <>
+              <FormField
+                label="Problem"
+                hint="Write the full problem statement, constraints, and I/O format. Rich text, tables, links, and headings are supported. Images are disabled for now."
+                required
+              >
+                <TiptapEditor
+                  content={description}
+                  onChange={(html) => setDescription(html)}
+                  placeholder="Write a Rwanda-themed challenge, like optimizing stops on a Kigali moto route, and use tables for examples if needed."
+                  className="bg-white"
+                />
+              </FormField>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="ghost"
+                  size="md"
+                  onClick={() => {
+                    setDescription(challenge.description);
+                    setIsEditingProblem(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  size="md"
+                  loading={updateMutation.isPending}
+                  onClick={() => {
+                    if (!hasDescriptionText(description)) {
+                      toast.error('Problem statement is required.');
+                      return;
+                    }
+                    handleSaveDetails();
+                  }}
+                >
+                  {detailsSaved
+                    ? <><CheckCircle2 size={14} className="mr-1.5" />Saved</>
+                    : <><Save size={14} className="mr-1.5" />Save Problem</>}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="rounded-xl border border-[#E5E7EB] bg-[#FCFCFD] p-5">
+              <TiptapViewer content={challenge.description} className="tiptap-viewer text-[#0F0F0F]" />
+            </div>
+          )}
         </div>
       )}
 
-      {/* ── Starter Code tab ────────────────────────────────────────────────── */}
-      {activeTab === 'starter' && (
+      {/* ── Sandbox tab ─────────────────────────────────────────────────────── */}
+      {activeTab === 'sandbox' && (
         <div className="flex flex-col gap-4">
-          <p className="font-body text-sm text-[#6B7280]">
-            Pre-fill each language with the starter code students will see when they open the challenge.
-          </p>
+          <div className="bg-[#F9F5FF] border border-[#E9D5FF] rounded-xl p-4 flex items-start gap-3">
+            <FlaskConical size={18} className="text-[#3D006B] mt-0.5 shrink-0" />
+            <div className="font-body text-sm text-[#6B7280] leading-relaxed">
+              This sandbox mirrors the student workspace, but hidden test failures stay visible here so you can debug the challenge before publishing.
+              {hiddenCount > 0 && <span className="block mt-1 text-xs text-[#9CA3AF]">{hiddenCount} hidden test case{hiddenCount !== 1 ? 's are' : ' is'} included in runs.</span>}
+            </div>
+          </div>
 
-          {/* Language pills */}
-          <div className="flex gap-2 flex-wrap">
-            {LANGUAGES.map(l => (
-              <button
-                key={l.value}
-                onClick={() => setStarterLang(l.value)}
-                className={cn(
-                  'px-3 py-1.5 rounded-full font-mono text-xs font-medium transition-all',
-                  starterLang === l.value
-                    ? 'bg-[#3D006B] text-white'
-                    : 'bg-[#F3F4F6] text-[#6B7280] hover:bg-[#E5E7EB]',
-                )}
+          <div className="flex flex-col overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white" style={{ height: '72vh' }}>
+            <div className="flex items-center gap-3 px-4 py-2.5 border-b border-[#E5E7EB] bg-white shrink-0">
+              <span className="font-heading font-semibold text-sm text-[#0F0F0F] flex-1 truncate">
+                {challenge.title}
+              </span>
+
+              <Button
+                variant="primary"
+                size="sm"
+                loading={runChallengeMutation.isPending}
+                onClick={handleRunSandbox}
+                disabled={challenge.testCases.length === 0}
+                className="shrink-0"
               >
-                {l.label}
-              </button>
-            ))}
-          </div>
+                <Send size={13} className="mr-1" />
+                Run Sandbox
+              </Button>
+            </div>
 
-          {/* Editor */}
-          <div className="rounded-xl overflow-hidden border border-[#E5E7EB]" style={{ height: 420 }}>
-            <ChallengeEditor
-              value={starterCode[starterLang]}
-              language={starterLang}
-              onValueChange={v => setStarterCode(prev => ({ ...prev, [starterLang]: v }))}
-              readOnly={false}
-            />
-          </div>
+            <div className="flex-1 flex overflow-hidden min-h-0">
+              <div className="w-[42%] min-w-[280px] border-r border-[#E5E7EB] flex flex-col overflow-hidden bg-white">
+                <div className="flex-1 overflow-y-auto">
+                  <ProblemPanel
+                    title={challenge.title}
+                    description={challenge.description}
+                    difficulty={challenge.difficulty}
+                    visibleTestCases={visibleTestCases}
+                  />
+                </div>
+              </div>
 
-          <div className="flex justify-end">
-            <Button
-              variant="primary"
-              size="md"
-              loading={updateMutation.isPending}
-              onClick={handleSaveStarterCode}
-            >
-              {starterSaved
-                ? <><CheckCircle2 size={14} className="mr-1.5" />Saved</>
-                : <><Save size={14} className="mr-1.5" />Save Starter Code</>}
-            </Button>
+              <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+                <div className="flex items-center gap-1 px-3 py-2 bg-[#1e1e1e] border-b border-[#3a3a3a] shrink-0 overflow-x-auto">
+                  {CHALLENGE_LANGUAGES.map(l => (
+                    <button
+                      key={l.value}
+                      onClick={() => setSandboxLang(l.value)}
+                      className={cn(
+                        'px-3 py-1 rounded font-mono text-xs font-medium whitespace-nowrap transition-colors',
+                        sandboxLang === l.value
+                          ? 'bg-[#3D006B] text-white'
+                          : 'text-[#9CA3AF] hover:text-white hover:bg-[#3a3a3a]',
+                      )}
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                  <div className="ml-auto pl-2 shrink-0">
+                    <span className="font-mono text-[10px] text-[#555] select-none hidden sm:block">
+                      Generated main entrypoint
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex-1 overflow-hidden min-h-0">
+                  <ChallengeEditor
+                    value={sandboxCode[sandboxLang]}
+                    language={sandboxLang}
+                    onValueChange={v => setSandboxCode(prev => ({ ...prev, [sandboxLang]: v }))}
+                    readOnly={false}
+                  />
+                </div>
+
+                <div className="shrink-0 border-t border-[#E5E7EB] bg-white flex flex-col" style={{ maxHeight: '45%' }}>
+                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#E5E7EB]">
+                    <div className="font-body text-xs font-medium text-[#3D006B]">Results</div>
+                    {challenge.testCases.length === 0 && (
+                      <div className="font-body text-[11px] text-amber-700">Add test cases to run the sandbox.</div>
+                    )}
+                  </div>
+                  <div className="overflow-y-auto flex-1 min-h-0">
+                    {sandboxResult ? (
+                      <SubmissionResults result={sandboxResult} />
+                    ) : (
+                      <div className="p-5">
+                        <p className="font-body text-xs text-[#9CA3AF] mb-3">
+                          Use this sandbox to check the generated starter, visible examples, and hidden-case behavior before students open the challenge.
+                        </p>
+                        <div className="flex items-center gap-2 text-[#6B7280] font-body text-xs">
+                          <Play size={12} />
+                          Run the sandbox to execute all current test cases.
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

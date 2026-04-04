@@ -18,28 +18,11 @@ import { SubmissionResults } from './components/SubmissionResults';
 import { SubmissionHistory } from './components/SubmissionHistory';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { CHALLENGE_LANGUAGES, normalizeVisibleChallengeCode } from '@/lib/challenges';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type RightTab = 'results' | 'history';
-
-const LANGUAGES: { value: ChallengeLanguage; label: string }[] = [
-  { value: 'python',     label: 'Python 3'   },
-  { value: 'java',       label: 'Java'       },
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'c',          label: 'C'          },
-  { value: 'cpp',        label: 'C++'        },
-  { value: 'go',         label: 'Go'         },
-];
-
-const DEFAULT_STARTER: Record<ChallengeLanguage, string> = {
-  python:     '# Write your solution here\n',
-  java:       'public class Solution {\n    public static void main(String[] args) {\n        // Write your solution here\n    }\n}\n',
-  javascript: '// Write your solution here\n',
-  c:          '#include <stdio.h>\n\nint main() {\n    // Write your solution here\n    return 0;\n}\n',
-  cpp:        '#include <iostream>\nusing namespace std;\n\nint main() {\n    // Write your solution here\n    return 0;\n}\n',
-  go:         'package main\n\nimport "fmt"\n\nfunc main() {\n    // Write your solution here\n    _ = fmt.Println\n}\n',
-};
 
 // ─── Workspace skeleton ───────────────────────────────────────────────────────
 
@@ -110,12 +93,12 @@ export default function ChallengePage() {
     initialized.current = true;
     const starter = challenge.starterCode as StarterCode;
     setCodeByLang({
-      python:     starter.python     || DEFAULT_STARTER.python,
-      java:       starter.java       || DEFAULT_STARTER.java,
-      javascript: starter.javascript || DEFAULT_STARTER.javascript,
-      c:          starter.c          || DEFAULT_STARTER.c,
-      cpp:        starter.cpp        || DEFAULT_STARTER.cpp,
-      go:         starter.go         || DEFAULT_STARTER.go,
+      python: normalizeVisibleChallengeCode('python', starter.python),
+      java: normalizeVisibleChallengeCode('java', starter.java),
+      javascript: normalizeVisibleChallengeCode('javascript', starter.javascript),
+      c: normalizeVisibleChallengeCode('c', starter.c),
+      cpp: normalizeVisibleChallengeCode('cpp', starter.cpp),
+      go: normalizeVisibleChallengeCode('go', starter.go),
     });
   }, [challenge]);
 
@@ -247,7 +230,7 @@ export default function ChallengePage() {
 
           {/* Language selector bar */}
           <div className="flex items-center gap-1 px-3 py-2 bg-[#1e1e1e] border-b border-[#3a3a3a] shrink-0 overflow-x-auto">
-            {LANGUAGES.map(l => (
+            {CHALLENGE_LANGUAGES.map(l => (
               <button
                 key={l.value}
                 onClick={() => setLanguage(l.value)}

@@ -56,3 +56,8 @@ export const deleteTestCase = asyncHandler(async (req: Request, res: Response) =
   await service.deleteTestCase(req.params.testCaseId);
   sendSuccess(res, undefined, 'Test case deleted');
 });
+
+export const postRunChallenge = asyncHandler(async (req: Request, res: Response) => {
+  const result = await service.runChallenge(req.params.id, req.body);
+  sendSuccess(res, result, 'Challenge run complete');
+});
