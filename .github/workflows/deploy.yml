@@ -127,10 +127,10 @@ jobs:
             cd $HOME/withintech-learn
 
             # Recreate postgres/redis/nginx if their image or config changed
-            docker compose up -d --no-build postgres redis nginx
+            docker compose up -d --no-build --remove-orphans postgres redis nginx
 
             # Bring up the Judge0 execution stack used by coding challenges.
-            docker compose -f docker-compose.judge0.yml up -d
+            docker compose -f docker-compose.judge0.yml up -d --remove-orphans
 
             # Bring up the executor (code runner bridge).
             docker compose up -d --no-build executor
