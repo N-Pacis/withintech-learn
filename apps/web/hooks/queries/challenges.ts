@@ -14,6 +14,16 @@ export type SubmissionStatus =
 
 export type ChallengeLanguage = 'python' | 'java' | 'javascript' | 'c' | 'cpp' | 'go';
 
+export type ParamType =
+  | 'int' | 'float' | 'double' | 'char' | 'string'
+  | 'int[]' | 'float[]' | 'double[]' | 'char[]' | 'string[]'
+  | 'int[][]' | 'float[][]' | 'double[][]' | 'char[][]' | 'string[][]';
+
+export interface FunctionParam {
+  name: string;
+  type: ParamType;
+}
+
 export interface StarterCode {
   python:     string;
   java:       string;
@@ -25,19 +35,21 @@ export interface StarterCode {
 
 // Admin
 export interface AdminChallenge {
-  id:          string;
-  title:       string;
-  slug:        string;
-  description: string;
-  difficulty:  Difficulty;
-  status:      ChallengeStatus;
-  starterCode: StarterCode;
-  timeLimit:   number;
-  orderIndex:  number;
-  createdAt:   string;
-  updatedAt:   string;
-  createdBy:   { id: string; firstName: string; lastName: string };
-  _count:      { testCases: number; submissions: number };
+  id:             string;
+  title:          string;
+  slug:           string;
+  description:    string;
+  difficulty:     Difficulty;
+  status:         ChallengeStatus;
+  starterCode:    StarterCode;
+  functionParams: FunctionParam[] | null;
+  returnType:     string | null;
+  timeLimit:      number;
+  orderIndex:     number;
+  createdAt:      string;
+  updatedAt:      string;
+  createdBy:      { id: string; firstName: string; lastName: string };
+  _count:         { testCases: number; submissions: number };
 }
 
 export interface ChallengeTestCase {
@@ -92,6 +104,8 @@ export interface StudentChallenge {
   description:      string;
   difficulty:       Difficulty;
   starterCode:      StarterCode;
+  functionParams:   FunctionParam[] | null;
+  returnType:       string | null;
   timeLimit:        number;
   visibleTestCases: VisibleTestCase[];
   completed:        boolean;
@@ -168,12 +182,14 @@ export function useCreateChallenge() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: {
-      title:       string;
-      description: string;
-      difficulty:  Difficulty;
-      starterCode?: Partial<StarterCode>;
-      timeLimit?:  number;
-      orderIndex?: number;
+      title:           string;
+      description:     string;
+      difficulty:      Difficulty;
+      starterCode?:    Partial<StarterCode>;
+      functionParams?: FunctionParam[];
+      returnType?:     string;
+      timeLimit?:      number;
+      orderIndex?:     number;
     }) =>
       apiFetch('/admin/challenges', { method: 'POST', body: JSON.stringify(body) }),
     onSuccess: () => qc.invalidateQueries({ queryKey: challengeKeys.all }),
@@ -184,12 +200,14 @@ export function useUpdateChallenge(id: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: Partial<{
-      title:       string;
-      description: string;
-      difficulty:  Difficulty;
-      starterCode: Partial<StarterCode>;
-      timeLimit:   number;
-      orderIndex:  number;
+      title:          string;
+      description:    string;
+      difficulty:     Difficulty;
+      starterCode:    Partial<StarterCode>;
+      functionParams: FunctionParam[];
+      returnType:     string;
+      timeLimit:      number;
+      orderIndex:     number;
     }>) =>
       apiFetch(`/admin/challenges/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
     onSuccess: () => {

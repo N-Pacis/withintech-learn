@@ -1,6 +1,10 @@
 import { prisma } from '../../db/prisma';
 import { badRequest, conflict, notFound } from '../../utils/errors';
-import { DEFAULT_CHALLENGE_STARTER_CODE } from '../challenges.constants';
+import {
+  DEFAULT_CHALLENGE_STARTER_CODE,
+  generateStarterCode,
+  type FunctionParam,
+} from '../challenges.constants';
 import {
   executeChallengeSubmission,
   formatChallengeResults,
@@ -15,25 +19,36 @@ const uniqueSlug = (title: string) =>
 // ─── Challenges ───────────────────────────────────────────────────────────────
 
 export const createChallenge = async (data: {
-  title: string;
-  description: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  starterCode: object;
-  timeLimit: number;
-  orderIndex: number;
-  userId: string;
+  title:          string;
+  description:    string;
+  difficulty:     'easy' | 'medium' | 'hard';
+  starterCode?:   object;
+  functionParams?: FunctionParam[];
+  returnType?:    string;
+  timeLimit:      number;
+  orderIndex:     number;
+  userId:         string;
 }) => {
   const slug = uniqueSlug(data.title);
+
+  // If function params are provided, auto-generate starter code unless caller supplied one
+  let starterCode: object = data.starterCode ?? DEFAULT_CHALLENGE_STARTER_CODE;
+  if (data.functionParams && data.functionParams.length > 0 && data.returnType && !data.starterCode) {
+    starterCode = generateStarterCode(data.functionParams, data.returnType);
+  }
+
   return prisma.challenge.create({
     data: {
-      title:       data.title,
+      title:          data.title,
       slug,
-      description: data.description,
-      difficulty:  data.difficulty,
-      starterCode: data.starterCode ?? DEFAULT_CHALLENGE_STARTER_CODE,
-      timeLimit:   data.timeLimit,
-      orderIndex:  data.orderIndex,
-      createdById: data.userId,
+      description:    data.description,
+      difficulty:     data.difficulty,
+      starterCode,
+      functionParams: data.functionParams ? data.functionParams as object[] : undefined,
+      returnType:     data.returnType,
+      timeLimit:      data.timeLimit,
+      orderIndex:     data.orderIndex,
+      createdById:    data.userId,
     },
   });
 };
@@ -83,19 +98,27 @@ export const getChallenge = async (id: string) => {
 };
 
 export const updateChallenge = async (id: string, data: {
-  title?: string;
-  description?: string;
-  difficulty?: 'easy' | 'medium' | 'hard';
-  starterCode?: object;
-  timeLimit?: number;
-  orderIndex?: number;
+  title?:          string;
+  description?:    string;
+  difficulty?:     'easy' | 'medium' | 'hard';
+  starterCode?:    object;
+  functionParams?: FunctionParam[];
+  returnType?:     string;
+  timeLimit?:      number;
+  orderIndex?:     number;
 }) => {
   const challenge = await prisma.challenge.findUnique({ where: { id } });
   if (!challenge) throw notFound('Challenge not found');
   if (challenge.status === 'published' && data.title !== undefined)
     throw badRequest('Title cannot be changed after publishing. Unpublish first.');
 
-  return prisma.challenge.update({ where: { id }, data });
+  // If function params changed and no explicit starter code given, regenerate starter code
+  const updateData: Record<string, unknown> = { ...data };
+  if (data.functionParams && data.returnType && data.starterCode === undefined) {
+    updateData.starterCode = generateStarterCode(data.functionParams, data.returnType);
+  }
+
+  return prisma.challenge.update({ where: { id }, data: updateData });
 };
 
 export const deleteChallenge = async (id: string) => {
@@ -181,18 +204,20 @@ export const runChallenge = async (id: string, data: {
   if (!challenge) throw notFound('Challenge not found');
 
   const executorResult = await executeChallengeSubmission({
-    language: data.language,
-    code: data.code,
-    testCases: challenge.testCases,
-    timeLimit: challenge.timeLimit,
+    language:       data.language,
+    code:           data.code,
+    testCases:      challenge.testCases,
+    timeLimit:      challenge.timeLimit,
+    functionParams: challenge.functionParams as unknown as FunctionParam[] | undefined,
+    returnType:     challenge.returnType ?? undefined,
   });
 
   return {
     submissionId: null,
-    status: executorResult.status,
-    testsPassed: executorResult.testsPassed,
-    totalTests: executorResult.totalTests,
+    status:       executorResult.status,
+    testsPassed:  executorResult.testsPassed,
+    totalTests:   executorResult.totalTests,
     compileError: executorResult.compileError ?? null,
-    results: formatChallengeResults(executorResult, challenge.testCases, { revealHidden: true }),
+    results:      formatChallengeResults(executorResult, challenge.testCases, { revealHidden: true }),
   };
 };
