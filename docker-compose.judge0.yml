@@ -23,6 +23,8 @@ services:
     environment:
       RAILS_ENV: production
       SECRET_KEY_BASE: ${JUDGE0_SECRET_KEY_BASE}
+      REDIS_URL: 'redis://:judge0redis@judge0-redis:6379/0'
+      POSTGRES_HOST: judge0-db
     deploy:
       resources:
         limits:
@@ -44,6 +46,8 @@ services:
     environment:
       RAILS_ENV: production
       SECRET_KEY_BASE: ${JUDGE0_SECRET_KEY_BASE}
+      REDIS_URL: 'redis://:judge0redis@judge0-redis:6379/0'
+      POSTGRES_HOST: judge0-db
     deploy:
       resources:
         limits:
