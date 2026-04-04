@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Plus, Trash2, Eye, EyeOff, Save, ChevronDown, CheckCircle2, Play, FlaskConical, Send, Pencil } from 'lucide-react';
@@ -16,6 +16,8 @@ import {
   type StarterCode,
   type ChallengeTestCase,
   type SubmissionResult,
+  type FunctionParam,
+  type ParamType,
 } from '@/hooks/queries/challenges';
 import { Button, Badge, FormField, PageLoader, TiptapEditor, TiptapViewer, Textarea } from '@/components/ui';
 import { ChallengeEditor } from '@/components/ui/ChallengeEditor';
@@ -25,18 +27,87 @@ import { CHALLENGE_LANGUAGES, DEFAULT_STARTER_CODE, normalizeVisibleChallengeCod
 import { ProblemPanel } from '@/app/learn/challenges/[slug]/components/ProblemPanel';
 import { SubmissionResults } from '@/app/learn/challenges/[slug]/components/SubmissionResults';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Helpers for structured test case input ───────────────────────────────────
+
+const PARAM_TYPES_LIST: ParamType[] = [
+  'int', 'float', 'double', 'char', 'string',
+  'int[]', 'float[]', 'double[]', 'char[]', 'string[]',
+  'int[][]', 'float[][]', 'double[][]', 'char[][]', 'string[][]',
+];
+
+function paramInputPlaceholder(type: ParamType): string {
+  if (type.endsWith('[][]')) return 'e.g. 1,2;3,4 (rows separated by ;)';
+  if (type.endsWith('[]'))   return type.startsWith('string') ? 'one per line' : 'e.g. 1, 2, 3';
+  if (type === 'char')       return 'e.g. a';
+  if (type === 'string')     return 'e.g. hello world';
+  return 'e.g. 42';
+}
+
+function parseParamValue(type: ParamType, raw: string): unknown {
+  if (type.endsWith('[][]')) {
+    return raw.split(';').map(row =>
+      row.split(',').map(v => {
+        const t = type.slice(0, -4) as ParamType;
+        return parseScalar(t, v.trim());
+      }),
+    );
+  }
+  if (type.endsWith('[]')) {
+    const et = type.slice(0, -2) as ParamType;
+    if (et === 'string') return raw.split('\n').map(v => v.trimEnd());
+    return raw.split(',').map(v => parseScalar(et, v.trim()));
+  }
+  return parseScalar(type, raw.trim());
+}
+
+function parseScalar(type: ParamType, v: string): unknown {
+  if (type === 'int')    return parseInt(v) || 0;
+  if (type === 'float' || type === 'double') return parseFloat(v) || 0;
+  if (type === 'char')   return v[0] ?? '';
+  return v;
+}
+
+function formatParamForDisplay(type: ParamType, value: unknown): string {
+  if (value === null || value === undefined) return '(empty)';
+  if (Array.isArray(value)) return JSON.stringify(value);
+  return String(value);
+}
+
+function prettyInput(input: string, params: FunctionParam[] | null): React.ReactNode {
+  if (!params || params.length === 0 || !input) {
+    return <pre className="font-mono text-xs bg-[#F3F4F6] rounded-lg px-3 py-2.5 whitespace-pre-wrap break-all">{input || '(empty)'}</pre>;
+  }
+  try {
+    const values = JSON.parse(input) as unknown[];
+    return (
+      <div className="flex flex-col gap-1.5">
+        {params.map((p, i) => (
+          <div key={p.name} className="flex items-start gap-2">
+            <span className="font-mono text-[11px] text-[#9CA3AF] shrink-0 pt-0.5">{p.name} =</span>
+            <pre className="font-mono text-xs bg-[#F3F4F6] rounded px-2 py-0.5 whitespace-pre-wrap break-all flex-1">
+              {formatParamForDisplay(p.type, values[i])}
+            </pre>
+          </div>
+        ))}
+      </div>
+    );
+  } catch {
+    return <pre className="font-mono text-xs bg-[#F3F4F6] rounded-lg px-3 py-2.5 whitespace-pre-wrap break-all">{input}</pre>;
+  }
+}
 
 // ─── Test case row ────────────────────────────────────────────────────────────
 
 function TestCaseRow({
   tc,
+  functionParams,
   onDelete,
   deleting,
 }: {
-  tc:       ChallengeTestCase;
-  onDelete: (id: string) => void;
-  deleting: boolean;
+  tc:             ChallengeTestCase;
+  functionParams: FunctionParam[] | null;
+  onDelete:       (id: string) => void;
+  deleting:       boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -69,8 +140,8 @@ function TestCaseRow({
       {expanded && (
         <div className="p-4 grid gap-3 bg-white">
           <div>
-            <span className="font-body text-[11px] font-medium text-[#9CA3AF] uppercase tracking-wider block mb-1">Input</span>
-            <pre className="font-mono text-xs bg-[#F3F4F6] rounded-lg px-3 py-2.5 whitespace-pre-wrap break-all leading-relaxed text-[#374151]">{tc.input || '(empty)'}</pre>
+            <span className="font-body text-[11px] font-medium text-[#9CA3AF] uppercase tracking-wider block mb-1.5">Input</span>
+            {prettyInput(tc.input, functionParams)}
           </div>
           <div>
             <span className="font-body text-[11px] font-medium text-[#9CA3AF] uppercase tracking-wider block mb-1">Expected Output</span>
@@ -84,26 +155,43 @@ function TestCaseRow({
 
 // ─── Add test case form ───────────────────────────────────────────────────────
 
-function AddTestCaseForm({ challengeId, nextIndex }: { challengeId: string; nextIndex: number }) {
-  const addMutation                 = useAddTestCase(challengeId);
-  const [input, setInput]           = useState('');
-  const [expected, setExpected]     = useState('');
-  const [isHidden, setIsHidden]     = useState(true);
-  const [open, setOpen]             = useState(false);
-  const [error, setError]           = useState('');
+function AddTestCaseForm({
+  challengeId,
+  nextIndex,
+  functionParams,
+}: {
+  challengeId:    string;
+  nextIndex:      number;
+  functionParams: FunctionParam[] | null;
+}) {
+  const addMutation = useAddTestCase(challengeId);
+  const [paramValues, setParamValues] = useState<Record<string, string>>({});
+  const [rawInput, setRawInput]       = useState('');   // fallback when no params
+  const [expected, setExpected]       = useState('');
+  const [isHidden, setIsHidden]       = useState(true);
+  const [open, setOpen]               = useState(false);
+  const [error, setError]             = useState('');
+
+  const hasParams = functionParams && functionParams.length > 0;
+
+  const buildInput = (): string => {
+    if (!hasParams) return rawInput;
+    const values = functionParams.map(p => parseParamValue(p.type, paramValues[p.name] ?? ''));
+    return JSON.stringify(values);
+  };
 
   const handleAdd = async () => {
     if (!expected.trim()) { setError('Expected output is required.'); return; }
     setError('');
     const res = await addMutation.mutateAsync({
-      input,
+      input:          buildInput(),
       expectedOutput: expected,
       isHidden,
-      orderIndex: nextIndex,
+      orderIndex:     nextIndex,
     });
     if (res.success) {
       toast.success('Test case added');
-      setInput(''); setExpected(''); setOpen(false);
+      setParamValues({}); setRawInput(''); setExpected(''); setOpen(false);
     } else {
       toast.error(res.message ?? 'Failed to add test case');
     }
@@ -124,22 +212,52 @@ function AddTestCaseForm({ challengeId, nextIndex }: { challengeId: string; next
     <div className="border-2 border-[#3D006B]/30 rounded-xl p-5 bg-[#F9F5FF] flex flex-col gap-4">
       <h3 className="font-heading font-semibold text-sm text-[#3D006B]">New Test Case #{nextIndex + 1}</h3>
 
-      <FormField label="Input" hint="What goes into stdin. Leave empty if the problem takes no input.">
-        <Textarea
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          rows={3}
-          placeholder="e.g.&#10;5&#10;1 2 3 4 5&#10;9"
-          className="font-mono text-xs"
-        />
-      </FormField>
+      {hasParams ? (
+        <div className="flex flex-col gap-3">
+          <p className="font-body text-xs text-[#6B7280]">Enter a value for each parameter:</p>
+          {functionParams.map(p => (
+            <FormField
+              key={p.name}
+              label={p.name}
+              hint={`type: ${p.type}`}
+            >
+              {p.type.endsWith('[]') ? (
+                <Textarea
+                  value={paramValues[p.name] ?? ''}
+                  onChange={e => setParamValues(v => ({ ...v, [p.name]: e.target.value }))}
+                  rows={p.type.endsWith('[][]') ? 3 : 2}
+                  placeholder={paramInputPlaceholder(p.type)}
+                  className="font-mono text-xs"
+                />
+              ) : (
+                <input
+                  value={paramValues[p.name] ?? ''}
+                  onChange={e => setParamValues(v => ({ ...v, [p.name]: e.target.value }))}
+                  placeholder={paramInputPlaceholder(p.type)}
+                  className="w-full font-mono text-xs border border-[#E5E7EB] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#3D006B]/30 focus:border-[#3D006B] bg-white"
+                />
+              )}
+            </FormField>
+          ))}
+        </div>
+      ) : (
+        <FormField label="Input" hint="Raw stdin input. Leave empty if the problem takes no input.">
+          <Textarea
+            value={rawInput}
+            onChange={e => setRawInput(e.target.value)}
+            rows={3}
+            placeholder="e.g.&#10;5&#10;1 2 3 4 5&#10;9"
+            className="font-mono text-xs"
+          />
+        </FormField>
+      )}
 
       <FormField label="Expected Output" required error={error}>
         <Textarea
           value={expected}
           onChange={e => { setExpected(e.target.value); setError(''); }}
           rows={2}
-          placeholder="e.g. 1 3"
+          placeholder={hasParams ? 'e.g. 0 (the return value your solution should produce)' : 'e.g. 1 3'}
           className="font-mono text-xs"
         />
       </FormField>
@@ -353,6 +471,17 @@ export default function EditChallengePage() {
         ))}
       </div>
 
+      {/* ── Function signature card (shown on all tabs) ─────────────────────── */}
+      {challenge.functionParams && challenge.functionParams.length > 0 && (
+        <div className="bg-[#1e1e1e] rounded-xl p-4 mb-2">
+          <p className="font-mono text-[10px] text-[#9CA3AF] mb-1.5 uppercase tracking-wider">Function signature</p>
+          <p className="font-mono text-xs text-[#C8E6C9]">
+            def solution({challenge.functionParams.map((p: FunctionParam) => `${p.name}: ${p.type}`).join(', ')})
+            {challenge.returnType ? ` → ${challenge.returnType}` : ''}:
+          </p>
+        </div>
+      )}
+
       {/* ── Details tab ─────────────────────────────────────────────────────── */}
       {activeTab === 'details' && (
         <div className="bg-white rounded-xl border border-[#E5E7EB] p-6 flex flex-col gap-5">
@@ -465,6 +594,7 @@ export default function EditChallengePage() {
                     description={challenge.description}
                     difficulty={challenge.difficulty}
                     visibleTestCases={visibleTestCases}
+                    functionParams={challenge.functionParams}
                   />
                 </div>
               </div>
@@ -549,12 +679,17 @@ export default function EditChallengePage() {
             <TestCaseRow
               key={tc.id}
               tc={tc}
+              functionParams={challenge.functionParams}
               onDelete={handleDeleteTestCase}
               deleting={deleteTestCaseMutation.isPending}
             />
           ))}
 
-          <AddTestCaseForm challengeId={challengeId} nextIndex={nextIndex} />
+          <AddTestCaseForm
+            challengeId={challengeId}
+            nextIndex={nextIndex}
+            functionParams={challenge.functionParams}
+          />
         </div>
       )}
     </div>

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DEFAULT_CHALLENGE_STARTER_CODE } from '../challenges.constants';
+import { DEFAULT_CHALLENGE_STARTER_CODE, PARAM_TYPES } from '../challenges.constants';
 
 const starterCodeSchema = z.object({
   python:     z.string().default(''),
@@ -10,22 +10,31 @@ const starterCodeSchema = z.object({
   go:         z.string().default(''),
 });
 
+const functionParamSchema = z.object({
+  name: z.string().min(1).max(50).regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Invalid identifier'),
+  type: z.enum(PARAM_TYPES),
+});
+
 export const createChallengeSchema = z.object({
-  title:       z.string().min(1).max(200),
-  description: z.string().min(1),
-  difficulty:  z.enum(['easy', 'medium', 'hard']),
-  starterCode: starterCodeSchema.default(DEFAULT_CHALLENGE_STARTER_CODE),
-  timeLimit:   z.number().int().min(1).max(15).default(5),
-  orderIndex:  z.number().int().min(0).default(0),
+  title:          z.string().min(1).max(200),
+  description:    z.string().min(1),
+  difficulty:     z.enum(['easy', 'medium', 'hard']),
+  starterCode:    starterCodeSchema.optional(),
+  functionParams: z.array(functionParamSchema).max(10).optional(),
+  returnType:     z.enum(PARAM_TYPES).or(z.literal('void')).optional(),
+  timeLimit:      z.number().int().min(1).max(15).default(5),
+  orderIndex:     z.number().int().min(0).default(0),
 });
 
 export const updateChallengeSchema = z.object({
-  title:       z.string().min(1).max(200).optional(),
-  description: z.string().min(1).optional(),
-  difficulty:  z.enum(['easy', 'medium', 'hard']).optional(),
-  starterCode: starterCodeSchema.optional(),
-  timeLimit:   z.number().int().min(1).max(15).optional(),
-  orderIndex:  z.number().int().min(0).optional(),
+  title:          z.string().min(1).max(200).optional(),
+  description:    z.string().min(1).optional(),
+  difficulty:     z.enum(['easy', 'medium', 'hard']).optional(),
+  starterCode:    starterCodeSchema.optional(),
+  functionParams: z.array(functionParamSchema).max(10).optional(),
+  returnType:     z.enum(PARAM_TYPES).or(z.literal('void')).optional(),
+  timeLimit:      z.number().int().min(1).max(15).optional(),
+  orderIndex:     z.number().int().min(0).optional(),
 });
 
 export const listChallengesSchema = z.object({
@@ -35,8 +44,9 @@ export const listChallengesSchema = z.object({
   status:     z.enum(['draft', 'published']).optional(),
 });
 
+// input is a JSON-encoded array of parameter values: e.g. [[2,7,11,15],9]
 export const createTestCaseSchema = z.object({
-  input:          z.string(),
+  input:          z.string(),   // JSON array of param values
   expectedOutput: z.string().min(1),
   isHidden:       z.boolean().default(true),
   orderIndex:     z.number().int().min(0),

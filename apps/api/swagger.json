@@ -4200,12 +4200,24 @@
                 "type": "object",
                 "required": ["title", "description", "difficulty"],
                 "properties": {
-                  "title":       { "type": "string" },
-                  "description": { "type": "string" },
-                  "difficulty":  { "type": "string", "enum": ["easy", "medium", "hard"] },
-                  "timeLimit":   { "type": "integer", "default": 5 },
-                  "orderIndex":  { "type": "integer", "default": 0 },
-                  "starterCode": { "type": "object" }
+                  "title":          { "type": "string" },
+                  "description":    { "type": "string" },
+                  "difficulty":     { "type": "string", "enum": ["easy", "medium", "hard"] },
+                  "timeLimit":      { "type": "integer", "default": 5 },
+                  "orderIndex":     { "type": "integer", "default": 0 },
+                  "starterCode":    { "type": "object" },
+                  "functionParams": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["name", "type"],
+                      "properties": {
+                        "name": { "type": "string" },
+                        "type": { "type": "string", "description": "e.g. int, string, int[], int[][]" }
+                      }
+                    }
+                  },
+                  "returnType": { "type": "string", "description": "e.g. int, void, string, int[]" }
                 }
               }
             }

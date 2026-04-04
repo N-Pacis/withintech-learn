@@ -1,6 +1,7 @@
 import { SubmissionStatus } from '@prisma/client';
 import { prisma } from '../../db/prisma';
 import { notFound } from '../../utils/errors';
+import { type FunctionParam } from '../challenges.constants';
 import {
   executeChallengeSubmission,
   formatChallengeResults,
@@ -75,16 +76,18 @@ export const getPublishedChallenge = async (slug: string, userId: string) => {
   if (!challenge) throw notFound('Challenge not found');
 
   return {
-    id:          challenge.id,
-    title:       challenge.title,
-    slug:        challenge.slug,
-    description: challenge.description,
-    difficulty:  challenge.difficulty,
-    starterCode: challenge.starterCode,
-    timeLimit:   challenge.timeLimit,
+    id:             challenge.id,
+    title:          challenge.title,
+    slug:           challenge.slug,
+    description:    challenge.description,
+    difficulty:     challenge.difficulty,
+    starterCode:    challenge.starterCode,
+    functionParams: challenge.functionParams,
+    returnType:     challenge.returnType,
+    timeLimit:      challenge.timeLimit,
     visibleTestCases: challenge.testCases,
-    completed:   challenge.progress.length > 0,
-    completedAt: challenge.progress[0]?.completedAt ?? null,
+    completed:      challenge.progress.length > 0,
+    completedAt:    challenge.progress[0]?.completedAt ?? null,
   };
 };
 
@@ -100,10 +103,12 @@ export const submitChallenge = async (slug: string, userId: string, data: {
   });
   if (!challenge) throw notFound('Challenge not found');
   const executorResult = await executeChallengeSubmission({
-    language: data.language,
-    code: data.code,
-    testCases: challenge.testCases,
-    timeLimit: challenge.timeLimit,
+    language:       data.language,
+    code:           data.code,
+    testCases:      challenge.testCases,
+    timeLimit:      challenge.timeLimit,
+    functionParams: challenge.functionParams as unknown as FunctionParam[] | undefined,
+    returnType:     challenge.returnType ?? undefined,
   });
 
   // Save submission

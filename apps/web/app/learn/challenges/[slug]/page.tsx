@@ -8,6 +8,7 @@ import {
   useStudentChallenge,
   useSubmitChallenge,
   type ChallengeLanguage,
+  type FunctionParam,
   type SubmissionResult,
   type StarterCode,
 } from '@/hooks/queries/challenges';
@@ -221,6 +222,7 @@ export default function ChallengePage() {
               description={challenge.description}
               difficulty={challenge.difficulty}
               visibleTestCases={challenge.visibleTestCases}
+              functionParams={challenge.functionParams}
             />
           </div>
         </div>
@@ -296,7 +298,7 @@ export default function ChallengePage() {
                 lastResult ? (
                   <SubmissionResults result={lastResult} />
                 ) : (
-                  <EmptyResultsState challenge={challenge} />
+                  <EmptyResultsState challenge={{ visibleTestCases: challenge.visibleTestCases, functionParams: challenge.functionParams ?? null }} />
                 )
               ) : (
                 <SubmissionHistory slug={slug} />
@@ -309,9 +311,39 @@ export default function ChallengePage() {
   );
 }
 
+// ─── Pretty-print structured test case input ─────────────────────────────────
+
+function InputDisplay({ input, params }: { input: string; params: FunctionParam[] | null }) {
+  if (!params || params.length === 0) {
+    return input ? <pre className="bg-[#F3F4F6] rounded px-2 py-1 whitespace-pre-wrap break-all text-xs font-mono">{input}</pre> : null;
+  }
+  try {
+    const values = JSON.parse(input) as unknown[];
+    return (
+      <div className="flex flex-col gap-1">
+        {params.map((p, i) => (
+          <div key={p.name} className="flex items-start gap-1.5 text-xs font-mono">
+            <span className="text-[#9CA3AF] shrink-0">{p.name} =</span>
+            <pre className="bg-[#F3F4F6] rounded px-1.5 py-0.5 whitespace-pre-wrap break-all flex-1">
+              {Array.isArray(values[i]) ? JSON.stringify(values[i]) : String(values[i] ?? '')}
+            </pre>
+          </div>
+        ))}
+      </div>
+    );
+  } catch {
+    return <pre className="bg-[#F3F4F6] rounded px-2 py-1 whitespace-pre-wrap break-all text-xs font-mono">{input}</pre>;
+  }
+}
+
 // ─── Empty results state ──────────────────────────────────────────────────────
 
-function EmptyResultsState({ challenge }: { challenge: { visibleTestCases: { id: string; input: string; expectedOutput: string }[] } }) {
+function EmptyResultsState({ challenge }: {
+  challenge: {
+    visibleTestCases: { id: string; input: string; expectedOutput: string }[];
+    functionParams:   FunctionParam[] | null;
+  };
+}) {
   return (
     <div className="p-5">
       <p className="font-body text-xs text-[#9CA3AF] mb-3">
@@ -328,8 +360,8 @@ function EmptyResultsState({ challenge }: { challenge: { visibleTestCases: { id:
               <div className="p-3 grid gap-2 bg-white">
                 {tc.input !== '' && (
                   <div>
-                    <div className="font-body text-[11px] text-[#9CA3AF] mb-0.5">Input</div>
-                    <pre className="bg-[#F3F4F6] rounded px-2 py-1 whitespace-pre-wrap break-all">{tc.input}</pre>
+                    <div className="font-body text-[11px] text-[#9CA3AF] mb-1">Input</div>
+                    <InputDisplay input={tc.input} params={challenge.functionParams} />
                   </div>
                 )}
                 <div>

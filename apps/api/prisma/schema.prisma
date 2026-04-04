@@ -232,19 +232,23 @@ enum SubmissionStatus {
 }
 
 model Challenge {
-  id          String          @id @default(uuid())
-  title       String
-  slug        String          @unique
-  description String          // Rich text HTML
-  difficulty  Difficulty
-  status      ChallengeStatus @default(draft)
+  id             String          @id @default(uuid())
+  title          String
+  slug           String          @unique
+  description    String          // Rich text HTML
+  difficulty     Difficulty
+  status         ChallengeStatus @default(draft)
   // starterCode: { python: "...", java: "...", javascript: "...", c: "...", cpp: "...", go: "..." }
-  starterCode Json
-  timeLimit   Int             @default(5) // seconds per test case
-  orderIndex  Int             @default(0)
-  createdById String
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  starterCode    Json
+  // functionParams: [{ name: string, type: string }] — LeetCode-style function signature
+  functionParams Json?
+  // returnType: e.g. "int", "string", "int[]", "void"
+  returnType     String?
+  timeLimit      Int             @default(5) // seconds per test case
+  orderIndex     Int             @default(0)
+  createdById    String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   createdBy   User                  @relation(fields: [createdById], references: [id])
   testCases   ChallengeTestCase[]

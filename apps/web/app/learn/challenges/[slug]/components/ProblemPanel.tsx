@@ -1,7 +1,7 @@
 'use client';
 
 import { Badge, TiptapViewer } from '@/components/ui';
-import type { Difficulty, VisibleTestCase } from '@/hooks/queries/challenges';
+import type { Difficulty, FunctionParam, VisibleTestCase } from '@/hooks/queries/challenges';
 
 const DIFFICULTY_BADGE: Record<Difficulty, { variant: 'success' | 'warning' | 'danger'; label: string }> = {
   easy:   { variant: 'success', label: 'Easy'   },
@@ -9,14 +9,46 @@ const DIFFICULTY_BADGE: Record<Difficulty, { variant: 'success' | 'warning' | 'd
   hard:   { variant: 'danger',  label: 'Hard'   },
 };
 
+function InputBlock({ input, params }: { input: string; params: FunctionParam[] | null | undefined }) {
+  if (!params || params.length === 0) {
+    return (
+      <pre className="font-mono text-xs text-[#0F0F0F] bg-[#F3F4F6] rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">
+        {input}
+      </pre>
+    );
+  }
+  try {
+    const values = JSON.parse(input) as unknown[];
+    return (
+      <div className="flex flex-col gap-1">
+        {params.map((p, i) => (
+          <div key={p.name} className="flex items-start gap-2 font-mono text-xs">
+            <span className="text-[#9CA3AF] shrink-0 pt-0.5">{p.name} =</span>
+            <pre className="bg-[#F3F4F6] rounded px-2 py-0.5 whitespace-pre-wrap break-all flex-1 text-[#0F0F0F]">
+              {Array.isArray(values[i]) ? JSON.stringify(values[i]) : String(values[i] ?? '')}
+            </pre>
+          </div>
+        ))}
+      </div>
+    );
+  } catch {
+    return (
+      <pre className="font-mono text-xs text-[#0F0F0F] bg-[#F3F4F6] rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">
+        {input}
+      </pre>
+    );
+  }
+}
+
 interface ProblemPanelProps {
   title:            string;
   description:      string;
   difficulty:       Difficulty;
   visibleTestCases: VisibleTestCase[];
+  functionParams?:  FunctionParam[] | null;
 }
 
-export function ProblemPanel({ title, description, difficulty, visibleTestCases }: ProblemPanelProps) {
+export function ProblemPanel({ title, description, difficulty, visibleTestCases, functionParams }: ProblemPanelProps) {
   const badge = DIFFICULTY_BADGE[difficulty];
 
   return (
@@ -48,8 +80,8 @@ export function ProblemPanel({ title, description, difficulty, visibleTestCases 
                 <div className="p-3 grid gap-2.5 bg-white">
                   {tc.input !== '' && (
                     <div>
-                      <span className="font-body text-[11px] font-medium text-[#9CA3AF] uppercase tracking-wider block mb-1">Input</span>
-                      <pre className="font-mono text-xs text-[#0F0F0F] bg-[#F3F4F6] rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">{tc.input}</pre>
+                      <span className="font-body text-[11px] font-medium text-[#9CA3AF] uppercase tracking-wider block mb-1.5">Input</span>
+                      <InputBlock input={tc.input} params={functionParams} />
                     </div>
                   )}
                   <div>
