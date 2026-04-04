@@ -30,10 +30,12 @@ type TestCase struct {
 
 // ExecuteRequest is the payload sent to POST /execute.
 type ExecuteRequest struct {
-	Language  SupportedLanguage `json:"language"`
-	Code      string            `json:"code"`
-	TestCases []TestCase        `json:"testCases"`
-	TimeLimit int               `json:"timeLimit"` // seconds, default 5
+	Language        SupportedLanguage `json:"language"`
+	Code            string            `json:"code"`
+	TestCases       []TestCase        `json:"testCases"`
+	TimeLimit       int               `json:"timeLimit"` // seconds, default 5
+	BatchedInput    string            `json:"batchedInput,omitempty"`
+	ExpectedOutputs []string          `json:"expectedOutputs,omitempty"`
 }
 
 // TestCaseResult is the per-test-case result returned to the caller.
@@ -49,11 +51,11 @@ type TestCaseResult struct {
 type ExecutionStatus string
 
 const (
-	StatusAccepted           ExecutionStatus = "accepted"
-	StatusWrongAnswer        ExecutionStatus = "wrong_answer"
-	StatusTimeLimitExceeded  ExecutionStatus = "time_limit_exceeded"
-	StatusRuntimeError       ExecutionStatus = "runtime_error"
-	StatusCompileError       ExecutionStatus = "compile_error"
+	StatusAccepted          ExecutionStatus = "accepted"
+	StatusWrongAnswer       ExecutionStatus = "wrong_answer"
+	StatusTimeLimitExceeded ExecutionStatus = "time_limit_exceeded"
+	StatusRuntimeError      ExecutionStatus = "runtime_error"
+	StatusCompileError      ExecutionStatus = "compile_error"
 )
 
 // ExecuteResponse is the payload returned from POST /execute.

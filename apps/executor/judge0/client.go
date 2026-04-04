@@ -30,7 +30,7 @@ func NewClient(baseURL string) *Client {
 		baseURL: strings.TrimRight(baseURL, "/"),
 		httpClient: &http.Client{
 			Transport: transport,
-			Timeout:   90 * time.Second, // generous: compile + run + Judge0 queue
+			Timeout:   10 * time.Minute, // batch mode can compile once and run many cases in one submission
 		},
 	}
 }
