@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
 	"sync"
 
@@ -58,6 +59,12 @@ func (h *ExecuteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	langID := models.Judge0LanguageID[req.Language]
+	if req.BatchedInput != "" {
+		resp := runBatchedTestCases(h.judge0, req.Code, langID, req.TestCases, req.ExpectedOutputs, req.BatchedInput, req.TimeLimit)
+		writeJSON(w, http.StatusOK, resp)
+		return
+	}
+
 	resp := runTestCases(h.judge0, req.Code, langID, req.TestCases, req.TimeLimit)
 	writeJSON(w, http.StatusOK, resp)
 }
@@ -76,7 +83,132 @@ func validateRequest(req models.ExecuteRequest) error {
 	if len(req.TestCases) > 100 {
 		return fmt.Errorf("maximum 100 test cases per submission")
 	}
+	if req.BatchedInput != "" && len(req.ExpectedOutputs) != len(req.TestCases) {
+		return fmt.Errorf("expectedOutputs must match testCases length in batched mode")
+	}
 	return nil
+}
+
+func runBatchedTestCases(
+	client *judge0.Client,
+	code string,
+	langID int,
+	testCases []models.TestCase,
+	expectedOutputs []string,
+	batchedInput string,
+	timeLimit int,
+) models.ExecuteResponse {
+	subReq := judge0.SubmissionRequest{
+		LanguageID:   langID,
+		SourceCode:   code,
+		Stdin:        batchedInput,
+		CPUTimeLimit: float64(timeLimit * len(testCases)),
+		MemoryLimit:  262144, // 256 MB
+	}
+
+	sub, err := client.Submit(subReq)
+	if err != nil {
+		results := make([]models.TestCaseResult, len(testCases))
+		for i, tc := range testCases {
+			results[i] = models.TestCaseResult{
+				Passed:         false,
+				Input:          tc.Input,
+				ActualOutput:   "",
+				ExpectedOutput: expectedOutputs[i],
+				Stderr:         fmt.Sprintf("execution engine error: %v", err),
+			}
+		}
+		return models.ExecuteResponse{
+			Status:      models.StatusRuntimeError,
+			TestsPassed: 0,
+			TotalTests:  len(testCases),
+			Results:     results,
+		}
+	}
+
+	if sub.Status.ID == judge0.StatusIDCompileError {
+		results := make([]models.TestCaseResult, len(testCases))
+		for i, tc := range testCases {
+			results[i] = models.TestCaseResult{
+				Passed:         false,
+				Input:          tc.Input,
+				ActualOutput:   "",
+				ExpectedOutput: expectedOutputs[i],
+				Stderr:         "compile error",
+			}
+		}
+		return models.ExecuteResponse{
+			Status:       models.StatusCompileError,
+			TestsPassed:  0,
+			TotalTests:   len(testCases),
+			Results:      results,
+			CompileError: strings.TrimSpace(sub.CompileOutput),
+		}
+	}
+
+	actualOutputs := splitOutputs(sub.Stdout)
+	results := make([]models.TestCaseResult, len(testCases))
+	passed := 0
+
+	for i, tc := range testCases {
+		actual := ""
+		if i < len(actualOutputs) {
+			actual = actualOutputs[i]
+		}
+
+		expected := strings.TrimRight(expectedOutputs[i], "\n")
+		stderr := ""
+		if i == len(actualOutputs) && sub.Status.ID != judge0.StatusIDAccepted && sub.Status.ID != judge0.StatusIDWrongAnswer {
+			stderr = strings.TrimSpace(sub.Stderr)
+		}
+
+		results[i] = models.TestCaseResult{
+			Passed:         actual == expected,
+			Input:          tc.Input,
+			ActualOutput:   actual,
+			ExpectedOutput: expected,
+			Stderr:         stderr,
+		}
+
+		if results[i].Passed {
+			passed++
+		}
+	}
+
+	if sub.Status.ID == judge0.StatusIDTLE {
+		markFirstUnfinished(results, "Time Limit Exceeded", strings.TrimSpace(sub.Stderr))
+		return models.ExecuteResponse{
+			Status:      models.StatusTimeLimitExceeded,
+			TestsPassed: countPassed(results),
+			TotalTests:  len(testCases),
+			Results:     results,
+		}
+	}
+	if sub.Status.ID == judge0.StatusIDInternalError || sub.Status.ID == judge0.StatusIDExecFormatError {
+		markFirstUnfinished(results, "Internal Error", strings.TrimSpace(sub.Stderr))
+		return models.ExecuteResponse{
+			Status:      models.StatusRuntimeError,
+			TestsPassed: countPassed(results),
+			TotalTests:  len(testCases),
+			Results:     results,
+		}
+	}
+	if sub.Status.ID >= judge0.StatusIDRuntimeErrorSIGSEGV {
+		markFirstUnfinished(results, "Runtime Error", strings.TrimSpace(sub.Stderr))
+		return models.ExecuteResponse{
+			Status:      models.StatusRuntimeError,
+			TestsPassed: countPassed(results),
+			TotalTests:  len(testCases),
+			Results:     results,
+		}
+	}
+
+	return models.ExecuteResponse{
+		Status:      overallStatus(results),
+		TestsPassed: passed,
+		TotalTests:  len(testCases),
+		Results:     results,
+	}
 }
 
 // tcOutcome carries the result for one test case back from its goroutine.
@@ -234,6 +366,35 @@ func overallStatus(results []models.TestCaseResult) models.ExecutionStatus {
 		}
 	}
 	return models.StatusAccepted
+}
+
+func splitOutputs(stdout string) []string {
+	trimmed := strings.TrimRight(stdout, "\n")
+	if trimmed == "" {
+		return nil
+	}
+	return strings.Split(trimmed, "\n")
+}
+
+func markFirstUnfinished(results []models.TestCaseResult, actualOutput string, stderr string) {
+	index := slices.IndexFunc(results, func(result models.TestCaseResult) bool {
+		return !result.Passed && result.ActualOutput == ""
+	})
+	if index == -1 {
+		return
+	}
+	results[index].ActualOutput = actualOutput
+	results[index].Stderr = stderr
+}
+
+func countPassed(results []models.TestCaseResult) int {
+	passed := 0
+	for _, result := range results {
+		if result.Passed {
+			passed++
+		}
+	}
+	return passed
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {

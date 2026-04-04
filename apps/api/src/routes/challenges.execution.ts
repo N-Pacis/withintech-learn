@@ -258,6 +258,10 @@ function javaParsing(params: FunctionParam[]): string {
   return lines.join('\n');
 }
 
+function javaParsingBody(params: FunctionParam[]): string {
+  return javaParsing(params).split('\n').slice(2).join('\n');
+}
+
 function javaParseScalar(et: string, expr: string): string {
   if (et === 'int')    return `Integer.parseInt(${expr})`;
   if (et === 'float')  return `Float.parseFloat(${expr})`;
@@ -318,6 +322,10 @@ function goParsing(params: FunctionParam[]): string {
     }
   }
   return lines.join('\n');
+}
+
+function goParsingBody(params: FunctionParam[]): string {
+  return goParsing(params).split('\n').slice(3).join('\n');
 }
 
 function goParseScalar(et: string, expr: string): string {
@@ -664,6 +672,243 @@ function buildGoWrapper(
   ].join('\n');
 }
 
+function buildBatchedExecutableChallengeCode(
+  language: SupportedChallengeLanguage,
+  userCode: string,
+  params: FunctionParam[],
+  returnType: string,
+): string {
+  const call = callArgs(language, params, returnType);
+
+  switch (language) {
+    case 'python':
+      return buildBatchedPythonWrapper(userCode, params, returnType, call);
+    case 'javascript':
+      return buildBatchedJsWrapper(userCode, params, returnType, call);
+    case 'java':
+      return buildBatchedJavaWrapper(userCode, params, returnType, call);
+    case 'cpp':
+      return buildBatchedCppWrapper(userCode, params, returnType, call);
+    case 'c':
+      return buildBatchedCWrapper(userCode, params, returnType, call);
+    case 'go':
+      return buildBatchedGoWrapper(userCode, params, returnType, call);
+  }
+}
+
+function buildBatchedPythonWrapper(
+  userCode: string,
+  params: FunctionParam[],
+  returnType: string,
+  call: string,
+): string {
+  const bindings = params.map((p, i) => `    ${p.name} = _args[${i}]`).join('\n');
+  const resultLines = returnType === 'void'
+    ? ['    solution(' + call + ')', '    print("")']
+    : isArrayType(returnType)
+      ? ['    _result = solution(' + call + ')', '    print(_json.dumps(_result, separators=(\',\', \':\')))']
+      : ['    _result = solution(' + call + ')', '    print(_result)'];
+
+  return [
+    userCode.trimEnd(),
+    '',
+    'import sys as _sys, json as _json',
+    '_lines = _sys.stdin.read().splitlines()',
+    '_cases = int(_lines[0].strip()) if _lines and _lines[0].strip() else 0',
+    'for _case_idx in range(_cases):',
+    '    _args = _json.loads(_lines[_case_idx + 1])',
+    bindings,
+    ...resultLines,
+    '',
+  ].join('\n');
+}
+
+function buildBatchedJsWrapper(
+  userCode: string,
+  params: FunctionParam[],
+  returnType: string,
+  call: string,
+): string {
+  const bindings = params.map((p, i) => `  const ${p.name} = _args[${i}];`).join('\n');
+  const resultLines = returnType === 'void'
+    ? ['  solution(' + call + ');', "  process.stdout.write('\\n');"]
+    : isArrayType(returnType)
+      ? ['  const _result = solution(' + call + ');', "  process.stdout.write(JSON.stringify(_result) + '\\n');"]
+      : ['  const _result = solution(' + call + ');', "  process.stdout.write(String(_result) + '\\n');"];
+
+  return [
+    userCode.trimEnd(),
+    '',
+    "const _lines = require('fs').readFileSync(0, 'utf8').split(/\\r?\\n/);",
+    "const _cases = Number((_lines[0] || '0').trim() || '0');",
+    'for (let _caseIdx = 0; _caseIdx < _cases; _caseIdx++) {',
+    '  const _args = JSON.parse(_lines[_caseIdx + 1]);',
+    bindings,
+    ...resultLines,
+    '}',
+    '',
+  ].join('\n');
+}
+
+function buildBatchedJavaWrapper(
+  userCode: string,
+  params: FunctionParam[],
+  returnType: string,
+  call: string,
+): string {
+  const parsing = javaParsingBody(params);
+  const jRetType = returnType === 'void' ? 'void' : javaType(returnType);
+  const resultLines: string[] = [];
+  if (returnType === 'void') {
+    resultLines.push(`            solution(${call});`);
+    resultLines.push('            System.out.println();');
+  } else {
+    resultLines.push(`            ${jRetType} _result = solution(${call});`);
+    resultLines.push(indentBlock(javaPrintResult(returnType).trimEnd(), 3));
+  }
+
+  return [
+    'import java.io.*;',
+    'import java.util.*;',
+    '',
+    'public class Main {',
+    indentBlock(userCode.trimEnd(), 1),
+    '',
+    '    @SuppressWarnings("all")',
+    '    public static void main(String[] args) throws Exception {',
+    '        BufferedReader _br = new BufferedReader(new InputStreamReader(System.in));',
+    '        int _cases = Integer.parseInt(_br.readLine().trim());',
+    '        String[] _parts;',
+    '        for (int _case = 0; _case < _cases; _case++) {',
+    indentBlock(parsing, 3),
+    resultLines.join('\n'),
+    '        }',
+    '    }',
+    '}',
+    '',
+  ].join('\n');
+}
+
+function buildBatchedCppWrapper(
+  userCode: string,
+  params: FunctionParam[],
+  returnType: string,
+  call: string,
+): string {
+  const parsing = cppParsing(params);
+  const cppRetType = returnType === 'void' ? 'void' : cppType(returnType);
+  const resultLines: string[] = [];
+  if (returnType === 'void') {
+    resultLines.push(`        solution(${call});`);
+    resultLines.push('        cout << endl;');
+  } else {
+    resultLines.push(`        ${cppRetType} _result = solution(${call});`);
+    resultLines.push(indentBlock(cppPrintResult(returnType).trimEnd(), 2));
+  }
+
+  return [
+    '#include <iostream>',
+    '#include <vector>',
+    '#include <string>',
+    '#include <sstream>',
+    'using namespace std;',
+    '',
+    userCode.trimEnd(),
+    '',
+    'int main() {',
+    '    int _cases; cin >> _cases;',
+    '    for (int _case = 0; _case < _cases; _case++) {',
+    indentBlock(parsing, 2),
+    resultLines.join('\n'),
+    '    }',
+    '    return 0;',
+    '}',
+    '',
+  ].join('\n');
+}
+
+function buildBatchedCWrapper(
+  userCode: string,
+  params: FunctionParam[],
+  returnType: string,
+  call: string,
+): string {
+  const parsing = cParsing(params);
+  const cRetType = returnType === 'void' ? 'void' : cReturnType(returnType);
+  const resultLines: string[] = [];
+  if (returnType === 'void') {
+    resultLines.push(`        solution(${call});`);
+    resultLines.push('        printf("\\n");');
+  } else {
+    if (isArrayType(returnType) && !is2DArrayType(returnType)) {
+      resultLines.push('        int _returnSize = 0;');
+    }
+    resultLines.push(`        ${cRetType} _result = solution(${call});`);
+    resultLines.push(indentBlock(cPrintResult(returnType).trimEnd(), 2));
+  }
+
+  return [
+    '#include <stdio.h>',
+    '#include <stdlib.h>',
+    '#include <string.h>',
+    '',
+    userCode.trimEnd(),
+    '',
+    'int main(void) {',
+    '    int _cases; scanf("%d", &_cases);',
+    '    for (int _case = 0; _case < _cases; _case++) {',
+    indentBlock(parsing, 2),
+    resultLines.join('\n'),
+    '    }',
+    '    return 0;',
+    '}',
+    '',
+  ].join('\n');
+}
+
+function buildBatchedGoWrapper(
+  userCode: string,
+  params: FunctionParam[],
+  returnType: string,
+  call: string,
+): string {
+  const parsing = goParsingBody(params);
+  const resultLines: string[] = [];
+  if (returnType === 'void') {
+    resultLines.push(`\t\tsolution(${call})`);
+    resultLines.push('\t\tfmt.Println()');
+  } else {
+    resultLines.push(`\t\t_result := solution(${call})`);
+    resultLines.push(indentBlock(goPrintResult(returnType).trimEnd().replace(/\t/g, '    '), 2));
+  }
+
+  return [
+    'package main',
+    '',
+    'import (',
+    '\t"bufio"',
+    '\t"fmt"',
+    '\t"os"',
+    '\t"strconv"',
+    '\t"strings"',
+    ')',
+    '',
+    userCode.trimEnd(),
+    '',
+    'func main() {',
+    '\t_reader := bufio.NewReader(os.Stdin)',
+    "\t_line, _ := _reader.ReadString('\\n')",
+    "\t_cases, _ := strconv.Atoi(strings.TrimSpace(_line))",
+    '\tvar _parts []string',
+    '\tfor _case := 0; _case < _cases; _case++ {',
+    indentBlock(parsing.replace(/\t/g, '    '), 2),
+    resultLines.join('\n'),
+    '\t}',
+    '}',
+    '',
+  ].join('\n');
+}
+
 // ─── Legacy wrapper (stdin passthrough — no function params) ──────────────────
 
 function looksLikeCompleteProgram(language: SupportedChallengeLanguage, code: string): boolean {
@@ -713,18 +958,29 @@ export async function executeChallengeSubmission(data: {
   if (!data.code.trim())          throw badRequest('Code cannot be empty');
   if (data.testCases.length === 0) throw badRequest('This challenge has no test cases yet');
 
-  const executableCode = buildExecutableChallengeCode(
-    language,
-    data.code,
-    data.functionParams,
-    data.returnType,
-  );
+  const supportsBatchExecution = Boolean(data.functionParams && data.functionParams.length > 0 && data.returnType);
+  const executableCode = supportsBatchExecution
+    ? buildBatchedExecutableChallengeCode(
+        language,
+        data.code,
+        data.functionParams!,
+        data.returnType!,
+      )
+    : buildExecutableChallengeCode(
+        language,
+        data.code,
+        data.functionParams,
+        data.returnType,
+      );
 
-  // Convert test case inputs to the appropriate stdin format for the language
   const formattedTestCases = data.testCases.map(tc => ({
     input: formatTestCaseInput(language, tc.input, data.functionParams),
     expectedOutput: tc.expectedOutput,
   }));
+
+  const batchedInput = supportsBatchExecution
+    ? formatBatchedTestCaseInput(language, formattedTestCases.map(tc => tc.input))
+    : undefined;
 
   try {
     const response = await fetch(`${EXECUTOR_URL}/execute`, {
@@ -734,10 +990,12 @@ export async function executeChallengeSubmission(data: {
         ...(EXECUTOR_SECRET ? { Authorization: `Bearer ${EXECUTOR_SECRET}` } : {}),
       },
       body: JSON.stringify({
-        language:   data.language,
-        code:       executableCode,
-        testCases:  formattedTestCases,
-        timeLimit:  data.timeLimit,
+        language:        data.language,
+        code:            executableCode,
+        testCases:       formattedTestCases,
+        timeLimit:       data.timeLimit,
+        batchedInput,
+        expectedOutputs: supportsBatchExecution ? formattedTestCases.map(tc => tc.expectedOutput) : undefined,
       }),
     });
 
@@ -746,6 +1004,17 @@ export async function executeChallengeSubmission(data: {
   } catch (err) {
     throw badRequest(`Execution service unavailable: ${(err as Error).message}`);
   }
+}
+
+function formatBatchedTestCaseInput(
+  language: SupportedChallengeLanguage,
+  inputs: string[],
+): string {
+  if (!needsLineBased(language)) {
+    return [String(inputs.length), ...inputs].join('\n');
+  }
+
+  return `${inputs.length}\n${inputs.join('\n')}`;
 }
 
 function formatTestCaseInput(
