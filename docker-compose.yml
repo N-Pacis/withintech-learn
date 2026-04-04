@@ -37,7 +37,10 @@ services:
     env_file:
       - .env
     environment:
+      PORT: 4001
       JUDGE0_URL: http://host.docker.internal:2358
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     deploy:
       resources:
         limits:
