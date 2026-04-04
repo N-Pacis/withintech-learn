@@ -1,5 +1,10 @@
 import { prisma } from '../../db/prisma';
 import { badRequest, conflict, notFound } from '../../utils/errors';
+import { DEFAULT_CHALLENGE_STARTER_CODE } from '../challenges.constants';
+import {
+  executeChallengeSubmission,
+  formatChallengeResults,
+} from '../challenges.execution';
 
 const toSlug = (title: string) =>
   title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -25,7 +30,7 @@ export const createChallenge = async (data: {
       slug,
       description: data.description,
       difficulty:  data.difficulty,
-      starterCode: data.starterCode,
+      starterCode: data.starterCode ?? DEFAULT_CHALLENGE_STARTER_CODE,
       timeLimit:   data.timeLimit,
       orderIndex:  data.orderIndex,
       createdById: data.userId,
@@ -163,4 +168,31 @@ export const deleteTestCase = async (testCaseId: string) => {
   const tc = await prisma.challengeTestCase.findUnique({ where: { id: testCaseId } });
   if (!tc) throw notFound('Test case not found');
   await prisma.challengeTestCase.delete({ where: { id: testCaseId } });
+};
+
+export const runChallenge = async (id: string, data: {
+  language: string;
+  code: string;
+}) => {
+  const challenge = await prisma.challenge.findUnique({
+    where: { id },
+    include: { testCases: { orderBy: { orderIndex: 'asc' } } },
+  });
+  if (!challenge) throw notFound('Challenge not found');
+
+  const executorResult = await executeChallengeSubmission({
+    language: data.language,
+    code: data.code,
+    testCases: challenge.testCases,
+    timeLimit: challenge.timeLimit,
+  });
+
+  return {
+    submissionId: null,
+    status: executorResult.status,
+    testsPassed: executorResult.testsPassed,
+    totalTests: executorResult.totalTests,
+    compileError: executorResult.compileError ?? null,
+    results: formatChallengeResults(executorResult, challenge.testCases, { revealHidden: true }),
+  };
 };

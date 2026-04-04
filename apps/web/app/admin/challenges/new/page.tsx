@@ -30,7 +30,7 @@ export default function NewChallengePage() {
   const validate = () => {
     const e: typeof errors = {};
     if (!title.trim())       e.title       = 'Title is required.';
-    if (!hasDescriptionText(description)) e.description = 'Description is required.';
+    if (!hasDescriptionText(description)) e.description = 'Problem statement is required.';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -41,7 +41,7 @@ export default function NewChallengePage() {
 
     const res = await createMutation.mutateAsync({ title: title.trim(), description, difficulty, timeLimit });
     if (res.success && res.data) {
-      toast.success('Challenge created — add starter code and test cases next.');
+      toast.success('Challenge created — add test cases and try it in the sandbox next.');
       router.push(`/admin/challenges/${(res.data as { id: string }).id}`);
     } else {
       toast.error(res.message ?? 'Failed to create challenge');
@@ -60,7 +60,7 @@ export default function NewChallengePage() {
         </Link>
         <div>
           <h1 className="font-heading font-black text-2xl text-[#0F0F0F]">New Challenge</h1>
-          <p className="font-body text-sm text-[#6B7280] mt-0.5">Fill in the basics — you'll add test cases next.</p>
+          <p className="font-body text-sm text-[#6B7280] mt-0.5">Fill in the basics. Starter code is generated automatically for each language.</p>
         </div>
       </div>
 
@@ -77,9 +77,9 @@ export default function NewChallengePage() {
           </FormField>
 
           <FormField
-            label="Description"
+            label="Problem"
             required
-            hint="Describe the problem clearly. Rich text, tables, links, and headings are supported. Images are disabled for now."
+            hint="Write the full problem statement. Rich text, tables, links, and headings are supported. Images are disabled for now."
             error={errors.description}
           >
             <TiptapEditor

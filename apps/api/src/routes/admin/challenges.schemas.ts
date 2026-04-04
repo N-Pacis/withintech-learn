@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { DEFAULT_CHALLENGE_STARTER_CODE } from '../challenges.constants';
 
 const starterCodeSchema = z.object({
   python:     z.string().default(''),
@@ -13,7 +14,7 @@ export const createChallengeSchema = z.object({
   title:       z.string().min(1).max(200),
   description: z.string().min(1),
   difficulty:  z.enum(['easy', 'medium', 'hard']),
-  starterCode: starterCodeSchema.default({}),
+  starterCode: starterCodeSchema.default(DEFAULT_CHALLENGE_STARTER_CODE),
   timeLimit:   z.number().int().min(1).max(15).default(5),
   orderIndex:  z.number().int().min(0).default(0),
 });
@@ -46,4 +47,9 @@ export const updateTestCaseSchema = z.object({
   expectedOutput: z.string().min(1).optional(),
   isHidden:       z.boolean().optional(),
   orderIndex:     z.number().int().min(0).optional(),
+});
+
+export const runChallengeSchema = z.object({
+  language: z.enum(['python', 'java', 'javascript', 'c', 'cpp', 'go']),
+  code: z.string().min(1).max(65536),
 });
