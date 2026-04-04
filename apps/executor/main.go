@@ -11,10 +11,9 @@ import (
 )
 
 func main() {
-	// Cap Go scheduler threads. The executor is I/O-bound (waiting on Judge0),
-	// so 2 OS threads is plenty and avoids stealing CPU from Judge0 workers.
+	// Single OS thread — executor is sequential I/O (1 Judge0 worker).
 	if maxProcs := getEnv("GOMAXPROCS", ""); maxProcs == "" {
-		runtime.GOMAXPROCS(2)
+		runtime.GOMAXPROCS(1)
 	}
 
 	judge0URL := getEnv("JUDGE0_URL", "http://localhost:2358")
