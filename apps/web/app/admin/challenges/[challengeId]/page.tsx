@@ -299,6 +299,7 @@ export default function EditChallengePage() {
   const runChallengeMutation                 = useRunAdminChallenge(challengeId);
 
   const [activeTab, setActiveTab]           = useState<Tab>('details');
+  const [mobileSandboxPanel, setMobileSandboxPanel] = useState<'problem' | 'code'>('problem');
   const [sandboxLang, setSandboxLang]       = useState<ChallengeLanguage>('python');
   const [sandboxCode, setSandboxCode]       = useState<StarterCode>(DEFAULT_STARTER_CODE);
   const [description, setDescription]      = useState('');
@@ -446,7 +447,7 @@ export default function EditChallengePage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-0 border-b border-[#E5E7EB] mb-6">
+      <div className="flex gap-0 border-b border-[#E5E7EB] mb-6 overflow-x-auto">
         {tabItems.map(tab => (
           <button
             key={tab.id}
@@ -586,8 +587,30 @@ export default function EditChallengePage() {
               </Button>
             </div>
 
+            {/* Mobile panel toggle */}
+            <div className="md:hidden flex shrink-0 border-b border-[#E5E7EB] bg-white">
+              {(['problem', 'code'] as const).map(panel => (
+                <button
+                  key={panel}
+                  onClick={() => setMobileSandboxPanel(panel)}
+                  className={cn(
+                    'flex-1 py-2 font-body text-xs font-medium capitalize transition-colors',
+                    mobileSandboxPanel === panel
+                      ? 'text-[#3D006B] border-b-2 border-[#3D006B]'
+                      : 'text-[#6B7280]',
+                  )}
+                >
+                  {panel === 'problem' ? 'Problem' : 'Code'}
+                </button>
+              ))}
+            </div>
+
             <div className="flex-1 flex overflow-hidden min-h-0">
-              <div className="w-[42%] min-w-[280px] border-r border-[#E5E7EB] flex flex-col overflow-hidden bg-white">
+              <div className={cn(
+                'flex flex-col overflow-hidden bg-white border-r border-[#E5E7EB]',
+                'md:flex md:w-[42%] md:min-w-[280px]',
+                mobileSandboxPanel === 'problem' ? 'flex flex-1' : 'hidden',
+              )}>
                 <div className="flex-1 overflow-y-auto">
                   <ProblemPanel
                     title={challenge.title}
@@ -599,7 +622,11 @@ export default function EditChallengePage() {
                 </div>
               </div>
 
-              <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+              <div className={cn(
+                'flex flex-col overflow-hidden min-w-0',
+                'md:flex md:flex-1',
+                mobileSandboxPanel === 'code' ? 'flex flex-1' : 'hidden',
+              )}>
                 <div className="flex items-center gap-1 px-3 py-2 bg-[#1e1e1e] border-b border-[#3a3a3a] shrink-0 overflow-x-auto">
                   {CHALLENGE_LANGUAGES.map(l => (
                     <button

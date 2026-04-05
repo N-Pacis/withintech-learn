@@ -172,16 +172,16 @@ export default function AdminChallengesPage() {
 
       <div className="p-6 max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
+        <div className="flex items-start justify-between gap-3 mb-6">
+          <div className="min-w-0">
             <h1 className="font-heading font-black text-2xl text-[#0F0F0F]">Challenges</h1>
             <p className="font-body text-sm text-[#6B7280] mt-0.5">
               {data ? `${data.total} challenge${data.total !== 1 ? 's' : ''}` : 'Manage coding challenges for students'}
             </p>
           </div>
-          <Link href="/admin/challenges/new">
+          <Link href="/admin/challenges/new" className="shrink-0">
             <Button variant="primary" size="md">
-              <Plus size={15} className="mr-1.5" /> New Challenge
+              <Plus size={15} className="mr-1.5" /><span className="hidden sm:inline">New Challenge</span><span className="sm:hidden">New</span>
             </Button>
           </Link>
         </div>
@@ -217,15 +217,15 @@ export default function AdminChallengesPage() {
           <EmptyState />
         ) : (
           <>
-            <div className="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
-              <table className="w-full">
+            <div className="bg-white rounded-xl border border-[#E5E7EB] overflow-x-auto">
+              <table className="w-full min-w-[480px]">
                 <thead>
                   <tr className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                     <th className="text-left px-4 py-3 font-body font-semibold text-xs text-[#6B7280] uppercase tracking-wider">Title</th>
                     <th className="text-left px-4 py-3 font-body font-semibold text-xs text-[#6B7280] uppercase tracking-wider">Difficulty</th>
                     <th className="text-left px-4 py-3 font-body font-semibold text-xs text-[#6B7280] uppercase tracking-wider">Status</th>
-                    <th className="text-left px-4 py-3 font-body font-semibold text-xs text-[#6B7280] uppercase tracking-wider w-16">Tests</th>
-                    <th className="text-left px-4 py-3 font-body font-semibold text-xs text-[#6B7280] uppercase tracking-wider w-20">Submissions</th>
+                    <th className="hidden sm:table-cell text-left px-4 py-3 font-body font-semibold text-xs text-[#6B7280] uppercase tracking-wider w-16">Tests</th>
+                    <th className="hidden sm:table-cell text-left px-4 py-3 font-body font-semibold text-xs text-[#6B7280] uppercase tracking-wider w-20">Submissions</th>
                     <th className="w-28" />
                   </tr>
                 </thead>
@@ -235,7 +235,7 @@ export default function AdminChallengesPage() {
                     const stat = STATUS_BADGE[c.status];
                     return (
                       <tr key={c.id} className="hover:bg-[#FAFAFA] transition-colors group">
-                        <td className="px-4 py-3.5 font-body text-sm text-[#0F0F0F] font-medium">
+                        <td className="px-4 py-3.5 font-body text-sm text-[#0F0F0F] font-medium max-w-[160px] sm:max-w-none truncate">
                           {c.title}
                         </td>
                         <td className="px-4 py-3.5">
@@ -244,14 +244,14 @@ export default function AdminChallengesPage() {
                         <td className="px-4 py-3.5">
                           <Badge variant={stat.variant} size="sm">{stat.label}</Badge>
                         </td>
-                        <td className="px-4 py-3.5 font-body text-sm text-[#6B7280]">
+                        <td className="hidden sm:table-cell px-4 py-3.5 font-body text-sm text-[#6B7280]">
                           {c._count.testCases}
                         </td>
-                        <td className="px-4 py-3.5 font-body text-sm text-[#6B7280]">
+                        <td className="hidden sm:table-cell px-4 py-3.5 font-body text-sm text-[#6B7280]">
                           {c._count.submissions}
                         </td>
                         <td className="px-4 py-3.5">
-                          <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center justify-end gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                             <button
                               title={c.status === 'published' ? 'Unpublish' : 'Publish'}
                               onClick={() => handleTogglePublish(c)}
