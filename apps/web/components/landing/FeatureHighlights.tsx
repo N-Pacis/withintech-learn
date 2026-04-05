@@ -181,6 +181,74 @@ function ProgressMockup() {
   );
 }
 
+// ─── Mock UI: Challenge workspace ────────────────────────────────────────────
+
+function ChallengeMockup() {
+  return (
+    <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-xl overflow-hidden">
+      {/* Title bar */}
+      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-[#F3F4F6] bg-[#FAFAFA]">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="font-heading font-bold text-xs text-[#0F0F0F] truncate">Kigali Coffee Pair</span>
+          <span className="shrink-0 font-body text-[9px] font-medium px-2 py-0.5 rounded bg-green-50 text-green-700 uppercase tracking-wide">Easy</span>
+        </div>
+        <div className="shrink-0 flex items-center gap-1.5 bg-[#3D006B] text-white text-[10px] font-body font-medium px-2.5 py-1 rounded">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Submit
+        </div>
+      </div>
+
+      {/* Language tabs */}
+      <div className="flex items-center gap-1 px-3 py-2 bg-[#1e1e1e] border-b border-[#3a3a3a]">
+        {['Python', 'Java', 'C++', 'Go'].map((lang, i) => (
+          <span key={lang} className={`font-mono text-[9px] px-2.5 py-1 rounded font-medium ${i === 0 ? 'bg-[#3D006B] text-white' : 'text-[#9CA3AF]'}`}>
+            {lang}
+          </span>
+        ))}
+      </div>
+
+      {/* Code editor */}
+      <div className="bg-[#1e1e1e] px-4 py-3 font-mono text-[11px] leading-relaxed">
+        <div><span className="text-[#C586C0]">def</span> <span className="text-[#DCDCAA]">solution</span><span className="text-white">(</span><span className="text-[#9CDCFE]">bags</span><span className="text-[#CE9178]">: int[]</span><span className="text-white">, </span><span className="text-[#9CDCFE]">shipment</span><span className="text-[#CE9178]">: int</span><span className="text-white">) → int[]:</span></div>
+        <div className="pl-4"><span className="text-[#9CDCFE]">seen</span><span className="text-white"> = </span><span className="text-[#CE9178]">{'{}'}</span></div>
+        <div className="pl-4"><span className="text-[#C586C0]">for</span><span className="text-white"> i, b </span><span className="text-[#C586C0]">in</span><span className="text-white"> </span><span className="text-[#DCDCAA]">enumerate</span><span className="text-white">(bags):</span></div>
+        <div className="pl-8"><span className="text-[#C586C0]">if</span><span className="text-white"> shipment - b </span><span className="text-[#C586C0]">in</span><span className="text-white"> seen:</span></div>
+        <div className="pl-12"><span className="text-[#C586C0]">return</span><span className="text-white"> [seen[shipment - b], i]</span></div>
+        <div className="pl-8"><span className="text-[#9CDCFE]">seen</span><span className="text-white">[b] = i</span></div>
+        <div className="flex items-center gap-1 mt-1">
+          <span className="w-1.5 h-4 bg-[#9CDCFE] animate-pulse rounded-sm" />
+        </div>
+      </div>
+
+      {/* Results panel */}
+      <div className="border-t border-[#E5E7EB]">
+        <div className="flex items-center gap-1 px-3 py-2 border-b border-[#F3F4F6]">
+          <span className="font-body text-[10px] font-medium text-[#3D006B] border-b-2 border-[#3D006B] px-2 py-1.5">Results</span>
+          <span className="font-body text-[10px] text-[#9CA3AF] px-2 py-1.5">Submissions</span>
+          <span className="ml-auto flex items-center gap-1 font-body text-[10px] font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Accepted
+          </span>
+        </div>
+        <div className="p-3 flex flex-col gap-1.5">
+          {[
+            { input: 'bags=[120,380,200], shipment=500', output: '[0,1]' },
+            { input: 'bags=[150,250,350], shipment=500', output: '[0,2]' },
+            { input: 'bags=[100,400], shipment=500',     output: '[0,1]' },
+          ].map(({ input, output }, i) => (
+            <div key={i} className="flex items-center gap-2 rounded-lg px-3 py-2 bg-green-50 border border-green-100 text-[10px] font-mono">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-green-500 shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
+              <span className="text-[#6B7280] truncate">{input}</span>
+              <span className="ml-auto text-green-700 shrink-0">→ {output}</span>
+            </div>
+          ))}
+          <p className="font-body text-[10px] text-[#9CA3AF] text-center pt-1">3 / 3 test cases passed</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Individual feature row ───────────────────────────────────────────────────
 
 interface FeatureRowProps {
@@ -279,6 +347,19 @@ export default function FeatureHighlights() {
               'Completion rate updated instantly as you progress',
             ]}
             mockup={<ProgressMockup />}
+          />
+
+          <FeatureRow
+            eyebrow="Challenges"
+            headline="Write real code. Get instant feedback."
+            body="Put your skills to the test with coding challenges that run your solution against real test cases, directly in the browser, across six languages."
+            bullets={[
+              'Python, JavaScript, Java, C, C++, and Go supported',
+              'Solve realistic Rwandan problems designed to sharpen your thinking',
+              'Instant verdict with per-test-case breakdown',
+            ]}
+            mockup={<ChallengeMockup />}
+            reverse
           />
         </div>
       </div>

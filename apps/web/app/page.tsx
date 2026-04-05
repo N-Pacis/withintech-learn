@@ -210,7 +210,8 @@ export default function Home() {
           <div className="flex flex-wrap items-center justify-center gap-12 lg:gap-20">
             {[
               { src: '/partners/partner-1.png', alt: 'Partner 1' },
-              { src: '/partners/partner-2.png', alt: 'Partner 2' }
+              { src: '/partners/partner-2.png', alt: 'Partner 2' },
+              { src: '/partners/partner-3.png', alt: 'Partner 3' },
             ].map(({ src, alt }) => (
               <div key={alt} className="h-16 w-48 relative">
                 <Image src={src} alt={alt} fill className="object-contain" unoptimized />

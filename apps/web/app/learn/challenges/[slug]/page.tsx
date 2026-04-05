@@ -86,6 +86,7 @@ export default function ChallengePage() {
   const [rightTab, setRightTab]       = useState<RightTab>('results');
   const [lastResult, setLastResult]   = useState<SubmissionResult | null>(null);
   const [showBanner, setShowBanner]   = useState(false);
+  const [mobilePanel, setMobilePanel] = useState<'problem' | 'code'>('problem');
   const initialized                   = useRef(false);
 
   // Seed starter code from challenge once it loads — only once
@@ -211,11 +212,33 @@ export default function ChallengePage() {
         </Button>
       </div>
 
+      {/* Mobile panel toggle */}
+      <div className="md:hidden flex shrink-0 border-b border-[#E5E7EB] bg-white">
+        {(['problem', 'code'] as const).map(panel => (
+          <button
+            key={panel}
+            onClick={() => setMobilePanel(panel)}
+            className={cn(
+              'flex-1 py-2.5 font-body text-sm font-medium capitalize transition-colors',
+              mobilePanel === panel
+                ? 'text-[#3D006B] border-b-2 border-[#3D006B]'
+                : 'text-[#6B7280]',
+            )}
+          >
+            {panel === 'problem' ? 'Problem' : 'Code'}
+          </button>
+        ))}
+      </div>
+
       {/* Main split */}
       <div className="flex-1 flex overflow-hidden min-h-0">
 
         {/* ── Left: Problem ───────────────────────────────────────────────── */}
-        <div className="w-[42%] min-w-[280px] border-r border-[#E5E7EB] flex flex-col overflow-hidden bg-white">
+        <div className={cn(
+          'flex flex-col overflow-hidden bg-white border-r border-[#E5E7EB]',
+          'md:flex md:w-[42%] md:min-w-[280px]',
+          mobilePanel === 'problem' ? 'flex flex-1' : 'hidden',
+        )}>
           <div className="flex-1 overflow-y-auto">
             <ProblemPanel
               title={challenge.title}
@@ -228,7 +251,11 @@ export default function ChallengePage() {
         </div>
 
         {/* ── Right: Editor + Results ─────────────────────────────────────── */}
-        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        <div className={cn(
+          'flex flex-col overflow-hidden min-w-0',
+          'md:flex md:flex-1',
+          mobilePanel === 'code' ? 'flex flex-1' : 'hidden',
+        )}>
 
           {/* Language selector bar */}
           <div className="flex items-center gap-1 px-3 py-2 bg-[#1e1e1e] border-b border-[#3a3a3a] shrink-0 overflow-x-auto">
