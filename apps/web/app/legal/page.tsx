@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Logo } from '@/components/ui';
 
-const LAST_UPDATED = 'March 23, 2026';
+const LAST_UPDATED = 'April 4, 2026';
 const CONTACT_EMAIL = 'learn@withintech.org';
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
@@ -67,6 +67,7 @@ export default function LegalPage() {
               ['#acceptable-use', 'Acceptable Use'],
               ['#account-suspension', 'Account Suspension & Termination'],
               ['#intellectual-property', 'Intellectual Property'],
+              ['#challenges', 'Coding Challenges & Code Execution'],
               ['#third-party-content', 'Third-Party Content & Thumbnails'],
               ['#disclaimer', 'Disclaimer of Warranties'],
               ['#limitation', 'Limitation of Liability'],
@@ -106,12 +107,14 @@ export default function LegalPage() {
         <Section id="acceptable-use" title="2. Acceptable Use">
           <P>You agree to use WithinTech Learn only for lawful, personal, and non-commercial educational purposes. You agree not to:</P>
           <Ul items={[
-            'Share, resell, sublicense, or redistribute any course content, materials, or certificates.',
+            'Share, resell, sublicense, or redistribute any course content, materials, certificates, or challenge problems.',
             'Use the platform to harass, abuse, or harm other users or WithinTech staff.',
             'Upload, post, or transmit any content that is unlawful, defamatory, or infringes on the rights of others.',
-            'Use automated tools, bots, scrapers, or scripts to access or extract platform content.',
+            'Use automated tools, bots, scrapers, or scripts to access, extract, or submit to platform content or features.',
             'Impersonate another person or entity.',
             'Use the platform in a manner that could damage, disable, or overburden our infrastructure.',
+            'Submit code to the Challenges feature that is intentionally designed to harm, overload, or exploit the code execution environment or any connected infrastructure.',
+            'Publicly share, publish, or distribute challenge problem statements, hidden test cases, or model solutions in any forum, repository, or medium without prior written consent from WithinTech.',
           ]} />
         </Section>
 
@@ -141,14 +144,23 @@ export default function LegalPage() {
         {/* ── 4. Intellectual Property ────────────────────────────────────────── */}
         <Section id="intellectual-property" title="4. Intellectual Property">
           <P>
-            All course content on WithinTech Learn, including but not limited to videos, text, quizzes,
-            assessments, module materials, and certificates, is the <strong>proprietary property of
-            WithinTech</strong> or its licensed content providers. All rights reserved.
+            All content on WithinTech Learn — including but not limited to videos, text, quizzes, assessments,
+            module materials, certificates, <strong>coding challenge problems, test cases, and example
+            inputs and outputs</strong> — is the <strong>proprietary property of WithinTech</strong> or its
+            licensed content providers. All rights reserved.
           </P>
           <P>
             You may not copy, reproduce, distribute, publish, broadcast, transmit, modify, adapt, create
-            derivative works from, or otherwise exploit any course content, in whole or in part, without the
-            prior written consent of WithinTech.
+            derivative works from, or otherwise exploit any platform content, in whole or in part, without
+            the prior written consent of WithinTech. This explicitly includes reproducing challenge problem
+            statements or test case data on external platforms such as GitHub, coding forums, or social media.
+          </P>
+          <P>
+            Code solutions you write and submit through the Challenges feature remain your own intellectual
+            property. However, by submitting code to our platform, you grant WithinTech a non-exclusive,
+            royalty-free license to retain, analyze, and use aggregated or anonymized submission data solely
+            for the purposes of improving our grading systems, platform quality, and educational content.
+            We will not publish or share your individual solutions publicly.
           </P>
           <P>
             Certificates issued by WithinTech Learn are issued solely to the enrolled learner and may not be
@@ -157,8 +169,36 @@ export default function LegalPage() {
           </P>
         </Section>
 
-        {/* ── 5. Thumbnails ───────────────────────────────────────────────────── */}
-        <Section id="third-party-content" title="5. Third-Party Content & Thumbnails">
+        {/* ── 5. Challenges & Code Execution ──────────────────────────────────── */}
+        <Section id="challenges" title="5. Coding Challenges & Code Execution">
+          <P>
+            WithinTech Learn offers a <strong>Coding Challenges</strong> feature that
+            allows users to write and submit code solutions in multiple programming languages. Submitted code
+            is executed in an isolated, sandboxed environment. By using this feature, you acknowledge and
+            agree to the following:
+          </P>
+          <Ul items={[
+            'Code execution is performed in a controlled sandbox environment. You must not attempt to escape, probe, or abuse this environment in any way.',
+            'Submissions are automatically graded by comparing your output against expected results. WithinTech does not guarantee that automated grading is free from errors and accepts no liability for incorrect verdicts.',
+            'Submission results, code, language, and timestamps are stored and associated with your account as part of your submission history.',
+            'Resource limits (time, memory) are enforced per submission. Submissions that exceed these limits will receive a Time Limit Exceeded or similar verdict.',
+            'You must not submit code designed to consume excessive resources, perform network calls, access the file system beyond the sandbox, or otherwise interfere with the execution environment.',
+            'The Challenges feature is provided as a beta feature. Its availability, grading accuracy, and supported languages may change at any time without prior notice.',
+          ]} />
+          <P>
+            WithinTech reserves the right to suspend or restrict access to the Challenges feature for any user
+            found to be abusing the code execution environment, submitting malicious payloads, or attempting
+            to reverse-engineer hidden test cases through systematic probing.
+          </P>
+          <P>
+            <strong>Beta disclaimer:</strong> The Challenges feature is under active development. Features,
+            grading logic, and supported languages may be modified, restricted, or discontinued at any time.
+            Completion records and submission history are retained on a best-effort basis during the beta period.
+          </P>
+        </Section>
+
+        {/* ── 6. Thumbnails ───────────────────────────────────────────────────── */}
+        <Section id="third-party-content" title="6. Third-Party Content & Thumbnails">
           <P>
             WithinTech Learn may display course thumbnail images sourced from third parties. We do not claim
             ownership over these images. If you believe a thumbnail on our platform uses your image or artwork
@@ -177,8 +217,8 @@ export default function LegalPage() {
           </P>
         </Section>
 
-        {/* ── 6. Disclaimer ───────────────────────────────────────────────────── */}
-        <Section id="disclaimer" title="6. Disclaimer of Warranties">
+        {/* ── 7. Disclaimer ───────────────────────────────────────────────────── */}
+        <Section id="disclaimer" title="7. Disclaimer of Warranties">
           <P>
             WithinTech Learn provides its courses and content for <strong>educational purposes only</strong>.
             While we strive for accuracy, <strong>we make no warranties or representations</strong> regarding
@@ -190,14 +230,16 @@ export default function LegalPage() {
             professionally or academically.
           </P>
           <P>
-            The platform is provided &quot;as is&quot; and &quot;as available&quot; without any warranties of any kind,
-            either express or implied, including but not limited to implied warranties of merchantability,
-            fitness for a particular purpose, or non-infringement.
+            The platform, including the Challenges feature and its automated code execution and grading
+            system, is provided &quot;as is&quot; and &quot;as available&quot; without any warranties of any kind, either express
+            or implied, including but not limited to implied warranties of merchantability, fitness for a
+            particular purpose, or non-infringement. Grading verdicts are automated and may not always
+            reflect the true correctness of a submitted solution.
           </P>
         </Section>
 
-        {/* ── 7. Limitation of Liability ──────────────────────────────────────── */}
-        <Section id="limitation" title="7. Limitation of Liability">
+        {/* ── 8. Limitation of Liability ──────────────────────────────────────── */}
+        <Section id="limitation" title="8. Limitation of Liability">
           <P>
             To the fullest extent permitted by applicable law, WithinTech, its directors, employees,
             partners, and agents shall not be liable for any indirect, incidental, special, consequential,
@@ -211,8 +253,8 @@ export default function LegalPage() {
           </P>
         </Section>
 
-        {/* ── 8. Privacy ──────────────────────────────────────────────────────── */}
-        <Section id="privacy" title="8. Privacy & Data Collection">
+        {/* ── 9. Privacy ──────────────────────────────────────────────────────── */}
+        <Section id="privacy" title="9. Privacy & Data Collection">
           <P>
             By using WithinTech Learn, you consent to the collection and use of your personal data as
             described in this section. We collect the following categories of information:
@@ -220,6 +262,7 @@ export default function LegalPage() {
           <Ul items={[
             'Account information: first name, last name, and email address.',
             'Learning data: courses you are enrolled in, module and quiz progress, and completion status.',
+            'Challenge data: code submissions, programming language used, submission timestamps, grading verdicts, and challenge completion status.',
             'Usage data: interactions with the platform such as button clicks, page views, feature usage, and session information.',
             'Device and browser information for security and analytics purposes.',
           ]} />
@@ -248,8 +291,8 @@ export default function LegalPage() {
           </P>
         </Section>
 
-        {/* ── 9. Communications ───────────────────────────────────────────────── */}
-        <Section id="communications" title="9. Communications & Marketing">
+        {/* ── 10. Communications ───────────────────────────────────────────────── */}
+        <Section id="communications" title="10. Communications & Marketing">
           <P>By creating an account, you agree to receive the following types of emails:</P>
           <Ul items={[
             'Transactional emails: account setup, password resets, certificate issuance.',
@@ -265,8 +308,8 @@ export default function LegalPage() {
           </P>
         </Section>
 
-        {/* ── 10. Security ────────────────────────────────────────────────────── */}
-        <Section id="security" title="10. Security & Prohibited Activities">
+        {/* ── 11. Security ────────────────────────────────────────────────────── */}
+        <Section id="security" title="11. Security & Prohibited Activities">
           <P>
             <strong>Any attempt to hack, exploit, tamper with, or gain unauthorized access to the WithinTech
             Learn platform, its infrastructure, user accounts, course enrollment records, or certificates
@@ -276,11 +319,13 @@ export default function LegalPage() {
           <P>This includes but is not limited to:</P>
           <Ul items={[
             'Attempting to bypass or circumvent authentication or access controls.',
-            'Forging, fabricating, or altering course completion certificates.',
+            'Forging, fabricating, or altering course completion certificates or challenge completion records.',
             'Illegally transferring or stealing course enrollments.',
             'Performing denial-of-service attacks or attempting to disrupt platform availability.',
             'Injecting malicious code, scripts, or payloads into the platform.',
             'Exploiting API endpoints or system vulnerabilities.',
+            'Submitting code to the Challenges feature that attempts to escape the sandbox, access system resources, perform network requests, or interfere with the execution infrastructure.',
+            'Systematically probing the challenge grading system to reverse-engineer hidden test cases.',
           ]} />
           <P>
             WithinTech reserves the right to report any such activities to the appropriate authorities and
@@ -288,8 +333,8 @@ export default function LegalPage() {
           </P>
         </Section>
 
-        {/* ── 11. Changes ─────────────────────────────────────────────────────── */}
-        <Section id="changes" title="11. Changes to These Terms">
+        {/* ── 12. Changes ─────────────────────────────────────────────────────── */}
+        <Section id="changes" title="12. Changes to These Terms">
           <P>
             WithinTech reserves the right to update these Terms of Service at any time. We will notify
             registered users of material changes via email or a prominent notice on the platform. The
@@ -306,8 +351,8 @@ export default function LegalPage() {
           </P>
         </Section>
 
-        {/* ── 12. Contact ─────────────────────────────────────────────────────── */}
-        <Section id="contact" title="12. Contact Us">
+        {/* ── 13. Contact ─────────────────────────────────────────────────────── */}
+        <Section id="contact" title="13. Contact Us">
           <P>
             If you have questions about these Terms, wish to make a data request, or need to report a
             concern, please contact us at:

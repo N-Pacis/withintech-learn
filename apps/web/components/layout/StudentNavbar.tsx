@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Logo } from '@/components/ui';
+import { Badge, Logo } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { label: 'My Courses',  href: '/learn'                  },
-  { label: 'Certificates', href: '/learn/certificates'    },
+  { label: 'My Courses',   href: '/learn',                 beta: false },
+  { label: 'Challenges',   href: '/learn/challenges',      beta: true  },
+  { label: 'Certificates', href: '/learn/certificates',    beta: false },
 ];
 
 export default function StudentNavbar() {
@@ -27,18 +28,19 @@ export default function StudentNavbar() {
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
-          {navItems.map(({ label, href }) => (
+          {navItems.map(({ label, href, beta }) => (
             <Link
               key={href}
               href={href}
               className={cn(
-                'font-body text-sm font-medium px-3 py-2 rounded-lg transition-colors',
+                'inline-flex items-center gap-1.5 font-body text-sm font-medium px-3 py-2 rounded-lg transition-colors',
                 pathname === href || (href !== '/learn' && pathname.startsWith(href))
                   ? 'text-[#3D006B] bg-[#3D006B]/5'
                   : 'text-[#6B7280] hover:text-[#3D006B] hover:bg-[#3D006B]/5',
               )}
             >
               {label}
+              {beta && <Badge variant="default" size="sm">Beta</Badge>}
             </Link>
           ))}
         </nav>
@@ -85,19 +87,20 @@ export default function StudentNavbar() {
       {/* Mobile nav dropdown */}
       {menuOpen && (
         <nav className="md:hidden border-t border-[#E5E7EB] bg-white px-4 py-3 flex flex-col gap-1">
-          {navItems.map(({ label, href }) => (
+          {navItems.map(({ label, href, beta }) => (
             <Link
               key={href}
               href={href}
               onClick={() => setMenuOpen(false)}
               className={cn(
-                'font-body text-sm font-medium px-3 py-2.5 rounded-lg transition-colors',
+                'inline-flex items-center gap-1.5 font-body text-sm font-medium px-3 py-2.5 rounded-lg transition-colors',
                 pathname === href || (href !== '/learn' && pathname.startsWith(href))
                   ? 'text-[#3D006B] bg-[#3D006B]/5'
                   : 'text-[#6B7280] hover:text-[#3D006B] hover:bg-[#3D006B]/5',
               )}
             >
               {label}
+              {beta && <Badge variant="default" size="sm">Beta</Badge>}
             </Link>
           ))}
         </nav>
