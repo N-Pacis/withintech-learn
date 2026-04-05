@@ -35,7 +35,6 @@ function ChallengeListSkeleton() {
           <div className="w-5 h-5 rounded-full bg-[#E5E7EB] shrink-0" />
           <div className="flex-1 h-4 bg-[#E5E7EB] rounded-md" style={{ width: `${50 + (i % 3) * 15}%` }} />
           <div className="w-14 h-5 bg-[#E5E7EB] rounded-full shrink-0" />
-          <div className="w-16 h-4 bg-[#E5E7EB] rounded-md shrink-0 hidden sm:block" />
         </div>
       ))}
     </div>
@@ -141,10 +140,6 @@ function ChallengeRow({ challenge, index }: { challenge: StudentChallengeListIte
       {/* Difficulty */}
       <Badge variant={badge.variant} size="sm" className="shrink-0">{badge.label}</Badge>
 
-      {/* Test count */}
-      <span className="font-body text-xs text-[#9CA3AF] shrink-0 hidden sm:block">
-        {challenge.testCount} test{challenge.testCount !== 1 ? 's' : ''}
-      </span>
     </Link>
   );
 }
