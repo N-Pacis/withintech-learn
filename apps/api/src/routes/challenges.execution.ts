@@ -147,13 +147,16 @@ function cppPrintResult(returnType: string): string {
       '    cout << "[";',
       '    for (size_t _i = 0; _i < _result.size(); _i++) {',
       '        if (_i > 0) cout << ",";',
-      et === 'string' ? '        cout << "\\"" << _result[_i] << "\\"";' : '        cout << _result[_i];',
+      et === 'string'  ? '        cout << "\\"" << _result[_i] << "\\"";'
+        : et === 'boolean' ? '        cout << (_result[_i] ? "true" : "false");'
+        : '        cout << _result[_i];',
       '    }',
       '    cout << "]" << endl;',
     ].join('\n') + '\n';
   }
-  if (et === 'char')   return '    cout << _result << endl;\n';
-  if (et === 'string') return '    cout << _result << endl;\n';
+  if (et === 'boolean') return '    cout << (_result ? "true" : "false") << endl;\n';
+  if (et === 'char')    return '    cout << _result << endl;\n';
+  if (et === 'string')  return '    cout << _result << endl;\n';
   return '    cout << _result << endl;\n';
 }
 
@@ -161,17 +164,20 @@ function cPrintResult(returnType: string): string {
   if (returnType === 'void') return '    solution(_CALL_ARGS_);\n';
   const et = elemType(returnType);
   if (isArrayType(returnType)) {
-    // C array return: solution returns int* and fills *returnSize
+    // C array return: solution returns type* and fills *returnSize
     const fmt = et === 'float' ? '%g' : et === 'double' ? '%g' : et === 'char' ? '%c' : et === 'string' ? '%s' : '%d';
     return [
       '    printf("[");',
       '    for (int _i = 0; _i < _returnSize; _i++) {',
       '        if (_i > 0) printf(",");',
-      et === 'string' ? '        printf("\\"%s\\"", _result[_i]);' : `        printf("${fmt}", _result[_i]);`,
+      et === 'string'  ? '        printf("\\"%s\\"", _result[_i]);'
+        : et === 'boolean' ? '        printf("%s", _result[_i] ? "true" : "false");'
+        : `        printf("${fmt}", _result[_i]);`,
       '    }',
       '    printf("]\\n");',
     ].join('\n') + '\n';
   }
+  if (et === 'boolean') return '    printf("%s\\n", _result ? "true" : "false");\n';
   const fmts: Record<string, string> = { int: '%d', float: '%g', double: '%g', char: '%c', string: '%s' };
   return `    printf("${fmts[et] ?? '%d'}\\n", _result);\n`;
 }
@@ -263,9 +269,10 @@ function javaParsingBody(params: FunctionParam[]): string {
 }
 
 function javaParseScalar(et: string, expr: string): string {
-  if (et === 'int')    return `Integer.parseInt(${expr})`;
-  if (et === 'float')  return `Float.parseFloat(${expr})`;
-  if (et === 'double') return `Double.parseDouble(${expr})`;
+  if (et === 'int')     return `Integer.parseInt(${expr})`;
+  if (et === 'float')   return `Float.parseFloat(${expr})`;
+  if (et === 'double')  return `Double.parseDouble(${expr})`;
+  if (et === 'boolean') return `Boolean.parseBoolean(${expr})`;
   return expr;
 }
 
@@ -329,8 +336,9 @@ function goParsingBody(params: FunctionParam[]): string {
 }
 
 function goParseScalar(et: string, expr: string): string {
-  if (et === 'int')            return `strconv.Atoi(${expr})`;
+  if (et === 'int')                      return `strconv.Atoi(${expr})`;
   if (et === 'float' || et === 'double') return `strconv.ParseFloat(${expr}, 64)`;
+  if (et === 'boolean')                  return `strconv.ParseBool(${expr})`;
   return `${expr}, nil`;
 }
 
@@ -358,6 +366,11 @@ function cppParsing(params: FunctionParam[]): string {
           `    ${cpt} ${name}(_${name}N);`,
           `    for (int _i = 0; _i < _${name}N; _i++) getline(cin, ${name}[_i]);`,
         );
+      } else if (et === 'boolean') {
+        lines.push(
+          `    ${cpt} ${name}(_${name}N);`,
+          `    for (int _i = 0; _i < _${name}N; _i++) { string _bt; cin >> _bt; ${name}[_i] = (_bt == "true"); }`,
+        );
       } else {
         lines.push(
           `    ${cpt} ${name}(_${name}N);`,
@@ -368,6 +381,8 @@ function cppParsing(params: FunctionParam[]): string {
       lines.push(`    string ${name}; cin.ignore(); getline(cin, ${name});`);
     } else if (et === 'char') {
       lines.push(`    char ${name}; cin >> ${name};`);
+    } else if (et === 'boolean') {
+      lines.push(`    bool ${name}; { string _bt; cin >> _bt; ${name} = (_bt == "true"); }`);
     } else {
       lines.push(`    ${cpt} ${name}; cin >> ${name};`);
     }
@@ -409,6 +424,11 @@ function cParsing(params: FunctionParam[]): string {
           `        ${name}[_i] = (char*)malloc(1024); scanf(" %1023s", ${name}[_i]);`,
           `    }`,
         );
+      } else if (et === 'boolean') {
+        lines.push(
+          `    int* ${name} = (int*)malloc(_${name}N * sizeof(int));`,
+          `    for (int _i = 0; _i < _${name}N; _i++) { char _bt[8]; scanf(" %7s", _bt); ${name}[_i] = (strcmp(_bt, "true") == 0); }`,
+        );
       } else {
         lines.push(
           `    ${bt}* ${name} = (${bt}*)malloc(_${name}N * sizeof(${bt}));`,
@@ -419,6 +439,8 @@ function cParsing(params: FunctionParam[]): string {
       lines.push(`    char* ${name} = (char*)malloc(65536); scanf(" %65535s", ${name});`);
     } else if (et === 'char') {
       lines.push(`    char ${name}; scanf(" %c", &${name});`);
+    } else if (et === 'boolean') {
+      lines.push(`    int ${name}; { char _bt[8]; scanf(" %7s", _bt); ${name} = (strcmp(_bt, "true") == 0); }`);
     } else {
       lines.push(`    ${cBaseType(et)} ${name}; scanf("${cScanfFmt(et)}", &${name});`);
     }
@@ -500,6 +522,9 @@ function buildPythonWrapper2(
   } else if (isArrayType(returnType)) {
     lines.push(`_result = solution(${call})`);
     lines.push('print(_json.dumps(_result, separators=(\',\', \':\')))', '');
+  } else if (elemType(returnType) === 'boolean') {
+    // Python prints True/False (capital); normalize to lowercase for cross-language consistency
+    lines.push(`_result = solution(${call})`, 'print(str(_result).lower())', '');
   } else {
     lines.push(`_result = solution(${call})`, 'print(_result)', '');
   }
@@ -707,7 +732,9 @@ function buildBatchedPythonWrapper(
     ? ['    solution(' + call + ')', '    print("")']
     : isArrayType(returnType)
       ? ['    _result = solution(' + call + ')', '    print(_json.dumps(_result, separators=(\',\', \':\')))']
-      : ['    _result = solution(' + call + ')', '    print(_result)'];
+      : elemType(returnType) === 'boolean'
+        ? ['    _result = solution(' + call + ')', '    print(str(_result).lower())']
+        : ['    _result = solution(' + call + ')', '    print(_result)'];
 
   return [
     userCode.trimEnd(),

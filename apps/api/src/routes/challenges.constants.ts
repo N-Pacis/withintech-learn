@@ -1,9 +1,9 @@
 // ─── Supported param types ────────────────────────────────────────────────────
 
 export const PARAM_TYPES = [
-  'int', 'float', 'double', 'char', 'string',
-  'int[]', 'float[]', 'double[]', 'char[]', 'string[]',
-  'int[][]', 'float[][]', 'double[][]', 'char[][]', 'string[][]',
+  'int', 'float', 'double', 'char', 'string', 'boolean',
+  'int[]', 'float[]', 'double[]', 'char[]', 'string[]', 'boolean[]',
+  'int[][]', 'float[][]', 'double[][]', 'char[][]', 'string[][]', 'boolean[][]',
 ] as const;
 
 export type ParamType = typeof PARAM_TYPES[number];
@@ -26,7 +26,7 @@ export function elemType(t: string): string {
 // ─── Language type mappings ───────────────────────────────────────────────────
 
 const PYTHON_BASE: Record<string, string> = {
-  int: 'int', float: 'float', double: 'float', char: 'str', string: 'str',
+  int: 'int', float: 'float', double: 'float', char: 'str', string: 'str', boolean: 'bool',
 };
 export function pythonTypeHint(t: string): string {
   const base = PYTHON_BASE[elemType(t)] ?? 'Any';
@@ -36,7 +36,7 @@ export function pythonTypeHint(t: string): string {
 }
 
 const JAVA_BASE: Record<string, string> = {
-  int: 'int', float: 'float', double: 'double', char: 'char', string: 'String',
+  int: 'int', float: 'float', double: 'double', char: 'char', string: 'String', boolean: 'boolean',
 };
 export function javaType(t: string): string {
   const base = JAVA_BASE[elemType(t)] ?? 'Object';
@@ -46,7 +46,7 @@ export function javaType(t: string): string {
 }
 
 const CPP_BASE: Record<string, string> = {
-  int: 'int', float: 'float', double: 'double', char: 'char', string: 'string',
+  int: 'int', float: 'float', double: 'double', char: 'char', string: 'string', boolean: 'bool',
 };
 export function cppType(t: string, asParam = false): string {
   const base = CPP_BASE[elemType(t)] ?? 'auto';
@@ -56,7 +56,7 @@ export function cppType(t: string, asParam = false): string {
 }
 
 const C_BASE: Record<string, string> = {
-  int: 'int', float: 'float', double: 'double', char: 'char', string: 'char*',
+  int: 'int', float: 'float', double: 'double', char: 'char', string: 'char*', boolean: 'int',
 };
 export function cBaseType(et: string): string {
   return C_BASE[et] ?? 'void*';
@@ -68,7 +68,7 @@ export function cReturnType(t: string): string {
 }
 
 const GO_BASE: Record<string, string> = {
-  int: 'int', float: 'float64', double: 'float64', char: 'byte', string: 'string',
+  int: 'int', float: 'float64', double: 'float64', char: 'byte', string: 'string', boolean: 'bool',
 };
 export function goType(t: string): string {
   const base = GO_BASE[elemType(t)] ?? 'interface{}';
@@ -78,7 +78,7 @@ export function goType(t: string): string {
 }
 
 const JSDOC_BASE: Record<string, string> = {
-  int: 'number', float: 'number', double: 'number', char: 'string', string: 'string',
+  int: 'number', float: 'number', double: 'number', char: 'string', string: 'string', boolean: 'boolean',
 };
 export function jsDocType(t: string): string {
   const base = JSDOC_BASE[elemType(t)] ?? 'any';
@@ -103,9 +103,10 @@ export function defaultReturnValue(language: string, t: string): string {
     }
   }
   if (et === 'int')                        return '0';
-  if (et === 'float' || et === 'double')   return language === 'python' || language === 'javascript' ? '0.0' : '0.0';
+  if (et === 'float' || et === 'double')   return '0.0';
   if (et === 'char')                       return language === 'java' ? "'\\0'" : language === 'python' ? "' '" : "' '";
   if (et === 'string')                     return language === 'java' ? '""' : language === 'c' ? 'NULL' : '""';
+  if (et === 'boolean')                    return 'false';
   return '0';
 }
 

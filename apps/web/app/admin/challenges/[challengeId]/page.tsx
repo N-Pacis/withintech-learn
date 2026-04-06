@@ -32,14 +32,15 @@ import { SubmissionResults } from '@/app/learn/challenges/[slug]/components/Subm
 // ─── Helpers for structured test case input ───────────────────────────────────
 
 const PARAM_TYPES_LIST: ParamType[] = [
-  'int', 'float', 'double', 'char', 'string',
-  'int[]', 'float[]', 'double[]', 'char[]', 'string[]',
-  'int[][]', 'float[][]', 'double[][]', 'char[][]', 'string[][]',
+  'int', 'float', 'double', 'char', 'string', 'boolean',
+  'int[]', 'float[]', 'double[]', 'char[]', 'string[]', 'boolean[]',
+  'int[][]', 'float[][]', 'double[][]', 'char[][]', 'string[][]', 'boolean[][]',
 ];
 
 function paramInputPlaceholder(type: ParamType): string {
-  if (type.endsWith('[][]')) return 'e.g. 1,2;3,4 (rows separated by ;)';
-  if (type.endsWith('[]'))   return type.startsWith('string') ? 'one per line' : 'e.g. 1, 2, 3';
+  if (type.endsWith('[][]')) return type.startsWith('boolean') ? 'e.g. true,false;false,true (rows by ;)' : 'e.g. 1,2;3,4 (rows separated by ;)';
+  if (type.endsWith('[]'))   return type.startsWith('string') ? 'one per line' : type.startsWith('boolean') ? 'e.g. true, false, true' : 'e.g. 1, 2, 3';
+  if (type === 'boolean')    return 'true or false';
   if (type === 'char')       return 'e.g. a';
   if (type === 'string')     return 'e.g. hello world';
   return 'e.g. 42';
@@ -63,9 +64,10 @@ function parseParamValue(type: ParamType, raw: string): unknown {
 }
 
 function parseScalar(type: ParamType, v: string): unknown {
-  if (type === 'int')    return parseInt(v) || 0;
+  if (type === 'int')     return parseInt(v) || 0;
   if (type === 'float' || type === 'double') return parseFloat(v) || 0;
-  if (type === 'char')   return v[0] ?? '';
+  if (type === 'char')    return v[0] ?? '';
+  if (type === 'boolean') return v.trim().toLowerCase() === 'true';
   return v;
 }
 
@@ -172,7 +174,6 @@ function AddTestCaseForm({
   const [expected, setExpected]       = useState('');
   const [isHidden, setIsHidden]       = useState(true);
   const [open, setOpen]               = useState(false);
-  const [error, setError]             = useState('');
 
   const hasParams = functionParams && functionParams.length > 0;
 
@@ -183,8 +184,6 @@ function AddTestCaseForm({
   };
 
   const handleAdd = async () => {
-    if (!expected.trim()) { setError('Expected output is required.'); return; }
-    setError('');
     const res = await addMutation.mutateAsync({
       input:          buildInput(),
       expectedOutput: expected,
@@ -254,10 +253,10 @@ function AddTestCaseForm({
         </FormField>
       )}
 
-      <FormField label="Expected Output" required error={error}>
+      <FormField label="Expected Output">
         <Textarea
           value={expected}
-          onChange={e => { setExpected(e.target.value); setError(''); }}
+          onChange={e => setExpected(e.target.value)}
           rows={2}
           placeholder={hasParams ? 'e.g. 0 (the return value your solution should produce)' : 'e.g. 1 3'}
           className="font-mono text-xs"
@@ -278,7 +277,7 @@ function AddTestCaseForm({
       </label>
 
       <div className="flex gap-2 justify-end pt-1">
-        <Button variant="secondary" size="sm" onClick={() => { setOpen(false); setError(''); }}>Cancel</Button>
+        <Button variant="secondary" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
         <Button variant="primary" size="sm" loading={addMutation.isPending} onClick={handleAdd}>
           Add Test Case
         </Button>
