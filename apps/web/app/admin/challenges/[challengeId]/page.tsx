@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Trash2, Eye, EyeOff, Save, ChevronDown, CheckCircle2, Play, FlaskConical, Send, Pencil } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Eye, EyeOff, Save, ChevronDown, CheckCircle2, Play, FlaskConical, Send, Pencil, Globe, Archive } from 'lucide-react';
 import {
   useAdminChallenge,
+  useAdminChallengeStats,
   useUpdateChallenge,
   usePublishChallenge,
   useUnpublishChallenge,
@@ -15,6 +16,7 @@ import {
   type ChallengeLanguage,
   type StarterCode,
   type ChallengeTestCase,
+  type ChallengeStats,
   type SubmissionResult,
   type FunctionParam,
   type ParamType,
@@ -285,9 +287,187 @@ function AddTestCaseForm({
   );
 }
 
+// ─── Statistics tab ───────────────────────────────────────────────────────────
+
+const STATUS_COLORS: Record<string, string> = {
+  accepted:            '#10B981',
+  wrong_answer:        '#EF4444',
+  time_limit_exceeded: '#F59E0B',
+  runtime_error:       '#8B5CF6',
+  compile_error:       '#6B7280',
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  accepted:            'Accepted',
+  wrong_answer:        'Wrong Answer',
+  time_limit_exceeded: 'Time Limit',
+  runtime_error:       'Runtime Error',
+  compile_error:       'Compile Error',
+};
+
+const LANG_COLORS: Record<string, string> = {
+  python:     '#3B82F6',
+  javascript: '#F59E0B',
+  java:       '#EF4444',
+  cpp:        '#8B5CF6',
+  c:          '#6B7280',
+  go:         '#06B6D4',
+};
+
+function StatsHero({ stats }: { stats: ChallengeStats }) {
+  const heroItems = [
+    { label: 'Pass Rate',    value: `${stats.passRate}%`, highlight: true  },
+    { label: 'Submissions',  value: stats.totalSubmissions                  },
+    { label: 'Unique Solvers', value: stats.uniqueSolvers                   },
+    { label: 'Attempted By', value: stats.uniqueAttempts                    },
+  ];
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {heroItems.map(({ label, value, highlight }) => (
+        <div key={label} className={`rounded-xl border px-5 py-4 ${highlight ? 'bg-[#F3E8FF] border-[#E9D5FF]' : 'bg-white border-[#E5E7EB]'}`}>
+          <p className={`font-body text-xs uppercase tracking-widest mb-1 ${highlight ? 'text-[#7C3AED]' : 'text-[#9CA3AF]'}`}>{label}</p>
+          <p className={`font-heading font-black text-2xl ${highlight ? 'text-[#3D006B]' : 'text-[#0F0F0F]'}`}>{value}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function HBar({ label, value, total, color }: { label: string; value: number; total: number; color: string }) {
+  const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+  return (
+    <div className="flex items-center gap-3">
+      <span className="font-body text-xs text-[#6B7280] w-[140px] shrink-0 truncate">{label}</span>
+      <div className="flex-1 bg-[#F3F4F6] rounded-full h-2 overflow-hidden">
+        <div className="h-2 rounded-full transition-all" style={{ width: `${pct}%`, background: color }} />
+      </div>
+      <span className="font-body text-xs text-[#374151] w-10 text-right shrink-0">{value}</span>
+      <span className="font-body text-xs text-[#9CA3AF] w-8 shrink-0">{pct}%</span>
+    </div>
+  );
+}
+
+function PassRingMini({ rate }: { rate: number }) {
+  const r = 30, circ = 2 * Math.PI * r, dash = (rate / 100) * circ;
+  return (
+    <svg width="72" height="72" viewBox="0 0 72 72" className="shrink-0">
+      <circle cx="36" cy="36" r={r} fill="none" stroke="#F3F4F6" strokeWidth="8" />
+      <circle
+        cx="36" cy="36" r={r}
+        fill="none"
+        stroke={rate >= 60 ? '#10B981' : rate >= 30 ? '#F59E0B' : '#EF4444'}
+        strokeWidth="8"
+        strokeDasharray={`${dash} ${circ}`}
+        strokeLinecap="round"
+        transform="rotate(-90 36 36)"
+      />
+      <text x="36" y="40" textAnchor="middle" fontSize="13" fontWeight="800" fill="#0F0F0F" fontFamily="var(--font-heading)">{rate}%</text>
+    </svg>
+  );
+}
+
+function TrendChart({ data }: { data: { date: string; total: number; accepted: number }[] }) {
+  if (data.length === 0) {
+    return <div className="flex items-center justify-center h-20"><p className="font-body text-sm text-[#9CA3AF]">No submissions in the last 30 days.</p></div>;
+  }
+  const max = Math.max(...data.map(d => d.total), 1);
+  return (
+    <div className="overflow-x-auto">
+      <div className="flex items-end gap-1.5 min-w-max" style={{ height: 80 }}>
+        {data.map(d => (
+          <div key={d.date} className="flex flex-col items-center gap-0.5 group relative">
+            <div
+              className="w-5 rounded-t-sm bg-[#3D006B]/20 relative overflow-hidden"
+              style={{ height: Math.max(4, (d.total / max) * 72) }}
+              title={`${d.date}: ${d.accepted}/${d.total}`}
+            >
+              <div
+                className="absolute bottom-0 left-0 right-0 bg-[#10B981] rounded-t-sm"
+                style={{ height: `${d.total > 0 ? (d.accepted / d.total) * 100 : 0}%` }}
+              />
+            </div>
+            <span className="font-body text-[9px] text-[#D1D5DB] rotate-45 origin-left">{d.date.slice(5)}</span>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center gap-4 mt-3">
+        <span className="flex items-center gap-1.5 font-body text-xs text-[#6B7280]"><span className="w-3 h-3 rounded-sm bg-[#3D006B]/20 inline-block" />Total</span>
+        <span className="flex items-center gap-1.5 font-body text-xs text-[#6B7280]"><span className="w-3 h-3 rounded-sm bg-[#10B981] inline-block" />Accepted</span>
+      </div>
+    </div>
+  );
+}
+
+function StatisticsTab({ challengeId }: { challengeId: string }) {
+  const { data: stats, isLoading } = useAdminChallengeStats(challengeId, true);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-4 animate-pulse">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">{Array.from({length:4}).map((_,i)=><div key={i} className="h-20 rounded-xl bg-[#F3F4F6]"/>)}</div>
+        <div className="h-48 rounded-xl bg-[#F3F4F6]" />
+        <div className="h-32 rounded-xl bg-[#F3F4F6]" />
+      </div>
+    );
+  }
+
+  if (!stats) return <p className="font-body text-sm text-[#9CA3AF] py-10 text-center">Could not load statistics.</p>;
+
+  const totalSubs = stats.totalSubmissions;
+  const statusEntries = Object.entries(stats.statusBreakdown).sort((a, b) => b[1] - a[1]);
+  const langEntries   = Object.entries(stats.languageBreakdown).sort((a, b) => b[1] - a[1]);
+
+  return (
+    <div className="flex flex-col gap-5">
+      <StatsHero stats={stats} />
+
+      {/* Pass rate ring + status breakdown side by side */}
+      <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 flex flex-col sm:flex-row gap-6">
+        <div className="flex flex-col items-center justify-center gap-2 shrink-0">
+          <PassRingMini rate={stats.passRate} />
+          <p className="font-body text-xs text-[#9CA3AF]">pass rate</p>
+        </div>
+        <div className="flex-1 flex flex-col gap-2.5">
+          <p className="font-body text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1">Outcome Breakdown</p>
+          {statusEntries.length === 0
+            ? <p className="font-body text-xs text-[#9CA3AF]">No submissions yet.</p>
+            : statusEntries.map(([s, n]) => (
+                <HBar
+                  key={s}
+                  label={STATUS_LABELS[s] ?? s}
+                  value={n}
+                  total={totalSubs}
+                  color={STATUS_COLORS[s] ?? '#9CA3AF'}
+                />
+              ))
+          }
+        </div>
+      </div>
+
+      {/* Language breakdown */}
+      {langEntries.length > 0 && (
+        <div className="bg-white rounded-xl border border-[#E5E7EB] p-5">
+          <p className="font-body text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">Language Usage</p>
+          <div className="flex flex-col gap-2.5">
+            {langEntries.map(([l, n]) => (
+              <HBar key={l} label={l} value={n} total={totalSubs} color={LANG_COLORS[l] ?? '#9CA3AF'} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 30-day submission trend */}
+      <div className="bg-white rounded-xl border border-[#E5E7EB] p-5">
+        <p className="font-body text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">Submissions — Last 30 Days</p>
+        <TrendChart data={stats.submissionTrend} />
+      </div>
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-type Tab = 'details' | 'tests' | 'sandbox';
+type Tab = 'details' | 'tests' | 'sandbox' | 'statistics';
 
 export default function EditChallengePage() {
   const { challengeId }                      = useParams<{ challengeId: string }>();
@@ -411,9 +591,10 @@ export default function EditChallengePage() {
   const hiddenCount = challenge.testCases.length - visibleTestCases.length;
 
   const tabItems: { id: Tab; label: string; badge?: string | number }[] = [
-    { id: 'details', label: 'Problem' },
-    { id: 'tests',   label: 'Test Cases', badge: challenge.testCases?.length ?? 0 },
-    { id: 'sandbox', label: 'Sandbox' },
+    { id: 'details',    label: 'Problem' },
+    { id: 'tests',      label: 'Test Cases', badge: challenge.testCases?.length ?? 0 },
+    { id: 'sandbox',    label: 'Sandbox' },
+    ...(challenge.status === 'published' ? [{ id: 'statistics' as Tab, label: 'Statistics' }] : []),
   ];
 
   return (
@@ -442,7 +623,9 @@ export default function EditChallengePage() {
           onClick={handleTogglePublish}
           className="shrink-0"
         >
-          {challenge.status === 'published' ? <><EyeOff size={14} className="mr-1.5" />Unpublish</> : <><Eye size={14} className="mr-1.5" />Publish</>}
+          {challenge.status === 'published'
+            ? <><Archive size={14} className="mr-1.5" />Unpublish</>
+            : <><Globe size={14} className="mr-1.5" />Publish</>}
         </Button>
       </div>
 
@@ -685,6 +868,11 @@ export default function EditChallengePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── Statistics tab ──────────────────────────────────────────────────── */}
+      {activeTab === 'statistics' && (
+        <StatisticsTab challengeId={challengeId} />
       )}
 
       {/* ── Test Cases tab ───────────────────────────────────────────────────── */}

@@ -40,6 +40,16 @@ export interface CourseCompletionDuration {
   avgDays: number;
 }
 
+export interface ChallengeAnalytics {
+  totalPublished:    number;
+  totalDraft:        number;
+  totalSubmissions:  number;
+  overallPassRate:   number;
+  totalSolvers:      number;
+  topChallenges:     { id: string; title: string; difficulty: string; submissions: number; passRate: number }[];
+  hardestChallenges: { id: string; title: string; difficulty: string; submissions: number; passRate: number }[];
+}
+
 export const analyticsKeys = {
   all: ['analytics'] as const,
   enrollmentTrend:          (from: string, to: string) => [...analyticsKeys.all, 'enrollment-trend', from, to] as const,
@@ -48,6 +58,7 @@ export const analyticsKeys = {
   dailyActiveLearners:      (from: string, to: string) => [...analyticsKeys.all, 'daily-active-learners', from, to] as const,
   usersOverTime:            (from: string, to: string) => [...analyticsKeys.all, 'users-over-time', from, to] as const,
   courseCompletionDuration: () => [...analyticsKeys.all, 'course-completion-duration'] as const,
+  challengeAnalytics:       () => [...analyticsKeys.all, 'challenges'] as const,
 };
 
 const STALE = 5 * 60 * 1000; // 5 min
@@ -123,6 +134,18 @@ export function useCourseCompletionDuration() {
     queryKey: analyticsKeys.courseCompletionDuration(),
     queryFn: async (): Promise<CourseCompletionDuration[]> => {
       const res = await apiFetch<CourseCompletionDuration[]>('/admin/analytics/course-completion-duration');
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    staleTime: STALE,
+  });
+}
+
+export function useChallengeAnalytics() {
+  return useQuery({
+    queryKey: analyticsKeys.challengeAnalytics(),
+    queryFn: async (): Promise<ChallengeAnalytics> => {
+      const res = await apiFetch<ChallengeAnalytics>('/admin/analytics/challenges');
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },

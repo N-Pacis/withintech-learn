@@ -61,3 +61,8 @@ export const postRunChallenge = asyncHandler(async (req: Request, res: Response)
   const result = await service.runChallenge(req.params.id, req.body);
   sendSuccess(res, result, 'Challenge run complete');
 });
+
+export const getChallengeStats = asyncHandler(async (req: Request, res: Response) => {
+  const result = await service.getChallengeStats(req.params.id);
+  sendSuccess(res, result);
+});

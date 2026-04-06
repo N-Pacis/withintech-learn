@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Plus, Pencil, Trash2, Eye, EyeOff, Code2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Globe, Archive, Code2 } from 'lucide-react';
 import {
   useAdminChallenges,
   useDeleteChallenge,
@@ -122,6 +123,7 @@ function useStatusTabCounts() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AdminChallengesPage() {
+  const router                  = useRouter();
   const [page, setPage]         = useState(1);
   const [difficulty, setDiff]   = useState<Difficulty | undefined>();
   const [statusTab, setStatusTab] = useState<StatusTabValue>('draft');
@@ -234,7 +236,11 @@ export default function AdminChallengesPage() {
                     const diff = DIFFICULTY_BADGE[c.difficulty];
                     const stat = STATUS_BADGE[c.status];
                     return (
-                      <tr key={c.id} className="hover:bg-[#FAFAFA] transition-colors group">
+                      <tr
+                        key={c.id}
+                        onClick={() => router.push(`/admin/challenges/${c.id}`)}
+                        className="hover:bg-[#FAFAFA] transition-colors group cursor-pointer"
+                      >
                         <td className="px-4 py-3.5 font-body text-sm text-[#0F0F0F] font-medium max-w-[160px] sm:max-w-none truncate">
                           {c.title}
                         </td>
@@ -250,7 +256,7 @@ export default function AdminChallengesPage() {
                         <td className="hidden sm:table-cell px-4 py-3.5 font-body text-sm text-[#6B7280]">
                           {c._count.submissions}
                         </td>
-                        <td className="px-4 py-3.5">
+                        <td className="px-4 py-3.5" onClick={e => e.stopPropagation()}>
                           <div className="flex items-center justify-end gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                             <button
                               title={c.status === 'published' ? 'Unpublish' : 'Publish'}
@@ -258,7 +264,7 @@ export default function AdminChallengesPage() {
                               disabled={publishMutation.isPending || unpublishMutation.isPending}
                               className="p-1.5 rounded-lg hover:bg-[#F3E8FF] text-[#9CA3AF] hover:text-[#3D006B] transition-colors disabled:opacity-40"
                             >
-                              {c.status === 'published' ? <EyeOff size={15} /> : <Eye size={15} />}
+                              {c.status === 'published' ? <Archive size={15} /> : <Globe size={15} />}
                             </button>
                             <Link href={`/admin/challenges/${c.id}`}>
                               <span className="p-1.5 rounded-lg hover:bg-[#F3E8FF] text-[#9CA3AF] hover:text-[#3D006B] transition-colors flex items-center">

@@ -193,6 +193,77 @@ export const deleteTestCase = async (testCaseId: string) => {
   await prisma.challengeTestCase.delete({ where: { id: testCaseId } });
 };
 
+export const getChallengeStats = async (id: string) => {
+  const challenge = await prisma.challenge.findUnique({ where: { id } });
+  if (!challenge) throw notFound('Challenge not found');
+
+  const [statusRows, langRows, trendRows, uniqueAttempts, uniqueSolvers] = await Promise.all([
+    // Status breakdown
+    prisma.$queryRaw<{ status: string; cnt: number }[]>`
+      SELECT status, COUNT(*)::int AS cnt
+      FROM "ChallengeSubmission"
+      WHERE "challengeId" = ${id}
+      GROUP BY status
+    `,
+    // Language breakdown
+    prisma.$queryRaw<{ language: string; cnt: number }[]>`
+      SELECT language, COUNT(*)::int AS cnt
+      FROM "ChallengeSubmission"
+      WHERE "challengeId" = ${id}
+      GROUP BY language
+      ORDER BY cnt DESC
+    `,
+    // 30-day daily trend
+    prisma.$queryRaw<{ date: string; total: number; accepted: number }[]>`
+      SELECT
+        TO_CHAR("submittedAt"::date, 'YYYY-MM-DD') AS date,
+        COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE status = 'accepted')::int AS accepted
+      FROM "ChallengeSubmission"
+      WHERE "challengeId" = ${id}
+        AND "submittedAt" >= NOW() - INTERVAL '30 days'
+      GROUP BY "submittedAt"::date
+      ORDER BY "submittedAt"::date ASC
+    `,
+    // Unique users who attempted
+    prisma.challengeSubmission.findMany({
+      where: { challengeId: id },
+      select: { userId: true },
+      distinct: ['userId'],
+    }),
+    // Unique users who solved
+    prisma.challengeSubmission.findMany({
+      where: { challengeId: id, status: 'accepted' },
+      select: { userId: true },
+      distinct: ['userId'],
+    }),
+  ]);
+
+  const totalSubmissions = statusRows.reduce((s, r) => s + Number(r.cnt), 0);
+  const acceptedCount = statusRows.find(r => r.status === 'accepted')?.cnt ?? 0;
+
+  const statusBreakdown: Record<string, number> = {};
+  for (const r of statusRows) statusBreakdown[r.status] = Number(r.cnt);
+
+  const languageBreakdown: Record<string, number> = {};
+  for (const r of langRows) languageBreakdown[r.language] = Number(r.cnt);
+
+  return {
+    totalSubmissions,
+    uniqueAttempts: uniqueAttempts.length,
+    uniqueSolvers: uniqueSolvers.length,
+    acceptedCount: Number(acceptedCount),
+    passRate: totalSubmissions > 0 ? Math.round((Number(acceptedCount) / totalSubmissions) * 100) : 0,
+    statusBreakdown,
+    languageBreakdown,
+    submissionTrend: trendRows.map(r => ({
+      date: r.date,
+      total: Number(r.total),
+      accepted: Number(r.accepted),
+    })),
+  };
+};
+
 export const runChallenge = async (id: string, data: {
   language: string;
   code: string;

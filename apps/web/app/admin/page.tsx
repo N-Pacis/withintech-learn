@@ -4,12 +4,13 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminStats } from '@/hooks/queries/users';
-import { useEnrollmentTrend, useTopCourses, useRetention, useDailyActiveLearners, useUsersOverTime, useCourseCompletionDuration } from '@/hooks/queries/analytics';
+import { useEnrollmentTrend, useTopCourses, useRetention, useDailyActiveLearners, useUsersOverTime, useCourseCompletionDuration, useChallengeAnalytics } from '@/hooks/queries/analytics';
 import { EnrollmentTrendChart } from './components/EnrollmentTrendChart';
 import { TopCoursesChart } from './components/TopCoursesChart';
 import { DailyActiveLearnersChart } from './components/DailyActiveLearnersChart';
 import { UsersOverTimeChart } from './components/UsersOverTimeChart';
 import { CourseCompletionChart } from './components/CourseCompletionChart';
+import { TopChallengesChart, HardestChallengesChart } from './components/ChallengeStatsChart';
 import { MonthRangePicker, DayRangePicker } from '@/components/ui';
 import type { RetentionStats } from '@/hooks/queries/analytics';
 
@@ -158,6 +159,7 @@ export default function AdminDashboard() {
   const { data: dal,        isLoading: dalLoading        } = useDailyActiveLearners(dalFrom, dalTo);
   const { data: uot,        isLoading: uotLoading        } = useUsersOverTime(uotFrom, uotTo);
   const { data: completion, isLoading: completionLoading } = useCourseCompletionDuration();
+  const { data: challenges, isLoading: challengesLoading } = useChallengeAnalytics();
 
   const statCards = [
     { label: 'Total Students',      value: stats?.totalStudents      ?? '—', href: '/admin/students' },
@@ -300,6 +302,62 @@ export default function AdminDashboard() {
         </ChartCard>
 
       </div>
+
+      {/* Challenges analytics */}
+      <div className="mt-10 mb-6">
+        <h2 className="font-heading font-bold text-lg text-[#0F0F0F]">Coding Challenges</h2>
+      </div>
+
+      {challengesLoading ? (
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {Array.from({length: 4}).map((_, i) => <div key={i} className="h-24 rounded-xl bg-[#F3F4F6] animate-pulse" />)}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="h-64 rounded-xl bg-[#F3F4F6] animate-pulse" />
+            <div className="h-64 rounded-xl bg-[#F3F4F6] animate-pulse" />
+          </div>
+        </div>
+      ) : !challenges ? null : (
+        <div className="flex flex-col gap-4">
+          {/* Stat cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { label: 'Published',    value: challenges.totalPublished,   href: '/admin/challenges' },
+              { label: 'Submissions',  value: challenges.totalSubmissions,  href: null               },
+              { label: 'Pass Rate',    value: `${challenges.overallPassRate}%`, href: null           },
+              { label: 'Solvers',      value: challenges.totalSolvers,      href: null               },
+            ].map(({ label, value, href }) => {
+              const card = (
+                <div className={`bg-white rounded-xl border border-[#E5E7EB] px-6 py-5 ${href ? 'hover:border-[#3D006B]/30 transition-colors cursor-pointer' : ''}`}>
+                  <p className="font-body text-xs text-[#6B7280] uppercase tracking-widest mb-2">{label}</p>
+                  <p className="font-heading font-bold text-2xl text-[#0F0F0F]">{value}</p>
+                </div>
+              );
+              return href
+                ? <Link key={label} href={href}>{card}</Link>
+                : <div key={label}>{card}</div>;
+            })}
+          </div>
+
+          {/* Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <ChartCard title="Most Attempted Challenges" subtitle="Published challenges ranked by total submissions">
+              {challenges.topChallenges.length === 0
+                ? <ChartEmpty height={220} message="No submissions yet." />
+                : <TopChallengesChart data={challenges.topChallenges} />
+              }
+            </ChartCard>
+
+            <ChartCard title="Hardest Challenges" subtitle="Published challenges with ≥5 submissions, lowest pass rate">
+              {challenges.hardestChallenges.length === 0
+                ? <ChartEmpty height={220} message="Need ≥5 submissions per challenge to rank difficulty." />
+                : <HardestChallengesChart data={challenges.hardestChallenges} />
+              }
+            </ChartCard>
+          </div>
+        </div>
+      )}
 
     </div>
   );

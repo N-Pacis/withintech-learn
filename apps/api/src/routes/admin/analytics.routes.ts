@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { sendSuccess } from '../../utils/response';
 import { badRequest } from '../../utils/errors';
-import { enrollmentTrend, topCourses, retention, dailyActiveLearners, usersOverTime, courseCompletionDuration } from './analytics.service';
+import { enrollmentTrend, topCourses, retention, dailyActiveLearners, usersOverTime, courseCompletionDuration, challengeAnalytics } from './analytics.service';
 
 const MONTH_RE = /^\d{4}-\d{2}$/;
 const DATE_RE  = /^\d{4}-\d{2}-\d{2}$/;
@@ -53,6 +53,10 @@ router.get('/admin/analytics/users-over-time', asyncHandler(async (req, res) => 
 
 router.get('/admin/analytics/course-completion-duration', asyncHandler(async (_req, res) => {
   sendSuccess(res, await courseCompletionDuration());
+}));
+
+router.get('/admin/analytics/challenges', asyncHandler(async (_req, res) => {
+  sendSuccess(res, await challengeAnalytics());
 }));
 
 export default router;
