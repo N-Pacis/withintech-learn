@@ -15,9 +15,9 @@ export type SubmissionStatus =
 export type ChallengeLanguage = 'python' | 'java' | 'javascript' | 'c' | 'cpp' | 'go';
 
 export type ParamType =
-  | 'int' | 'float' | 'double' | 'char' | 'string'
-  | 'int[]' | 'float[]' | 'double[]' | 'char[]' | 'string[]'
-  | 'int[][]' | 'float[][]' | 'double[][]' | 'char[][]' | 'string[][]';
+  | 'int' | 'float' | 'double' | 'char' | 'string' | 'boolean'
+  | 'int[]' | 'float[]' | 'double[]' | 'char[]' | 'string[]' | 'boolean[]'
+  | 'int[][]' | 'float[][]' | 'double[][]' | 'char[][]' | 'string[][]' | 'boolean[][]';
 
 export interface FunctionParam {
   name: string;

@@ -46,15 +46,15 @@ export const listChallengesSchema = z.object({
 
 // input is a JSON-encoded array of parameter values: e.g. [[2,7,11,15],9]
 export const createTestCaseSchema = z.object({
-  input:          z.string(),   // JSON array of param values
-  expectedOutput: z.string().min(1),
+  input:          z.string(),
+  expectedOutput: z.string(),
   isHidden:       z.boolean().default(true),
   orderIndex:     z.number().int().min(0),
 });
 
 export const updateTestCaseSchema = z.object({
   input:          z.string().optional(),
-  expectedOutput: z.string().min(1).optional(),
+  expectedOutput: z.string().optional(),
   isHidden:       z.boolean().optional(),
   orderIndex:     z.number().int().min(0).optional(),
 });
