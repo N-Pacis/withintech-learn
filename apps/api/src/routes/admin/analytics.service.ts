@@ -13,8 +13,7 @@ export interface UsersOverTimePoint {
 export interface CourseCompletionDuration {
   id: string;
   title: string;
-  passedCount: number;
-  avgDays: number; // average days from enrollment to PASSED
+  avgDays: number;
 }
 
 export interface TrendPoint {
@@ -158,40 +157,52 @@ export async function usersOverTime(from: string, to: string): Promise<UsersOver
   return rows.map((r) => ({ date: r.date, users: Number(r.users) }));
 }
 
-// Published courses ranked by average days from enrollment to PASSED status (fastest first).
-// Only includes courses that have at least one passing student.
+// Published courses ranked by average days from enrollment to first completion (fastest first).
+//
+// Completion timestamp strategy:
+//   Quiz-based courses  → MIN(QuizAttempt.createdAt WHERE status='pass') per student.
+//                         updatedAt is NOT used because the quiz can be retaken; every
+//                         passing retake bumps updatedAt to NOW(), which would inflate
+//                         the average for active students who revisit the course.
+//   Module-only courses → sc.updatedAt (set exactly once when all modules are done;
+//                         there is no retake mechanism for modules).
+//   COALESCE handles courses whose quiz record was deleted after completion.
 export async function courseCompletionDuration(): Promise<CourseCompletionDuration[]> {
   const rows = await prisma.$queryRaw<{
     id: string;
     title: string;
-    passed_count: number;
     avg_days: number;
   }[]>`
-    WITH top_courses AS (
-      SELECT "courseId"
-      FROM "StudentCourse"
-      GROUP BY "courseId"
-      ORDER BY COUNT(*) DESC
-      LIMIT 5
-    )
     SELECT
       c.id,
       c.title,
-      COUNT(sc.id)::int                                                                  AS passed_count,
-      ROUND(AVG(EXTRACT(EPOCH FROM (sc."updatedAt" - sc."enrolledAt")) / 86400))::int   AS avg_days
+      ROUND(AVG(
+        EXTRACT(EPOCH FROM (
+          COALESCE(
+            (
+              SELECT MIN(qa."createdAt")
+              FROM "Quiz" q2
+              JOIN "QuizAttempt" qa
+                ON qa."quizId" = q2.id
+               AND qa."userId"  = sc."studentId"
+               AND qa.status    = 'pass'
+              WHERE q2."courseId" = c.id
+            ),
+            sc."updatedAt"
+          ) - sc."enrolledAt"
+        )) / 86400
+      ))::int AS avg_days
     FROM "Course" c
-    JOIN top_courses tc ON tc."courseId" = c.id
     JOIN "StudentCourse" sc ON sc."courseId" = c.id AND sc.status = 'PASSED'
     WHERE c.status = 'published'
     GROUP BY c.id, c.title
-    HAVING COUNT(sc.id) >= 1
     ORDER BY avg_days ASC
+    LIMIT 5
   `;
 
   return rows.map((r) => ({
     id: r.id,
     title: r.title,
-    passedCount: Number(r.passed_count),
     avgDays: Number(r.avg_days),
   }));
 }
