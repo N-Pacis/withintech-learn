@@ -3,6 +3,10 @@ import { prisma } from '../../db/prisma';
 import { notFound } from '../../utils/errors';
 import { type FunctionParam } from '../challenges.constants';
 import {
+  getCachedStudentChallenge,
+  buildAndCacheChallenge,
+} from '../../services/challenge-cache.service';
+import {
   executeChallengeSubmission,
   formatChallengeResults,
 } from '../challenges.execution';
@@ -62,32 +66,41 @@ export const listPublishedChallenges = async ({
 // ─── Get Challenge Detail ─────────────────────────────────────────────────────
 
 export const getPublishedChallenge = async (slug: string, userId: string) => {
-  const challenge = await prisma.challenge.findFirst({
-    where: { slug, status: 'published' },
-    include: {
-      testCases: {
-        where:   { isHidden: false },
-        orderBy: { orderIndex: 'asc' },
-        select:  { id: true, input: true, expectedOutput: true, orderIndex: true },
-      },
-      progress: { where: { userId }, select: { completedAt: true } },
-    },
+  // Try cache for the static challenge data
+  let cached = await getCachedStudentChallenge(slug);
+
+  if (!cached) {
+    // Cache miss — verify it exists and is published, then populate
+    const dbChallenge = await prisma.challenge.findFirst({
+      where: { slug, status: 'published' },
+      select: { id: true },
+    });
+    if (!dbChallenge) throw notFound('Challenge not found');
+
+    await buildAndCacheChallenge(dbChallenge.id);
+    cached = await getCachedStudentChallenge(slug);
+    if (!cached) throw notFound('Challenge not found');
+  }
+
+  // Per-user progress is never cached — cheap single-row lookup
+  const progress = await prisma.challengeProgress.findUnique({
+    where: { userId_challengeId: { userId, challengeId: cached.id } },
+    select: { completedAt: true },
   });
-  if (!challenge) throw notFound('Challenge not found');
 
   return {
-    id:             challenge.id,
-    title:          challenge.title,
-    slug:           challenge.slug,
-    description:    challenge.description,
-    difficulty:     challenge.difficulty,
-    starterCode:    challenge.starterCode,
-    functionParams: challenge.functionParams,
-    returnType:     challenge.returnType,
-    timeLimit:      challenge.timeLimit,
-    visibleTestCases: challenge.testCases,
-    completed:      challenge.progress.length > 0,
-    completedAt:    challenge.progress[0]?.completedAt ?? null,
+    id:               cached.id,
+    title:            cached.title,
+    slug:             cached.slug,
+    description:      cached.description,
+    difficulty:       cached.difficulty,
+    starterCode:      cached.starterCode,
+    functionParams:   cached.functionParams,
+    returnType:       cached.returnType,
+    timeLimit:        cached.timeLimit,
+    visibleTestCases: cached.visibleTestCases,
+    completed:        !!progress,
+    completedAt:      progress?.completedAt ?? null,
   };
 };
 

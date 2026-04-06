@@ -36,7 +36,6 @@ export interface UsersOverTimePoint {
 export interface CourseCompletionDuration {
   id: string;
   title: string;
-  passedCount: number;
   avgDays: number;
 }
 

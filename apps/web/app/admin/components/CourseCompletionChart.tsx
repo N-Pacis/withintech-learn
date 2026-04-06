@@ -10,7 +10,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-  LabelList,
 } from 'recharts';
 import type { CourseCompletionDuration } from '@/hooks/queries/analytics';
 
@@ -70,20 +69,12 @@ export function CourseCompletionChart({ data }: { data: CourseCompletionDuration
           />
           <Tooltip
             contentStyle={tooltipStyle}
-            formatter={(v, name) =>
-              name === 'avgDays' ? [`${v} days`, 'Avg completion'] : [v, 'Students passed']
-            }
+            formatter={(v) => [`${v} days`, 'Avg completion']}
           />
           <Bar dataKey="avgDays" name="avgDays" radius={[0, 4, 4, 0]}>
             {data.map((_, i) => (
               <Cell key={i} fill="#3D006B" fillOpacity={1 - i * 0.08} />
             ))}
-            <LabelList
-              dataKey="passedCount"
-              position="right"
-              formatter={(v: unknown) => `${v} passed`}
-              style={{ fontSize: 11, fontFamily: 'var(--font-body)', fill: '#9CA3AF' }}
-            />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

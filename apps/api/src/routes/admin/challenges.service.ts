@@ -1,6 +1,11 @@
 import { prisma } from '../../db/prisma';
 import { badRequest, conflict, notFound } from '../../utils/errors';
 import {
+  buildAndCacheChallenge,
+  getCachedAdminChallenge,
+  invalidateChallengeCache,
+} from '../../services/challenge-cache.service';
+import {
   DEFAULT_CHALLENGE_STARTER_CODE,
   generateStarterCode,
   type FunctionParam,
@@ -85,6 +90,9 @@ export const listChallenges = async ({
 };
 
 export const getChallenge = async (id: string) => {
+  const cached = await getCachedAdminChallenge(id);
+  if (cached) return cached;
+
   const challenge = await prisma.challenge.findUnique({
     where: { id },
     include: {
@@ -94,6 +102,10 @@ export const getChallenge = async (id: string) => {
     },
   });
   if (!challenge) throw notFound('Challenge not found');
+
+  // Populate cache for next request — fire-and-forget
+  buildAndCacheChallenge(id).catch(() => {});
+
   return challenge;
 };
 
@@ -118,7 +130,12 @@ export const updateChallenge = async (id: string, data: {
     updateData.starterCode = generateStarterCode(data.functionParams, data.returnType);
   }
 
-  return prisma.challenge.update({ where: { id }, data: updateData });
+  const updated = await prisma.challenge.update({ where: { id }, data: updateData });
+  // Rebuild cache — if unpublished (draft) the student key will be left alone by
+  // buildAndCacheChallenge since it only sets the student key for published challenges.
+  // Invalidate student key only if slug changed (slug is immutable after publish, so safe).
+  await buildAndCacheChallenge(id);
+  return updated;
 };
 
 export const deleteChallenge = async (id: string) => {
@@ -139,14 +156,21 @@ export const publishChallenge = async (id: string) => {
   if (challenge._count.testCases === 0)
     throw badRequest('Add at least one test case before publishing');
 
-  return prisma.challenge.update({ where: { id }, data: { status: 'published' } });
+  const published = await prisma.challenge.update({ where: { id }, data: { status: 'published' } });
+  await buildAndCacheChallenge(id);
+  return published;
 };
 
 export const unpublishChallenge = async (id: string) => {
   const challenge = await prisma.challenge.findUnique({ where: { id } });
   if (!challenge) throw notFound('Challenge not found');
   if (challenge.status === 'draft') throw conflict('Challenge is already unpublished');
-  return prisma.challenge.update({ where: { id }, data: { status: 'draft' } });
+  const unpublished = await prisma.challenge.update({ where: { id }, data: { status: 'draft' } });
+  // Invalidate both keys — draft challenges must not be served from student cache
+  await invalidateChallengeCache(id, challenge.slug);
+  // Rebuild admin cache so the admin UI reflects the new status immediately
+  await buildAndCacheChallenge(id);
+  return unpublished;
 };
 
 // ─── Test Cases ───────────────────────────────────────────────────────────────
@@ -171,9 +195,11 @@ export const addTestCase = async (challengeId: string, data: {
     });
   }
 
-  return prisma.challengeTestCase.create({
+  const tc = await prisma.challengeTestCase.create({
     data: { challengeId, ...data },
   });
+  buildAndCacheChallenge(challengeId).catch(() => {});
+  return tc;
 };
 
 export const updateTestCase = async (testCaseId: string, data: {
@@ -191,6 +217,7 @@ export const deleteTestCase = async (testCaseId: string) => {
   const tc = await prisma.challengeTestCase.findUnique({ where: { id: testCaseId } });
   if (!tc) throw notFound('Test case not found');
   await prisma.challengeTestCase.delete({ where: { id: testCaseId } });
+  buildAndCacheChallenge(tc.challengeId).catch(() => {});
 };
 
 export const getChallengeStats = async (id: string) => {
