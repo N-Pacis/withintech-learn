@@ -3466,6 +3466,14 @@
         }
       }
     },
+    "/admin/analytics/challenges": {
+      "get": {
+        "tags": ["Admin / Analytics"],
+        "summary": "Challenges analytics overview",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Challenges analytics" } }
+      }
+    },
     "/admin/enrollments": {
       "get": {
         "tags": ["Admin / Enrollments"],
@@ -4288,6 +4296,15 @@
         "security": [{ "bearerAuth": [] }],
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
         "responses": { "200": { "description": "Challenge unpublished" } }
+      }
+    },
+    "/admin/challenges/{id}/stats": {
+      "get": {
+        "tags": ["Admin - Challenges"],
+        "summary": "Get statistics for a challenge",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Challenge statistics" } }
       }
     },
     "/admin/challenges/{id}/test-cases": {

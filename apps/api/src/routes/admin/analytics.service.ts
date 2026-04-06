@@ -196,6 +196,87 @@ export async function courseCompletionDuration(): Promise<CourseCompletionDurati
   }));
 }
 
+export interface ChallengeAnalytics {
+  totalPublished: number;
+  totalDraft: number;
+  totalSubmissions: number;
+  overallPassRate: number;
+  totalSolvers: number;
+  topChallenges: { id: string; title: string; difficulty: string; submissions: number; passRate: number }[];
+  hardestChallenges: { id: string; title: string; difficulty: string; submissions: number; passRate: number }[];
+}
+
+export async function challengeAnalytics(): Promise<ChallengeAnalytics> {
+  const [counts, submissionRows, topRows, hardestRows, solversResult] = await Promise.all([
+    prisma.challenge.groupBy({
+      by: ['status'],
+      _count: { id: true },
+    }),
+    prisma.$queryRaw<{ total: number; accepted: number }[]>`
+      SELECT COUNT(*)::int AS total,
+             COUNT(*) FILTER (WHERE status = 'accepted')::int AS accepted
+      FROM "ChallengeSubmission"
+    `,
+    // Top 5 by submission count (published only)
+    prisma.$queryRaw<{ id: string; title: string; difficulty: string; submissions: number; accepted: number }[]>`
+      SELECT c.id, c.title, c.difficulty,
+             COUNT(cs.id)::int AS submissions,
+             COUNT(cs.id) FILTER (WHERE cs.status = 'accepted')::int AS accepted
+      FROM "Challenge" c
+      LEFT JOIN "ChallengeSubmission" cs ON cs."challengeId" = c.id
+      WHERE c.status = 'published'
+      GROUP BY c.id, c.title, c.difficulty
+      ORDER BY submissions DESC
+      LIMIT 5
+    `,
+    // Hardest = published with ≥5 submissions, lowest pass rate
+    prisma.$queryRaw<{ id: string; title: string; difficulty: string; submissions: number; accepted: number }[]>`
+      SELECT c.id, c.title, c.difficulty,
+             COUNT(cs.id)::int AS submissions,
+             COUNT(cs.id) FILTER (WHERE cs.status = 'accepted')::int AS accepted
+      FROM "Challenge" c
+      JOIN "ChallengeSubmission" cs ON cs."challengeId" = c.id
+      WHERE c.status = 'published'
+      GROUP BY c.id, c.title, c.difficulty
+      HAVING COUNT(cs.id) >= 5
+      ORDER BY (COUNT(cs.id) FILTER (WHERE cs.status = 'accepted')::float / COUNT(cs.id)) ASC
+      LIMIT 5
+    `,
+    // Unique solvers
+    prisma.challengeSubmission.findMany({
+      where: { status: 'accepted' },
+      select: { userId: true },
+      distinct: ['userId'],
+    }),
+  ]);
+
+  const statusMap: Record<string, number> = {};
+  for (const row of counts) statusMap[row.status] = row._count.id;
+
+  const totalSubs = submissionRows[0] ? Number(submissionRows[0].total) : 0;
+  const totalAcc  = submissionRows[0] ? Number(submissionRows[0].accepted) : 0;
+
+  const toRow = (r: { id: string; title: string; difficulty: string; submissions: number; accepted: number }) => ({
+    id: r.id,
+    title: r.title,
+    difficulty: r.difficulty,
+    submissions: Number(r.submissions),
+    passRate: Number(r.submissions) > 0
+      ? Math.round((Number(r.accepted) / Number(r.submissions)) * 100)
+      : 0,
+  });
+
+  return {
+    totalPublished: statusMap['published'] ?? 0,
+    totalDraft: statusMap['draft'] ?? 0,
+    totalSubmissions: totalSubs,
+    overallPassRate: totalSubs > 0 ? Math.round((totalAcc / totalSubs) * 100) : 0,
+    totalSolvers: solversResult.length,
+    topChallenges: topRows.map(toRow),
+    hardestChallenges: hardestRows.map(toRow),
+  };
+}
+
 // Students who came back for a second course (retention).
 // CTE so the subquery runs once.
 export async function retention(): Promise<RetentionStats> {

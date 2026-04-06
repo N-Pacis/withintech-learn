@@ -140,10 +140,22 @@ export interface SubmissionHistoryItem {
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
+export interface ChallengeStats {
+  totalSubmissions: number;
+  uniqueAttempts:   number;
+  uniqueSolvers:    number;
+  acceptedCount:    number;
+  passRate:         number;
+  statusBreakdown:  Record<string, number>;
+  languageBreakdown: Record<string, number>;
+  submissionTrend:  { date: string; total: number; accepted: number }[];
+}
+
 export const challengeKeys = {
   all:             ['challenges'] as const,
   adminList:       (params?: object) => ['challenges', 'admin', 'list', params] as const,
   adminOne:        (id: string)     => ['challenges', 'admin', id] as const,
+  adminStats:      (id: string)     => ['challenges', 'admin', id, 'stats'] as const,
   studentList:     (params?: object) => ['challenges', 'student', 'list', params] as const,
   studentOne:      (slug: string)   => ['challenges', 'student', slug] as const,
   submissions:     (slug: string)   => ['challenges', 'submissions', slug] as const,
@@ -173,6 +185,16 @@ export function useAdminChallenge(id: string) {
     queryFn:  () => apiFetch<AdminChallengeDetail>(`/admin/challenges/${id}`),
     select:   res => res.data,
     enabled:  !!id,
+  });
+}
+
+export function useAdminChallengeStats(id: string, enabled = true) {
+  return useQuery({
+    queryKey: challengeKeys.adminStats(id),
+    queryFn:  () => apiFetch<ChallengeStats>(`/admin/challenges/${id}/stats`),
+    select:   res => res.data,
+    enabled:  !!id && enabled,
+    staleTime: 2 * 60 * 1000,
   });
 }
 
