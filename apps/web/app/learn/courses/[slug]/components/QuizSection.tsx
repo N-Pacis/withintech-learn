@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, RotateCcw, Trophy } from 'lucide-react';
-import { GridLoader } from 'react-spinners';
-import { useQueryClient } from '@tanstack/react-query';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui';
+import { useState, useEffect } from "react";
+import { CheckCircle, XCircle, RotateCcw, Trophy } from "lucide-react";
+import { GridLoader } from "react-spinners";
+import { useQueryClient } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui";
 import {
   useSubmitQuiz,
   type StudentModuleQuiz,
   type QuizAttemptSummary,
   type QuizAttemptResult,
   type MarkedQuestion,
-} from '@/hooks/queries/courses';
+} from "@/hooks/queries/courses";
 
 interface QuizSectionProps {
   slug: string;
@@ -22,8 +22,15 @@ interface QuizSectionProps {
   onPass: () => void;
 }
 
-export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAttempt, onPass }: QuizSectionProps) {
+export function QuizSection({
+  slug,
+  moduleId,
+  quiz,
+  lastAttempt: initialLastAttempt,
+  onPass,
+}: QuizSectionProps) {
   const queryClient = useQueryClient();
+  const [started, setStarted] = useState(false);
   const [answers, setAnswers] = useState<Record<string, Set<string>>>({});
   const [result, setResult] = useState<QuizAttemptResult | null>(null);
   const [lastAttempt, setLastAttempt] = useState(initialLastAttempt);
@@ -31,8 +38,8 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
 
   // Notify parent if already passed on mount
   useEffect(() => {
-    if (lastAttempt?.status === 'pass') onPass();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (lastAttempt?.status === "pass") onPass();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function toggleOption(questionId: string, optionId: string) {
@@ -44,7 +51,9 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
     });
   }
 
-  const allAnswered = quiz.questions.every((q) => (answers[q.id]?.size ?? 0) > 0);
+  const allAnswered = quiz.questions.every(
+    (q) => (answers[q.id]?.size ?? 0) > 0,
+  );
 
   function handleSubmit() {
     const payload = quiz.questions.map((q) => ({
@@ -64,8 +73,10 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
           };
           setLastAttempt(summary);
           // Invalidate so revisiting this module shows fresh lastAttempt
-          queryClient.invalidateQueries({ queryKey: ['student', 'module', slug, moduleId] });
-          if (data.attempt.status === 'pass') onPass();
+          queryClient.invalidateQueries({
+            queryKey: ["student", "module", slug, moduleId],
+          });
+          if (data.attempt.status === "pass") onPass();
         },
       },
     );
@@ -74,20 +85,26 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
   function handleRetry() {
     setResult(null);
     setAnswers({});
+    setStarted(true);
   }
 
-  const alreadyPassed = lastAttempt?.status === 'pass' && !result;
+  const alreadyPassed = lastAttempt?.status === "pass" && !result;
+  const isCourseQuiz = moduleId === "course-quiz";
 
   return (
     <div className="mt-10 pt-8 border-t border-[#E5E7EB]">
-
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
-          <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-1.5">Module Quiz</p>
-          <h3 className="font-heading font-bold text-xl text-[#0F0F0F]">{quiz.title}</h3>
+          <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-1.5">
+            {isCourseQuiz ? "Final Course Quiz" : "Module Quiz"}
+          </p>
+          <h3 className="font-heading font-bold text-xl text-[#0F0F0F]">
+            {quiz.title}
+          </h3>
           <p className="font-body text-sm text-[#6B7280] mt-1">
-            Pass score: {quiz.passingScore}% &middot; {quiz.questions.length} question{quiz.questions.length !== 1 ? 's' : ''}
+            Pass score: {quiz.passingScore}% &middot; {quiz.questions.length}{" "}
+            question{quiz.questions.length !== 1 ? "s" : ""}
           </p>
         </div>
         {alreadyPassed && (
@@ -111,6 +128,51 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
             </p>
           </div>
         </div>
+      ) : !started && !result ? (
+        /* ── Lobby / gate screen ── */
+        <div className="flex flex-col gap-5">
+          {lastAttempt && (
+            <div className="flex items-center gap-2 px-4 py-3 rounded-xl font-body text-sm bg-red-50 text-red-600">
+              <XCircle size={16} />
+              Last attempt: <strong>{lastAttempt.score}%</strong> (Failed)
+            </div>
+          )}
+          <div className="rounded-xl border border-[#E5E7EB] bg-[#FAFAFA] divide-y divide-[#E5E7EB]">
+            <div className="flex items-center justify-between px-5 py-4">
+              <span className="font-body text-sm text-[#6B7280]">
+                Questions
+              </span>
+              <span className="font-body text-sm font-semibold text-[#0F0F0F]">
+                {quiz.questions.length}
+              </span>
+            </div>
+            <div className="flex items-center justify-between px-5 py-4">
+              <span className="font-body text-sm text-[#6B7280]">
+                Passing score
+              </span>
+              <span className="font-body text-sm font-semibold text-[#0F0F0F]">
+                {quiz.passingScore}%
+              </span>
+            </div>
+            {isCourseQuiz && (
+              <div className="flex items-center justify-between px-5 py-4">
+                <span className="font-body text-sm text-[#6B7280]">
+                  Answers revealed
+                </span>
+                <span className="font-body text-sm font-semibold text-[#0F0F0F]">
+                  Only for chosen options
+                </span>
+              </div>
+            )}
+          </div>
+          <Button
+            size="md"
+            onClick={() => setStarted(true)}
+            className="flex items-center gap-2 self-start"
+          >
+            Start Quiz <Trophy size={15} />
+          </Button>
+        </div>
       ) : isPending ? (
         /* ── Processing state ── */
         <div className="flex flex-col items-center justify-center py-16 gap-6">
@@ -118,8 +180,12 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
             <GridLoader color="#3D006B" size={10} margin={3} />
           </div>
           <div className="flex flex-col items-center gap-1">
-            <p className="font-heading font-bold text-base text-[#0F0F0F]">Grading your answers</p>
-            <p className="font-body text-sm text-[#6B7280]">The system is processing your results…</p>
+            <p className="font-heading font-bold text-base text-[#0F0F0F]">
+              Grading your answers
+            </p>
+            <p className="font-body text-sm text-[#6B7280]">
+              The system is processing your results…
+            </p>
           </div>
         </div>
       ) : result ? (
@@ -127,25 +193,43 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
         <>
           <div
             className={cn(
-              'flex items-center gap-2 px-4 py-3 rounded-xl mb-6 font-body text-sm font-medium',
-              result.attempt.status === 'pass' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600',
+              "flex items-center gap-2 px-4 py-3 rounded-xl mb-6 font-body text-sm font-medium",
+              result.attempt.status === "pass"
+                ? "bg-green-50 text-green-700"
+                : "bg-red-50 text-red-600",
             )}
           >
-            {result.attempt.status === 'pass' ? <CheckCircle size={16} /> : <XCircle size={16} />}
+            {result.attempt.status === "pass" ? (
+              <CheckCircle size={16} />
+            ) : (
+              <XCircle size={16} />
+            )}
             You scored <strong>{result.attempt.score}%</strong>
             &nbsp;
-            {result.attempt.status === 'pass' ? 'Passed! You can continue.' : 'Failed. Review and try again.'}
+            {result.attempt.status === "pass"
+              ? "Passed! You can continue."
+              : "Failed. Review and try again."}
           </div>
 
           <div className="flex flex-col gap-8">
             {result.questions.map((q, i) => (
-              <MarkedQuestionRow key={q.questionId} question={q} index={i} isCourseQuiz={moduleId === 'course-quiz'} />
+              <MarkedQuestionRow
+                key={q.questionId}
+                question={q}
+                index={i}
+                isCourseQuiz={moduleId === "course-quiz"}
+              />
             ))}
           </div>
 
-          {result.attempt.status === 'fail' && (
+          {result.attempt.status === "fail" && (
             <div className="mt-8">
-              <Button variant="secondary" size="md" onClick={handleRetry} className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={handleRetry}
+                className="flex items-center gap-2"
+              >
                 <RotateCcw size={15} /> Try again
               </Button>
             </div>
@@ -169,7 +253,9 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
                   <span className="w-6 h-6 rounded-full bg-[#3D006B] text-white font-body text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                     {i + 1}
                   </span>
-                  <p className="font-body text-sm font-medium text-[#0F0F0F] pt-0.5">{q.text}</p>
+                  <p className="font-body text-sm font-medium text-[#0F0F0F] pt-0.5">
+                    {q.text}
+                  </p>
                 </div>
                 <div className="flex flex-col gap-2 pl-9">
                   {q.options.map((opt) => {
@@ -178,10 +264,10 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
                       <label
                         key={opt.id}
                         className={cn(
-                          'flex items-start gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-all',
+                          "flex items-start gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-all",
                           chosen
-                            ? 'border-[#3D006B] bg-[#F3E8FF] shadow-sm'
-                            : 'border-[#E5E7EB] hover:border-[#C4B5FD] hover:bg-[#FAFAFA]',
+                            ? "border-[#3D006B] bg-[#F3E8FF] shadow-sm"
+                            : "border-[#E5E7EB] hover:border-[#C4B5FD] hover:bg-[#FAFAFA]",
                         )}
                       >
                         <input
@@ -190,7 +276,9 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
                           onChange={() => toggleOption(q.id, opt.id)}
                           className="accent-[#3D006B] mt-0.5 shrink-0"
                         />
-                        <span className="font-body text-sm text-[#374151] flex-1 min-w-0 break-words">{opt.text}</span>
+                        <span className="font-body text-sm text-[#374151] flex-1 min-w-0 wrap-break-word">
+                          {opt.text}
+                        </span>
                       </label>
                     );
                   })}
@@ -200,7 +288,9 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
           </div>
 
           {error && (
-            <p className="font-body text-sm text-red-500 mt-4">{(error as Error).message}</p>
+            <p className="font-body text-sm text-red-500 mt-4">
+              {(error as Error).message}
+            </p>
           )}
 
           <div className="mt-8">
@@ -214,17 +304,31 @@ export function QuizSection({ slug, moduleId, quiz, lastAttempt: initialLastAtte
   );
 }
 
-function MarkedQuestionRow({ question, index, isCourseQuiz }: { question: MarkedQuestion; index: number; isCourseQuiz: boolean }) {
+function MarkedQuestionRow({
+  question,
+  index,
+  isCourseQuiz,
+}: {
+  question: MarkedQuestion;
+  index: number;
+  isCourseQuiz: boolean;
+}) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-start gap-3">
-        <span className={cn(
-          'w-6 h-6 rounded-full font-body text-xs font-bold flex items-center justify-center shrink-0 mt-0.5',
-          question.isCorrect ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600',
-        )}>
+        <span
+          className={cn(
+            "w-6 h-6 rounded-full font-body text-xs font-bold flex items-center justify-center shrink-0 mt-0.5",
+            question.isCorrect
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-600",
+          )}
+        >
           {index + 1}
         </span>
-        <p className="font-body text-sm font-medium text-[#0F0F0F] min-w-0 pt-0.5">{question.text}</p>
+        <p className="font-body text-sm font-medium text-[#0F0F0F] min-w-0 pt-0.5">
+          {question.text}
+        </p>
       </div>
       <div className="flex flex-col gap-2 pl-9">
         {question.options.map((opt) => {
@@ -234,15 +338,24 @@ function MarkedQuestionRow({ question, index, isCourseQuiz }: { question: Marked
               <div
                 key={opt.id}
                 className={cn(
-                  'flex items-start gap-3 px-4 py-3 rounded-xl border text-sm font-body',
-                  question.isCorrect && opt.wasChosen ? 'border-green-500 bg-green-50 text-green-800' :
-                  !question.isCorrect && opt.wasChosen ? 'border-red-400 bg-red-50 text-red-700' :
-                  'border-[#E5E7EB] text-[#6B7280]',
+                  "flex items-start gap-3 px-4 py-3 rounded-xl border text-sm font-body",
+                  question.isCorrect && opt.wasChosen
+                    ? "border-green-500 bg-green-50 text-green-800"
+                    : !question.isCorrect && opt.wasChosen
+                      ? "border-red-400 bg-red-50 text-red-700"
+                      : "border-[#E5E7EB] text-[#6B7280]",
                 )}
               >
-                <span className="flex-1 min-w-0 break-words">{opt.text}</span>
-                {question.isCorrect && opt.wasChosen && <CheckCircle size={14} className="text-green-600 shrink-0 mt-0.5" />}
-                {!question.isCorrect && opt.wasChosen && <XCircle size={14} className="text-red-500 shrink-0 mt-0.5" />}
+                <span className="flex-1 min-w-0 wrap-break-word">{opt.text}</span>
+                {question.isCorrect && opt.wasChosen && (
+                  <CheckCircle
+                    size={14}
+                    className="text-green-600 shrink-0 mt-0.5"
+                  />
+                )}
+                {!question.isCorrect && opt.wasChosen && (
+                  <XCircle size={14} className="text-red-500 shrink-0 mt-0.5" />
+                )}
               </div>
             );
           }
@@ -253,16 +366,33 @@ function MarkedQuestionRow({ question, index, isCourseQuiz }: { question: Marked
             <div
               key={opt.id}
               className={cn(
-                'flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-body',
-                opt.wasChosen && (opt.isCorrect || autoAwarded) && 'border-green-500 bg-green-50 text-green-800',
-                opt.isCorrect && !opt.wasChosen && !autoAwarded && 'border-dashed border-blue-400 bg-blue-50/40 text-blue-700',
-                !opt.isCorrect && opt.wasChosen && !question.isCorrect && 'border-red-400 bg-red-50 text-red-700',
-                !opt.wasChosen && (!opt.isCorrect || autoAwarded) && 'border-[#E5E7EB] text-[#6B7280]',
+                "flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-body",
+                opt.wasChosen &&
+                  (opt.isCorrect || autoAwarded) &&
+                  "border-green-500 bg-green-50 text-green-800",
+                opt.isCorrect &&
+                  !opt.wasChosen &&
+                  !autoAwarded &&
+                  "border-dashed border-blue-400 bg-blue-50/40 text-blue-700",
+                !opt.isCorrect &&
+                  opt.wasChosen &&
+                  !question.isCorrect &&
+                  "border-red-400 bg-red-50 text-red-700",
+                !opt.wasChosen &&
+                  (!opt.isCorrect || autoAwarded) &&
+                  "border-[#E5E7EB] text-[#6B7280]",
               )}
             >
-              <span className="flex-1 min-w-0 break-words">{opt.text}</span>
-              {opt.wasChosen && (opt.isCorrect || autoAwarded) && <CheckCircle size={14} className="text-green-600 shrink-0 mt-0.5" />}
-              {!opt.isCorrect && opt.wasChosen && !question.isCorrect && <XCircle size={14} className="text-red-500 shrink-0 mt-0.5" />}
+              <span className="flex-1 min-w-0 wrap-break-word">{opt.text}</span>
+              {opt.wasChosen && (opt.isCorrect || autoAwarded) && (
+                <CheckCircle
+                  size={14}
+                  className="text-green-600 shrink-0 mt-0.5"
+                />
+              )}
+              {!opt.isCorrect && opt.wasChosen && !question.isCorrect && (
+                <XCircle size={14} className="text-red-500 shrink-0 mt-0.5" />
+              )}
             </div>
           );
         })}
