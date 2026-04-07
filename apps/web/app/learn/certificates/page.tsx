@@ -69,7 +69,7 @@ function SharePopover({ cert, userId, rect, onClose }: SharePopoverProps) {
   return (
     <div
       ref={ref}
-      className="fixed z-[9999] w-64 bg-white rounded-2xl shadow-xl border border-[#E5E7EB] py-3"
+      className="fixed z-9999 w-64 bg-white rounded-2xl shadow-xl border border-[#E5E7EB] py-3"
       style={{ top, right: window.innerWidth - rect.right, transform: `translateY(${translateY})` }}
     >
       <p className="font-body text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider px-4 mb-2">
