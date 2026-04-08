@@ -38,7 +38,6 @@ export interface ChallengeLeaderboardEntry {
   firstName:      string;
   lastName:       string;
   problemsSolved: number;
-  avgPassRate:    number;
 }
 
 export interface ChallengeAnalytics {

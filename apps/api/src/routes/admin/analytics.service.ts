@@ -15,7 +15,6 @@ export interface ChallengeLeaderboardEntry {
   firstName:      string;
   lastName:       string;
   problemsSolved: number;
-  avgPassRate:    number; // 0–100
 }
 
 export interface TrendPoint {
@@ -159,41 +158,28 @@ export async function usersOverTime(from: string, to: string): Promise<UsersOver
   return rows.map((r) => ({ date: r.date, users: Number(r.users) }));
 }
 
-// Top 5 students ranked by unique challenges solved in the date range.
-// Tiebreaker: average (testsPassed / totalTests) across all their submissions
-// in the range — rewards efficient solvers who needed fewer failed attempts.
+// Top 5 students ranked by unique challenges completed in the date range.
 export async function challengeLeaderboard(from: string, to: string): Promise<ChallengeLeaderboardEntry[]> {
   const fromDate = dayStart(from);
   const toDate   = dayEnd(to);
 
   const rows = await prisma.$queryRaw<{
-    user_id:        string;
-    first_name:     string;
-    last_name:      string;
+    user_id:         string;
+    first_name:      string;
+    last_name:       string;
     problems_solved: number;
-    avg_pass_rate:  number;
   }[]>`
     SELECT
-      u.id                                                              AS user_id,
-      u."firstName"                                                     AS first_name,
-      u."lastName"                                                      AS last_name,
-      COUNT(DISTINCT cp."challengeId")::int                            AS problems_solved,
-      ROUND(
-        COALESCE(
-          AVG(cs."testsPassed"::float / NULLIF(cs."totalTests", 0)),
-          1
-        ) * 100
-      )::int                                                            AS avg_pass_rate
+      u.id                                     AS user_id,
+      u."firstName"                            AS first_name,
+      u."lastName"                             AS last_name,
+      COUNT(DISTINCT cp."challengeId")::int    AS problems_solved
     FROM "ChallengeProgress" cp
     JOIN "User" u ON u.id = cp."userId"
-    LEFT JOIN "ChallengeSubmission" cs
-      ON  cs."userId" = cp."userId"
-      AND cs."submittedAt" >= ${fromDate}
-      AND cs."submittedAt" <  ${toDate}
     WHERE cp."completedAt" >= ${fromDate}
       AND cp."completedAt" <  ${toDate}
     GROUP BY u.id, u."firstName", u."lastName"
-    ORDER BY problems_solved DESC, avg_pass_rate DESC
+    ORDER BY problems_solved DESC
     LIMIT 5
   `;
 
@@ -202,7 +188,6 @@ export async function challengeLeaderboard(from: string, to: string): Promise<Ch
     firstName:      r.first_name,
     lastName:       r.last_name,
     problemsSolved: Number(r.problems_solved),
-    avgPassRate:    Number(r.avg_pass_rate),
   }));
 }
 
