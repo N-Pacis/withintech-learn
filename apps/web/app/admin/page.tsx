@@ -4,13 +4,13 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminStats } from '@/hooks/queries/users';
-import { useEnrollmentTrend, useTopCourses, useRetention, useDailyActiveLearners, useUsersOverTime, useCourseCompletionDuration, useChallengeAnalytics } from '@/hooks/queries/analytics';
+import { useEnrollmentTrend, useTopCourses, useRetention, useDailyActiveLearners, useUsersOverTime, useChallengeAnalytics, useChallengeLeaderboard } from '@/hooks/queries/analytics';
 import { EnrollmentTrendChart } from './components/EnrollmentTrendChart';
 import { TopCoursesChart } from './components/TopCoursesChart';
 import { DailyActiveLearnersChart } from './components/DailyActiveLearnersChart';
 import { UsersOverTimeChart } from './components/UsersOverTimeChart';
-import { CourseCompletionChart } from './components/CourseCompletionChart';
 import { TopChallengesChart, HardestChallengesChart } from './components/ChallengeStatsChart';
+import { ChallengeLeaderboard } from './components/ChallengeLeaderboard';
 import { MonthRangePicker, DayRangePicker } from '@/components/ui';
 import type { RetentionStats } from '@/hooks/queries/analytics';
 
@@ -51,6 +51,12 @@ function toIso(d: Date) {
 
 function todayIso() { return toIso(new Date()); }
 function daysAgoIso(n: number) { const d = new Date(); d.setDate(d.getDate() - n); return toIso(d); }
+function mondayOfWeekIso() {
+  const d = new Date();
+  const day = d.getDay(); // 0=Sun
+  d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+  return toIso(d);
+}
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -151,6 +157,8 @@ export default function AdminDashboard() {
   const [dalTo,     setDalTo    ] = useState(() => todayIso());
   const [uotFrom,   setUotFrom  ] = useState(() => daysAgoIso(29));
   const [uotTo,     setUotTo    ] = useState(() => todayIso());
+  const [lbFrom,    setLbFrom   ] = useState(() => mondayOfWeekIso());
+  const [lbTo,      setLbTo     ] = useState(() => todayIso());
 
   // Each chart fetches independently — they render as they resolve.
   const { data: trend,      isLoading: trendLoading      } = useEnrollmentTrend(trendFrom, trendTo);
@@ -158,8 +166,8 @@ export default function AdminDashboard() {
   const { data: retention,  isLoading: retentionLoading  } = useRetention();
   const { data: dal,        isLoading: dalLoading        } = useDailyActiveLearners(dalFrom, dalTo);
   const { data: uot,        isLoading: uotLoading        } = useUsersOverTime(uotFrom, uotTo);
-  const { data: completion, isLoading: completionLoading } = useCourseCompletionDuration();
   const { data: challenges, isLoading: challengesLoading } = useChallengeAnalytics();
+  const { data: leaderboard, isLoading: leaderboardLoading } = useChallengeLeaderboard(lbFrom, lbTo);
 
   const statCards = [
     { label: 'Total Students',      value: stats?.totalStudents      ?? '—', href: '/admin/students' },
@@ -288,19 +296,6 @@ export default function AdminDashboard() {
 
         </div>
 
-        {/* Course completion duration */}
-        <ChartCard
-          title="Courses by Avg Completion Time"
-          subtitle="Published courses ranked fastest to slowest — days from enrollment to passing"
-        >
-          {completionLoading
-            ? <ChartSkeleton />
-            : !completion || completion.length === 0
-              ? <ChartEmpty message="No courses with passing students yet." />
-              : <CourseCompletionChart data={completion} />
-          }
-        </ChartCard>
-
       </div>
 
       {/* Challenges analytics */}
@@ -356,6 +351,15 @@ export default function AdminDashboard() {
               }
             </ChartCard>
           </div>
+
+          {/* Leaderboard */}
+          <ChallengeLeaderboard
+            entries={leaderboard}
+            isLoading={leaderboardLoading}
+            from={lbFrom}
+            to={lbTo}
+            onChange={(f, t) => { setLbFrom(f); setLbTo(t); }}
+          />
         </div>
       )}
 
