@@ -158,7 +158,10 @@ export async function usersOverTime(from: string, to: string): Promise<UsersOver
   return rows.map((r) => ({ date: r.date, users: Number(r.users) }));
 }
 
-// Top 5 students ranked by unique challenges completed in the date range.
+// Top 5 students ranked by distinct challenges they got accepted on in the date range.
+// Uses ChallengeSubmission.submittedAt — the authoritative timestamp of when a solve happened.
+// ChallengeProgress.completedAt is only set on first-ever solve (upsert with update:{}),
+// so it cannot be used to scope solves to a time window.
 export async function challengeLeaderboard(from: string, to: string): Promise<ChallengeLeaderboardEntry[]> {
   const fromDate = dayStart(from);
   const toDate   = dayEnd(to);
@@ -170,14 +173,15 @@ export async function challengeLeaderboard(from: string, to: string): Promise<Ch
     problems_solved: number;
   }[]>`
     SELECT
-      u.id                                     AS user_id,
-      u."firstName"                            AS first_name,
-      u."lastName"                             AS last_name,
-      COUNT(DISTINCT cp."challengeId")::int    AS problems_solved
-    FROM "ChallengeProgress" cp
-    JOIN "User" u ON u.id = cp."userId"
-    WHERE cp."completedAt" >= ${fromDate}
-      AND cp."completedAt" <  ${toDate}
+      u.id                                         AS user_id,
+      u."firstName"                                AS first_name,
+      u."lastName"                                 AS last_name,
+      COUNT(DISTINCT cs."challengeId")::int        AS problems_solved
+    FROM "ChallengeSubmission" cs
+    JOIN "User" u ON u.id = cs."userId"
+    WHERE cs.status = 'accepted'
+      AND cs."submittedAt" >= ${fromDate}
+      AND cs."submittedAt" <  ${toDate}
     GROUP BY u.id, u."firstName", u."lastName"
     ORDER BY problems_solved DESC
     LIMIT 5
