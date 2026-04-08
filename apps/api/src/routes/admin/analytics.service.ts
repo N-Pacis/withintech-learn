@@ -10,10 +10,12 @@ export interface UsersOverTimePoint {
   users: number; // new registrations that day
 }
 
-export interface CourseCompletionDuration {
-  id: string;
-  title: string;
-  avgDays: number;
+export interface ChallengeLeaderboardEntry {
+  userId:         string;
+  firstName:      string;
+  lastName:       string;
+  problemsSolved: number;
+  avgPassRate:    number; // 0–100
 }
 
 export interface TrendPoint {
@@ -157,53 +159,50 @@ export async function usersOverTime(from: string, to: string): Promise<UsersOver
   return rows.map((r) => ({ date: r.date, users: Number(r.users) }));
 }
 
-// Published courses ranked by average days from enrollment to first completion (fastest first).
-//
-// Completion timestamp strategy:
-//   Quiz-based courses  → MIN(QuizAttempt.createdAt WHERE status='pass') per student.
-//                         updatedAt is NOT used because the quiz can be retaken; every
-//                         passing retake bumps updatedAt to NOW(), which would inflate
-//                         the average for active students who revisit the course.
-//   Module-only courses → sc.updatedAt (set exactly once when all modules are done;
-//                         there is no retake mechanism for modules).
-//   COALESCE handles courses whose quiz record was deleted after completion.
-export async function courseCompletionDuration(): Promise<CourseCompletionDuration[]> {
+// Top 5 students ranked by unique challenges solved in the date range.
+// Tiebreaker: average (testsPassed / totalTests) across all their submissions
+// in the range — rewards efficient solvers who needed fewer failed attempts.
+export async function challengeLeaderboard(from: string, to: string): Promise<ChallengeLeaderboardEntry[]> {
+  const fromDate = dayStart(from);
+  const toDate   = dayEnd(to);
+
   const rows = await prisma.$queryRaw<{
-    id: string;
-    title: string;
-    avg_days: number;
+    user_id:        string;
+    first_name:     string;
+    last_name:      string;
+    problems_solved: number;
+    avg_pass_rate:  number;
   }[]>`
     SELECT
-      c.id,
-      c.title,
-      ROUND(AVG(
-        EXTRACT(EPOCH FROM (
-          COALESCE(
-            (
-              SELECT MIN(qa."createdAt")
-              FROM "Quiz" q2
-              JOIN "QuizAttempt" qa
-                ON qa."quizId" = q2.id
-               AND qa."userId"  = sc."studentId"
-               AND qa.status    = 'pass'
-              WHERE q2."courseId" = c.id
-            ),
-            sc."updatedAt"
-          ) - sc."enrolledAt"
-        )) / 86400
-      ))::int AS avg_days
-    FROM "Course" c
-    JOIN "StudentCourse" sc ON sc."courseId" = c.id AND sc.status = 'PASSED'
-    WHERE c.status = 'published'
-    GROUP BY c.id, c.title
-    ORDER BY avg_days ASC
+      u.id                                                              AS user_id,
+      u."firstName"                                                     AS first_name,
+      u."lastName"                                                      AS last_name,
+      COUNT(DISTINCT cp."challengeId")::int                            AS problems_solved,
+      ROUND(
+        COALESCE(
+          AVG(cs."testsPassed"::float / NULLIF(cs."totalTests", 0)),
+          1
+        ) * 100
+      )::int                                                            AS avg_pass_rate
+    FROM "ChallengeProgress" cp
+    JOIN "User" u ON u.id = cp."userId"
+    LEFT JOIN "ChallengeSubmission" cs
+      ON  cs."userId" = cp."userId"
+      AND cs."submittedAt" >= ${fromDate}
+      AND cs."submittedAt" <  ${toDate}
+    WHERE cp."completedAt" >= ${fromDate}
+      AND cp."completedAt" <  ${toDate}
+    GROUP BY u.id, u."firstName", u."lastName"
+    ORDER BY problems_solved DESC, avg_pass_rate DESC
     LIMIT 5
   `;
 
   return rows.map((r) => ({
-    id: r.id,
-    title: r.title,
-    avgDays: Number(r.avg_days),
+    userId:         r.user_id,
+    firstName:      r.first_name,
+    lastName:       r.last_name,
+    problemsSolved: Number(r.problems_solved),
+    avgPassRate:    Number(r.avg_pass_rate),
   }));
 }
 

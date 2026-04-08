@@ -33,10 +33,12 @@ export interface UsersOverTimePoint {
   users: number;
 }
 
-export interface CourseCompletionDuration {
-  id: string;
-  title: string;
-  avgDays: number;
+export interface ChallengeLeaderboardEntry {
+  userId:         string;
+  firstName:      string;
+  lastName:       string;
+  problemsSolved: number;
+  avgPassRate:    number;
 }
 
 export interface ChallengeAnalytics {
@@ -56,8 +58,8 @@ export const analyticsKeys = {
   retention:                () => [...analyticsKeys.all, 'retention'] as const,
   dailyActiveLearners:      (from: string, to: string) => [...analyticsKeys.all, 'daily-active-learners', from, to] as const,
   usersOverTime:            (from: string, to: string) => [...analyticsKeys.all, 'users-over-time', from, to] as const,
-  courseCompletionDuration: () => [...analyticsKeys.all, 'course-completion-duration'] as const,
   challengeAnalytics:       () => [...analyticsKeys.all, 'challenges'] as const,
+  challengeLeaderboard:     (from: string, to: string) => [...analyticsKeys.all, 'challenge-leaderboard', from, to] as const,
 };
 
 const STALE = 5 * 60 * 1000; // 5 min
@@ -128,18 +130,6 @@ export function useUsersOverTime(from: string, to: string) {
   });
 }
 
-export function useCourseCompletionDuration() {
-  return useQuery({
-    queryKey: analyticsKeys.courseCompletionDuration(),
-    queryFn: async (): Promise<CourseCompletionDuration[]> => {
-      const res = await apiFetch<CourseCompletionDuration[]>('/admin/analytics/course-completion-duration');
-      if (!res.success || !res.data) throw new Error(res.message);
-      return res.data;
-    },
-    staleTime: STALE,
-  });
-}
-
 export function useChallengeAnalytics() {
   return useQuery({
     queryKey: analyticsKeys.challengeAnalytics(),
@@ -149,5 +139,19 @@ export function useChallengeAnalytics() {
       return res.data;
     },
     staleTime: STALE,
+  });
+}
+
+export function useChallengeLeaderboard(from: string, to: string) {
+  return useQuery({
+    queryKey: analyticsKeys.challengeLeaderboard(from, to),
+    queryFn: async (): Promise<ChallengeLeaderboardEntry[]> => {
+      const qs = new URLSearchParams({ from, to });
+      const res = await apiFetch<ChallengeLeaderboardEntry[]>(`/admin/analytics/challenge-leaderboard?${qs}`);
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    staleTime: STALE,
+    enabled: !!from && !!to,
   });
 }

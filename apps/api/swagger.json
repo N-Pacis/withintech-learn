@@ -3430,15 +3430,39 @@
         }
       }
     },
-    "/admin/analytics/course-completion-duration": {
+    "/admin/analytics/challenges": {
       "get": {
         "tags": ["Admin / Analytics"],
-        "summary": "Courses by avg completion time",
-        "description": "Published courses ranked by average days from enrollment to passing (fastest first). Only includes courses with at least one passing student.",
+        "summary": "Challenges analytics overview",
         "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Challenges analytics" } }
+      }
+    },
+    "/admin/analytics/challenge-leaderboard": {
+      "get": {
+        "tags": ["Admin / Analytics"],
+        "summary": "Weekly challenge leaderboard",
+        "description": "Top 5 students ranked by unique challenges completed in the date range. Tiebreaker: average pass rate across their submissions in the range.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+            "description": "Start date (YYYY-MM-DD)"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+            "description": "End date (YYYY-MM-DD, max 30 days from `from`)"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Array of courses with completion duration stats",
+            "description": "Leaderboard entries",
             "content": {
               "application/json": {
                 "schema": {
@@ -3450,10 +3474,11 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id":          { "type": "string" },
-                          "title":       { "type": "string" },
-                          "passedCount": { "type": "integer" },
-                          "avgDays":     { "type": "integer" }
+                          "userId":         { "type": "string" },
+                          "firstName":      { "type": "string" },
+                          "lastName":       { "type": "string" },
+                          "problemsSolved": { "type": "integer" },
+                          "avgPassRate":    { "type": "integer", "description": "0–100" }
                         }
                       }
                     }
@@ -3462,16 +3487,9 @@
               }
             }
           },
+          "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
-      }
-    },
-    "/admin/analytics/challenges": {
-      "get": {
-        "tags": ["Admin / Analytics"],
-        "summary": "Challenges analytics overview",
-        "security": [{ "bearerAuth": [] }],
-        "responses": { "200": { "description": "Challenges analytics" } }
       }
     },
     "/admin/enrollments": {
