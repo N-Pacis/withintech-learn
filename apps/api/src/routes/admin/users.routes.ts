@@ -15,6 +15,13 @@ const listUsersQuerySchema = z.object({
   limit:     z.coerce.number().int().min(1).max(100).default(50),
 });
 
+const exportUsersQuerySchema = z.object({
+  search:    z.string().optional(),
+  role:      z.enum(['admin', 'student']).optional(),
+  status:    z.enum(['active', 'inactive']).optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional(),
+});
+
 const createAdminSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
@@ -30,6 +37,13 @@ router.get('/admin/stats', asyncHandler(async (_req, res) => {
     prisma.certificate.count(),
   ]);
   sendSuccess(res, { totalStudents, activeCourses, certificatesIssued });
+}));
+
+router.get('/admin/users/export', asyncHandler(async (req, res) => {
+  const parsed = exportUsersQuerySchema.safeParse(req.query);
+  if (!parsed.success) throw badRequest('Invalid query parameters');
+  const result = await usersService.exportUsers(parsed.data);
+  sendSuccess(res, result);
 }));
 
 router.get('/admin/users', asyncHandler(async (req, res) => {

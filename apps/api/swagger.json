@@ -3087,6 +3087,23 @@
         }
       }
     },
+    "/admin/users/export": {
+      "get": {
+        "tags": ["Admin / Users"],
+        "summary": "Export all students",
+        "description": "Returns all matching students without pagination. Supports the same search/status/sortOrder filters as the list endpoint.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "search",    "in": "query", "schema": { "type": "string" } },
+          { "name": "status",    "in": "query", "schema": { "type": "string", "enum": ["active", "inactive"] } },
+          { "name": "sortOrder", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"] } }
+        ],
+        "responses": {
+          "200": { "description": "Array of all matching users" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
     "/admin/users": {
       "get": {
         "tags": [

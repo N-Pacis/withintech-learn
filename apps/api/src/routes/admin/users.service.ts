@@ -75,6 +75,22 @@ export const listUsers = async ({ search, role, status, sortOrder = 'desc', page
   return { total, page, limit, users: users.map(formatUser) };
 };
 
+export const exportUsers = async ({ search, role, status, sortOrder = 'desc' }: Omit<ListUsersParams, 'page' | 'limit'> = {}) => {
+  const where = {
+    AND: [
+      search ? { OR: buildSearchConditions(search) } : {},
+      role ? { role: { name: role } } : {},
+      status !== undefined ? { isActive: status === 'active' } : {},
+    ],
+  };
+  const users = await prisma.user.findMany({
+    where,
+    include: { role: true },
+    orderBy: { createdAt: sortOrder },
+  });
+  return users.map(formatUser);
+};
+
 export const setUserActive = async ({ userId, isActive }: { userId: string; isActive: boolean }) => {
   const user = await prisma.user.findUnique({ where: { id: userId }, include: { role: true } });
   if (!user) throw notFound('User not found');

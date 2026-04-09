@@ -62,6 +62,16 @@ export function useStudents(params: Omit<UsersParams, 'role'> = {}) {
   return useUsers({ ...params, role: 'student' });
 }
 
+export async function fetchStudentsExport(params: Pick<UsersParams, 'search' | 'status' | 'sortOrder'>): Promise<AdminUser[]> {
+  const qs = new URLSearchParams({ role: 'student' });
+  if (params.search)    qs.set('search', params.search);
+  if (params.status)    qs.set('status', params.status);
+  if (params.sortOrder) qs.set('sortOrder', params.sortOrder);
+  const res = await apiFetch<AdminUser[]>(`/admin/users/export?${qs}`);
+  if (!res.success || !res.data) throw new Error(res.message);
+  return res.data;
+}
+
 export function useSetUserActive() {
   const queryClient = useQueryClient();
 
