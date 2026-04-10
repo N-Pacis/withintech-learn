@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle, XCircle, RotateCcw, Trophy, AlertTriangle } from "lucide-react";
+import { CheckCircle, XCircle, RotateCcw, Trophy } from "lucide-react";
 import { GridLoader } from "react-spinners";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui";
+import { Button, WarningToast } from "@/components/ui";
 import {
   useSubmitQuiz,
   type StudentModuleQuiz,
@@ -36,7 +36,8 @@ export function QuizSection({
   const [answers, setAnswers] = useState<Record<string, Set<string>>>({});
   const [result, setResult] = useState<QuizAttemptResult | null>(null);
   const [lastAttempt, setLastAttempt] = useState(initialLastAttempt);
-  const [tabWarning, setTabWarning] = useState(false);
+  const [warningCount, setWarningCount] = useState(0);
+  const [warningVisible, setWarningVisible] = useState(false);
   const { mutate: submit, isPending, error } = useSubmitQuiz();
 
   const quizActive = started && !result && !isPending;
@@ -44,7 +45,10 @@ export function QuizSection({
   useEffect(() => {
     if (!quizActive) return;
 
-    const markWarning = () => setTabWarning(true);
+    const markWarning = () => {
+      setWarningCount((n) => n + 1);
+      setWarningVisible(true);
+    };
 
     // 1. Tab switch / app switch (Page Visibility API — universal modern browser support)
     const handleVisibility = () => {
@@ -145,7 +149,8 @@ export function QuizSection({
   function handleRetry() {
     setResult(null);
     setAnswers({});
-    setTabWarning(false);
+    setWarningCount(0);
+    setWarningVisible(false);
     setStarted(true);
   }
 
@@ -154,6 +159,13 @@ export function QuizSection({
   const quizLabel = isCourseQuiz ? "Final Course Quiz" : quizType === 'lesson' ? "Lesson Quiz" : "Module Quiz";
 
   return (
+    <>
+    <WarningToast
+      visible={warningVisible}
+      count={warningCount}
+      onClose={() => setWarningVisible(false)}
+    />
+
     <div className="mt-10 pt-8 border-t border-[#E5E7EB]">
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
@@ -300,21 +312,6 @@ export function QuizSection({
       ) : (
         /* ── Quiz form ── */
         <>
-          {/* Focus warning banner */}
-          {tabWarning && (
-            <div className="flex items-start gap-3 px-4 py-3.5 rounded-xl mb-6 border border-amber-100 bg-amber-50 animate-in slide-in-from-top duration-300">
-              <AlertTriangle size={15} className="text-amber-500 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-body text-sm font-semibold text-amber-700">
-                  You left this page
-                </p>
-                <p className="font-body text-xs text-amber-600 mt-0.5">
-                  Please stay focused on the quiz. Leaving this page is being monitored.
-                </p>
-              </div>
-            </div>
-          )}
-
           {/* Previous failed attempt banner */}
           {lastAttempt && (
             <div className="flex items-center gap-2 px-4 py-3 rounded-xl mb-6 font-body text-sm bg-red-50 text-red-600">
@@ -381,6 +378,7 @@ export function QuizSection({
         </>
       )}
     </div>
+    </>
   );
 }
 

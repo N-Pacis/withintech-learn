@@ -3,13 +3,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  History,
-  CheckCircle2,
-  Send,
-  AlertTriangle,
-} from "lucide-react";
+import { ArrowLeft, History, CheckCircle2, Send } from "lucide-react";
 import {
   useStudentChallenge,
   useSubmitChallenge,
@@ -18,7 +12,7 @@ import {
   type SubmissionResult,
   type StarterCode,
 } from "@/hooks/queries/challenges";
-import { Button } from "@/components/ui";
+import { Button, WarningToast } from "@/components/ui";
 import { ChallengeEditor } from "@/components/ui/ChallengeEditor";
 import { ProblemPanel } from "./components/ProblemPanel";
 import { SubmissionResults } from "./components/SubmissionResults";
@@ -117,7 +111,8 @@ export default function ChallengePage() {
   const [rightTab, setRightTab] = useState<RightTab>("results");
   const [lastResult, setLastResult] = useState<SubmissionResult | null>(null);
   const [showBanner, setShowBanner] = useState(false);
-  const [tabWarning, setTabWarning] = useState(false);
+  const [warningCount, setWarningCount] = useState(0);
+  const [warningVisible, setWarningVisible] = useState(false);
   const [mobilePanel, setMobilePanel] = useState<"problem" | "code">("problem");
 
   // Seed starter code from challenge once it loads — only once per challenge
@@ -187,7 +182,10 @@ export default function ChallengePage() {
   // Blur: catches alt-tab to another app or address-bar focus while tab is still visible
   useEffect(() => {
     if (!challenge) return;
-    const markWarning = () => setTabWarning(true);
+    const markWarning = () => {
+      setWarningCount((n) => n + 1);
+      setWarningVisible(true);
+    };
     const handleVisibility = () => {
       if (document.visibilityState === "hidden") markWarning();
     };
@@ -238,16 +236,12 @@ export default function ChallengePage() {
         <AcceptedBanner onDismiss={() => setShowBanner(false)} />
       )}
 
-      {/* Focus warning banner */}
-      {tabWarning && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-amber-50 border-b border-amber-100 animate-in slide-in-from-top duration-300">
-          <AlertTriangle size={15} className="text-amber-500 shrink-0" />
-          <span className="font-body text-sm font-medium text-amber-700 flex-1">
-            You left this page — please stay focused on the challenge. Your
-            activity is being monitored.
-          </span>
-        </div>
-      )}
+      <WarningToast
+        visible={warningVisible}
+        count={warningCount}
+        context="challenge"
+        onClose={() => setWarningVisible(false)}
+      />
 
       {/* Top bar */}
       <div className="flex items-center gap-3 px-4 py-2.5 border-b border-[#E5E7EB] bg-white shrink-0">
