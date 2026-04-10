@@ -147,20 +147,26 @@ export default function ChallengePage() {
     }
   }, [codeByLang, language, submitMutation]);
 
-  // Tab visibility detection
+  // Focus / visibility detection
   // Primary: Page Visibility API (Chrome, Firefox, Safari, Edge, iOS Safari 7+)
-  // Supplement: pagehide covers iOS Safari edge cases on app-switch / Home button
+  // Supplement: pagehide catches iOS Safari edge cases on app-switch / Home button
+  // Blur: catches alt-tab to another app or address-bar focus while tab is still visible
   useEffect(() => {
     if (!challenge) return;
     const markWarning = () => setTabWarning(true);
     const handleVisibility = () => {
       if (document.visibilityState === 'hidden') markWarning();
     };
+    const handleBlur = () => {
+      if (document.visibilityState === 'visible') markWarning();
+    };
     document.addEventListener('visibilitychange', handleVisibility);
     window.addEventListener('pagehide', markWarning);
+    window.addEventListener('blur', handleBlur);
     return () => {
       document.removeEventListener('visibilitychange', handleVisibility);
       window.removeEventListener('pagehide', markWarning);
+      window.removeEventListener('blur', handleBlur);
     };
   }, [challenge]);
 
@@ -196,12 +202,12 @@ export default function ChallengePage() {
         <AcceptedBanner onDismiss={() => setShowBanner(false)} />
       )}
 
-      {/* Tab warning banner */}
+      {/* Focus warning banner */}
       {tabWarning && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-amber-50 border-b border-amber-200 animate-in slide-in-from-top duration-300">
-          <AlertTriangle size={15} className="text-amber-600 shrink-0" />
-          <span className="font-body text-sm font-medium text-amber-800 flex-1">
-            Please stay on this page while working on the challenge. Tab switching is being monitored.
+        <div className="flex items-center gap-3 px-4 py-3 bg-amber-50 border-b border-amber-100 animate-in slide-in-from-top duration-300">
+          <AlertTriangle size={15} className="text-amber-500 shrink-0" />
+          <span className="font-body text-sm font-medium text-amber-700 flex-1">
+            You left this page — please stay focused on the challenge. Your activity is being monitored.
           </span>
         </div>
       )}
