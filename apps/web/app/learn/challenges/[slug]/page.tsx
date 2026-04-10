@@ -239,7 +239,6 @@ export default function ChallengePage() {
       <WarningToast
         visible={warningVisible}
         count={warningCount}
-        context="challenge"
         onClose={() => setWarningVisible(false)}
       />
 
