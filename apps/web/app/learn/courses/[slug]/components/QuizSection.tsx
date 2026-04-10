@@ -44,14 +44,25 @@ export function QuizSection({
 
     const markWarning = () => setTabWarning(true);
 
-    // Primary: Page Visibility API (Chrome, Firefox, Safari, Edge, iOS Safari 7+)
+    // 1. Tab switch / app switch (Page Visibility API — universal modern browser support)
     const handleVisibility = () => {
       if (document.visibilityState === "hidden") markWarning();
     };
-    // Supplement: pagehide covers iOS Safari edge cases where visibilitychange
-    // may not fire reliably when switching apps or pressing the Home button
+    // Supplement: pagehide catches iOS Safari edge cases on app-switch / Home button
     const handlePageHide = () => markWarning();
 
+    // 2. Window blur — catches alt-tab to another app and address-bar focus
+    //    Only fires when the tab itself is still visible (visibilitychange handles hidden tabs)
+    const handleBlur = () => {
+      if (document.visibilityState === "visible") markWarning();
+    };
+
+    // 3. beforeunload — native browser "Leave page?" dialog on close/navigate away
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+
+    // 4. Keyboard shortcuts that open devtools or view source
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
         e.key === "F12" ||
@@ -60,16 +71,22 @@ export function QuizSection({
       )
         e.preventDefault();
     };
+
+    // 5. Right-click context menu
     const handleContextMenu = (e: MouseEvent) => e.preventDefault();
 
     document.addEventListener("visibilitychange", handleVisibility);
     window.addEventListener("pagehide", handlePageHide);
+    window.addEventListener("blur", handleBlur);
+    window.addEventListener("beforeunload", handleBeforeUnload);
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("contextmenu", handleContextMenu);
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("pagehide", handlePageHide);
+      window.removeEventListener("blur", handleBlur);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("contextmenu", handleContextMenu);
     };
@@ -278,16 +295,16 @@ export function QuizSection({
       ) : (
         /* ── Quiz form ── */
         <>
-          {/* Tab warning banner */}
+          {/* Focus warning banner */}
           {tabWarning && (
             <div className="flex items-start gap-3 px-4 py-3.5 rounded-xl mb-6 border border-amber-100 bg-amber-50 animate-in slide-in-from-top duration-300">
-              <AlertTriangle size={15} className="text-amber-600 shrink-0 mt-0.5" />
+              <AlertTriangle size={15} className="text-amber-500 shrink-0 mt-0.5" />
               <div>
                 <p className="font-body text-sm font-semibold text-amber-700">
-                  Tab switch detected
+                  You left this page
                 </p>
                 <p className="font-body text-xs text-amber-600 mt-0.5">
-                  Please stay on this page while taking the quiz. Your activity is being monitored.
+                  Please stay focused on the quiz. Leaving this page is being monitored.
                 </p>
               </div>
             </div>
@@ -301,14 +318,17 @@ export function QuizSection({
             </div>
           )}
 
-          <div className="flex flex-col gap-8">
+          <div
+            className="flex flex-col gap-8"
+            onCopy={(e) => e.preventDefault()}
+          >
             {quiz.questions.map((q, i) => (
               <div key={q.id} className="flex flex-col gap-3">
                 <div className="flex items-start gap-3">
                   <span className="w-6 h-6 rounded-full bg-[#3D006B] text-white font-body text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                     {i + 1}
                   </span>
-                  <p className="font-body text-sm font-medium text-[#0F0F0F] pt-0.5">
+                  <p className="font-body text-sm font-medium text-[#0F0F0F] pt-0.5 select-none">
                     {q.text}
                   </p>
                 </div>
@@ -331,7 +351,7 @@ export function QuizSection({
                           onChange={() => toggleOption(q.id, opt.id)}
                           className="accent-[#3D006B] mt-0.5 shrink-0"
                         />
-                        <span className="font-body text-sm text-[#374151] flex-1 min-w-0 wrap-break-word">
+                        <span className="font-body text-sm text-[#374151] flex-1 min-w-0 wrap-break-word select-none">
                           {opt.text}
                         </span>
                       </label>
