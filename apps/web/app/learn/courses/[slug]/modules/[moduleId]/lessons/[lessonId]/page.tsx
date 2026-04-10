@@ -207,7 +207,7 @@ export default function LessonPage() {
             <QuizSection
               slug={slug}
               moduleId={moduleId}
-              quiz={lesson.quiz}
+              quiz={lesson.quiz!}
               lastAttempt={lesson.lastAttempt}
               onPass={handleQuizPass}
               quizType="lesson"
