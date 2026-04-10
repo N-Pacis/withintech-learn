@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, Trophy, CheckCircle2 } from "lucide-react";
-import { usePublishedCourse } from "@/hooks/queries/courses";
+import { ArrowLeft, Trophy, CheckCircle2, ChevronDown } from "lucide-react";
+import { usePublishedCourse, useStudentModule } from "@/hooks/queries/courses";
 import { PageLoader } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +13,11 @@ export default function CourseLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { slug, moduleId } = useParams<{ slug: string; moduleId?: string }>();
+  const { slug, moduleId, lessonId } = useParams<{
+    slug: string;
+    moduleId?: string;
+    lessonId?: string;
+  }>();
   const pathname = usePathname();
   const router = useRouter();
   const { data: course, isLoading, isError } = usePublishedCourse(slug);
@@ -39,6 +43,20 @@ export default function CourseLayout({
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [pathname]);
+
+  // Derive active module id and lesson id from pathname
+  const activeModuleId = moduleId ?? pathname.match(/modules\/([^/]+)/)?.[1];
+  const activeLessonId = lessonId ?? pathname.match(/lessons\/([^/]+)/)?.[1];
+
+  // Fetch lesson data for the active module (must be called before any early return)
+  const activeModule = course?.modules.find((m) => m.id === activeModuleId);
+  const { data: activeModuleDetail } = useStudentModule(
+    slug,
+    activeModuleId && activeModule && !activeModule.isLocked
+      ? activeModuleId
+      : "",
+  );
+  const activeLessons = activeModuleDetail?.lessons ?? [];
 
   if (isLoading) return <PageLoader type="content" />;
   if (isError || !course) {
@@ -70,8 +88,6 @@ export default function CourseLayout({
     router.push(`/learn/courses/${slug}/quiz`);
   }
 
-  // Derive active module id from pathname
-  const activeModuleId = moduleId ?? pathname.match(/modules\/([^/]+)/)?.[1];
   const isOnModuleQuiz = pathname.includes("/quiz") && !isOnCourseQuiz;
 
   return (
@@ -152,7 +168,61 @@ export default function CourseLayout({
                     >
                       {m.title}
                     </span>
+                    {m.hasLessons && activeModuleId === m.id && (
+                      <ChevronDown
+                        size={12}
+                        className={cn(
+                          "ml-auto shrink-0 text-[#9CA3AF] transition-transform",
+                          activeModuleId === m.id && "rotate-180",
+                        )}
+                      />
+                    )}
                   </button>
+                  {/* Lesson sub-items */}
+                  {activeModuleId === m.id && activeLessons.length > 0 && (
+                    <div className="pl-8 pr-2 pb-1">
+                      {activeLessons.map((l, li) => {
+                        const isLessonActive = activeLessonId === l.id;
+                        const lessonDone = l.isCompleted;
+                        const lessonLocked = l.isLocked;
+                        return (
+                          <button
+                            key={l.id}
+                            onClick={() => {
+                              if (!lessonLocked) {
+                                router.push(
+                                  `/learn/courses/${slug}/modules/${m.id}/lessons/${l.id}`,
+                                );
+                              }
+                            }}
+                            disabled={lessonLocked}
+                            className={cn(
+                              "w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors text-xs",
+                              lessonLocked
+                                ? "opacity-40 cursor-not-allowed"
+                                : isLessonActive
+                                  ? "bg-[#EDE5F7] text-[#3D006B] font-semibold"
+                                  : "hover:bg-[#F3F4F6] text-[#6B7280]",
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                "w-4 h-4 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold",
+                                lessonDone
+                                  ? "bg-green-100 text-green-700"
+                                  : isLessonActive
+                                    ? "bg-[#3D006B] text-white"
+                                    : "bg-[#E5E7EB] text-[#9CA3AF]",
+                              )}
+                            >
+                              {lessonDone ? <CheckCircle2 size={9} /> : li + 1}
+                            </span>
+                            <span className="truncate">{l.title}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                   {/* Module quiz sub-item — only show if module has quiz */}
                   {isQuizActive && (
                     <div className="pl-11 pr-4 py-2 bg-[#F3E8FF]">

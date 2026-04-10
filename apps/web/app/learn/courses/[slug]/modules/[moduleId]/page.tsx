@@ -88,6 +88,17 @@ export default function ModulePage() {
     }
   }, [course, courseModule, slug, router]);
 
+  // Redirect to first incomplete lesson if module uses lessons
+  useEffect(() => {
+    if (mod && mod.lessons && mod.lessons.length > 0) {
+      const firstIncomplete = mod.lessons.find((l) => !l.isCompleted);
+      const target = firstIncomplete ?? mod.lessons[0];
+      router.replace(
+        `/learn/courses/${slug}/modules/${moduleId}/lessons/${target.id}`,
+      );
+    }
+  }, [mod, slug, moduleId, router]);
+
   if (isLoading || !course) return <PageLoader type="content" />;
   if (!mod) return null;
 

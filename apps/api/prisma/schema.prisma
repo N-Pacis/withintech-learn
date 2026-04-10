@@ -41,6 +41,7 @@ model User {
   enrollments          StudentCourse[]
   quizAttempts         QuizAttempt[]
   moduleProgress       ModuleProgress[]
+  lessonProgress       LessonProgress[]
   certificates         Certificate[]
   createdChallenges    Challenge[]
   challengeSubmissions ChallengeSubmission[]
@@ -116,6 +117,7 @@ model Module {
   title      String
   orderIndex Int
   blocks     ModuleBlock[]
+  lessons    Lesson[]
   quiz       Quiz?
   progress   ModuleProgress[]
   createdAt  DateTime         @default(now())
@@ -146,6 +148,8 @@ model Quiz {
   module       Module?       @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   courseId     String?       @unique
   course       Course?       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonId     String?       @unique
+  lesson       Lesson?       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   title        String
   passingScore Int
   maxAttempts  Int           @default(3)
@@ -208,6 +212,48 @@ model Certificate {
   completedAt DateTime @default(now())
 
   @@unique([userId, courseId])
+}
+
+model Lesson {
+  id         String           @id @default(uuid())
+  moduleId   String
+  module     Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title      String
+  orderIndex Int
+  blocks     LessonBlock[]
+  quiz       Quiz?
+  progress   LessonProgress[]
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([moduleId, orderIndex])
+}
+
+model LessonBlock {
+  id         String    @id @default(uuid())
+  lessonId   String
+  lesson     Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  type       BlockType
+  content    String?
+  storageKey String?
+  caption    String?
+  language   String?
+  orderIndex Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([lessonId, orderIndex])
+}
+
+model LessonProgress {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+
+  @@unique([userId, lessonId])
 }
 
 // ─── Challenges ───────────────────────────────────────────────────────────────

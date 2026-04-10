@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '@/lib/api';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -25,6 +25,7 @@ export interface Question {
 
 export interface Quiz {
   id: string;
+  lessonId: string | null;
   moduleId: string | null;
   courseId: string | null;
   title: string;
@@ -38,19 +39,36 @@ export interface Quiz {
 // ─── Query keys ───────────────────────────────────────────────────────────────
 
 export const quizKeys = {
-  all:         ['quizzes'] as const,
-  forModule:   (moduleId: string) => ['quizzes', 'module', moduleId] as const,
-  forCourse:   (courseId: string) => ['quizzes', 'course', courseId] as const,
-  detail:      (id: string)       => ['quizzes', id] as const,
+  all: ["quizzes"] as const,
+  forLesson: (lessonId: string) => ["quizzes", "lesson", lessonId] as const,
+  forModule: (moduleId: string) => ["quizzes", "module", moduleId] as const,
+  forCourse: (courseId: string) => ["quizzes", "course", courseId] as const,
+  detail: (id: string) => ["quizzes", id] as const,
 };
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
+
+export function useLessonQuiz(lessonId: string) {
+  return useQuery({
+    queryKey: quizKeys.forLesson(lessonId),
+    queryFn: async (): Promise<Quiz | null> => {
+      const res = await apiFetch<Quiz | null>(
+        `/admin/lessons/${lessonId}/quiz`,
+      );
+      if (!res.success) throw new Error(res.message);
+      return res.data ?? null;
+    },
+    enabled: !!lessonId,
+  });
+}
 
 export function useModuleQuiz(moduleId: string) {
   return useQuery({
     queryKey: quizKeys.forModule(moduleId),
     queryFn: async (): Promise<Quiz | null> => {
-      const res = await apiFetch<Quiz | null>(`/admin/modules/${moduleId}/quiz`);
+      const res = await apiFetch<Quiz | null>(
+        `/admin/modules/${moduleId}/quiz`,
+      );
       if (!res.success) throw new Error(res.message);
       return res.data ?? null;
     },
@@ -62,7 +80,9 @@ export function useCourseQuiz(courseId: string) {
   return useQuery({
     queryKey: quizKeys.forCourse(courseId),
     queryFn: async (): Promise<Quiz | null> => {
-      const res = await apiFetch<Quiz | null>(`/admin/courses/${courseId}/quiz`);
+      const res = await apiFetch<Quiz | null>(
+        `/admin/courses/${courseId}/quiz`,
+      );
       if (!res.success) throw new Error(res.message);
       return res.data ?? null;
     },
@@ -84,6 +104,27 @@ export function useQuiz(id: string) {
 
 // ─── Quiz mutations ───────────────────────────────────────────────────────────
 
+export function useCreateLessonQuiz(lessonId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: {
+      title: string;
+      passingScore: number;
+      maxAttempts: number;
+    }): Promise<Quiz> => {
+      const res = await apiFetch<Quiz>(`/admin/lessons/${lessonId}/quiz`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: quizKeys.forLesson(lessonId) });
+    },
+  });
+}
+
 export function useCreateModuleQuiz(moduleId: string) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -93,7 +134,7 @@ export function useCreateModuleQuiz(moduleId: string) {
       maxAttempts: number;
     }): Promise<Quiz> => {
       const res = await apiFetch<Quiz>(`/admin/modules/${moduleId}/quiz`, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(data),
       });
       if (!res.success || !res.data) throw new Error(res.message);
@@ -114,7 +155,7 @@ export function useCreateCourseQuiz(courseId: string) {
       maxAttempts: number;
     }): Promise<Quiz> => {
       const res = await apiFetch<Quiz>(`/admin/courses/${courseId}/quiz`, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(data),
       });
       if (!res.success || !res.data) throw new Error(res.message);
@@ -141,7 +182,7 @@ export function useUpdateQuiz(cacheKey: readonly unknown[]) {
       maxAttempts?: number;
     }): Promise<Quiz> => {
       const res = await apiFetch<Quiz>(`/admin/quizzes/${id}`, {
-        method: 'PATCH',
+        method: "PATCH",
         body: JSON.stringify(data),
       });
       if (!res.success || !res.data) throw new Error(res.message);
@@ -159,7 +200,7 @@ export function useDeleteQuiz(cacheKey: readonly unknown[]) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await apiFetch(`/admin/quizzes/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/admin/quizzes/${id}`, { method: "DELETE" });
       if (!res.success) throw new Error(res.message);
     },
     onSuccess: () => {
@@ -182,10 +223,13 @@ export function useAddQuestion(cacheKey: readonly unknown[]) {
       text: string;
       orderIndex: number;
     }): Promise<Question> => {
-      const res = await apiFetch<Question>(`/admin/quizzes/${quizId}/questions`, {
-        method: 'POST',
-        body: JSON.stringify({ text, orderIndex }),
-      });
+      const res = await apiFetch<Question>(
+        `/admin/quizzes/${quizId}/questions`,
+        {
+          method: "POST",
+          body: JSON.stringify({ text, orderIndex }),
+        },
+      );
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
@@ -198,9 +242,15 @@ export function useAddQuestion(cacheKey: readonly unknown[]) {
 export function useUpdateQuestion(cacheKey: readonly unknown[]) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, text }: { id: string; text: string }): Promise<Question> => {
+    mutationFn: async ({
+      id,
+      text,
+    }: {
+      id: string;
+      text: string;
+    }): Promise<Question> => {
       const res = await apiFetch<Question>(`/admin/questions/${id}`, {
-        method: 'PATCH',
+        method: "PATCH",
         body: JSON.stringify({ text }),
       });
       if (!res.success || !res.data) throw new Error(res.message);
@@ -216,7 +266,9 @@ export function useDeleteQuestion(cacheKey: readonly unknown[]) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await apiFetch(`/admin/questions/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/admin/questions/${id}`, {
+        method: "DELETE",
+      });
       if (!res.success) throw new Error(res.message);
     },
     onSuccess: () => {
@@ -241,10 +293,13 @@ export function useAddOption(cacheKey: readonly unknown[]) {
       isCorrect: boolean;
       orderIndex: number;
     }): Promise<QuestionOption> => {
-      const res = await apiFetch<QuestionOption>(`/admin/questions/${questionId}/options`, {
-        method: 'POST',
-        body: JSON.stringify({ text, isCorrect, orderIndex }),
-      });
+      const res = await apiFetch<QuestionOption>(
+        `/admin/questions/${questionId}/options`,
+        {
+          method: "POST",
+          body: JSON.stringify({ text, isCorrect, orderIndex }),
+        },
+      );
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
@@ -267,7 +322,7 @@ export function useUpdateOption(cacheKey: readonly unknown[]) {
       isCorrect?: boolean;
     }): Promise<QuestionOption> => {
       const res = await apiFetch<QuestionOption>(`/admin/options/${id}`, {
-        method: 'PATCH',
+        method: "PATCH",
         body: JSON.stringify({ text, isCorrect }),
       });
       if (!res.success || !res.data) throw new Error(res.message);
@@ -283,7 +338,7 @@ export function useDeleteOption(cacheKey: readonly unknown[]) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await apiFetch(`/admin/options/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/admin/options/${id}`, { method: "DELETE" });
       if (!res.success) throw new Error(res.message);
     },
     onSuccess: () => {
