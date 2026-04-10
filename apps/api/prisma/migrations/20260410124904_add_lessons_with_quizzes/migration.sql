@@ -5,10 +5,10 @@
 
 */
 -- AlterTable
-ALTER TABLE "Quiz" ADD COLUMN     "lessonId" TEXT;
+ALTER TABLE "Quiz" ADD COLUMN IF NOT EXISTS "lessonId" TEXT;
 
 -- CreateTable
-CREATE TABLE "Lesson" (
+CREATE TABLE IF NOT EXISTS "Lesson" (
     "id" TEXT NOT NULL,
     "moduleId" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE "Lesson" (
 );
 
 -- CreateTable
-CREATE TABLE "LessonBlock" (
+CREATE TABLE IF NOT EXISTS "LessonBlock" (
     "id" TEXT NOT NULL,
     "lessonId" TEXT NOT NULL,
     "type" "BlockType" NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE "LessonBlock" (
 );
 
 -- CreateTable
-CREATE TABLE "LessonProgress" (
+CREATE TABLE IF NOT EXISTS "LessonProgress" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "lessonId" TEXT NOT NULL,
@@ -46,37 +46,53 @@ CREATE TABLE "LessonProgress" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Lesson_moduleId_orderIndex_key" ON "Lesson"("moduleId", "orderIndex");
+CREATE UNIQUE INDEX IF NOT EXISTS "Lesson_moduleId_orderIndex_key" ON "Lesson"("moduleId", "orderIndex");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "LessonBlock_lessonId_orderIndex_key" ON "LessonBlock"("lessonId", "orderIndex");
+CREATE UNIQUE INDEX IF NOT EXISTS "LessonBlock_lessonId_orderIndex_key" ON "LessonBlock"("lessonId", "orderIndex");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "LessonProgress_userId_lessonId_key" ON "LessonProgress"("userId", "lessonId");
+CREATE UNIQUE INDEX IF NOT EXISTS "LessonProgress_userId_lessonId_key" ON "LessonProgress"("userId", "lessonId");
 
 -- CreateIndex
-CREATE INDEX "Course_status_idx" ON "Course"("status");
+CREATE INDEX IF NOT EXISTS "Course_status_idx" ON "Course"("status");
 
 -- CreateIndex
-CREATE INDEX "Course_createdById_idx" ON "Course"("createdById");
+CREATE INDEX IF NOT EXISTS "Course_createdById_idx" ON "Course"("createdById");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Quiz_lessonId_key" ON "Quiz"("lessonId");
+CREATE UNIQUE INDEX IF NOT EXISTS "Quiz_lessonId_key" ON "Quiz"("lessonId");
 
 -- CreateIndex
-CREATE INDEX "QuizAttempt_userId_quizId_idx" ON "QuizAttempt"("userId", "quizId");
+CREATE INDEX IF NOT EXISTS "QuizAttempt_userId_quizId_idx" ON "QuizAttempt"("userId", "quizId");
 
--- AddForeignKey
-ALTER TABLE "Quiz" ADD CONSTRAINT "Quiz_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "Lesson"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- AddForeignKey (idempotent)
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'Quiz_lessonId_fkey') THEN
+    ALTER TABLE "Quiz" ADD CONSTRAINT "Quiz_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "Lesson"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;
 
--- AddForeignKey
-ALTER TABLE "Lesson" ADD CONSTRAINT "Lesson_moduleId_fkey" FOREIGN KEY ("moduleId") REFERENCES "Module"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'Lesson_moduleId_fkey') THEN
+    ALTER TABLE "Lesson" ADD CONSTRAINT "Lesson_moduleId_fkey" FOREIGN KEY ("moduleId") REFERENCES "Module"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;
 
--- AddForeignKey
-ALTER TABLE "LessonBlock" ADD CONSTRAINT "LessonBlock_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "Lesson"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'LessonBlock_lessonId_fkey') THEN
+    ALTER TABLE "LessonBlock" ADD CONSTRAINT "LessonBlock_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "Lesson"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;
 
--- AddForeignKey
-ALTER TABLE "LessonProgress" ADD CONSTRAINT "LessonProgress_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'LessonProgress_userId_fkey') THEN
+    ALTER TABLE "LessonProgress" ADD CONSTRAINT "LessonProgress_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;
 
--- AddForeignKey
-ALTER TABLE "LessonProgress" ADD CONSTRAINT "LessonProgress_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "Lesson"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'LessonProgress_lessonId_fkey') THEN
+    ALTER TABLE "LessonProgress" ADD CONSTRAINT "LessonProgress_lessonId_fkey" FOREIGN KEY ("lessonId") REFERENCES "Lesson"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;
