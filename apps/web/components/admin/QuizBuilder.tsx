@@ -2,8 +2,10 @@
 
 import { useState, useRef, useEffect, KeyboardEvent } from "react";
 import {
+  useLessonQuiz,
   useModuleQuiz,
   useCourseQuiz,
+  useCreateLessonQuiz,
   useCreateModuleQuiz,
   useCreateCourseQuiz,
   useUpdateQuiz,
@@ -992,8 +994,14 @@ function QuizEditor({
 // ─── QuizBuilder ──────────────────────────────────────────────────────────────
 
 export type QuizBuilderProps =
-  | { moduleId: string; courseId?: never; readOnly?: boolean }
-  | { courseId: string; moduleId?: never; readOnly?: boolean };
+  | { lessonId: string; moduleId?: never; courseId?: never; readOnly?: boolean }
+  | { moduleId: string; lessonId?: never; courseId?: never; readOnly?: boolean }
+  | {
+      courseId: string;
+      lessonId?: never;
+      moduleId?: never;
+      readOnly?: boolean;
+    };
 
 function ModuleQuizBuilder({
   moduleId,
@@ -1063,7 +1071,45 @@ function CourseQuizBuilder({
   return <QuizEditor quiz={quiz} cacheKey={cacheKey} readOnly={readOnly} />;
 }
 
+function LessonQuizBuilder({
+  lessonId,
+  readOnly,
+}: {
+  lessonId: string;
+  readOnly?: boolean;
+}) {
+  const cacheKey = quizKeys.forLesson(lessonId);
+  const { data: quiz, isLoading, isError } = useLessonQuiz(lessonId);
+  const { mutateAsync: createQuiz } = useCreateLessonQuiz(lessonId);
+
+  if (isLoading) return <PageLoader type="list" count={2} />;
+  if (isError) {
+    return (
+      <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-3 rounded-lg">
+        Failed to load quiz. Please refresh.
+      </p>
+    );
+  }
+  if (!quiz) {
+    if (readOnly) {
+      return (
+        <div className="flex flex-col items-center text-center py-10 border-2 border-dashed border-[#E5E7EB] rounded-xl">
+          <p className="font-body text-sm text-[#9CA3AF]">
+            No quiz was added to this lesson.
+          </p>
+        </div>
+      );
+    }
+    return <CreateQuizPanel onCreate={createQuiz} />;
+  }
+  return <QuizEditor quiz={quiz} cacheKey={cacheKey} readOnly={readOnly} />;
+}
+
 export function QuizBuilder(props: QuizBuilderProps) {
+  if ("lessonId" in props && props.lessonId)
+    return (
+      <LessonQuizBuilder lessonId={props.lessonId} readOnly={props.readOnly} />
+    );
   if ("moduleId" in props && props.moduleId)
     return (
       <ModuleQuizBuilder moduleId={props.moduleId} readOnly={props.readOnly} />
