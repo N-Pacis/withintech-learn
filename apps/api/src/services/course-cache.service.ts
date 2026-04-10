@@ -1,10 +1,10 @@
-import redis from '../db/redis';
-import { prisma } from '../db/prisma';
+import redis from "../db/redis";
+import { prisma } from "../db/prisma";
 
 // ─── Key helpers ──────────────────────────────────────────────────────────────
 
-const courseKey  = (slug: string)     => `published_course:${slug}`;
-const moduleKey  = (moduleId: string) => `published_module:${moduleId}`;
+const courseKey = (slug: string) => `published_course:${slug}`;
+const moduleKey = (moduleId: string) => `published_module:${moduleId}`;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -15,43 +15,46 @@ export interface CachedCourse {
   description: string | null;
   thumbnailKey: string | null;
   moduleIds: string[]; // ordered list — used for cache-busting on archive
-  quiz: {
+  quiz: CachedQuiz | null;
+}
+
+interface CachedBlock {
+  id: string;
+  type: string;
+  content: string | null;
+  storageKey: string | null;
+  caption: string | null;
+  language: string | null;
+  orderIndex: number;
+}
+
+interface CachedQuiz {
+  id: string;
+  title: string;
+  passingScore: number;
+  questions: {
     id: string;
-    title: string;
-    passingScore: number;
-    questions: {
-      id: string;
-      text: string;
-      orderIndex: number;
-      options: { id: string; text: string; orderIndex: number }[];
-    }[];
-  } | null;
+    text: string;
+    orderIndex: number;
+    options: { id: string; text: string; orderIndex: number }[];
+  }[];
+}
+
+export interface CachedLesson {
+  id: string;
+  title: string;
+  orderIndex: number;
+  blocks: CachedBlock[];
+  quiz: CachedQuiz | null;
 }
 
 export interface CachedModule {
   id: string;
   title: string;
   orderIndex: number;
-  blocks: {
-    id: string;
-    type: string;
-    content: string | null;
-    storageKey: string | null;
-    caption: string | null;
-    language: string | null;
-    orderIndex: number;
-  }[];
-  quiz: {
-    id: string;
-    title: string;
-    passingScore: number;
-    questions: {
-      id: string;
-      text: string;
-      orderIndex: number;
-      options: { id: string; text: string; orderIndex: number }[];
-    }[];
-  } | null;
+  blocks: CachedBlock[];
+  lessons: CachedLesson[];
+  quiz: CachedQuiz | null;
 }
 
 // ─── Build & store ────────────────────────────────────────────────────────────
@@ -66,14 +69,61 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
       description: true,
       thumbnailKey: true,
       modules: {
-        orderBy: { orderIndex: 'asc' },
+        orderBy: { orderIndex: "asc" },
         select: {
           id: true,
           title: true,
           orderIndex: true,
           blocks: {
-            orderBy: { orderIndex: 'asc' },
-            select: { id: true, type: true, content: true, storageKey: true, caption: true, language: true, orderIndex: true },
+            orderBy: { orderIndex: "asc" },
+            select: {
+              id: true,
+              type: true,
+              content: true,
+              storageKey: true,
+              caption: true,
+              language: true,
+              orderIndex: true,
+            },
+          },
+          lessons: {
+            orderBy: { orderIndex: "asc" },
+            select: {
+              id: true,
+              title: true,
+              orderIndex: true,
+              blocks: {
+                orderBy: { orderIndex: "asc" },
+                select: {
+                  id: true,
+                  type: true,
+                  content: true,
+                  storageKey: true,
+                  caption: true,
+                  language: true,
+                  orderIndex: true,
+                },
+              },
+              quiz: {
+                select: {
+                  id: true,
+                  title: true,
+                  passingScore: true,
+                  questions: {
+                    orderBy: { orderIndex: "asc" },
+                    select: {
+                      id: true,
+                      text: true,
+                      orderIndex: true,
+                      options: {
+                        orderBy: { orderIndex: "asc" },
+                        select: { id: true, text: true, orderIndex: true },
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
           quiz: {
             select: {
@@ -81,12 +131,15 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
               title: true,
               passingScore: true,
               questions: {
-                orderBy: { orderIndex: 'asc' },
+                orderBy: { orderIndex: "asc" },
                 select: {
                   id: true,
                   text: true,
                   orderIndex: true,
-                  options: { orderBy: { orderIndex: 'asc' }, select: { id: true, text: true, orderIndex: true } },
+                  options: {
+                    orderBy: { orderIndex: "asc" },
+                    select: { id: true, text: true, orderIndex: true },
+                  },
                 },
               },
             },
@@ -99,12 +152,15 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
           title: true,
           passingScore: true,
           questions: {
-            orderBy: { orderIndex: 'asc' },
+            orderBy: { orderIndex: "asc" },
             select: {
               id: true,
               text: true,
               orderIndex: true,
-              options: { orderBy: { orderIndex: 'asc' }, select: { id: true, text: true, orderIndex: true } },
+              options: {
+                orderBy: { orderIndex: "asc" },
+                select: { id: true, text: true, orderIndex: true },
+              },
             },
           },
         },
@@ -117,8 +173,20 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
 
   // Cache each module individually
   for (const mod of course.modules) {
-    const { blocks, quiz, ...modMeta } = mod;
-    const cached: CachedModule = { ...modMeta, blocks, quiz: quiz ?? null };
+    const { blocks, lessons, quiz, ...modMeta } = mod;
+    const cachedLessons: CachedLesson[] = lessons.map(
+      ({ blocks: lb, quiz: lq, ...lMeta }) => ({
+        ...lMeta,
+        blocks: lb,
+        quiz: lq ?? null,
+      }),
+    );
+    const cached: CachedModule = {
+      ...modMeta,
+      blocks,
+      lessons: cachedLessons,
+      quiz: quiz ?? null,
+    };
     pipeline.set(moduleKey(mod.id), JSON.stringify(cached));
   }
 
@@ -139,12 +207,16 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
 
 // ─── Read ─────────────────────────────────────────────────────────────────────
 
-export const getCachedCourse = async (slug: string): Promise<CachedCourse | null> => {
+export const getCachedCourse = async (
+  slug: string,
+): Promise<CachedCourse | null> => {
   const raw = await redis.get(courseKey(slug));
   return raw ? (JSON.parse(raw) as CachedCourse) : null;
 };
 
-export const getCachedModule = async (moduleId: string): Promise<CachedModule | null> => {
+export const getCachedModule = async (
+  moduleId: string,
+): Promise<CachedModule | null> => {
   const raw = await redis.get(moduleKey(moduleId));
   return raw ? (JSON.parse(raw) as CachedModule) : null;
 };
