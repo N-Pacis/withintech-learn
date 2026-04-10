@@ -20,6 +20,7 @@ interface QuizSectionProps {
   quiz: StudentModuleQuiz;
   lastAttempt: QuizAttemptSummary | null;
   onPass: () => void;
+  quizType?: 'module' | 'lesson' | 'course';
 }
 
 export function QuizSection({
@@ -28,6 +29,7 @@ export function QuizSection({
   quiz,
   lastAttempt: initialLastAttempt,
   onPass,
+  quizType,
 }: QuizSectionProps) {
   const queryClient = useQueryClient();
   const [started, setStarted] = useState(false);
@@ -58,8 +60,10 @@ export function QuizSection({
     };
 
     // 3. beforeunload — native browser "Leave page?" dialog on close/navigate away
+    //    e.preventDefault() works in Chrome 119+; e.returnValue = '' is required for Firefox and Safari
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
+      e.returnValue = '';
     };
 
     // 4. Keyboard shortcuts that open devtools or view source
@@ -146,7 +150,8 @@ export function QuizSection({
   }
 
   const alreadyPassed = lastAttempt?.status === "pass" && !result;
-  const isCourseQuiz = moduleId === "course-quiz";
+  const isCourseQuiz = quizType === 'course' || moduleId === "course-quiz";
+  const quizLabel = isCourseQuiz ? "Final Course Quiz" : quizType === 'lesson' ? "Lesson Quiz" : "Module Quiz";
 
   return (
     <div className="mt-10 pt-8 border-t border-[#E5E7EB]">
@@ -154,7 +159,7 @@ export function QuizSection({
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
           <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-1.5">
-            {isCourseQuiz ? "Final Course Quiz" : "Module Quiz"}
+            {quizLabel}
           </p>
           <h3 className="font-heading font-bold text-xl text-[#0F0F0F]">
             {quiz.title}

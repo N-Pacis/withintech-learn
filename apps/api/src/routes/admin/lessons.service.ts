@@ -55,8 +55,13 @@ export const updateLesson = async (id: string, title: string) => {
 };
 
 export const deleteLesson = async (id: string) => {
-  const lesson = await prisma.lesson.findUnique({ where: { id } });
+  const lesson = await prisma.lesson.findUnique({
+    where: { id },
+    include: { blocks: { select: { storageKey: true } } },
+  });
   if (!lesson) throw notFound('Lesson not found');
+  const imageKeys = lesson.blocks.map(b => b.storageKey).filter((k): k is string => !!k);
+  await Promise.all(imageKeys.map(deleteFromS3));
   await prisma.lesson.delete({ where: { id } });
 };
 
@@ -106,6 +111,7 @@ export const updateLessonBlock = async (id: string, data: { content?: string; ca
 export const deleteLessonBlock = async (id: string) => {
   const block = await prisma.lessonBlock.findUnique({ where: { id } });
   if (!block) throw notFound('Block not found');
+  if (block.storageKey) await deleteFromS3(block.storageKey);
   await prisma.lessonBlock.delete({ where: { id } });
 };
 

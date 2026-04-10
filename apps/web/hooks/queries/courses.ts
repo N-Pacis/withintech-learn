@@ -150,7 +150,7 @@ export interface StudentLessonDetail {
   title: string;
   orderIndex: number;
   blocks: StudentBlock[];
-  quiz: StudentModuleQuiz;
+  quiz: StudentModuleQuiz | null;
   lastAttempt: QuizAttemptSummary | null;
 }
 

@@ -107,6 +107,7 @@ export default function LessonPage() {
   const needsQuiz = hasQuiz && !quizPassed;
 
   function handleQuizPass() {
+    if (isCompleted) return;
     // After passing the lesson quiz, complete the lesson
     completeLesson(lessonId, {
       onSuccess: () => {
@@ -209,6 +210,7 @@ export default function LessonPage() {
               quiz={lesson.quiz}
               lastAttempt={lesson.lastAttempt}
               onPass={handleQuizPass}
+              quizType="lesson"
             />
           </div>
         )}

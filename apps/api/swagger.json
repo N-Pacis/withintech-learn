@@ -198,6 +198,38 @@
           }
         }
       },
+      "Lesson": {
+        "type": "object",
+        "properties": {
+          "id":         { "type": "string", "format": "uuid" },
+          "moduleId":   { "type": "string", "format": "uuid" },
+          "title":      { "type": "string" },
+          "orderIndex": { "type": "integer" },
+          "hasQuiz":    { "type": "boolean" },
+          "createdAt":  { "type": "string", "format": "date-time" },
+          "updatedAt":  { "type": "string", "format": "date-time" }
+        }
+      },
+      "LessonBlock": {
+        "type": "object",
+        "properties": {
+          "id":         { "type": "string", "format": "uuid" },
+          "lessonId":   { "type": "string", "format": "uuid" },
+          "type":       { "type": "string", "enum": ["text", "image", "code"] },
+          "content":    { "type": "string", "nullable": true },
+          "storageKey": { "type": "string", "nullable": true },
+          "url":        { "type": "string", "nullable": true },
+          "caption":    { "type": "string", "nullable": true },
+          "language": {
+            "type": "string",
+            "enum": ["html","css","javascript","typescript","python","markdown","text","bash","cpp","csharp","rust","java","xml","yaml"],
+            "nullable": true
+          },
+          "orderIndex": { "type": "integer" },
+          "createdAt":  { "type": "string", "format": "date-time" },
+          "updatedAt":  { "type": "string", "format": "date-time" }
+        }
+      },
       "Quiz": {
         "type": "object",
         "properties": {
@@ -2115,6 +2147,329 @@
         }
       }
     },
+    "/admin/modules/{moduleId}/lessons": {
+      "post": {
+        "tags": ["Admin / Lessons"],
+        "summary": "Add a lesson to a module",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "moduleId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "orderIndex"],
+                "properties": {
+                  "title":      { "type": "string", "minLength": 1 },
+                  "orderIndex": { "type": "integer", "minimum": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Lesson created.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Module not found." },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      },
+      "get": {
+        "tags": ["Admin / Lessons"],
+        "summary": "List lessons for a module",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "moduleId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Ordered list of lessons. Each item includes `hasQuiz`.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/admin/modules/{moduleId}/lessons/reorder": {
+      "post": {
+        "tags": ["Admin / Lessons"],
+        "summary": "Reorder lessons atomically",
+        "description": "`orderIndex` values must be contiguous starting from 1.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "moduleId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["items"],
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "required": ["id", "orderIndex"],
+                      "properties": {
+                        "id":         { "type": "string", "format": "uuid" },
+                        "orderIndex": { "type": "integer", "minimum": 1 }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Lessons reordered." },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/admin/lessons/{id}": {
+      "get": {
+        "tags": ["Admin / Lessons"],
+        "summary": "Get lesson detail with blocks",
+        "description": "Returns the lesson, its ordered blocks (image blocks include a signed `url`), and `hasQuiz`.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Lesson with blocks.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Lesson not found." }
+        }
+      },
+      "patch": {
+        "tags": ["Admin / Lessons"],
+        "summary": "Update lesson title",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title"],
+                "properties": {
+                  "title": { "type": "string", "minLength": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Lesson updated.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Lesson not found." }
+        }
+      },
+      "delete": {
+        "tags": ["Admin / Lessons"],
+        "summary": "Delete a lesson",
+        "description": "Also deletes all blocks (and their S3 images) and any associated quiz.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Lesson deleted." },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Lesson not found." }
+        }
+      }
+    },
+    "/admin/lessons/{lessonId}/blocks": {
+      "post": {
+        "tags": ["Admin / Lesson Blocks"],
+        "summary": "Add a block to a lesson",
+        "description": "For `text` supply `content`. For `image` supply optional `caption`. For `code` supply `content` and `language`. Upload images via the upload-image endpoint.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["type", "orderIndex"],
+                "properties": {
+                  "type":       { "type": "string", "enum": ["text", "image", "code"] },
+                  "content":    { "type": "string" },
+                  "caption":    { "type": "string" },
+                  "language":   { "type": "string", "enum": ["html","css","javascript","typescript","python","markdown","text","bash","cpp","csharp","rust","java","xml","yaml"] },
+                  "orderIndex": { "type": "integer", "minimum": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Block added.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Lesson not found." },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      },
+      "get": {
+        "tags": ["Admin / Lesson Blocks"],
+        "summary": "List blocks for a lesson",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Ordered list of blocks. Image blocks include a signed `url`.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/admin/lessons/{lessonId}/blocks/reorder": {
+      "post": {
+        "tags": ["Admin / Lesson Blocks"],
+        "summary": "Reorder lesson blocks atomically",
+        "description": "`orderIndex` values must be contiguous starting from 1.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["items"],
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "required": ["id", "orderIndex"],
+                      "properties": {
+                        "id":         { "type": "string", "format": "uuid" },
+                        "orderIndex": { "type": "integer", "minimum": 1 }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Blocks reordered." },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/admin/lessons/{lessonId}/blocks/{id}": {
+      "patch": {
+        "tags": ["Admin / Lesson Blocks"],
+        "summary": "Update a lesson block's content",
+        "description": "Only editable fields: `content`, `caption`, `language`. Block `type` cannot be changed.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "in": "path", "name": "id",       "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content":  { "type": "string", "minLength": 1 },
+                  "caption":  { "type": "string" },
+                  "language": { "type": "string", "enum": ["html","css","javascript","typescript","python","markdown","text","bash","cpp","csharp","rust","java","xml","yaml"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Block updated.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Block not found." }
+        }
+      },
+      "delete": {
+        "tags": ["Admin / Lesson Blocks"],
+        "summary": "Delete a lesson block",
+        "description": "If the block is an image block, the S3 object is also deleted.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "in": "path", "name": "id",       "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Block deleted." },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Block not found." }
+        }
+      }
+    },
+    "/admin/lessons/{lessonId}/blocks/{blockId}/upload-image": {
+      "post": {
+        "tags": ["Admin / Lesson Blocks"],
+        "summary": "Upload image for a lesson image block",
+        "description": "Block must exist and be of type `image`. Multipart form upload. Field name: `image`. Replaces existing image.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "in": "path", "name": "blockId",  "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": { "type": "string", "format": "binary" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Image uploaded. Returns `storageKey` and signed `url`.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Block not found." }
+        }
+      }
+    },
     "/admin/modules/{moduleId}/quiz": {
       "get": {
         "tags": [
@@ -2245,6 +2600,54 @@
               }
             }
           }
+        }
+      }
+    },
+    "/admin/lessons/{lessonId}/quiz": {
+      "get": {
+        "tags": ["Admin / Quizzes"],
+        "summary": "Get quiz for a lesson (null if none exists)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Quiz with questions and options, or null.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Lesson not found." }
+        }
+      },
+      "post": {
+        "tags": ["Admin / Quizzes"],
+        "summary": "Create quiz for a lesson",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "passingScore"],
+                "properties": {
+                  "title":        { "type": "string" },
+                  "passingScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+                  "maxAttempts":  { "type": "integer", "default": 3 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Lesson quiz created.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Lesson not found." },
+          "409": { "$ref": "#/components/responses/Conflict" }
         }
       }
     },
@@ -3952,6 +4355,45 @@
           "404": {
             "$ref": "#/components/responses/NotFound"
           }
+        }
+      }
+    },
+    "/student/courses/{slug}/modules/{moduleId}/lessons/{lessonId}": {
+      "get": {
+        "tags": ["Student - Courses"],
+        "summary": "Get a single lesson's content",
+        "description": "Returns lesson blocks (image blocks include signed `url`), embedded quiz, and last quiz attempt. Requires enrollment and all previous lessons to be completed (sequential progression enforced).",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "slug",     "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "moduleId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "lessonId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Lesson content with blocks, quiz, and last attempt." },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Course, module, or lesson not found." }
+        }
+      }
+    },
+    "/student/courses/{slug}/modules/{moduleId}/lessons/{lessonId}/progress": {
+      "post": {
+        "tags": ["Student - Courses"],
+        "summary": "Mark a lesson as completed",
+        "description": "Saves lesson progress. Requires all previous lessons to be completed. If the lesson has a quiz, the student must have passed it first. Auto-completes the module (and course) when all lessons are done and no module-level quiz exists.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "slug",     "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "moduleId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "lessonId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "201": { "description": "Lesson marked as completed." },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "description": "Course, module, or lesson not found." }
         }
       }
     },
