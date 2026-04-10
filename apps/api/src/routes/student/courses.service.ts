@@ -300,6 +300,9 @@ export const getStudentModule = async (
   ]);
 
   // Build lesson list with completion / lock state (empty for legacy modules)
+  // Guard: modules cached before the lessons feature was deployed won't have the field
+  const cachedLessons = cachedMod.lessons ?? [];
+
   let lessons: {
     id: string;
     title: string;
@@ -308,8 +311,8 @@ export const getStudentModule = async (
     isLocked: boolean;
   }[] = [];
 
-  if (cachedMod.lessons.length > 0) {
-    const lessonIds = cachedMod.lessons.map((l) => l.id);
+  if (cachedLessons.length > 0) {
+    const lessonIds = cachedLessons.map((l) => l.id);
     const completedLessonSet = new Set(
       (
         await prisma.lessonProgress.findMany({
@@ -318,15 +321,15 @@ export const getStudentModule = async (
         })
       ).map((r) => r.lessonId),
     );
-    const firstIncompleteLessonIdx = cachedMod.lessons.findIndex(
+    const firstIncompleteLessonIdx = cachedLessons.findIndex(
       (l) => !completedLessonSet.has(l.id),
     );
     const lessonReachableUpTo =
       firstIncompleteLessonIdx === -1
-        ? cachedMod.lessons.length
+        ? cachedLessons.length
         : firstIncompleteLessonIdx;
 
-    lessons = cachedMod.lessons.map((l, i) => ({
+    lessons = cachedLessons.map((l, i) => ({
       id: l.id,
       title: l.title,
       orderIndex: l.orderIndex,
@@ -474,13 +477,16 @@ export const getStudentLesson = async (
   }
   if (!cachedMod) throw notFound("Module not found");
 
-  const cachedLesson = cachedMod.lessons.find((l) => l.id === lessonId);
+  // Guard: modules cached before the lessons feature was deployed won't have the field
+  const modLessons = cachedMod.lessons ?? [];
+
+  const cachedLesson = modLessons.find((l) => l.id === lessonId);
   if (!cachedLesson) throw notFound("Lesson not found");
 
   // Enforce sequential lesson progression
-  const lessonIndex = cachedMod.lessons.findIndex((l) => l.id === lessonId);
+  const lessonIndex = modLessons.findIndex((l) => l.id === lessonId);
   if (lessonIndex > 0) {
-    const previousLessonIds = cachedMod.lessons
+    const previousLessonIds = modLessons
       .slice(0, lessonIndex)
       .map((l) => l.id);
     const completedLessonCount = await prisma.lessonProgress.count({
