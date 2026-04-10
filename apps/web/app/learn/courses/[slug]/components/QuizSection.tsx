@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle, XCircle, RotateCcw, Trophy } from "lucide-react";
+import { CheckCircle, XCircle, RotateCcw, Trophy, AlertTriangle } from "lucide-react";
 import { GridLoader } from "react-spinners";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,46 @@ export function QuizSection({
   const [answers, setAnswers] = useState<Record<string, Set<string>>>({});
   const [result, setResult] = useState<QuizAttemptResult | null>(null);
   const [lastAttempt, setLastAttempt] = useState(initialLastAttempt);
+  const [tabWarning, setTabWarning] = useState(false);
   const { mutate: submit, isPending, error } = useSubmitQuiz();
+
+  const quizActive = started && !result && !isPending;
+
+  useEffect(() => {
+    if (!quizActive) return;
+
+    const markWarning = () => setTabWarning(true);
+
+    // Primary: Page Visibility API (Chrome, Firefox, Safari, Edge, iOS Safari 7+)
+    const handleVisibility = () => {
+      if (document.visibilityState === "hidden") markWarning();
+    };
+    // Supplement: pagehide covers iOS Safari edge cases where visibilitychange
+    // may not fire reliably when switching apps or pressing the Home button
+    const handlePageHide = () => markWarning();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.key.toLowerCase() === "u") ||
+        (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "i")
+      )
+        e.preventDefault();
+    };
+    const handleContextMenu = (e: MouseEvent) => e.preventDefault();
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("pagehide", handlePageHide);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("contextmenu", handleContextMenu);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("pagehide", handlePageHide);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("contextmenu", handleContextMenu);
+    };
+  }, [quizActive]);
 
   // Notify parent if already passed on mount
   useEffect(() => {
@@ -85,6 +124,7 @@ export function QuizSection({
   function handleRetry() {
     setResult(null);
     setAnswers({});
+    setTabWarning(false);
     setStarted(true);
   }
 
@@ -238,6 +278,21 @@ export function QuizSection({
       ) : (
         /* ── Quiz form ── */
         <>
+          {/* Tab warning banner */}
+          {tabWarning && (
+            <div className="flex items-start gap-3 px-4 py-3.5 rounded-xl mb-6 border border-amber-100 bg-amber-50 animate-in slide-in-from-top duration-300">
+              <AlertTriangle size={15} className="text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-body text-sm font-semibold text-amber-700">
+                  Tab switch detected
+                </p>
+                <p className="font-body text-xs text-amber-600 mt-0.5">
+                  Please stay on this page while taking the quiz. Your activity is being monitored.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Previous failed attempt banner */}
           {lastAttempt && (
             <div className="flex items-center gap-2 px-4 py-3 rounded-xl mb-6 font-body text-sm bg-red-50 text-red-600">

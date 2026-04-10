@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, History, CheckCircle2, Send } from 'lucide-react';
+import { ArrowLeft, History, CheckCircle2, Send, AlertTriangle } from 'lucide-react';
 import {
   useStudentChallenge,
   useSubmitChallenge,
@@ -86,6 +86,7 @@ export default function ChallengePage() {
   const [rightTab, setRightTab]       = useState<RightTab>('results');
   const [lastResult, setLastResult]   = useState<SubmissionResult | null>(null);
   const [showBanner, setShowBanner]   = useState(false);
+  const [tabWarning, setTabWarning]   = useState(false);
   const [mobilePanel, setMobilePanel] = useState<'problem' | 'code'>('problem');
   const initialized                   = useRef(false);
 
@@ -146,6 +147,23 @@ export default function ChallengePage() {
     }
   }, [codeByLang, language, submitMutation]);
 
+  // Tab visibility detection
+  // Primary: Page Visibility API (Chrome, Firefox, Safari, Edge, iOS Safari 7+)
+  // Supplement: pagehide covers iOS Safari edge cases on app-switch / Home button
+  useEffect(() => {
+    if (!challenge) return;
+    const markWarning = () => setTabWarning(true);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'hidden') markWarning();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('pagehide', markWarning);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('pagehide', markWarning);
+    };
+  }, [challenge]);
+
   // Keyboard shortcut: Cmd/Ctrl+Enter to submit
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -176,6 +194,16 @@ export default function ChallengePage() {
       {/* Accepted banner */}
       {showBanner && challenge.completed && (
         <AcceptedBanner onDismiss={() => setShowBanner(false)} />
+      )}
+
+      {/* Tab warning banner */}
+      {tabWarning && (
+        <div className="flex items-center gap-3 px-4 py-3 bg-amber-50 border-b border-amber-200 animate-in slide-in-from-top duration-300">
+          <AlertTriangle size={15} className="text-amber-600 shrink-0" />
+          <span className="font-body text-sm font-medium text-amber-800 flex-1">
+            Please stay on this page while working on the challenge. Tab switching is being monitored.
+          </span>
+        </div>
       )}
 
       {/* Top bar */}
