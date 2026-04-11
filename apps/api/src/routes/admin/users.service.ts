@@ -285,29 +285,7 @@ export const createStudentsFromImport = async (
       const password = crypto.randomBytes(12).toString("base64").slice(0, 16);
       const passwordHash = await hashPassword(password);
 
-      const user = await prisma.user.create({
-        data: {
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          email: normalizedEmail,
-          passwordHash,
-          roleId: studentRole.id,
-          isActive: true,
-          emailVerified: true,
-          createdById,
-        },
-      });
-
-      const joinedAt = randomDateBetween(
-        new Date("2026-03-12"),
-        new Date("2026-04-08"),
-      );
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { createdAt: joinedAt },
-      });
-
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://api.learn.withintech.org";
+      const apiUrl = process.env.API_URL ?? "https://api.learn.withintech.org";
       const magicToken = signMagicLoginToken(normalizedEmail, password);
       const magicLoginUrl = `${apiUrl}/auth/magic-login?token=${magicToken}`;
 
@@ -320,6 +298,26 @@ export const createStudentsFromImport = async (
           magicLoginUrl,
         }),
       });
+
+      const joinedAt = randomDateBetween(
+        new Date("2026-03-12"),
+        new Date("2026-04-08"),
+      );
+      const user = await prisma.user.create({
+        data: {
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: normalizedEmail,
+          passwordHash,
+          roleId: studentRole.id,
+          isActive: true,
+          emailVerified: true,
+          createdById,
+          createdAt: joinedAt,
+        },
+      });
+
+      void user;
 
       result.created++;
       result.rows.push({
