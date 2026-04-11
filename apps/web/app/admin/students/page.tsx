@@ -564,16 +564,23 @@ export default function StudentsPage() {
   const [rawSearch, setRawSearch] = useState("");
   const [status, setStatus] = useState<UsersParams["status"]>("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [page, setPage] = useState(1);
   const debouncedSearch = useDebounce(rawSearch.trim(), 350);
+
+  useEffect(() => { setPage(1); }, [debouncedSearch, status, sortOrder]);
 
   const [exportOpen, setExportOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
 
+  const PAGE_SIZE = 10;
+
   const params: UsersParams = {
     search: debouncedSearch || undefined,
     status: status || undefined,
     sortOrder,
+    page,
+    limit: PAGE_SIZE,
   };
 
   const { data: studentsPage, isLoading, error } = useStudents(params);
@@ -841,6 +848,9 @@ export default function StudentsPage() {
             columns={columns}
             rows={students.map(buildRow)}
             rowKey={(row) => row.id as string}
+            page={page}
+            totalPages={Math.ceil((studentsPage?.total ?? 0) / PAGE_SIZE)}
+            onPageChange={setPage}
           />
         )}
       </div>
