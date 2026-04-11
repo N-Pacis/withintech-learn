@@ -42,7 +42,7 @@ export const studentWelcomeEmailTemplate = ({
               <p style="margin:0 0 16px;font-size:14px;color:#6B7280;line-height:1.7;">
                 You've been personally invited to join the <strong style="color:#0F0F0F;">WithinTech Learn Platform</strong> and take part in our
                 <strong style="color:#0F0F0F;">Weekly Challenges Beta</strong> where developers compete on exciting challenges,
-                sharpen their skills, and win prizes every week.
+                sharpen their skills, and <strong style="color:#0F0F0F;">win prizes every week.</strong>
               </p>
 
               <p style="margin:0 0 16px;font-size:14px;color:#6B7280;line-height:1.7;">

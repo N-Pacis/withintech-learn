@@ -59,7 +59,7 @@ export const signMagicLoginToken = (email: string, password: string): string =>
   jwt.sign(
     { email, password, purpose: "magic_login" },
     process.env.JWT_ACCESS_SECRET as string,
-    { expiresIn: "7d" },
+    { expiresIn: "20d" },
   );
 
 export const verifyMagicLoginToken = (
