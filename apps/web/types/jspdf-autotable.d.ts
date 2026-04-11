@@ -9,6 +9,10 @@ declare module "jspdf-autotable" {
     fontStyle?: string;
   }
 
+  interface AutoTableHookData {
+    pageNumber: number;
+  }
+
   interface AutoTableOptions {
     startY?: number;
     head?: unknown[][];
@@ -18,6 +22,7 @@ declare module "jspdf-autotable" {
     alternateRowStyles?: AutoTableStyles;
     margin?: { top?: number; right?: number; bottom?: number; left?: number };
     theme?: "striped" | "grid" | "plain";
+    didDrawPage?: (data: AutoTableHookData) => void;
   }
 
   export default function autoTable(
