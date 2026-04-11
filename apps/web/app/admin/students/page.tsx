@@ -617,9 +617,11 @@ export default function StudentsPage() {
       if (format === "excel") {
         const { utils, writeFile } = await import("xlsx");
         const ws = utils.aoa_to_sheet([
-          ["WithinTech Learn"],
+          [process.env.NEXT_PUBLIC_BRAND_NAME || "WithinTech Learn"],
           [`Students Export - ${exportDate}`],
-          [`Data extracted from WithinTech Learn platform on ${exportDate}`],
+          [
+            `Data extracted from ${process.env.NEXT_PUBLIC_BRAND_NAME || "WithinTech Learn"} platform on ${exportDate}`,
+          ],
           [],
           headers,
           ...rows,
@@ -637,38 +639,202 @@ export default function StudentsPage() {
         const { default: autoTable } = await import("jspdf-autotable");
         const doc = new jsPDF({ orientation: "landscape" });
 
-        const logoResponse = await fetch("/logo.png");
-        const logoBlob = await logoResponse.blob();
-        const logoBase64 = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(logoBlob);
-        });
-        doc.addImage(logoBase64, "PNG", 14, 10, 20, 20);
+        let logoBase64 = "";
+        try {
+          const logoResponse = await fetch("/logo.png");
+          if (logoResponse.ok) {
+            const logoBlob = await logoResponse.blob();
+            logoBase64 = await new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.readAsDataURL(logoBlob);
+            });
+          }
+        } catch (logoError) {
+          console.warn("Logo load failed, continuing without logo:", logoError);
+        }
 
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(16);
-        doc.setTextColor(61, 0, 107);
-        doc.text("WithinTech Learn", 38, 20);
+        // Load icons from public folder
+        async function loadIcon(path: string): Promise<string> {
+          try {
+            const response = await fetch(path);
+            if (!response.ok) return "";
+            const blob = await response.blob();
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.readAsDataURL(blob);
+            });
+          } catch {
+            return "";
+          }
+        }
 
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(12);
-        doc.setTextColor(0, 0, 0);
-        doc.text("Students Export", 38, 28);
+        const [
+          facebookIcon,
+          instagramIcon,
+          linkedinIcon,
+          twitterIcon,
+          whatsappIcon,
+          globeIcon,
+          mailIcon,
+          phoneIcon,
+        ] = await Promise.all([
+          loadIcon("/icons/facebook.png"),
+          loadIcon("/icons/instagram.png"),
+          loadIcon("/icons/linkedin.png"),
+          loadIcon("/icons/twitter.png"),
+          loadIcon("/icons/whatsapp.png"),
+          loadIcon("/icons/globe.png"),
+          loadIcon("/icons/mail.png"),
+          loadIcon("/icons/phone.png"),
+        ]);
 
-        doc.setFontSize(9);
-        doc.setTextColor(107, 114, 128);
-        const filterStr = [
-          debouncedSearch && `Search: "${debouncedSearch}"`,
-          status && `Status: ${status}`,
-        ]
-          .filter(Boolean)
-          .join("  ·  ");
-        doc.text(
-          `Exported ${exportDate}  ·  ${users.length} records${filterStr ? `  ·  ${filterStr}` : ""}`,
-          14,
-          38,
-        );
+        const pageWidth = doc.internal.pageSize.width;
+        const pageHeight = doc.internal.pageSize.height;
+        const marginBottom = 40;
+
+        function addHeader(pageNumber: number) {
+          doc.setPage(pageNumber);
+          if (logoBase64) {
+            doc.addImage(logoBase64, "PNG", 14, 10, 20, 20);
+          }
+
+          // Brand name on left
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(16);
+          doc.setTextColor(61, 0, 107);
+          doc.text(
+            process.env.NEXT_PUBLIC_BRAND_NAME || "WithinTech Learn",
+            38,
+            20,
+          );
+
+          // File title on right with larger size
+          const titleText = "Students Export";
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(20);
+          doc.setTextColor(61, 0, 107);
+          const titleWidth = doc.getTextWidth(titleText);
+          doc.text(titleText, pageWidth - 14 - titleWidth, 22);
+
+          if (pageNumber === 1) {
+            doc.setFontSize(9);
+            doc.setTextColor(107, 114, 128);
+            const filterStr = [
+              debouncedSearch && `Search: "${debouncedSearch}"`,
+              status && `Status: ${status}`,
+            ]
+              .filter(Boolean)
+              .join("  ·  ");
+            doc.text(
+              `Exported ${exportDate}  ·  ${users.length} records${filterStr ? `  ·  ${filterStr}` : ""}`,
+              14,
+              38,
+            );
+          }
+        }
+
+        function addFooter(pageNumber: number) {
+          doc.setPage(pageNumber);
+
+          const footerY = pageHeight - 35;
+          const footerHeight = 35;
+
+          // Purple background
+          doc.setFillColor(61, 0, 107);
+          doc.rect(0, footerY, pageWidth, footerHeight, "F");
+
+          // Contact info and social icons in white
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8);
+          doc.setTextColor(255, 255, 255);
+
+          const iconSize = 4;
+          const spacing = 10;
+          let currentX = pageWidth - 14;
+          const baseY = pageHeight - 17;
+
+          // Helper to draw icon + text from left to right
+          function drawItem(icon: string, text: string, format: "PNG") {
+            const textWidth = doc.getTextWidth(text);
+            const itemWidth = icon ? iconSize + 2 + textWidth : textWidth;
+            currentX -= itemWidth;
+
+            if (icon) {
+              doc.addImage(
+                icon,
+                format,
+                currentX,
+                baseY - 3,
+                iconSize,
+                iconSize,
+              );
+            }
+            doc.text(text, currentX + (icon ? iconSize + 2 : 0), baseY);
+            return itemWidth;
+          }
+
+          // 6. WhatsApp icon with phone number (no country code)
+          const phoneShort = (
+            process.env.NEXT_PUBLIC_SUPPORT_PHONE || "+250 781 375 199"
+          ).replace(/^\+\d{2}\s*/, "");
+          drawItem(whatsappIcon, phoneShort, "PNG");
+          currentX -= spacing;
+
+          // 5. Social icons (facebook, instagram, twitter, linkedin) + handle
+          const socialHandle =
+            process.env.NEXT_PUBLIC_SOCIAL_HANDLE || "@WithinTechRwanda";
+          const handleWidth = doc.getTextWidth(socialHandle);
+          currentX -= handleWidth;
+          doc.text(socialHandle, currentX, baseY);
+          currentX -= 2;
+
+          // Draw social icons from right to left
+          const socialIcons = [
+            { icon: linkedinIcon, name: "linkedin" },
+            { icon: twitterIcon, name: "twitter" },
+            { icon: instagramIcon, name: "instagram" },
+            { icon: facebookIcon, name: "facebook" },
+          ];
+
+          for (const { icon } of socialIcons) {
+            if (icon) {
+              currentX -= iconSize + 2;
+              doc.addImage(
+                icon,
+                "PNG",
+                currentX,
+                baseY - 3,
+                iconSize,
+                iconSize,
+              );
+            }
+          }
+          currentX -= spacing;
+
+          // 4. Small whitespace separator
+          currentX -= 5;
+
+          // 3. Phone with phone icon
+          const phoneText =
+            process.env.NEXT_PUBLIC_SUPPORT_PHONE || "+250 781 375 199";
+          drawItem(phoneIcon, phoneText, "PNG");
+          currentX -= spacing;
+
+          // 2. Email with mail icon
+          const emailText =
+            process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "info@learn.withintech.rw";
+          drawItem(mailIcon, emailText, "PNG");
+          currentX -= spacing;
+
+          // 1. Website with globe icon
+          const websiteText =
+            process.env.NEXT_PUBLIC_SUPPORT_WEBSITE || "learn.withintech.org";
+          drawItem(globeIcon, websiteText, "PNG");
+        }
+
+        let pageCount = 1;
 
         autoTable(doc, {
           startY: 44,
@@ -681,22 +847,23 @@ export default function StudentsPage() {
             fontStyle: "bold",
           },
           alternateRowStyles: { fillColor: [249, 250, 251] },
+          margin: { top: 44, bottom: marginBottom },
+          didDrawPage: (data: { pageNumber: number }) => {
+            pageCount = data.pageNumber;
+          },
         });
 
-        const pageHeight = doc.internal.pageSize.height;
-        doc.setFontSize(8);
-        doc.setTextColor(156, 163, 175);
-        doc.text(
-          `Data extracted from WithinTech Learn platform on ${exportDate}`,
-          14,
-          pageHeight - 10,
-        );
+        for (let i = 1; i <= pageCount; i++) {
+          addHeader(i);
+          addFooter(i);
+        }
 
         doc.save("students.pdf");
       }
 
       setExportOpen(false);
-    } catch {
+    } catch (error) {
+      console.error("Export failed:", error);
       toast.error("Export failed. Please try again.");
     } finally {
       setExporting(false);

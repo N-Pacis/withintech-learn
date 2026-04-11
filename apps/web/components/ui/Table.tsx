@@ -44,7 +44,7 @@ export function Table({ columns, rows, rowKey, pageSize = 10, className, page: e
     <div>
       <div className={cn('bg-white rounded-xl ring-1 ring-[#E5E7EB] overflow-hidden shadow-sm', className)}>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[600px]">
+          <table className="w-full min-w-150">
             <thead>
               <tr className="border-b border-[#E5E7EB] bg-[#F9FAFB]">
                 {columns.map((col) => (
