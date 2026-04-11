@@ -17,13 +17,28 @@ interface TableProps {
   rowKey: (row: Record<string, CellValue>) => string;
   pageSize?: number;
   className?: string;
+  // Server-side pagination — when all three are provided, client-side slicing is disabled
+  page?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
 }
 
-export function Table({ columns, rows, rowKey, pageSize = 10, className }: TableProps) {
-  const [page, setPage] = useState(1);
-  const totalPages = Math.ceil(rows.length / pageSize);
-  const start = (page - 1) * pageSize;
-  const paginatedRows = rows.slice(start, start + pageSize);
+export function Table({ columns, rows, rowKey, pageSize = 10, className, page: externalPage, totalPages: externalTotalPages, onPageChange: externalOnPageChange }: TableProps) {
+  const [internalPage, setInternalPage] = useState(1);
+
+  const isServerPaginated = externalPage !== undefined && externalTotalPages !== undefined && externalOnPageChange !== undefined;
+
+  const page = isServerPaginated ? externalPage : internalPage;
+  const totalPages = isServerPaginated ? externalTotalPages : Math.ceil(rows.length / pageSize);
+  const visibleRows = isServerPaginated ? rows : rows.slice((page - 1) * pageSize, page * pageSize);
+
+  function handlePageChange(p: number) {
+    if (isServerPaginated) {
+      externalOnPageChange(p);
+    } else {
+      setInternalPage(p);
+    }
+  }
 
   return (
     <div>
@@ -43,7 +58,7 @@ export function Table({ columns, rows, rowKey, pageSize = 10, className }: Table
               </tr>
             </thead>
             <tbody>
-              {paginatedRows.map((row) => (
+              {visibleRows.map((row) => (
                 <tr key={rowKey(row)} className="border-b border-[#F3F4F6] hover:bg-[#FAFAFA] transition-colors last:border-0">
                   {columns.map((col) => (
                     <td key={col.key} className="px-6 py-4">
@@ -56,7 +71,7 @@ export function Table({ columns, rows, rowKey, pageSize = 10, className }: Table
           </table>
         </div>
       </div>
-      <Pagination page={page} totalPages={totalPages} onPageChange={(p) => { setPage(p); }} />
+      <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
     </div>
   );
 }
