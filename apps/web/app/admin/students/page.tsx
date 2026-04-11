@@ -608,10 +608,27 @@ export default function StudentsPage() {
       );
       const headers = activeCols.map((c) => c.label);
       const rows = users.map((u) => activeCols.map((c) => c.getValue(u)));
+      const exportDate = new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
 
       if (format === "excel") {
         const { utils, writeFile } = await import("xlsx");
-        const ws = utils.aoa_to_sheet([headers, ...rows]);
+        const ws = utils.aoa_to_sheet([
+          ["WithinTech Learn"],
+          [`Students Export - ${exportDate}`],
+          [`Data extracted from WithinTech Learn platform on ${exportDate}`],
+          [],
+          headers,
+          ...rows,
+        ]);
+        ws["!merges"] = [
+          { s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } },
+          { s: { r: 1, c: 0 }, e: { r: 1, c: headers.length - 1 } },
+          { s: { r: 2, c: 0 }, e: { r: 2, c: headers.length - 1 } },
+        ];
         const wb = utils.book_new();
         utils.book_append_sheet(wb, ws, "Students");
         writeFile(wb, "students.xlsx");
@@ -619,11 +636,28 @@ export default function StudentsPage() {
         const { default: jsPDF } = await import("jspdf");
         const { default: autoTable } = await import("jspdf-autotable");
         const doc = new jsPDF({ orientation: "landscape" });
-        doc.setFont("helvetica");
-        doc.setFontSize(14);
-        doc.text("Students", 14, 16);
+
+        const logoResponse = await fetch("/logo.png");
+        const logoBlob = await logoResponse.blob();
+        const logoBase64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(logoBlob);
+        });
+        doc.addImage(logoBase64, "PNG", 14, 10, 20, 20);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.setTextColor(61, 0, 107);
+        doc.text("WithinTech Learn", 38, 20);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text("Students Export", 38, 28);
+
         doc.setFontSize(9);
-        doc.setTextColor(120);
+        doc.setTextColor(107, 114, 128);
         const filterStr = [
           debouncedSearch && `Search: "${debouncedSearch}"`,
           status && `Status: ${status}`,
@@ -631,12 +665,13 @@ export default function StudentsPage() {
           .filter(Boolean)
           .join("  ·  ");
         doc.text(
-          `Exported ${new Date().toLocaleDateString()}  ·  ${users.length} records${filterStr ? `  ·  ${filterStr}` : ""}`,
+          `Exported ${exportDate}  ·  ${users.length} records${filterStr ? `  ·  ${filterStr}` : ""}`,
           14,
-          22,
+          38,
         );
+
         autoTable(doc, {
-          startY: 28,
+          startY: 44,
           head: [headers],
           body: rows,
           styles: { fontSize: 9, cellPadding: 4 },
@@ -647,6 +682,16 @@ export default function StudentsPage() {
           },
           alternateRowStyles: { fillColor: [249, 250, 251] },
         });
+
+        const pageHeight = doc.internal.pageSize.height;
+        doc.setFontSize(8);
+        doc.setTextColor(156, 163, 175);
+        doc.text(
+          `Data extracted from WithinTech Learn platform on ${exportDate}`,
+          14,
+          pageHeight - 10,
+        );
+
         doc.save("students.pdf");
       }
 
