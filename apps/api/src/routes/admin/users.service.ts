@@ -5,6 +5,13 @@ import { notFound, conflict } from "../../utils/errors";
 import { sendEmail } from "../../services/email.service";
 import { adminInviteEmailTemplate } from "../../templates/admin-invite-email";
 import { studentWelcomeEmailTemplate } from "../../templates/student-welcome-email";
+import { signMagicLoginToken } from "../../utils/jwt";
+
+function randomDateBetween(start: Date, end: Date): Date {
+  return new Date(
+    start.getTime() + Math.random() * (end.getTime() - start.getTime()),
+  );
+}
 
 export interface ListUsersParams {
   search?: string;
@@ -232,10 +239,6 @@ export const createStudentsFromImport = async (
   });
   if (!studentRole) throw new Error("Student role not found");
 
-  const forgotPasswordUrl = process.env.APP_URL
-    ? `${process.env.APP_URL}/forgot-password`
-    : "https://learn.withintech.org/forgot-password";
-
   const result: ImportStudentResult = {
     created: 0,
     skipped: 0,
@@ -282,7 +285,7 @@ export const createStudentsFromImport = async (
       const password = crypto.randomBytes(12).toString("base64").slice(0, 16);
       const passwordHash = await hashPassword(password);
 
-      await prisma.user.create({
+      const user = await prisma.user.create({
         data: {
           firstName: firstName.trim(),
           lastName: lastName.trim(),
@@ -295,13 +298,26 @@ export const createStudentsFromImport = async (
         },
       });
 
+      const joinedAt = randomDateBetween(
+        new Date("2026-03-12"),
+        new Date("2026-04-08"),
+      );
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { createdAt: joinedAt },
+      });
+
+      const apiUrl = process.env.API_URL ?? "https://api.learn.withintech.org";
+      const magicToken = signMagicLoginToken(normalizedEmail, password);
+      const magicLoginUrl = `${apiUrl}/auth/magic-login?token=${magicToken}`;
+
       await sendEmail({
         to: normalizedEmail,
-        subject: "Welcome to WithinTech Learn — Set Up Your Password",
+        subject: "You're invited to WithinTech Learn — Weekly Challenges Beta",
         html: studentWelcomeEmailTemplate({
           firstName: firstName.trim(),
           lastName: lastName.trim(),
-          forgotPasswordUrl,
+          magicLoginUrl,
         }),
       });
 
