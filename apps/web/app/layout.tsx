@@ -65,6 +65,10 @@ export default function RootLayout({
             gtag('config', 'G-DY93CNS1DD');
           `}
         </Script>
+        <Script
+          {...({ src: "https://static.cloudflareinsights.com/beacon.min.js", "data-cf-beacon": '{"token": "02cbf59965dc42c4ab476414afe269be"}' } as ScriptProps)}
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
