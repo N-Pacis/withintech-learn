@@ -74,7 +74,7 @@ export const studentWelcomeEmailTemplate = ({
               <p style="margin:0;font-size:13px;color:#374151;font-weight:600;">Team WithinTech</p>
 
               <p style="margin:20px 0 0;font-size:11px;color:#9CA3AF;line-height:1.6;">
-                This link is valid for 7 days. If you were not expecting this invitation, you can safely ignore this email.
+                This link is valid for 20 days. If you were not expecting this invitation, you can safely ignore this email.
               </p>
             </td>
           </tr>
