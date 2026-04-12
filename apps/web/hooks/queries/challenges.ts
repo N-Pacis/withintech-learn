@@ -164,6 +164,8 @@ export interface PublicChallenge {
   visibleTestCases: VisibleTestCase[];
 }
 
+export type ChallengeSort = 'number_asc' | 'number_desc' | 'least_solved' | 'most_solved' | 'oldest' | 'newest';
+
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
 export interface ChallengeStats {
@@ -351,6 +353,7 @@ export function useStudentChallenges(params?: {
   page?:       number;
   limit?:      number;
   difficulty?: Difficulty;
+  sort?:       ChallengeSort;
 }) {
   return useQuery({
     queryKey: challengeKeys.studentList(params),
@@ -363,12 +366,12 @@ export function useStudentChallenges(params?: {
   });
 }
 
-export function useStudentChallenge(slug: string) {
+export function useStudentChallenge(slug: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: challengeKeys.studentOne(slug),
     queryFn:  () => apiFetch<StudentChallenge>(`/student/challenges/${slug}`),
     select:   res => res.data,
-    enabled:  !!slug,
+    enabled:  (options?.enabled !== false) && !!slug,
   });
 }
 
@@ -393,12 +396,12 @@ export function usePublicChallenges() {
   });
 }
 
-export function usePublicChallenge(slug: string) {
+export function usePublicChallenge(slug: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: challengeKeys.publicOne(slug),
     queryFn:  () => apiFetch<PublicChallenge>(`/public/challenges/${slug}`),
     select:   res => res.data,
-    enabled:  !!slug,
+    enabled:  (options?.enabled !== false) && !!slug,
     staleTime: 10 * 60 * 1000,
   });
 }

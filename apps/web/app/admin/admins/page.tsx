@@ -1,21 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button, Badge, PageLoader, Table, Select } from '@/components/ui';
 import type { Column, CellValue } from '@/components/ui';
 import { useAdmins, useSetUserActive, AdminUser, UsersParams } from '@/hooks/queries/users';
 import AddAdminModal from './components/AddAdminModal';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
-
-function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
-  }, [value, delay]);
-  return debounced;
-}
+import { useDebounce } from '@/hooks/useDebounce';
 
 function formatDate(date: string | null): CellValue {
   if (!date) return <span className="font-body text-sm text-[#D1D5DB]">—</span>;

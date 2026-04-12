@@ -1,21 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { PageLoader } from '@/components/ui';
 import { useUsers, useSetUserActive, UsersParams } from '@/hooks/queries/users';
 import UserRow from './components/UserRow';
 import UsersToolbar from './components/UsersToolbar';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
-
-function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
-  }, [value, delay]);
-  return debounced;
-}
+import { useDebounce } from '@/hooks/useDebounce';
 
 export default function UsersPage() {
   const [rawSearch, setRawSearch] = useState('');

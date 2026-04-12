@@ -28,17 +28,9 @@ import {
   // ImportStudentsResult,
 } from "@/hooks/queries/users";
 import { cn } from "@/lib/utils";
+import { useDebounce } from "@/hooks/useDebounce";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
-  }, [value, delay]);
-  return debounced;
-}
 
 function formatDate(date: string | null): CellValue {
   if (!date) return <span className="font-body text-sm text-[#D1D5DB]">—</span>;

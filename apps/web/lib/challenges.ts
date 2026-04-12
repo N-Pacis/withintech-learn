@@ -1,4 +1,33 @@
-import type { ChallengeLanguage } from '@/hooks/queries/challenges';
+import type { ChallengeLanguage, Difficulty, ChallengeSort } from '@/hooks/queries/challenges';
+
+// ─── Difficulty display config ────────────────────────────────────────────────
+
+export const DIFFICULTY_CONFIG: Record<Difficulty, {
+  variant: 'success' | 'warning' | 'danger';
+  label: string;
+  dot: string;
+  textColor: string;
+}> = {
+  easy:   { variant: 'success', label: 'Easy',   dot: 'bg-green-400', textColor: 'text-green-600'  },
+  medium: { variant: 'warning', label: 'Medium', dot: 'bg-amber-400', textColor: 'text-amber-600'  },
+  hard:   { variant: 'danger',  label: 'Hard',   dot: 'bg-red-400',   textColor: 'text-red-600'    },
+};
+
+export const DIFFICULTY_FILTER_OPTIONS: { value: Difficulty | 'all'; label: string }[] = [
+  { value: 'all',    label: 'All'    },
+  { value: 'easy',   label: 'Easy'   },
+  { value: 'medium', label: 'Medium' },
+  { value: 'hard',   label: 'Hard'   },
+];
+
+export const CHALLENGE_SORT_OPTIONS: { value: ChallengeSort; label: string }[] = [
+  { value: 'number_asc',   label: 'Number ↑'     },
+  { value: 'number_desc',  label: 'Number ↓'     },
+  { value: 'least_solved', label: 'Least Solved' },
+  { value: 'most_solved',  label: 'Most Solved'  },
+  { value: 'oldest',       label: 'Oldest'       },
+  { value: 'newest',       label: 'Newest'       },
+];
 
 export const CHALLENGE_LANGUAGES: { value: ChallengeLanguage; label: string }[] = [
   { value: 'python', label: 'Python 3' },

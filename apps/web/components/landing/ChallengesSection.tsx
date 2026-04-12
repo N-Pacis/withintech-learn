@@ -49,11 +49,11 @@ function ChallengeCard({ challenge }: { challenge: PublicChallengeListItem }) {
         cfg.accent,
       )}
     >
-      <div className="flex items-center justify-between">
-        <span className="font-mono text-xs text-[#D1D5DB]">#{challenge.number}</span>
+      <div className="flex items-center justify-end">
         <Badge variant={cfg.variant} size="sm">{cfg.label}</Badge>
       </div>
       <h3 className="font-heading font-bold text-sm text-[#0F0F0F] leading-snug group-hover:text-[#3D006B] transition-colors line-clamp-2">
+        <span className="text-[#C4B5FD] font-medium text-xs">{challenge.number}.</span>{' '}
         {challenge.title}
       </h3>
       <p className="font-body text-xs text-[#6B7280] leading-relaxed line-clamp-2 flex-1">

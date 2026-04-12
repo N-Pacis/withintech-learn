@@ -19,16 +19,36 @@ export const listPublishedChallenges = async ({
   page,
   limit,
   difficulty,
+  sort,
 }: {
   userId: string;
   page: number;
   limit: number;
   difficulty?: 'easy' | 'medium' | 'hard';
+  sort: 'number_asc' | 'number_desc' | 'least_solved' | 'most_solved' | 'oldest' | 'newest';
 }) => {
   const where = {
     status: 'published' as const,
     ...(difficulty ? { difficulty } : {}),
   };
+
+  const orderBy = (() => {
+    switch (sort) {
+      case 'number_desc':
+        return [{ number: 'desc' as const }, { createdAt: 'desc' as const }];
+      case 'least_solved':
+        return [{ progress: { _count: 'asc' as const } }, { number: 'asc' as const }];
+      case 'most_solved':
+        return [{ progress: { _count: 'desc' as const } }, { number: 'asc' as const }];
+      case 'oldest':
+        return [{ createdAt: 'asc' as const }, { number: 'asc' as const }];
+      case 'newest':
+        return [{ createdAt: 'desc' as const }, { number: 'asc' as const }];
+      case 'number_asc':
+      default:
+        return [{ number: 'asc' as const }, { createdAt: 'desc' as const }];
+    }
+  })();
 
   const [total, challenges] = await Promise.all([
     prisma.challenge.count({ where }),
@@ -36,7 +56,7 @@ export const listPublishedChallenges = async ({
       where,
       skip: (page - 1) * limit,
       take: limit,
-      orderBy: [{ orderIndex: 'asc' }, { createdAt: 'desc' }],
+      orderBy,
       select: {
         id: true,
         number: true,

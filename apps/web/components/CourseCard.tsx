@@ -28,26 +28,10 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-// Deterministic gradient cover when no thumbnail is available
-const GRADIENTS = [
-  ['#3D006B', '#7C3AED'],
-  ['#0F172A', '#1E40AF'],
-  ['#064E3B', '#059669'],
-  ['#78350F', '#D97706'],
-  ['#4C0519', '#BE185D'],
-  ['#1E3A5F', '#0EA5E9'],
-  ['#312E81', '#6D28D9'],
-  ['#134E4A', '#0D9488'],
-];
-
-function titleHash(title: string) {
-  let h = 0;
-  for (let i = 0; i < title.length; i++) h = (h * 31 + title.charCodeAt(i)) >>> 0;
-  return h % GRADIENTS.length;
-}
+import { titleGradient } from '@/lib/courses';
 
 function CourseCover({ title, featured }: { title: string; featured?: boolean }) {
-  const [from, to] = GRADIENTS[titleHash(title)];
+  const [from, to] = titleGradient(title);
   const lines = title.length > 40 ? 3 : 2;
   return (
     <div
