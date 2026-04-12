@@ -19,7 +19,9 @@ export function useProfile() {
       if (!res.success || !res.data) {
         // Token is invalid/expired — clear stored profile and redirect without blocking
         clearCachedProfile();
-        if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/sign-in')) {
+        // Only redirect from protected routes — public pages (/, /challenges, /courses, etc.) must not redirect
+        const PROTECTED = ['/learn', '/admin'];
+        if (typeof window !== 'undefined' && PROTECTED.some(p => window.location.pathname.startsWith(p))) {
           window.location.href = '/sign-in';
         }
         throw new Error(res.message);
