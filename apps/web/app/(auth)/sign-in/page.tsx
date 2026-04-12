@@ -8,6 +8,16 @@ import { Logo, AuthLoader } from "@/components/ui";
 import { useLogin, useProfile } from "@/hooks/queries/auth";
 import { Button, Input, FormField, PasswordInput } from "@/components/ui";
 
+// Redirect to `next` only if the user's role permits it; otherwise fall back to their home.
+function resolveDestination(next: string | null, role: string): string {
+  const home = role === 'admin' ? '/admin' : '/learn';
+  if (!next) return home;
+  // Prevent students from being bounced into /admin and admins into /learn via a stale next param
+  if (next.startsWith('/admin') && role !== 'admin') return home;
+  if (next.startsWith('/learn') && role === 'admin') return home;
+  return next;
+}
+
 const features = [
   "Learn at your own pace, anytime",
   "Hands-on projects and quizzes",
@@ -29,8 +39,7 @@ function SignInForm() {
 
   useEffect(() => {
     if (!profile) return;
-    const destination = next ?? (profile.role === "admin" ? "/admin" : "/learn");
-    router.replace(destination);
+    router.replace(resolveDestination(next, profile.role));
   }, [profile, router, next]);
 
   async function handleSubmit(e: FormEvent) {
@@ -43,8 +52,7 @@ function SignInForm() {
         router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
         return;
       }
-      const destination = next ?? (data.user.role === "admin" ? "/admin" : "/learn");
-      router.push(destination);
+      router.push(resolveDestination(next, data.user.role));
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Invalid email or password",

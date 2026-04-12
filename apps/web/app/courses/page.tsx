@@ -7,24 +7,7 @@ import { usePublicAllCourses, type PublicCourse } from '@/hooks/queries/courses'
 import { Button, Logo } from '@/components/ui';
 import { ArrowRight, BookOpen, Lock, Zap } from 'lucide-react';
 
-// ─── Gradient covers (deterministic, matches CourseCard) ─────────────────────
-
-const GRADIENTS = [
-  ['#3D006B', '#7C3AED'],
-  ['#0F172A', '#1E40AF'],
-  ['#064E3B', '#059669'],
-  ['#78350F', '#D97706'],
-  ['#4C0519', '#BE185D'],
-  ['#1E3A5F', '#0EA5E9'],
-  ['#312E81', '#6D28D9'],
-  ['#134E4A', '#0D9488'],
-];
-
-function titleHash(title: string) {
-  let h = 0;
-  for (let i = 0; i < title.length; i++) h = (h * 31 + title.charCodeAt(i)) >>> 0;
-  return h % GRADIENTS.length;
-}
+import { COURSE_GRADIENTS, titleGradient, titleToGradientIndex } from '@/lib/courses';
 
 // ─── Skeletons ────────────────────────────────────────────────────────────────
 
@@ -48,7 +31,7 @@ function CardSkeleton() {
 // ─── Course card ──────────────────────────────────────────────────────────────
 
 function CourseCard({ course }: { course: PublicCourse }) {
-  const [from, to] = GRADIENTS[titleHash(course.title)];
+  const [from, to] = titleGradient(course.title);
 
   return (
     <Link
@@ -97,7 +80,7 @@ function CourseCard({ course }: { course: PublicCourse }) {
 // ─── Ghost card (blurred) ─────────────────────────────────────────────────────
 
 function GhostCourseCard({ index }: { index: number }) {
-  const [from, to] = GRADIENTS[index % GRADIENTS.length];
+  const [from, to] = COURSE_GRADIENTS[index % COURSE_GRADIENTS.length];
   return (
     <div className="bg-white rounded-2xl border border-[#E5E7EB] overflow-hidden flex flex-col select-none pointer-events-none">
       <div

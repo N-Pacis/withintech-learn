@@ -27,3 +27,7 @@ export { MonthRangePicker } from './MonthRangePicker';
 export { DayRangePicker } from './DayRangePicker';
 export { TiptapEditor, TiptapViewer } from './TiptapEditor';
 export { WarningToast } from './WarningToast';
+export { FilterPills } from './FilterPills';
+export type { FilterOption } from './FilterPills';
+export { SortDropdown } from './SortDropdown';
+export type { SortOption } from './SortDropdown';

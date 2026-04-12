@@ -22,7 +22,8 @@ export function useProfile() {
         // Only redirect from protected routes — public pages (/, /challenges, /courses, etc.) must not redirect
         const PROTECTED = ['/learn', '/admin'];
         if (typeof window !== 'undefined' && PROTECTED.some(p => window.location.pathname.startsWith(p))) {
-          window.location.href = '/sign-in';
+          const next = encodeURIComponent(window.location.pathname + window.location.search);
+          window.location.href = `/sign-in?next=${next}`;
         }
         throw new Error(res.message);
       }
