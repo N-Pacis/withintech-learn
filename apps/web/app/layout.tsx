@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import Script, { type ScriptProps } from "next/script";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
+import { PageTitleSync } from "@/components/system/PageTitleSync";
 
 const syne = localFont({
   variable: "--font-syne",
@@ -25,7 +26,10 @@ const dmSans = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://learn.withintech.org"),
-  title: "WithinTech Learn: Study at your pace",
+  title: {
+    default: "WithinTech Learn: Study at your pace",
+    template: `%s`,
+  },
   description:
     "A product of WithinTech Rwanda designed to provide a vast array of courses necessary to thrive in this AI-driven technological era.",
   openGraph: {
@@ -53,6 +57,7 @@ export default function RootLayout({
     <html lang="en" className={`${syne.variable} ${dmSans.variable}`}>
       <body className="antialiased">
         <QueryProvider>{children}</QueryProvider>
+        <PageTitleSync />
         <Script
           {...({ src: "https://www.googletagmanager.com/gtag/js?id=G-DY93CNS1DD" } as ScriptProps)}
           strategy="afterInteractive"
