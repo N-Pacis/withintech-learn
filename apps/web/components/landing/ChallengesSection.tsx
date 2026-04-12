@@ -59,10 +59,7 @@ function ChallengeCard({ challenge }: { challenge: PublicChallengeListItem }) {
       <p className="font-body text-xs text-[#6B7280] leading-relaxed line-clamp-2 flex-1">
         {challenge.descriptionExcerpt}
       </p>
-      <div className="flex items-center justify-between pt-1">
-        <span className="font-body text-[11px] text-[#9CA3AF]">
-          {challenge.testCount} test{challenge.testCount !== 1 ? 's' : ''}
-        </span>
+      <div className="flex items-center justify-end pt-1">
         <span className="flex items-center gap-0.5 font-body text-[11px] font-medium text-[#3D006B] group-hover:gap-1.5 transition-all">
           Solve <ChevronRight size={11} />
         </span>

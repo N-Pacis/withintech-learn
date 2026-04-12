@@ -3,8 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useEnrollments, useEnrollmentProgress, type Enrollment } from '@/hooks/queries/enrollments';
 import { useCourses } from '@/hooks/queries/courses';
-import { PageLoader, Table, Select } from '@/components/ui';
+import { PageLoader, Table, Select, Pagination } from '@/components/ui';
 import type { Column, CellValue } from '@/components/ui';
+import { useDebounce } from '@/hooks/useDebounce';
 
 // ─── Progress popup ───────────────────────────────────────────────────────────
 
@@ -166,23 +167,27 @@ const columns: Column[] = [
   { key: 'actions', header: '' },
 ];
 
+const PAGE_SIZE = 20;
+
 export default function EnrollmentsPage() {
   const [search, setSearch] = useState('');
   const [courseId, setCourseId] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [page, setPage] = useState(1);
   const [activeEnrollmentId, setActiveEnrollmentId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search), 300);
-    return () => clearTimeout(t);
-  }, [search]);
+  const debouncedSearch = useDebounce(search.trim(), 350);
+
+  useEffect(() => { setPage(1); }, [debouncedSearch, courseId]);
 
   const { data: coursesPage, isLoading: coursesLoading } = useCourses({ page: 1, limit: 100 });
   const { data: enrollmentsPage, isLoading } = useEnrollments({
     search: debouncedSearch || undefined,
     courseId: courseId || undefined,
+    page,
+    limit: PAGE_SIZE,
   });
   const enrollments = enrollmentsPage?.enrollments;
+  const totalPages = enrollmentsPage ? Math.ceil(enrollmentsPage.total / PAGE_SIZE) : 1;
 
   function buildRow(e: Enrollment): Record<string, CellValue> {
     return {
@@ -250,11 +255,14 @@ export default function EnrollmentsPage() {
       )}
 
       {enrollments && enrollments.length > 0 && (
-        <Table
-          columns={columns}
-          rows={enrollments.map(buildRow)}
-          rowKey={(row) => row.id as string}
-        />
+        <>
+          <Table
+            columns={columns}
+            rows={enrollments.map(buildRow)}
+            rowKey={(row) => row.id as string}
+          />
+          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+        </>
       )}
 
       {activeEnrollmentId && (
