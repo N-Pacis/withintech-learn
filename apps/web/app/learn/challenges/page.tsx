@@ -93,7 +93,7 @@ function ChallengeRow({ challenge }: { challenge: StudentChallengeListItem }) {
       className="group flex items-center gap-4 px-5 py-4 border-b border-[#F3F4F6] last:border-0 hover:bg-[#F9F5FF] transition-colors"
     >
       <div className="flex items-center gap-3 shrink-0">
-        <span className="text-xs text-[#C4B5FD] font-medium w-6 text-right hidden sm:block">
+        <span className="text-sm text-[#C4B5FD] font-semibold w-8 text-right shrink-0">
           {challenge.number}.
         </span>
         {challenge.completed

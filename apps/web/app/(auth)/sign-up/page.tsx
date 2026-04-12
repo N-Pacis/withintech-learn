@@ -60,7 +60,7 @@ export default function SignUpPage() {
   const router = useRouter();
   const { mutateAsync: signUp } = useSignUp();
   // const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
-  const { data: profile, isLoading: profileLoading } = useProfile();
+  const { data: profile } = useProfile();
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -78,7 +78,8 @@ export default function SignUpPage() {
     router.replace(profile.role === "admin" ? "/admin" : "/learn");
   }, [profile, router]);
 
-  if (profileLoading) return <AuthLoader />;
+  // Already logged in — show loader immediately; useEffect above will redirect
+  if (profile) return <AuthLoader />;
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));

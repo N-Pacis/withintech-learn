@@ -34,8 +34,8 @@ export function useProfile() {
     initialData: () => getCachedProfile() ?? undefined,
     retry: false,
     refetchOnWindowFocus: false,
-    staleTime: 0,        // always re-validate in background on mount
-    gcTime: Infinity,    // keep in memory while app is open
+    staleTime: 5 * 60 * 1000, // trust cached profile for 5 min before re-validating
+    gcTime: Infinity,          // keep in memory while app is open
   });
 }
 

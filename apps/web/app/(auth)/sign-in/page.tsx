@@ -30,7 +30,7 @@ function SignInForm() {
   const next = searchParams.get("next");
   const { mutateAsync: login } = useLogin();
   // const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
-  // initialData seeds from localStorage — isLoading is false if a cached profile exists
+  // initialData seeds from localStorage — data is available synchronously if cached
   const { data: profile } = useProfile();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,6 +41,9 @@ function SignInForm() {
     if (!profile) return;
     router.replace(resolveDestination(next, profile.role));
   }, [profile, router, next]);
+
+  // Already logged in — show loader immediately; useEffect above will redirect
+  if (profile) return <AuthLoader />;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
