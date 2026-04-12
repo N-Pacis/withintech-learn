@@ -67,14 +67,14 @@ import { SubmissionResults } from "@/app/learn/challenges/[slug]/components/Subm
 function paramInputPlaceholder(type: ParamType): string {
   if (type.endsWith("[][]"))
     return type.startsWith("boolean")
-      ? "e.g. true,false;false,true (rows by ;)"
-      : "e.g. 1,2;3,4 (rows separated by ;)";
+      ? "e.g. true,false;false,true (rows by ;) — leave blank for []"
+      : "e.g. 1,2;3,4 (rows separated by ;) — leave blank for []";
   if (type.endsWith("[]"))
     return type.startsWith("string")
-      ? "one per line"
+      ? "one per line — leave blank for []"
       : type.startsWith("boolean")
-        ? "e.g. true, false, true"
-        : "e.g. 1, 2, 3";
+        ? "e.g. true, false, true — leave blank for []"
+        : "e.g. 1, 2, 3 — leave blank for []";
   if (type === "boolean") return "true or false";
   if (type === "char") return "e.g. a";
   if (type === "string") return "e.g. hello world";
@@ -83,6 +83,7 @@ function paramInputPlaceholder(type: ParamType): string {
 
 function parseParamValue(type: ParamType, raw: string): unknown {
   if (type.endsWith("[][]")) {
+    if (raw.trim() === "") return [];
     return raw.split(";").map((row) =>
       row.split(",").map((v) => {
         const t = type.slice(0, -4) as ParamType;
@@ -91,6 +92,7 @@ function parseParamValue(type: ParamType, raw: string): unknown {
     );
   }
   if (type.endsWith("[]")) {
+    if (raw.trim() === "") return [];
     const et = type.slice(0, -2) as ParamType;
     if (et === "string") return raw.split("\n").map((v) => v.trimEnd());
     return raw.split(",").map((v) => parseScalar(et, v.trim()));
@@ -340,7 +342,7 @@ function AddTestCaseForm({
           rows={2}
           placeholder={
             hasParams
-              ? "e.g. 0 (the return value your solution should produce)"
+              ? "e.g. 0 or [] (the return value your solution should produce)"
               : "e.g. 1 3"
           }
           className="font-mono text-xs"

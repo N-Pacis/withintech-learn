@@ -8,8 +8,8 @@ import { cn } from '@/lib/utils';
 import { useProfile } from '@/hooks/queries/auth';
 
 const links = [
-  { label: 'Courses',      href: '#courses'      },
-  { label: 'Demo',         href: '#demo'         },
+  { label: 'Courses',      href: '/courses'      },
+  { label: 'Challenges',   href: '/challenges'   },
   { label: 'How It Works', href: '#how-it-works' },
   { label: 'FAQ',          href: '#faq'          },
 ];

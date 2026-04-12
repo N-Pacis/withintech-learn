@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { CheckCircle2, Circle, Code2, Trophy, Zap } from 'lucide-react';
 import { useStudentChallenges, type Difficulty, type StudentChallengeListItem } from '@/hooks/queries/challenges';
-import { Badge } from '@/components/ui';
+import { Badge, Pagination } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -110,12 +110,13 @@ function StatsBar({
 
 // ─── Challenge row ────────────────────────────────────────────────────────────
 
-function ChallengeRow({ challenge, index }: { challenge: StudentChallengeListItem; index: number }) {
+function ChallengeRow({ challenge }: { challenge: StudentChallengeListItem }) {
   const badge = DIFFICULTY_BADGE[challenge.difficulty];
 
   return (
     <Link
       href={`/learn/challenges/${challenge.slug}`}
+      prefetch={false}
       className={cn(
         'group flex items-center gap-4 px-5 py-4 border-b border-[#F3F4F6] last:border-0',
         'hover:bg-[#F9F5FF] transition-colors',
@@ -123,7 +124,7 @@ function ChallengeRow({ challenge, index }: { challenge: StudentChallengeListIte
     >
       {/* Row index + completion */}
       <div className="flex items-center gap-3 shrink-0">
-        <span className="font-mono text-xs text-[#D1D5DB] w-5 text-right hidden sm:block">{index + 1}</span>
+        <span className="font-mono text-xs text-[#D1D5DB] w-5 text-right hidden sm:block">{challenge.number}</span>
         {challenge.completed
           ? <CheckCircle2 size={18} className="text-green-500 shrink-0" />
           : <Circle size={18} className="text-[#D1D5DB] group-hover:text-[#C4B5FD] shrink-0 transition-colors" />}
@@ -219,33 +220,12 @@ export default function ChallengesPage() {
       ) : (
         <>
           <div className="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
-            {data.challenges.map((c, i) => (
-              <ChallengeRow key={c.id} challenge={c} index={(page - 1) * 20 + i} />
+            {data.challenges.map((c) => (
+              <ChallengeRow key={c.id} challenge={c} />
             ))}
           </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-3 mt-6">
-              <button
-                disabled={page === 1}
-                onClick={() => setPage(p => p - 1)}
-                className="px-4 py-2 rounded-lg font-body text-sm bg-white border border-[#E5E7EB] text-[#6B7280] disabled:opacity-40 hover:border-[#3D006B]/40 hover:text-[#3D006B] transition-colors"
-              >
-                Previous
-              </button>
-              <span className="font-body text-sm text-[#6B7280]">
-                {page} / {totalPages}
-              </span>
-              <button
-                disabled={page >= totalPages}
-                onClick={() => setPage(p => p + 1)}
-                className="px-4 py-2 rounded-lg font-body text-sm bg-white border border-[#E5E7EB] text-[#6B7280] disabled:opacity-40 hover:border-[#3D006B]/40 hover:text-[#3D006B] transition-colors"
-              >
-                Next
-              </button>
-            </div>
-          )}
+          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
       )}
     </div>

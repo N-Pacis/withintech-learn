@@ -21,6 +21,7 @@ import studentQuizRouter from "./student/quiz.routes";
 import studentChallengesRouter from "./student/challenges.routes";
 import certificatesRouter from "./student/certificates.routes";
 import publicCoursesRouter from "./public/courses.routes";
+import publicChallengesRouter from "./public/challenges.routes";
 
 const router = Router();
 
@@ -36,6 +37,7 @@ router.post(
 
 // ── Public routes ─────────────────────────────────────────────────────────────
 router.use(publicCoursesRouter);
+router.use(publicChallengesRouter);
 router.use(authRouter);
 
 // ── Admin routes ──────────────────────────────────────────────────────────────

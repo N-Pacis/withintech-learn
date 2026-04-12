@@ -66,6 +66,35 @@ router.get('/public/courses', asyncHandler(async (_req: Request, res: Response) 
   sendSuccess(res, coursesWithUrls);
 }));
 
+// ─── List all published courses (no auth) ────────────────────────────────────
+// Must be registered before /:slug so "all" isn't matched as a slug param.
+
+router.get('/public/courses/all', asyncHandler(async (_req: Request, res: Response) => {
+  const courses = await prisma.course.findMany({
+    where:   { status: 'published' },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id:          true,
+      title:       true,
+      slug:        true,
+      description: true,
+      thumbnailKey: true,
+      createdAt:   true,
+      _count:      { select: { modules: true } },
+    },
+  });
+
+  const coursesWithUrls = await Promise.all(
+    courses.map(async ({ _count, ...c }) => ({
+      ...c,
+      thumbnailUrl:  c.thumbnailKey ? await getSignedUrl(c.thumbnailKey) : null,
+      moduleCount:   _count.modules,
+    })),
+  );
+
+  sendSuccess(res, coursesWithUrls);
+}));
+
 router.get('/public/courses/:slug', asyncHandler(async (req: Request, res: Response) => {
   const course = await prisma.course.findFirst({
     where: { slug: req.params.slug, status: 'published' },
