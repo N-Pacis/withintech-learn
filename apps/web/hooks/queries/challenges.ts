@@ -36,6 +36,7 @@ export interface StarterCode {
 // Admin
 export interface AdminChallenge {
   id:             string;
+  number:         number;
   title:          string;
   slug:           string;
   description:    string;
@@ -75,6 +76,7 @@ export interface AdminChallengesPage {
 // Student
 export interface StudentChallengeListItem {
   id:          string;
+  number:      number;
   title:       string;
   slug:        string;
   difficulty:  Difficulty;
@@ -138,6 +140,30 @@ export interface SubmissionHistoryItem {
   submittedAt: string;
 }
 
+// Public (unauthenticated)
+export interface PublicChallengeListItem {
+  id:                 string;
+  number:             number;
+  title:              string;
+  slug:               string;
+  difficulty:         Difficulty;
+  descriptionExcerpt: string;
+  testCount:          number;
+}
+
+export interface PublicChallenge {
+  id:               string;
+  title:            string;
+  slug:             string;
+  description:      string;
+  difficulty:       Difficulty;
+  starterCode:      StarterCode;
+  functionParams:   FunctionParam[] | null;
+  returnType:       string | null;
+  timeLimit:        number;
+  visibleTestCases: VisibleTestCase[];
+}
+
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
 export interface ChallengeStats {
@@ -159,6 +185,8 @@ export const challengeKeys = {
   studentList:     (params?: object) => ['challenges', 'student', 'list', params] as const,
   studentOne:      (slug: string)   => ['challenges', 'student', slug] as const,
   submissions:     (slug: string)   => ['challenges', 'submissions', slug] as const,
+  publicList:      ()               => ['challenges', 'public', 'list'] as const,
+  publicOne:       (slug: string)   => ['challenges', 'public', slug] as const,
 };
 
 // ─── Admin Queries ────────────────────────────────────────────────────────────
@@ -330,7 +358,8 @@ export function useStudentChallenges(params?: {
       apiFetch<StudentChallengesPage>(`/student/challenges?${new URLSearchParams(
         Object.fromEntries(Object.entries(params ?? {}).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)]))
       )}`),
-    select: res => res.data,
+    select:    res => res.data,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -350,6 +379,27 @@ export function useMySubmissions(slug: string) {
       apiFetch<SubmissionHistoryItem[]>(`/student/challenges/${slug}/submissions`),
     select:  res => res.data,
     enabled: !!slug,
+  });
+}
+
+// ─── Public Queries (no auth) ─────────────────────────────────────────────────
+
+export function usePublicChallenges() {
+  return useQuery({
+    queryKey: challengeKeys.publicList(),
+    queryFn:  () => apiFetch<PublicChallengeListItem[]>('/public/challenges'),
+    select:   res => res.data,
+    staleTime: 10 * 60 * 1000,
+  });
+}
+
+export function usePublicChallenge(slug: string) {
+  return useQuery({
+    queryKey: challengeKeys.publicOne(slug),
+    queryFn:  () => apiFetch<PublicChallenge>(`/public/challenges/${slug}`),
+    select:   res => res.data,
+    enabled:  !!slug,
+    staleTime: 10 * 60 * 1000,
   });
 }
 

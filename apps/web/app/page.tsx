@@ -4,6 +4,7 @@ import Navbar from "@/components/landing/Navbar";
 import Ticker from "@/components/landing/Ticker";
 import CertificateCard from "@/components/landing/CertificateCard";
 import CoursesSection from "@/components/landing/CoursesSection";
+import ChallengesSection from "@/components/landing/ChallengesSection";
 import FeatureHighlights from "@/components/landing/FeatureHighlights";
 import { Logo } from "@/components/ui";
 
@@ -92,6 +93,8 @@ export default function Home() {
       </section>
 
       <CoursesSection />
+
+      <ChallengesSection />
 
       {/* ── 6. Certificate Moment ───────────────────────────────────────────── */}
       <FeatureHighlights />
@@ -338,10 +341,12 @@ export default function Home() {
               </p>
               <ul className="flex flex-col gap-3">
                 {[
-                  { label: "Home", href: "/" },
-                  { label: "Start Learning", href: "/sign-in" },
-                  { label: "How It Works", href: "#how-it-works" },
-                  { label: "FAQ", href: "#faq" },
+                  { label: "Home",           href: "/"            },
+                  { label: "Courses",        href: "/courses"     },
+                  { label: "Challenges",     href: "/challenges"  },
+                  { label: "Start Learning", href: "/sign-in"     },
+                  { label: "How It Works",   href: "#how-it-works"},
+                  { label: "FAQ",            href: "#faq"         },
                 ].map(({ label, href }) => (
                   <li key={label}>
                     <Link href={href} className="font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors">

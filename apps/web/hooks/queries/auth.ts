@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
 import type { User } from '@/lib/auth';
+import { getCachedProfile, setCachedProfile, clearCachedProfile } from '@/lib/profile-cache';
 
 // ─── Query keys ──────────────────────────────────────────────────────────────
 
@@ -15,11 +16,23 @@ export function useProfile() {
     queryKey: authKeys.profile,
     queryFn: async (): Promise<User> => {
       const res = await apiFetch<User>('/auth/profile', {}, { redirectOn401: false });
-      if (!res.success || !res.data) throw new Error(res.message);
+      if (!res.success || !res.data) {
+        // Token is invalid/expired — clear stored profile and redirect without blocking
+        clearCachedProfile();
+        if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/sign-in')) {
+          window.location.href = '/sign-in';
+        }
+        throw new Error(res.message);
+      }
+      setCachedProfile(res.data);
       return res.data;
     },
+    // Seed immediately from localStorage — no loading spinner on first render
+    initialData: () => getCachedProfile() ?? undefined,
     retry: false,
     refetchOnWindowFocus: false,
+    staleTime: 0,        // always re-validate in background on mount
+    gcTime: Infinity,    // keep in memory while app is open
   });
 }
 
@@ -38,6 +51,7 @@ export function useGoogleAuth() {
       return res.data;
     },
     onSuccess: (data) => {
+      setCachedProfile(data.user);
       queryClient.setQueryData(authKeys.profile, data.user);
     },
   });
@@ -48,12 +62,13 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (credentials: { email: string; password: string }): Promise<LoginResult> => {
-      const res = await apiFetch<LoginResult>('/auth/login', { method: 'POST', body: JSON.stringify(credentials) });
+      const res = await apiFetch<LoginResult>('/auth/login', { method: 'POST', body: JSON.stringify(credentials) }, { skipRefresh: true });
       if (!res.success || !res.data) throw new Error(res.message ?? 'Login failed');
       return res.data;
     },
     onSuccess: (data) => {
       if ('requiresEmailVerification' in data) return;
+      setCachedProfile(data.user);
       queryClient.setQueryData(authKeys.profile, data.user);
     },
   });
@@ -82,6 +97,7 @@ export function useVerifyEmail() {
       return res.data;
     },
     onSuccess: (data) => {
+      setCachedProfile(data.user);
       queryClient.setQueryData(authKeys.profile, data.user);
     },
   });
@@ -136,6 +152,7 @@ export function useResetPassword() {
       return res.data;
     },
     onSuccess: (data) => {
+      setCachedProfile(data.user);
       queryClient.setQueryData(authKeys.profile, data.user);
     },
   });
@@ -144,6 +161,7 @@ export function useResetPassword() {
 export function useLogout() {
   const queryClient = useQueryClient();
   return () => {
+    clearCachedProfile();
     apiFetch('/auth/logout', { method: 'POST' }).finally(() => {
       queryClient.clear();
       window.location.href = '/sign-in';

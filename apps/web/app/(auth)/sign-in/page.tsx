@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { FormEvent, useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 // import { GoogleLogin } from '@react-oauth/google';
 import { Logo, AuthLoader } from "@/components/ui";
@@ -14,11 +14,14 @@ const features = [
   "Certificates to showcase your skills",
 ];
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
   const { mutateAsync: login } = useLogin();
   // const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
-  const { data: profile, isLoading: profileLoading } = useProfile();
+  // initialData seeds from localStorage — isLoading is false if a cached profile exists
+  const { data: profile } = useProfile();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,10 +29,9 @@ export default function SignInPage() {
 
   useEffect(() => {
     if (!profile) return;
-    router.replace(profile.role === "admin" ? "/admin" : "/learn");
-  }, [profile, router]);
-
-  if (profileLoading) return <AuthLoader />;
+    const destination = next ?? (profile.role === "admin" ? "/admin" : "/learn");
+    router.replace(destination);
+  }, [profile, router, next]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -41,7 +43,8 @@ export default function SignInPage() {
         router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
         return;
       }
-      router.push(data.user.role === "admin" ? "/admin" : "/learn");
+      const destination = next ?? (data.user.role === "admin" ? "/admin" : "/learn");
+      router.push(destination);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Invalid email or password",
@@ -242,5 +245,13 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<AuthLoader />}>
+      <SignInForm />
+    </Suspense>
   );
 }

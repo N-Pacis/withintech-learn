@@ -4,6 +4,7 @@ import { notFound } from '../../utils/errors';
 import { type FunctionParam } from '../challenges.constants';
 import {
   getCachedStudentChallenge,
+  getCachedAdminChallenge,
   buildAndCacheChallenge,
 } from '../../services/challenge-cache.service';
 import {
@@ -38,6 +39,7 @@ export const listPublishedChallenges = async ({
       orderBy: [{ orderIndex: 'asc' }, { createdAt: 'desc' }],
       select: {
         id: true,
+        number: true,
         title: true,
         slug: true,
         difficulty: true,
@@ -53,6 +55,7 @@ export const listPublishedChallenges = async ({
     limit,
     challenges: challenges.map(c => ({
       id:         c.id,
+      number:     c.number,
       title:      c.title,
       slug:       c.slug,
       difficulty: c.difficulty,
@@ -110,11 +113,28 @@ export const submitChallenge = async (slug: string, userId: string, data: {
   language: string;
   code: string;
 }) => {
-  const challenge = await prisma.challenge.findFirst({
-    where: { slug, status: 'published' },
-    include: { testCases: { orderBy: { orderIndex: 'asc' } } },
-  });
+  // Admin cache is keyed by ID; resolve via student cache (keyed by slug).
+  // Two Redis reads at ~1ms each — far cheaper than a DB query with JOIN.
+  const studentCached = await getCachedStudentChallenge(slug);
+  const cached = studentCached ? await getCachedAdminChallenge(studentCached.id) : null;
+
+  let challenge: { id: string; timeLimit: number; functionParams: unknown; returnType: string | null; testCases: { input: string; expectedOutput: string; isHidden: boolean; orderIndex: number }[] };
+
+  if (cached && cached.status === 'published') {
+    challenge = cached;
+  } else {
+    const dbChallenge = await prisma.challenge.findFirst({
+      where: { slug, status: 'published' },
+      include: { testCases: { orderBy: { orderIndex: 'asc' } } },
+    });
+    if (!dbChallenge) throw notFound('Challenge not found');
+    // Populate cache for next time
+    await buildAndCacheChallenge(dbChallenge.id);
+    challenge = dbChallenge;
+  }
+
   if (!challenge) throw notFound('Challenge not found');
+
   const executorResult = await executeChallengeSubmission({
     language:       data.language,
     code:           data.code,

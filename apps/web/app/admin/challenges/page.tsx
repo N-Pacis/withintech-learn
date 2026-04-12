@@ -223,6 +223,7 @@ export default function AdminChallengesPage() {
               <table className="w-full min-w-[480px]">
                 <thead>
                   <tr className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                    <th className="text-left px-4 py-3 font-body font-semibold text-xs text-[#6B7280] uppercase tracking-wider w-10">#</th>
                     <th className="text-left px-4 py-3 font-body font-semibold text-xs text-[#6B7280] uppercase tracking-wider">Title</th>
                     <th className="text-left px-4 py-3 font-body font-semibold text-xs text-[#6B7280] uppercase tracking-wider">Difficulty</th>
                     <th className="text-left px-4 py-3 font-body font-semibold text-xs text-[#6B7280] uppercase tracking-wider">Status</th>
@@ -241,6 +242,9 @@ export default function AdminChallengesPage() {
                         onClick={() => router.push(`/admin/challenges/${c.id}`)}
                         className="hover:bg-[#FAFAFA] transition-colors group cursor-pointer"
                       >
+                        <td className="px-4 py-3.5 font-mono text-xs text-[#9CA3AF]">
+                          {c.number}
+                        </td>
                         <td className="px-4 py-3.5 font-body text-sm text-[#0F0F0F] font-medium max-w-[160px] sm:max-w-none truncate">
                           {c.title}
                         </td>
