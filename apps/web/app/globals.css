@@ -68,11 +68,6 @@ body {
   background-size: 22px 22px;
 }
 
-.font-heading {
-  letter-spacing: -0.02em;
-}
-
-
 /* ─── Tiptap shared prose styles ─────────────────────────────────────────── */
 .tiptap-editor .ProseMirror,
 .tiptap-viewer .ProseMirror {
