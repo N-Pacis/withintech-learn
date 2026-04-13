@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useEnrollments, useEnrollmentProgress, type Enrollment } from '@/hooks/queries/enrollments';
 import { useCourses } from '@/hooks/queries/courses';
-import { PageLoader, Table, Select, Pagination } from '@/components/ui';
+import { PageLoader, Table, Select } from '@/components/ui';
 import type { Column, CellValue } from '@/components/ui';
 import { useDebounce } from '@/hooks/useDebounce';
 
@@ -255,14 +255,14 @@ export default function EnrollmentsPage() {
       )}
 
       {enrollments && enrollments.length > 0 && (
-        <>
-          <Table
-            columns={columns}
-            rows={enrollments.map(buildRow)}
-            rowKey={(row) => row.id as string}
-          />
-          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-        </>
+        <Table
+          columns={columns}
+          rows={enrollments.map(buildRow)}
+          rowKey={(row) => row.id as string}
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       )}
 
       {activeEnrollmentId && (
