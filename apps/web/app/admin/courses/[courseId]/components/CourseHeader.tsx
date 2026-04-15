@@ -21,9 +21,9 @@ export function CourseHeader({ course, courseId }: { course: Course; courseId: s
         <div className="flex items-center gap-3 mb-2">
           <Badge variant={badge.variant} size="sm">{badge.label}</Badge>
         </div>
-        <h1 className="font-heading font-black text-3xl text-[#0F0F0F] leading-tight">{course.title}</h1>
+        <h1 className="font-heading font-black text-3xl text-[#0F0F0F] dark:text-[#F9FAFB] leading-tight">{course.title}</h1>
         {course.description && (
-          <p className="font-body text-sm text-[#6B7280] mt-3 leading-relaxed">{course.description}</p>
+          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-3 leading-relaxed">{course.description}</p>
         )}
       </div>
 

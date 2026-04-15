@@ -64,7 +64,7 @@ function OtpInput({ value, onChange }: { value: string[]; onChange: (v: string[]
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={handlePaste}
           onFocus={(e) => e.target.select()}
-          className="w-11 h-14 text-center font-heading font-black text-xl text-[#0F0F0F] rounded-xl border-2 border-[#E5E7EB] bg-white outline-none transition-all focus:border-[#3D006B] focus:ring-4 focus:ring-[#3D006B]/10 caret-transparent"
+          className="w-11 h-14 text-center font-heading font-black text-xl text-[#0F0F0F] dark:text-[#F9FAFB] rounded-xl border-2 border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] outline-none transition-all focus:border-[#3D006B] focus:ring-4 focus:ring-[#3D006B]/10 caret-transparent"
         />
       ))}
     </div>
@@ -126,7 +126,7 @@ function VerifyEmailContent() {
 
   return (
     <div
-      className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden"
+      className="min-h-screen bg-white dark:bg-[#0f0f0f] flex items-center justify-center relative overflow-hidden"
       style={{
         backgroundImage: 'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
         backgroundSize: '22px 22px',
@@ -154,11 +154,11 @@ function VerifyEmailContent() {
             <Logo className="h-16" linked={false} />
           </div>
 
-          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] mb-1">Verify your email</h1>
-          <p className="font-body text-sm text-[#6B7280] mb-2">
-            We sent a 6-digit code to <span className="font-medium text-[#0F0F0F]">{email}</span>.
+          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] dark:text-[#F9FAFB] mb-1">Verify your email</h1>
+          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-2">
+            We sent a 6-digit code to <span className="font-medium text-[#0F0F0F] dark:text-[#F9FAFB]">{email}</span>.
           </p>
-          <p className="font-body text-xs text-[#9CA3AF] mb-8">Don&apos;t see it? Check your spam folder.</p>
+          <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] mb-8">Don&apos;t see it? Check your spam folder.</p>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <OtpInput value={otp} onChange={setOtp} />
@@ -177,7 +177,7 @@ function VerifyEmailContent() {
               Verify Email
             </Button>
 
-            <p className="font-body text-sm text-[#6B7280] text-center">
+            <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] text-center">
               Didn&apos;t receive the code?{' '}
               {countdown > 0 ? (
                 <span className="text-[#9CA3AF]">Resend in {countdown}s</span>

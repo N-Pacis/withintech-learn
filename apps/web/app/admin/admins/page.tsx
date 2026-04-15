@@ -54,7 +54,7 @@ export default function AdminsPage() {
             </span>
           </div>
           <div>
-            <p className="font-body text-sm font-medium text-[#0F0F0F]">{u.firstName} {u.lastName}</p>
+            <p className="font-body text-sm font-medium text-[#0F0F0F] dark:text-[#F9FAFB]">{u.firstName} {u.lastName}</p>
             <p className="font-body text-xs text-[#9CA3AF]">{u.email}</p>
           </div>
         </div>
@@ -80,8 +80,8 @@ export default function AdminsPage() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="font-heading font-black text-2xl text-[#0F0F0F]">Admins</h1>
-          <p className="font-body text-sm text-[#6B7280] mt-1">Manage admin accounts.</p>
+          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] dark:text-[#F9FAFB]">Admins</h1>
+          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-1">Manage admin accounts.</p>
         </div>
         <Button variant="primary" onClick={() => setShowModal(true)}>
           Add Admin
@@ -102,7 +102,7 @@ export default function AdminsPage() {
             value={rawSearch}
             onChange={(e) => setRawSearch(e.target.value)}
             className={cn(
-              'font-body text-sm w-full pl-9 pr-4 py-2 rounded-lg border border-[#E5E7EB] bg-white text-[#0F0F0F]',
+              'font-body text-sm w-full pl-9 pr-4 py-2 rounded-lg border border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] text-[#0F0F0F] dark:text-[#F9FAFB]',
               'placeholder-[#9CA3AF] outline-none transition-all',
               'focus:border-[#3D006B] focus:ring-2 focus:ring-[#3D006B]/10',
             )}
@@ -130,7 +130,7 @@ export default function AdminsPage() {
 
       {!isLoading && !error && admins?.length === 0 && (
         <div className="text-center py-16">
-          <p className="font-body text-[#6B7280]">No admins found.</p>
+          <p className="font-body text-[#6B7280] dark:text-[#9CA3AF]">No admins found.</p>
         </div>
       )}
 

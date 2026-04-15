@@ -11,17 +11,27 @@ interface LogoProps {
 }
 
 export default function Logo({ className, linked = true }: LogoProps) {
-  const src = '/logo.png';
   const img = (
-    <Image
-      src={src}
-      alt="WithinTech Learn"
-      width={1000}
-      height={1000}
-      className={cn('w-auto', className ?? 'h-20')}
-      priority
-      unoptimized
-    />
+    <>
+      <Image
+        src="/logo.png"
+        alt="WithinTech Learn"
+        width={1000}
+        height={1000}
+        className={cn('w-auto dark:hidden', className ?? 'h-20')}
+        priority
+        unoptimized
+      />
+      <Image
+        src="/logo-dark-mode.png"
+        alt="WithinTech Learn"
+        width={1000}
+        height={1000}
+        className={cn('w-auto hidden dark:block', className ?? 'h-20')}
+        priority
+        unoptimized
+      />
+    </>
   );
 
   if (!linked) return img;

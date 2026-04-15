@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Badge, Logo } from '@/components/ui';
+import { Badge, Logo, ThemeToggle } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
@@ -19,7 +19,7 @@ export default function StudentNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 bg-white border-b border-[#E5E7EB] shadow-sm">
+    <header className="sticky top-0 z-30 bg-white dark:bg-[#0f0f0f] border-b border-[#E5E7EB] dark:border-[#2d2d2d] shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
         <div className="flex-shrink-0 py-1">
@@ -45,15 +45,16 @@ export default function StudentNavbar() {
           ))}
         </nav>
 
-        {/* Right: user + logout */}
+        {/* Right: theme toggle + user + logout */}
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <div className="hidden sm:flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-[#3D006B]/10 flex items-center justify-center">
               <span className="font-heading font-bold text-xs text-[#3D006B]">
                 {user?.firstName?.[0]?.toUpperCase() ?? '?'}
               </span>
             </div>
-            <span className="font-body text-sm text-[#374151]">
+            <span className="font-body text-sm text-[#374151] dark:text-[#D1D5DB]">
               {user?.firstName} {user?.lastName}
             </span>
           </div>
@@ -86,7 +87,7 @@ export default function StudentNavbar() {
 
       {/* Mobile nav dropdown */}
       {menuOpen && (
-        <nav className="md:hidden border-t border-[#E5E7EB] bg-white px-4 py-3 flex flex-col gap-1">
+        <nav className="md:hidden border-t border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#0f0f0f] px-4 py-3 flex flex-col gap-1">
           {navItems.map(({ label, href, beta }) => (
             <Link
               key={href}

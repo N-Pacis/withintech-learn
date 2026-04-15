@@ -31,3 +31,4 @@ export { FilterPills } from './FilterPills';
 export type { FilterOption } from './FilterPills';
 export { SortDropdown } from './SortDropdown';
 export type { SortOption } from './SortDropdown';
+export { ThemeToggle } from './ThemeToggle';

@@ -35,7 +35,7 @@ function FilterPills({
             'font-body text-sm px-4 py-1.5 rounded-full border transition-all',
             value === f.value
               ? 'bg-[#3D006B] text-white border-[#3D006B]'
-              : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:border-[#3D006B]/40 hover:text-[#3D006B]',
+              : 'bg-white dark:bg-transparent text-[#6B7280] dark:text-[#9CA3AF] border-[#E5E7EB] dark:border-[#2d2d2d] hover:border-[#3D006B]/40 dark:hover:border-[#7C3AED]/40 hover:text-[#3D006B] dark:hover:text-[#C084FC]',
           )}
         >
           {f.label}
@@ -76,39 +76,39 @@ function EmptyState({ filter, search }: { filter: CourseFilter; search: string }
   if (search) {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center">
-        <div className="w-16 h-16 rounded-full bg-[#F3F4F6] flex items-center justify-center mb-5">
+        <div className="w-16 h-16 rounded-full bg-[#F3F4F6] dark:bg-[#252525] flex items-center justify-center mb-5">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
         </div>
-        <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">No results for &ldquo;{search}&rdquo;</h3>
-        <p className="font-body text-sm text-[#6B7280] max-w-xs">Try different keywords or clear your search.</p>
+        <h3 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB] mb-2">No results for &ldquo;{search}&rdquo;</h3>
+        <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] max-w-xs">Try different keywords or clear your search.</p>
       </div>
     );
   }
   if (filter === 'enrolled') {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center">
-        <div className="w-16 h-16 rounded-full bg-[#F3E8FF] flex items-center justify-center mb-5">
+        <div className="w-16 h-16 rounded-full bg-[#F3E8FF] dark:bg-[#2d1a4a] flex items-center justify-center mb-5">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3D006B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
           </svg>
         </div>
-        <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">Not enrolled yet</h3>
-        <p className="font-body text-sm text-[#6B7280] max-w-xs">Browse all courses and enroll to start learning.</p>
+        <h3 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB] mb-2">Not enrolled yet</h3>
+        <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] max-w-xs">Browse all courses and enroll to start learning.</p>
       </div>
     );
   }
   if (filter === 'passed') {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center">
-        <div className="w-16 h-16 rounded-full bg-[#F3E8FF] flex items-center justify-center mb-5">
+        <div className="w-16 h-16 rounded-full bg-[#F3E8FF] dark:bg-[#2d1a4a] flex items-center justify-center mb-5">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3D006B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
           </svg>
         </div>
-        <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">No completed courses yet</h3>
-        <p className="font-body text-sm text-[#6B7280] max-w-xs">Complete all modules and pass the final quiz to finish a course.</p>
+        <h3 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB] mb-2">No completed courses yet</h3>
+        <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] max-w-xs">Complete all modules and pass the final quiz to finish a course.</p>
       </div>
     );
   }
@@ -134,7 +134,7 @@ interface StatCardProps {
 
 function StatCard({ label, value, icon, accent = '#3D006B' }: StatCardProps) {
   return (
-    <div className="flex items-center gap-3 p-4 bg-white rounded-xl border border-[#E5E7EB]">
+    <div className="flex items-center gap-3 p-4 bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d]">
       <div
         className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
         style={{ background: `${accent}14` }}
@@ -142,8 +142,8 @@ function StatCard({ label, value, icon, accent = '#3D006B' }: StatCardProps) {
         <span style={{ color: accent }}>{icon}</span>
       </div>
       <div className="min-w-0">
-        <p className="font-heading font-black text-xl text-[#0F0F0F] leading-none">{value}</p>
-        <p className="font-body text-xs text-[#9CA3AF] mt-0.5 leading-snug">{label}</p>
+        <p className="font-heading font-black text-xl text-[#0F0F0F] dark:text-[#F9FAFB] leading-none">{value}</p>
+        <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] mt-0.5 leading-snug">{label}</p>
       </div>
     </div>
   );
@@ -157,7 +157,7 @@ function StudentSidebar() {
   return (
     <aside className="w-full lg:w-64 xl:w-72 shrink-0 flex flex-col gap-3 lg:sticky lg:top-6 lg:self-start">
 
-      <p className="font-heading font-bold text-xs tracking-widest uppercase text-[#9CA3AF]">My Progress</p>
+      <p className="font-heading font-bold text-xs tracking-widest uppercase text-[#9CA3AF] dark:text-[#6B7280]">My Progress</p>
 
       <StatCard
         label="Courses enrolled"
@@ -209,15 +209,15 @@ function StudentSidebar() {
       />
 
       {/* Completion rate */}
-      <div className="p-4 bg-white rounded-xl border border-[#E5E7EB] mt-1">
+      <div className="p-4 bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] mt-1">
         <div className="flex items-center justify-between mb-2">
-          <p className="font-body text-xs text-[#6B7280]">Completion rate</p>
-          <p className="font-heading font-black text-sm text-[#3D006B]">{completionRate}%</p>
+          <p className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF]">Completion rate</p>
+          <p className="font-heading font-black text-sm text-[#3D006B] dark:text-[#C084FC]">{completionRate}%</p>
         </div>
-        <div className="h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden">
+        <div className="h-1.5 bg-[#F3F4F6] dark:bg-[#252525] rounded-full overflow-hidden">
           <div className="h-full bg-[#3D006B] rounded-full transition-all duration-500" style={{ width: `${completionRate}%` }} />
         </div>
-        <p className="font-body text-xs text-[#9CA3AF] mt-2">
+        <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] mt-2">
           {stats ? `${stats.completed} of ${stats.total} courses completed` : '—'}
         </p>
       </div>
@@ -251,8 +251,8 @@ export default function LearnPage() {
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="font-heading font-black text-3xl text-[#0F0F0F]">All Courses</h1>
-        <p className="font-body text-sm text-[#6B7280] mt-1">Browse and start learning at your own pace.</p>
+        <h1 className="font-heading font-black text-3xl text-[#0F0F0F] dark:text-[#F9FAFB]">All Courses</h1>
+        <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-1">Browse and start learning at your own pace.</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8 items-start">
@@ -287,7 +287,7 @@ export default function LearnPage() {
             <EmptyState filter={filter} search={search} />
           ) : (
             <>
-              <p className="font-body text-sm text-[#9CA3AF] mb-5">
+              <p className="font-body text-sm text-[#9CA3AF] dark:text-[#6B7280] mb-5">
                 {data.total} course{data.total !== 1 ? 's' : ''}
               </p>
 

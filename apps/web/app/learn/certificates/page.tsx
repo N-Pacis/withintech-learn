@@ -69,10 +69,10 @@ function SharePopover({ cert, userId, rect, onClose }: SharePopoverProps) {
   return (
     <div
       ref={ref}
-      className="fixed z-9999 w-64 bg-white rounded-2xl shadow-xl border border-[#E5E7EB] py-3"
+      className="fixed z-9999 w-64 bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-xl border border-[#E5E7EB] dark:border-[#2d2d2d] py-3"
       style={{ top, right: window.innerWidth - rect.right, transform: `translateY(${translateY})` }}
     >
-      <p className="font-body text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wider px-4 mb-2">
+      <p className="font-body text-[10px] font-semibold text-[#9CA3AF] dark:text-[#6B7280] uppercase tracking-wider px-4 mb-2">
         Share Certificate
       </p>
       {links.map((l) => (
@@ -82,14 +82,14 @@ function SharePopover({ cert, userId, rect, onClose }: SharePopoverProps) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={onClose}
-          className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#F9FAFB] transition-colors"
+          className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#F9FAFB] dark:hover:bg-[#252525] transition-colors"
         >
           <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: l.bg }}>
             {l.icon}
           </div>
           <div>
-            <p className="font-body text-sm font-medium text-[#0F0F0F] leading-tight">{l.label}</p>
-            <p className="font-body text-xs text-[#9CA3AF]">{l.sublabel}</p>
+            <p className="font-body text-sm font-medium text-[#0F0F0F] dark:text-[#F9FAFB] leading-tight">{l.label}</p>
+            <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280]">{l.sublabel}</p>
           </div>
         </a>
       ))}
@@ -122,7 +122,7 @@ function CertificateCard({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-md hover:border-[#D1D5DB] transition-all flex flex-col">
+    <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-[#E5E7EB] dark:border-[#2d2d2d] shadow-sm hover:shadow-md hover:border-[#D1D5DB] dark:hover:border-[#4B5563] transition-all flex flex-col">
 
       {/* Preview: click opens full certificate */}
       <Link
@@ -137,14 +137,14 @@ function CertificateCard({
       {/* Content */}
       <div className="p-4 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="font-heading font-bold text-sm text-[#0F0F0F] leading-snug line-clamp-2">
+          <h3 className="font-heading font-bold text-sm text-[#0F0F0F] dark:text-[#F9FAFB] leading-snug line-clamp-2">
             {cert.courseTitle}
           </h3>
-          <span className="shrink-0 text-[10px] font-body font-semibold text-[#059669] bg-[#ECFDF5] px-2 py-0.5 rounded-full">
+          <span className="shrink-0 text-[10px] font-body font-semibold text-[#059669] bg-[#ECFDF5] dark:bg-green-950/30 px-2 py-0.5 rounded-full">
             Earned
           </span>
         </div>
-        <p className="font-body text-xs text-[#9CA3AF] mb-4">
+        <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] mb-4">
           {new Date(cert.completedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
 
@@ -159,7 +159,7 @@ function CertificateCard({
           <button
             ref={btnRef}
             onClick={() => btnRef.current && onShare(cert, btnRef.current.getBoundingClientRect())}
-            className="w-9 h-9 flex items-center justify-center rounded-lg border border-[#E5E7EB] bg-white hover:bg-[#F9FAFB] text-[#6B7280] hover:text-[#374151] transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-lg border border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] hover:bg-[#F9FAFB] dark:hover:bg-[#252525] text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#374151] dark:hover:text-[#D1D5DB] transition-colors"
             aria-label="Share certificate"
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -189,8 +189,8 @@ export default function CertificatesPage() {
     <div className="px-6 py-10 max-w-7xl mx-auto w-full">
 
       <div className="mb-8">
-        <h1 className="font-heading font-black text-3xl text-[#0F0F0F]">My Certificates</h1>
-        <p className="font-body text-sm text-[#6B7280] mt-1">
+        <h1 className="font-heading font-black text-3xl text-[#0F0F0F] dark:text-[#F9FAFB]">My Certificates</h1>
+        <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-1">
           Certificates you have earned by completing courses.
         </p>
       </div>
@@ -211,8 +211,8 @@ export default function CertificatesPage() {
               <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
             </svg>
           </div>
-          <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">No certificates yet</h3>
-          <p className="font-body text-sm text-[#6B7280] max-w-xs">
+          <h3 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB] mb-2">No certificates yet</h3>
+          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] max-w-xs">
             Complete all modules and pass the final quiz to earn your first certificate.
           </p>
         </div>
@@ -220,7 +220,7 @@ export default function CertificatesPage() {
 
       {certs && certs.length > 0 && profile && (
         <>
-          <p className="font-body text-sm text-[#9CA3AF] mb-6">
+          <p className="font-body text-sm text-[#9CA3AF] dark:text-[#6B7280] mb-6">
             {certs.length} certificate{certs.length !== 1 ? 's' : ''} earned
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">

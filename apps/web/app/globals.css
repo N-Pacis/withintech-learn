@@ -1,8 +1,16 @@
 @import "tailwindcss";
 
+/* Class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:is(.dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #0f0f0f;
+}
+
+.dark {
+  --background: #0f0f0f;
+  --foreground: #f9fafb;
 }
 
 @theme inline {
@@ -106,6 +114,7 @@
 
 body {
   background: var(--background);
+  color: var(--foreground);
   font-family: var(--font-dm-sans), sans-serif;
   font-weight: 450;
   line-height: 1.6;
@@ -191,6 +200,11 @@ strong {
   background-color: #FAFAFA;
   background-image: radial-gradient(#3D006B18 1px, transparent 1px);
   background-size: 22px 22px;
+}
+
+.dark .bg-dots {
+  background-color: #141414;
+  background-image: radial-gradient(#C084FC18 1px, transparent 1px);
 }
 
 /* ─── Tiptap shared prose styles ─────────────────────────────────────────── */
@@ -322,4 +336,41 @@ strong {
   border: none;
   border-top: 2px solid #E5E7EB;
   margin: 1rem 0;
+}
+
+/* ─── Dark mode overrides ─────────────────────────────────────────────────── */
+.dark .tiptap-editor .ProseMirror,
+.dark .tiptap-viewer .ProseMirror {
+  color: #D1D5DB;
+}
+
+.dark .tiptap-editor .ProseMirror h1,
+.dark .tiptap-viewer .ProseMirror h1,
+.dark .tiptap-editor .ProseMirror h2,
+.dark .tiptap-viewer .ProseMirror h2,
+.dark .tiptap-editor .ProseMirror h3,
+.dark .tiptap-viewer .ProseMirror h3 {
+  color: #F9FAFB;
+}
+
+.dark .tiptap-editor .ProseMirror a,
+.dark .tiptap-viewer .ProseMirror a {
+  color: #C084FC;
+}
+
+.dark .tiptap-editor .ProseMirror blockquote,
+.dark .tiptap-viewer .ProseMirror blockquote {
+  border-left-color: #7C3AED;
+  color: #9CA3AF;
+}
+
+.dark .tiptap-editor .ProseMirror hr,
+.dark .tiptap-viewer .ProseMirror hr {
+  border-top-color: #2d2d2d;
+}
+
+.dark .tiptap-editor .ProseMirror mark,
+.dark .tiptap-viewer .ProseMirror mark {
+  background-color: #713F12;
+  color: #FEF08A;
 }

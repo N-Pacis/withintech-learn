@@ -12,7 +12,7 @@ const DIFFICULTY_BADGE: Record<Difficulty, { variant: 'success' | 'warning' | 'd
 function InputBlock({ input, params }: { input: string; params: FunctionParam[] | null | undefined }) {
   if (!params || params.length === 0) {
     return (
-      <pre className="font-mono text-xs text-[#0F0F0F] bg-[#F3F4F6] rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">
+      <pre className="font-mono text-xs text-[#0F0F0F] dark:text-[#D1D5DB] bg-[#F3F4F6] dark:bg-[#252525] rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">
         {input}
       </pre>
     );
@@ -24,7 +24,7 @@ function InputBlock({ input, params }: { input: string; params: FunctionParam[] 
         {params.map((p, i) => (
           <div key={p.name} className="flex items-start gap-2 font-mono text-xs">
             <span className="text-[#9CA3AF] shrink-0 pt-0.5">{p.name} =</span>
-            <pre className="bg-[#F3F4F6] rounded px-2 py-0.5 whitespace-pre-wrap break-all flex-1 text-[#0F0F0F]">
+            <pre className="bg-[#F3F4F6] dark:bg-[#252525] rounded px-2 py-0.5 whitespace-pre-wrap break-all flex-1 text-[#0F0F0F] dark:text-[#D1D5DB]">
               {Array.isArray(values[i]) ? JSON.stringify(values[i]) : String(values[i] ?? '')}
             </pre>
           </div>
@@ -33,7 +33,7 @@ function InputBlock({ input, params }: { input: string; params: FunctionParam[] 
     );
   } catch {
     return (
-      <pre className="font-mono text-xs text-[#0F0F0F] bg-[#F3F4F6] rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">
+      <pre className="font-mono text-xs text-[#0F0F0F] dark:text-[#D1D5DB] bg-[#F3F4F6] dark:bg-[#252525] rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">
         {input}
       </pre>
     );
@@ -54,9 +54,9 @@ export function ProblemPanel({ title, description, difficulty, visibleTestCases,
   return (
     <div className="flex flex-col h-full">
       {/* Sticky title + badge */}
-      <div className="sticky top-0 bg-white border-b border-[#F3F4F6] px-5 py-4 z-10">
+      <div className="sticky top-0 bg-white dark:bg-[#1a1a1a] border-b border-[#F3F4F6] dark:border-[#2d2d2d] px-5 py-4 z-10">
         <div className="flex items-start gap-3">
-          <h1 className="font-heading font-bold text-[15px] text-[#0F0F0F] flex-1 leading-snug">{title}</h1>
+          <h1 className="font-heading font-bold text-[15px] text-[#0F0F0F] dark:text-[#F9FAFB] flex-1 leading-snug">{title}</h1>
           <Badge variant={badge.variant} size="md" className="shrink-0 mt-0.5">{badge.label}</Badge>
         </div>
       </div>
@@ -73,11 +73,11 @@ export function ProblemPanel({ title, description, difficulty, visibleTestCases,
               Examples
             </h2>
             {visibleTestCases.map((tc, i) => (
-              <div key={tc.id} className="rounded-xl border border-[#E5E7EB] overflow-hidden">
-                <div className="px-3 py-2 bg-[#F9FAFB] border-b border-[#E5E7EB]">
-                  <span className="font-body text-xs font-medium text-[#6B7280]">Example {i + 1}</span>
+              <div key={tc.id} className="rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] overflow-hidden">
+                <div className="px-3 py-2 bg-[#F9FAFB] dark:bg-[#141414] border-b border-[#E5E7EB] dark:border-[#2d2d2d]">
+                  <span className="font-body text-xs font-medium text-[#6B7280] dark:text-[#9CA3AF]">Example {i + 1}</span>
                 </div>
-                <div className="p-3 grid gap-2.5 bg-white">
+                <div className="p-3 grid gap-2.5 bg-white dark:bg-[#1a1a1a]">
                   {tc.input !== '' && (
                     <div>
                       <span className="font-body text-[11px] font-medium text-[#9CA3AF] uppercase tracking-wider block mb-1.5">Input</span>
@@ -86,7 +86,7 @@ export function ProblemPanel({ title, description, difficulty, visibleTestCases,
                   )}
                   <div>
                     <span className="font-body text-[11px] font-medium text-[#9CA3AF] uppercase tracking-wider block mb-1">Output</span>
-                    <pre className="font-mono text-xs text-[#0F0F0F] bg-[#F3F4F6] rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">{tc.expectedOutput}</pre>
+                    <pre className="font-mono text-xs text-[#0F0F0F] dark:text-[#D1D5DB] bg-[#F3F4F6] dark:bg-[#252525] rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">{tc.expectedOutput}</pre>
                   </div>
                 </div>
               </div>

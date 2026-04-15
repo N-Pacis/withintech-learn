@@ -11,7 +11,7 @@ const IMAGE_ACCEPT = ['image/jpeg', 'image/png', 'image/webp'];
 
 function TextBlockView({ block }: { block: Block }) {
   return (
-    <p className="font-body text-sm text-[#374151] leading-relaxed whitespace-pre-wrap line-clamp-4">
+    <p className="font-body text-sm text-[#374151] dark:text-[#D1D5DB] leading-relaxed whitespace-pre-wrap line-clamp-4">
       {block.content}
     </p>
   );
@@ -23,7 +23,7 @@ function ImageBlockView({ block }: { block: Block }) {
   if (!block.url) {
     return (
       <div className="flex items-center gap-2 py-2">
-        <div className="w-8 h-8 rounded bg-[#F3E8FF] flex items-center justify-center">
+        <div className="w-8 h-8 rounded bg-[#F3E8FF] dark:bg-[#2d1a4a] flex items-center justify-center">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3D006B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
           </svg>
@@ -34,7 +34,7 @@ function ImageBlockView({ block }: { block: Block }) {
   }
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="relative h-40 rounded-lg overflow-hidden bg-[#F3F4F6]">
+      <div className="relative h-40 rounded-lg overflow-hidden bg-[#F3F4F6] dark:bg-[#252525]">
         <Image src={block.url} alt={block.caption ?? 'Block image'} fill className="object-cover" />
       </div>
       {block.caption && <p className="font-body text-xs text-[#9CA3AF]">{block.caption}</p>}
@@ -186,10 +186,10 @@ export function BlockCard({
   return (
     <div
       className={cn(
-        'flex gap-3 p-4 border-b border-[#E5E7EB] last:border-0 transition-all group',
+        'flex gap-3 p-4 border-b border-[#E5E7EB] dark:border-[#2d2d2d] last:border-0 transition-all group',
         isDragging && 'opacity-40 bg-[#F3E8FF]/30',
         isDragOver && 'bg-[#F3E8FF]/50 border-l-2 border-l-[#3D006B]',
-        !isDragging && !isDragOver && 'hover:bg-[#FAFAFA]',
+        !isDragging && !isDragOver && 'hover:bg-[#FAFAFA] dark:hover:bg-[#252525]',
       )}
     >
       {/* Drag handle + order */}
@@ -228,7 +228,7 @@ export function BlockCard({
               : <EditCodeBlock block={block} moduleId={moduleId} onDone={onCancelEdit} />
         ) : isDeleting ? (
           <div className="flex items-center gap-2 py-1">
-            <p className="font-body text-xs text-[#6B7280] flex-1">Delete this block?</p>
+            <p className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF] flex-1">Delete this block?</p>
             <Button variant="danger" size="sm" onClick={onConfirmDelete}>Delete</Button>
             <Button variant="ghost" size="sm" onClick={onCancelDelete}>Cancel</Button>
           </div>

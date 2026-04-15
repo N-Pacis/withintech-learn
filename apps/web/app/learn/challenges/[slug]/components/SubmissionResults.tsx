@@ -70,11 +70,11 @@ function TestCaseRow({
 
       {/* Details */}
       {!hidden && open && (
-        <div className="p-3 grid gap-2.5 bg-white font-mono text-xs">
+        <div className="p-3 grid gap-2.5 bg-white dark:bg-[#1a1a1a] font-mono text-xs">
           {result.input !== '' && (
             <div>
               <span className="font-body text-[11px] font-medium text-[#9CA3AF] uppercase tracking-wider block mb-1">Input</span>
-              <pre className="bg-[#F3F4F6] rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">{result.input}</pre>
+              <pre className="bg-[#F3F4F6] dark:bg-[#252525] dark:text-[#D1D5DB] rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">{result.input}</pre>
             </div>
           )}
           <div>
@@ -108,7 +108,7 @@ function TestCaseRow({
 
       {/* Hidden-but-failed */}
       {hidden && !result.passed && (
-        <div className="px-4 py-2.5 bg-white font-body text-xs text-[#9CA3AF]">
+        <div className="px-4 py-2.5 bg-white dark:bg-[#1a1a1a] font-body text-xs text-[#9CA3AF] dark:text-[#6B7280]">
           This test failed. Details are hidden.
         </div>
       )}
@@ -157,7 +157,7 @@ export function SubmissionResults({ result }: { result: SubmissionResult }) {
           <div className="px-4 py-2 bg-red-50 border-b border-red-200 font-body text-xs font-medium text-red-600 uppercase tracking-wider">
             Compile Error
           </div>
-          <pre className="p-4 font-mono text-xs text-red-700 whitespace-pre-wrap break-all bg-white leading-relaxed overflow-x-auto">
+          <pre className="p-4 font-mono text-xs text-red-700 whitespace-pre-wrap break-all bg-white dark:bg-[#1a1a1a] leading-relaxed overflow-x-auto">
             {result.compileError}
           </pre>
         </div>

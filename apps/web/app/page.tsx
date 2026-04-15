@@ -12,12 +12,12 @@ import { Logo } from "@/components/ui";
 
 export default function Home() {
   return (
-    <div className="bg-white text-[#0F0F0F]">
+    <div className="bg-white dark:bg-[#0f0f0f] text-[#0F0F0F] dark:text-[#F9FAFB]">
       <Navbar />
 
       {/* ── 2. Hero ─────────────────────────────────────────────────────────── */}
       <section
-        className="overflow-hidden bg-white"
+        className="overflow-hidden bg-white dark:bg-[#0f0f0f]"
         style={{
           backgroundImage:
             "radial-gradient(circle, #d1d5db 1px, transparent 1px)",
@@ -29,7 +29,7 @@ export default function Home() {
           className="absolute inset-x-0 bottom-0 h-40 pointer-events-none"
           style={{
             background:
-              "linear-gradient(to bottom, transparent, white)",
+              "linear-gradient(to bottom, transparent, var(--background))",
           }}
         />
 
@@ -38,12 +38,12 @@ export default function Home() {
 
             {/* Left: text */}
             <div className="lg:w-[55%] lg:pr-12 pb-20">
-              <h1 className="font-heading font-black text-5xl sm:text-6xl lg:text-7xl text-[#0F0F0F] tracking-tight leading-[1.05] mb-6">
+              <h1 className="font-heading font-black text-5xl sm:text-6xl lg:text-7xl text-[#0F0F0F] dark:text-[#F9FAFB] tracking-tight leading-[1.05] mb-6">
                 <span className="block">Stay Ahead</span>
                 <span className="block">in the AI Era.</span>
               </h1>
 
-              <p className="font-body text-lg text-[#6B7280] leading-relaxed mb-8 max-w-sm">
+              <p className="font-body text-lg text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed mb-8 max-w-sm">
                 Experience hands-on learning, quizzes, and verified certificates.
               </p>
 
@@ -54,7 +54,7 @@ export default function Home() {
                 Start Learning →
               </Link>
 
-              <p className="font-body text-xs text-[#9CA3AF] mt-4">
+              <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] mt-4">
                 Certificates recognized by WithinTech Rwanda
               </p>
             </div>
@@ -127,12 +127,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="how-it-works" className="bg-white py-20 lg:py-28">
+      <section id="how-it-works" className="bg-white dark:bg-[#0f0f0f] py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <p className="font-heading text-xs tracking-widest uppercase text-[#3D006B] font-bold mb-4">
+          <p className="font-heading text-xs tracking-widest uppercase text-[#3D006B] dark:text-[#C084FC] font-bold mb-4">
             How it works
           </p>
-          <h2 className="font-heading font-black text-3xl lg:text-4xl text-[#0F0F0F] tracking-tight mb-16">
+          <h2 className="font-heading font-black text-3xl lg:text-4xl text-[#0F0F0F] dark:text-[#F9FAFB] tracking-tight mb-16">
             Three steps. That is all.
           </h2>
 
@@ -142,10 +142,10 @@ export default function Home() {
               <div className="w-12 h-12 rounded-full bg-[#3D006B] flex items-center justify-center mb-6">
                 <span className="font-heading text-white font-bold text-lg">1</span>
               </div>
-              <h3 className="font-heading font-bold text-xl text-[#0F0F0F] mb-2">
+              <h3 className="font-heading font-bold text-xl text-[#0F0F0F] dark:text-[#F9FAFB] mb-2">
                 Get access
               </h3>
-              <p className="font-body text-base text-[#6B7280] max-w-[200px]">
+              <p className="font-body text-base text-[#6B7280] dark:text-[#9CA3AF] max-w-[200px]">
                 Sign in and find your courses ready to go.
               </p>
             </div>
@@ -158,10 +158,10 @@ export default function Home() {
               <div className="w-12 h-12 rounded-full bg-[#3D006B] flex items-center justify-center mb-6">
                 <span className="font-heading text-white font-bold text-lg">2</span>
               </div>
-              <h3 className="font-heading font-bold text-xl text-[#0F0F0F] mb-2">
+              <h3 className="font-heading font-bold text-xl text-[#0F0F0F] dark:text-[#F9FAFB] mb-2">
                 Study your modules
               </h3>
-              <p className="font-body text-base text-[#6B7280] max-w-[200px]">
+              <p className="font-body text-base text-[#6B7280] dark:text-[#9CA3AF] max-w-[200px]">
                 Work at your own pace, on any device, anywhere.
               </p>
             </div>
@@ -174,10 +174,10 @@ export default function Home() {
               <div className="w-12 h-12 rounded-full bg-[#3D006B] flex items-center justify-center mb-6">
                 <span className="font-heading text-white font-bold text-lg">3</span>
               </div>
-              <h3 className="font-heading font-bold text-xl text-[#0F0F0F] mb-2">
+              <h3 className="font-heading font-bold text-xl text-[#0F0F0F] dark:text-[#F9FAFB] mb-2">
                 Earn your certificate
               </h3>
-              <p className="font-body text-base text-[#6B7280] max-w-[200px]">
+              <p className="font-body text-base text-[#6B7280] dark:text-[#9CA3AF] max-w-[200px]">
                 Pass the quiz and download your certificate instantly.
               </p>
             </div>
@@ -195,7 +195,7 @@ export default function Home() {
                   <span className="font-heading text-white font-bold text-lg">{n}</span>
                 </div>
                 <div className="pt-1">
-                  <h3 className="font-heading font-bold text-xl text-[#0F0F0F] mb-2">{title}</h3>
+                  <h3 className="font-heading font-bold text-xl text-[#0F0F0F] dark:text-[#F9FAFB] mb-2">{title}</h3>
                   <p className="font-body text-base text-[#6B7280]">{desc}</p>
                 </div>
               </div>
@@ -205,9 +205,9 @@ export default function Home() {
       </section>
 
       {/* ── 7. Partners ─────────────────────────────────────────────────────── */}
-      <section className="bg-white border-y border-[#E5E7EB] py-12">
+      <section className="bg-white dark:bg-[#0f0f0f] border-y border-[#E5E7EB] dark:border-[#2d2d2d] py-12">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest text-center mb-10">
+          <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] uppercase tracking-widest text-center mb-10">
             Partners
           </p>
           <div className="flex flex-wrap items-center justify-center gap-12 lg:gap-20">
@@ -226,12 +226,12 @@ export default function Home() {
 
       {/* ── 8. Final CTA ────────────────────────────────────────────────────── */}
       {/* ── 7. FAQ ──────────────────────────────────────────────────────────── */}
-      <section id="faq" className="bg-[#FAFAFA] border-y border-[#E5E7EB] py-20 lg:py-28">
+      <section id="faq" className="bg-[#FAFAFA] dark:bg-[#0a0a0a] border-y border-[#E5E7EB] dark:border-[#2d2d2d] py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <p className="font-heading text-xs tracking-widest uppercase text-[#3D006B] font-bold mb-4">
+          <p className="font-heading text-xs tracking-widest uppercase text-[#3D006B] dark:text-[#C084FC] font-bold mb-4">
             FAQ
           </p>
-          <h2 className="font-heading font-black text-3xl lg:text-4xl text-[#0F0F0F] tracking-tight mb-14">
+          <h2 className="font-heading font-black text-3xl lg:text-4xl text-[#0F0F0F] dark:text-[#F9FAFB] tracking-tight mb-14">
             Common questions, answered.
           </h2>
 
@@ -258,14 +258,14 @@ export default function Home() {
                 a: "WithinTech Learn works on any device with a modern browser: laptop, tablet, or phone. No app to install.",
               }
             ].map(({ q, a }) => (
-              <div key={q} className="bg-white rounded-2xl border border-[#E5E7EB] p-6">
-                <p className="font-heading font-bold text-base text-[#0F0F0F] mb-3">{q}</p>
-                <p className="font-body text-sm text-[#6B7280] leading-relaxed">{a}</p>
+              <div key={q} className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-[#E5E7EB] dark:border-[#2d2d2d] p-6">
+                <p className="font-heading font-bold text-base text-[#0F0F0F] dark:text-[#F9FAFB] mb-3">{q}</p>
+                <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">{a}</p>
               </div>
             ))}
           </div>
 
-          <p className="font-body text-sm text-[#6B7280] mt-10">
+          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-10">
             Still have questions?{" "}
             <a href="mailto:learn@withintech.org" className="text-[#3D006B] hover:underline font-medium">
               Email us at learn@withintech.org
@@ -275,13 +275,13 @@ export default function Home() {
       </section>
 
       {/* ── 9. Final CTA ────────────────────────────────────────────────────── */}
-      <section className="bg-white border-t border-[#E5E7EB] py-24 lg:py-32 overflow-hidden">
+      <section className="bg-white dark:bg-[#0f0f0f] border-t border-[#E5E7EB] dark:border-[#2d2d2d] py-24 lg:py-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row lg:items-center gap-16">
 
             {/* Left: copy + buttons */}
             <div className="lg:w-1/2">
-              <h2 className="font-heading font-black text-4xl lg:text-5xl text-[#0F0F0F] tracking-tight mb-10 max-w-lg">
+              <h2 className="font-heading font-black text-4xl lg:text-5xl text-[#0F0F0F] dark:text-[#F9FAFB] tracking-tight mb-10 max-w-lg">
                 Ready to start learning?
               </h2>
 
@@ -294,7 +294,7 @@ export default function Home() {
                 </Link>
                 <Link
                   href="#how-it-works"
-                  className="font-body font-medium text-[#3D006B] border border-[#3D006B] px-7 py-3.5 rounded-md hover:bg-[#F3E8FF] transition-colors text-base"
+                  className="font-body font-medium text-[#3D006B] dark:text-[#C084FC] border border-[#3D006B] dark:border-[#7C3AED] px-7 py-3.5 rounded-md hover:bg-[#F3E8FF] dark:hover:bg-[#2d1a4a] transition-colors text-base"
                 >
                   Learn More
                 </Link>
@@ -321,7 +321,7 @@ export default function Home() {
 
       {/* ── 9. Footer ────────────────────────────────────────────────────────── */}
       {/* ── 10. Footer ───────────────────────────────────────────────────────── */}
-      <footer className="bg-white border-t border-[#E5E7EB] py-14">
+      <footer className="bg-white dark:bg-[#0f0f0f] border-t border-[#E5E7EB] dark:border-[#2d2d2d] py-14">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
 
@@ -329,14 +329,14 @@ export default function Home() {
               <div className="mb-4 py-1">
                 <Logo className="h-16" linked={false} />
               </div>
-              <p className="font-body text-sm text-[#6B7280] mb-4">
+              <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-4">
                 Learn. Prove it. Move forward.
               </p>
-              <p className="font-body text-xs text-[#9CA3AF]" suppressHydrationWarning>© {new Date().getFullYear()} WithinTech</p>
+              <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280]" suppressHydrationWarning>© {new Date().getFullYear()} WithinTech</p>
             </div>
 
             <div>
-              <p className="font-heading text-xs tracking-widest uppercase text-[#0F0F0F] font-bold mb-5">
+              <p className="font-heading text-xs tracking-widest uppercase text-[#0F0F0F] dark:text-[#F9FAFB] font-bold mb-5">
                 Quick Links
               </p>
               <ul className="flex flex-col gap-3">
@@ -349,7 +349,7 @@ export default function Home() {
                   { label: "FAQ",            href: "#faq"         },
                 ].map(({ label, href }) => (
                   <li key={label}>
-                    <Link href={href} className="font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors">
+                    <Link href={href} className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#3D006B] dark:hover:text-[#C084FC] transition-colors">
                       {label}
                     </Link>
                   </li>
@@ -358,7 +358,7 @@ export default function Home() {
             </div>
 
             <div>
-              <p className="font-heading text-xs tracking-widest uppercase text-[#0F0F0F] font-bold mb-5">
+              <p className="font-heading text-xs tracking-widest uppercase text-[#0F0F0F] dark:text-[#F9FAFB] font-bold mb-5">
                 Legal
               </p>
               <ul className="flex flex-col gap-3">
@@ -368,7 +368,7 @@ export default function Home() {
                   { label: "Acceptable Use", href: "/legal#acceptable-use" },
                 ].map(({ label, href }) => (
                   <li key={label}>
-                    <Link href={href} className="font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors">
+                    <Link href={href} className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#3D006B] dark:hover:text-[#C084FC] transition-colors">
                       {label}
                     </Link>
                   </li>
@@ -377,13 +377,13 @@ export default function Home() {
             </div>
 
             <div>
-              <p className="font-heading text-xs tracking-widest uppercase text-[#0F0F0F] font-bold mb-5">
+              <p className="font-heading text-xs tracking-widest uppercase text-[#0F0F0F] dark:text-[#F9FAFB] font-bold mb-5">
                 About
               </p>
               <p className="font-body text-sm text-[#6B7280] mb-3">
                 A WithinTech Rwanda product
               </p>
-              <a href="mailto:learn@withintech.org" className="font-body text-sm text-[#3D006B] hover:underline">
+              <a href="mailto:learn@withintech.org" className="font-body text-sm text-[#3D006B] dark:text-[#C084FC] hover:underline">
                 learn@withintech.org
               </a>
             </div>

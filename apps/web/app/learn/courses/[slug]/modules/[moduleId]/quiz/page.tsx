@@ -56,13 +56,13 @@ export default function ModuleQuizPage() {
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-32 lg:pb-10">
       {/* Badge */}
       <div className="flex items-center gap-2 mb-6">
-        <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#F3E8FF] text-[#3D006B] font-body text-xs font-semibold">
+        <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#F3E8FF] dark:bg-[#2d1a4a] text-[#3D006B] dark:text-[#C084FC] font-body text-xs font-semibold">
           Module {moduleIndex + 1} Quiz
         </span>
       </div>
 
       {/* Quiz card */}
-      <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6 sm:p-8">
+      <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-[#E5E7EB] dark:border-[#2d2d2d] shadow-sm p-6 sm:p-8">
         <QuizSection
           slug={slug}
           moduleId={moduleId}
@@ -73,7 +73,7 @@ export default function ModuleQuizPage() {
       </div>
 
       {/* Desktop nav */}
-      <div className="hidden lg:flex flex-row items-center justify-between gap-3 mt-8 pt-6 border-t border-[#E5E7EB]">
+      <div className="hidden lg:flex flex-row items-center justify-between gap-3 mt-8 pt-6 border-t border-[#E5E7EB] dark:border-[#2d2d2d]">
         <Button
           variant="secondary"
           size="md"
@@ -128,7 +128,7 @@ export default function ModuleQuizPage() {
       </div>
 
       {/* Mobile sticky nav */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-[#E5E7EB] shadow-[0_-4px_16px_rgba(0,0,0,0.06)] px-4 py-3 flex items-center justify-between gap-3">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white dark:bg-[#111111] border-t border-[#E5E7EB] dark:border-[#2d2d2d] shadow-[0_-4px_16px_rgba(0,0,0,0.06)] px-4 py-3 flex items-center justify-between gap-3">
         <Button
           variant="secondary"
           size="md"
@@ -139,7 +139,7 @@ export default function ModuleQuizPage() {
         >
           <ChevronLeft size={16} />
         </Button>
-        <p className="font-body text-xs text-[#9CA3AF] truncate flex-1 text-center">
+        <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] truncate flex-1 text-center">
           {mod.title} — Quiz
         </p>
         {quizPassed && (

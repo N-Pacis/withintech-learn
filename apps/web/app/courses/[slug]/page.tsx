@@ -50,7 +50,7 @@ function CourseDetailContent() {
   const { data: course, isLoading, error } = usePublicCourseDetail(slug);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-[#0f0f0f]">
       <Navbar />
 
       <main className="max-w-3xl mx-auto px-6 lg:px-8 pt-12 pb-24">

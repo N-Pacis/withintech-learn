@@ -33,7 +33,7 @@ function AdminGuard({ children }: { children: React.ReactNode }) {
   if (!user || user.role !== 'admin') return null;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#0f0f0f]">
 
       {/* ── Mobile top bar ────────────────────────────────────────────────── */}
       <header className="lg:hidden fixed top-0 inset-x-0 z-30 h-14 bg-[#3D006B] flex items-center gap-3 px-4 shadow-sm">

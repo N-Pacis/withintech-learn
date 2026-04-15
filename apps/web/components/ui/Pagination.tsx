@@ -30,9 +30,9 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
 
   return (
     <div className="flex items-center justify-between mt-6">
-      <p className="font-body text-sm text-[#6B7280]">
-        Page <span className="font-medium text-[#0F0F0F]">{page}</span> of{' '}
-        <span className="font-medium text-[#0F0F0F]">{totalPages}</span>
+      <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF]">
+        Page <span className="font-medium text-[#0F0F0F] dark:text-[#F9FAFB]">{page}</span> of{' '}
+        <span className="font-medium text-[#0F0F0F] dark:text-[#F9FAFB]">{totalPages}</span>
       </p>
 
       <div className="flex items-center gap-1">
@@ -42,6 +42,7 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
           className={cn(
             'w-8 h-8 flex items-center justify-center rounded-lg transition-colors',
             'text-[#6B7280] hover:bg-[#F3E8FF] hover:text-[#3D006B]',
+            'dark:text-[#9CA3AF] dark:hover:bg-[#2d1a4a] dark:hover:text-[#C084FC]',
             'disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#6B7280]',
           )}
           aria-label="Previous page"
@@ -65,7 +66,7 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
                 'w-8 h-8 flex items-center justify-center rounded-lg font-body text-sm transition-colors',
                 p === page
                   ? 'bg-[#3D006B] text-white font-medium'
-                  : 'text-[#374151] hover:bg-[#F3E8FF] hover:text-[#3D006B]',
+                  : 'text-[#374151] hover:bg-[#F3E8FF] hover:text-[#3D006B] dark:text-[#D1D5DB] dark:hover:bg-[#2d1a4a] dark:hover:text-[#C084FC]',
               )}
             >
               {p}
@@ -79,6 +80,7 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
           className={cn(
             'w-8 h-8 flex items-center justify-center rounded-lg transition-colors',
             'text-[#6B7280] hover:bg-[#F3E8FF] hover:text-[#3D006B]',
+            'dark:text-[#9CA3AF] dark:hover:bg-[#2d1a4a] dark:hover:text-[#C084FC]',
             'disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#6B7280]',
           )}
           aria-label="Next page"

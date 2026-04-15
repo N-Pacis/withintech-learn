@@ -38,20 +38,20 @@ export default function CourseQuizPage() {
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-32 lg:pb-10">
       {/* Badge */}
       <div className="flex items-center gap-2 mb-6">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F3E8FF] text-[#3D006B] font-body text-xs font-semibold">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F3E8FF] dark:bg-[#2d1a4a] text-[#3D006B] dark:text-[#C084FC] font-body text-xs font-semibold">
           <Trophy size={11} /> Final Quiz
         </span>
       </div>
 
       {/* Quiz card */}
-      <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6 sm:p-8">
-        <div className="flex items-center gap-3 px-5 py-4 rounded-xl bg-[#F3E8FF] border border-[#E9D5FF] mb-6">
+      <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-[#E5E7EB] dark:border-[#2d2d2d] shadow-sm p-6 sm:p-8">
+        <div className="flex items-center gap-3 px-5 py-4 rounded-xl bg-[#F3E8FF] dark:bg-[#2d1a4a] border border-[#E9D5FF] dark:border-[#4a2878] mb-6">
           <div className="w-9 h-9 rounded-full bg-[#3D006B] flex items-center justify-center shrink-0">
             <Trophy size={16} className="text-white" />
           </div>
           <div>
-            <p className="font-heading font-bold text-sm text-[#0F0F0F]">Final Course Quiz</p>
-            <p className="font-body text-xs text-[#6B7280] mt-0.5">
+            <p className="font-heading font-bold text-sm text-[#0F0F0F] dark:text-[#F9FAFB]">Final Course Quiz</p>
+            <p className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5">
               Pass to complete the course. Answers are not revealed.
             </p>
           </div>
@@ -70,7 +70,7 @@ export default function CourseQuizPage() {
       </div>
 
       {/* Desktop nav */}
-      <div className="hidden lg:flex flex-row items-center justify-between gap-3 mt-8 pt-6 border-t border-[#E5E7EB]">
+      <div className="hidden lg:flex flex-row items-center justify-between gap-3 mt-8 pt-6 border-t border-[#E5E7EB] dark:border-[#2d2d2d]">
         <Button
           variant="secondary"
           size="md"
@@ -90,7 +90,7 @@ export default function CourseQuizPage() {
       </div>
 
       {/* Mobile sticky nav */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-[#E5E7EB] shadow-[0_-4px_16px_rgba(0,0,0,0.06)] px-4 py-3 flex items-center justify-between gap-3">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white dark:bg-[#111111] border-t border-[#E5E7EB] dark:border-[#2d2d2d] shadow-[0_-4px_16px_rgba(0,0,0,0.06)] px-4 py-3 flex items-center justify-between gap-3">
         <Button
           variant="secondary"
           size="md"
@@ -99,7 +99,7 @@ export default function CourseQuizPage() {
         >
           <ChevronLeft size={16} />
         </Button>
-        <p className="font-body text-xs text-[#9CA3AF] truncate flex-1 text-center">Final Quiz</p>
+        <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] truncate flex-1 text-center">Final Quiz</p>
         {isCoursePassed && (
           <Button size="md" asChild className="px-3 bg-green-600 hover:bg-green-700 border-0">
             <Link href={certHref} target="_blank"><Award size={16} /></Link>

@@ -23,11 +23,11 @@ function ChartCard({ title, subtitle, action, children }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-[#E5E7EB] px-6 py-5">
+    <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] px-6 py-5">
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
-          <p className="font-heading font-bold text-sm text-[#0F0F0F]">{title}</p>
-          {subtitle && <p className="font-body text-xs text-[#9CA3AF] mt-0.5">{subtitle}</p>}
+          <p className="font-heading font-bold text-sm text-[#0F0F0F] dark:text-[#F9FAFB]">{title}</p>
+          {subtitle && <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] mt-0.5">{subtitle}</p>}
         </div>
         {action && <div className="shrink-0">{action}</div>}
       </div>
@@ -62,7 +62,7 @@ function mondayOfWeekIso() {
 
 function ChartSkeleton({ height = 260 }: { height?: number }) {
   return (
-    <div className="rounded-lg bg-[#F9FAFB] animate-pulse" style={{ height }} />
+    <div className="rounded-lg bg-[#F9FAFB] dark:bg-[#252525] animate-pulse" style={{ height }} />
   );
 }
 
@@ -85,7 +85,7 @@ function Ring({ rate, label }: { rate: number; label: string }) {
   return (
     <div className="relative w-[100px] h-[100px] shrink-0">
       <svg width="100" height="100" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r={radius} fill="none" stroke="#F3F4F6" strokeWidth="10" />
+        <circle cx="50" cy="50" r={radius} fill="none" stroke="currentColor" strokeWidth="10" className="text-[#F3F4F6] dark:text-[#2d2d2d]" />
         <circle
           cx="50" cy="50" r={radius}
           fill="none" stroke="#3D006B" strokeWidth="10"
@@ -95,8 +95,8 @@ function Ring({ rate, label }: { rate: number; label: string }) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-heading font-black text-lg text-[#0F0F0F]">{rate}%</span>
-        <span className="font-body text-[10px] text-[#9CA3AF] leading-tight text-center">{label}</span>
+        <span className="font-heading font-black text-lg text-[#0F0F0F] dark:text-[#F9FAFB]">{rate}%</span>
+        <span className="font-body text-[10px] text-[#9CA3AF] dark:text-[#6B7280] leading-tight text-center">{label}</span>
       </div>
     </div>
   );
@@ -104,9 +104,9 @@ function Ring({ rate, label }: { rate: number; label: string }) {
 
 function StatRow({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
   return (
-    <div className={`flex items-center justify-between px-4 py-2.5 rounded-lg ${highlight ? 'bg-[#F3E8FF]' : 'bg-[#F9FAFB]'}`}>
-      <span className={`font-body text-xs ${highlight ? 'text-[#3D006B]' : 'text-[#6B7280]'}`}>{label}</span>
-      <span className={`font-heading font-bold text-sm ${highlight ? 'text-[#3D006B]' : 'text-[#0F0F0F]'}`}>{value}</span>
+    <div className={`flex items-center justify-between px-4 py-2.5 rounded-lg ${highlight ? 'bg-[#F3E8FF] dark:bg-[#2d1a4a]' : 'bg-[#F9FAFB] dark:bg-[#252525]'}`}>
+      <span className={`font-body text-xs ${highlight ? 'text-[#3D006B] dark:text-[#C084FC]' : 'text-[#6B7280] dark:text-[#9CA3AF]'}`}>{label}</span>
+      <span className={`font-heading font-bold text-sm ${highlight ? 'text-[#3D006B] dark:text-[#C084FC]' : 'text-[#0F0F0F] dark:text-[#F9FAFB]'}`}>{value}</span>
     </div>
   );
 }
@@ -127,7 +127,7 @@ function RetentionCard({ registeredStudents, enrolledStudents, enrollmentRate, r
         </div>
       </div>
 
-      <div className="border-t border-[#F3F4F6]" />
+      <div className="border-t border-[#F3F4F6] dark:border-[#2d2d2d]" />
 
       {/* Retention */}
       <div>
@@ -180,8 +180,8 @@ export default function AdminDashboard() {
 
       {/* Header */}
       <div className="mb-10">
-        <p className="font-body text-sm text-[#6B7280] mb-1">Admin Dashboard</p>
-        <h1 className="font-heading font-black text-3xl text-[#0F0F0F]">
+        <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-1">Admin Dashboard</p>
+        <h1 className="font-heading font-black text-3xl text-[#0F0F0F] dark:text-[#F9FAFB]">
           Welcome back, {user?.firstName}.
         </h1>
       </div>
@@ -190,9 +190,9 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
         {statCards.map(({ label, value, href }) => {
           const card = (
-            <div className={`bg-white rounded-xl border border-[#E5E7EB] px-6 py-5 ${href ? 'hover:border-[#3D006B]/30 transition-colors cursor-pointer' : ''}`}>
-              <p className="font-body text-xs text-[#6B7280] uppercase tracking-widest mb-2">{label}</p>
-              <p className="font-heading font-bold text-3xl text-[#0F0F0F]">{value}</p>
+            <div className={`bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] px-6 py-5 ${href ? 'hover:border-[#3D006B]/30 transition-colors cursor-pointer' : ''}`}>
+              <p className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-widest mb-2">{label}</p>
+              <p className="font-heading font-bold text-3xl text-[#0F0F0F] dark:text-[#F9FAFB]">{value}</p>
             </div>
           );
           return href
@@ -203,7 +203,7 @@ export default function AdminDashboard() {
 
       {/* Analytics */}
       <div className="mb-6">
-        <h2 className="font-heading font-bold text-lg text-[#0F0F0F]">Learning Analytics</h2>
+        <h2 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB]">Learning Analytics</h2>
       </div>
 
       <div className="flex flex-col gap-4">
@@ -300,17 +300,17 @@ export default function AdminDashboard() {
 
       {/* Challenges analytics */}
       <div className="mt-10 mb-6">
-        <h2 className="font-heading font-bold text-lg text-[#0F0F0F]">Coding Challenges</h2>
+        <h2 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB]">Coding Challenges</h2>
       </div>
 
       {challengesLoading ? (
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {Array.from({length: 4}).map((_, i) => <div key={i} className="h-24 rounded-xl bg-[#F3F4F6] animate-pulse" />)}
+            {Array.from({length: 4}).map((_, i) => <div key={i} className="h-24 rounded-xl bg-[#F3F4F6] dark:bg-[#252525] animate-pulse" />)}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="h-64 rounded-xl bg-[#F3F4F6] animate-pulse" />
-            <div className="h-64 rounded-xl bg-[#F3F4F6] animate-pulse" />
+            <div className="h-64 rounded-xl bg-[#F3F4F6] dark:bg-[#252525] animate-pulse" />
+            <div className="h-64 rounded-xl bg-[#F3F4F6] dark:bg-[#252525] animate-pulse" />
           </div>
         </div>
       ) : !challenges ? null : (
@@ -324,9 +324,9 @@ export default function AdminDashboard() {
               { label: 'Solvers',      value: challenges.totalSolvers,      href: null               },
             ].map(({ label, value, href }) => {
               const card = (
-                <div className={`bg-white rounded-xl border border-[#E5E7EB] px-6 py-5 ${href ? 'hover:border-[#3D006B]/30 transition-colors cursor-pointer' : ''}`}>
-                  <p className="font-body text-xs text-[#6B7280] uppercase tracking-widest mb-2">{label}</p>
-                  <p className="font-heading font-bold text-2xl text-[#0F0F0F]">{value}</p>
+                <div className={`bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] px-6 py-5 ${href ? 'hover:border-[#3D006B]/30 transition-colors cursor-pointer' : ''}`}>
+                  <p className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-widest mb-2">{label}</p>
+                  <p className="font-heading font-bold text-2xl text-[#0F0F0F] dark:text-[#F9FAFB]">{value}</p>
                 </div>
               );
               return href

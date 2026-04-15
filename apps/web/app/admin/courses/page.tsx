@@ -18,7 +18,7 @@ function PublishConfirmModal({ onConfirm, onCancel, loading }: { onConfirm: () =
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onCancel} />
-      <div className="relative bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+      <div className="relative bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-xl max-w-md w-full p-6">
         <div className="flex items-start gap-4 mb-5">
           <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -28,9 +28,9 @@ function PublishConfirmModal({ onConfirm, onCancel, loading }: { onConfirm: () =
             </svg>
           </div>
           <div>
-            <h2 className="font-heading font-bold text-lg text-[#0F0F0F] mb-1">Publish this course?</h2>
-            <p className="font-body text-sm text-[#6B7280] leading-relaxed">
-              Once published, this course will be visible to students and <span className="font-semibold text-[#0F0F0F]">cannot be edited</span>. Quizzes, modules, and content will be locked. You can archive it later, but not unpublish.
+            <h2 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB] mb-1">Publish this course?</h2>
+            <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">
+              Once published, this course will be visible to students and <span className="font-semibold text-[#0F0F0F] dark:text-[#F9FAFB]">cannot be edited</span>. Quizzes, modules, and content will be locked. You can archive it later, but not unpublish.
             </p>
           </div>
         </div>
@@ -56,7 +56,7 @@ const STATUS_BADGE: Record<CourseStatus, { variant: 'gray' | 'success' | 'warnin
 function EmptyState({ tab }: { tab: TabValue }) {
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center">
-      <div className="w-14 h-14 rounded-full bg-[#F3E8FF] flex items-center justify-center mb-5">
+      <div className="w-14 h-14 rounded-full bg-[#F3E8FF] dark:bg-[#2d1a4a] flex items-center justify-center mb-5">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3D006B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
           <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
@@ -64,21 +64,21 @@ function EmptyState({ tab }: { tab: TabValue }) {
       </div>
       {tab === 'draft' ? (
         <>
-          <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">No draft courses</h3>
-          <p className="font-body text-sm text-[#6B7280] mb-6 max-w-xs">Create a course to get started.</p>
+          <h3 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB] mb-2">No draft courses</h3>
+          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-6 max-w-xs">Create a course to get started.</p>
           <Button asChild size="md">
             <Link href="/admin/courses/new">Create your first course</Link>
           </Button>
         </>
       ) : tab === 'published' ? (
         <>
-          <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">No published courses</h3>
-          <p className="font-body text-sm text-[#6B7280] max-w-xs">Publish a draft course to make it visible to students.</p>
+          <h3 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB] mb-2">No published courses</h3>
+          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] max-w-xs">Publish a draft course to make it visible to students.</p>
         </>
       ) : (
         <>
-          <h3 className="font-heading font-bold text-lg text-[#0F0F0F] mb-2">No archived courses</h3>
-          <p className="font-body text-sm text-[#6B7280] max-w-xs">Archived courses are retired and no longer accessible to students.</p>
+          <h3 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB] mb-2">No archived courses</h3>
+          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] max-w-xs">Archived courses are retired and no longer accessible to students.</p>
         </>
       )}
     </div>
@@ -174,7 +174,7 @@ function CourseGrid({ tab }: { tab: TabValue }) {
 
   return (
     <>
-      <p className="font-body text-sm text-[#9CA3AF] mb-5">
+      <p className="font-body text-sm text-[#9CA3AF] dark:text-[#6B7280] mb-5">
         {data.total} course{data.total !== 1 ? 's' : ''}
       </p>
 
@@ -220,8 +220,8 @@ export default function CoursesPage() {
     <div className="p-4 sm:p-8 lg:p-12 max-w-6xl">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
-          <p className="font-body text-sm text-[#6B7280] mb-1">Admin</p>
-          <h1 className="font-heading font-black text-3xl text-[#0F0F0F]">Courses</h1>
+          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-1">Admin</p>
+          <h1 className="font-heading font-black text-3xl text-[#0F0F0F] dark:text-[#F9FAFB]">Courses</h1>
         </div>
         <Button asChild size="md">
           <Link href="/admin/courses/new">
