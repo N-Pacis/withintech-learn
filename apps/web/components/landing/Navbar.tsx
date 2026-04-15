@@ -51,6 +51,11 @@ export default function Navbar() {
           </Link>
         </div>
 
+        {/* Mobile: theme toggle (always visible) */}
+        <div className="md:hidden">
+          <ThemeToggle />
+        </div>
+
         {/* Mobile: hamburger */}
         <button
           onClick={() => setOpen((v) => !v)}
