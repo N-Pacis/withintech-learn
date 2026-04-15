@@ -51,7 +51,7 @@ export default function CoursesSection() {
         {/* Cards — stretch when there are enough to fill the row, fixed otherwise */}
         <div className="flex flex-col lg:flex-row gap-4 lg:items-start">
           {/* Featured card */}
-          <div className={`w-full shrink-0 ${rest.length > 0 ? 'lg:flex-1' : 'lg:max-w-[520px]'}`}>
+          <div className={`w-full shrink-0 ${rest.length > 0 ? 'lg:flex-1' : 'lg:max-w-130'}`}>
             <CourseCard
               course={featured}
               href={`/courses/${featured.slug}`}
@@ -63,7 +63,7 @@ export default function CoursesSection() {
 
           {/* Remaining cards — stacked */}
           {rest.length > 0 && (
-            <div className={`flex flex-col gap-4 w-full shrink-0 ${rest.length >= 2 ? 'lg:w-[42%]' : 'lg:max-w-[340px]'}`}>
+            <div className={`flex flex-col gap-4 w-full shrink-0 ${rest.length >= 2 ? 'lg:w-[42%]' : 'lg:max-w-85'}`}>
               {rest.map((course) => (
                 <CourseCard key={course.id} course={course} href={`/courses/${course.slug}`} badge={tagBadge(course.tag)} footer={EnrollButton} />
               ))}
