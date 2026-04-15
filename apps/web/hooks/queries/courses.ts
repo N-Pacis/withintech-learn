@@ -462,13 +462,13 @@ export function useTopCourses() {
 }
 
 export interface PublicCourse {
-  id:           string;
-  title:        string;
-  slug:         string;
-  description:  string | null;
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
   thumbnailUrl: string | null;
-  createdAt:    string;
-  moduleCount:  number;
+  createdAt: string;
+  moduleCount: number;
 }
 
 export function usePublicAllCourses() {

@@ -71,7 +71,9 @@ export function LessonEditor({
     return (
       <Card>
         <CardBody className="py-12 text-center">
-          <p className="font-body text-sm text-[#9CA3AF]">Loading lessons...</p>
+          <p className="font-body text-sm text-muted-contrast">
+            Loading lessons...
+          </p>
         </CardBody>
       </Card>
     );
@@ -107,8 +109,8 @@ export function LessonEditor({
       {lessons.length === 0 && (
         <Card>
           <CardBody className="py-12 text-center">
-            <BookOpen size={32} className="mx-auto mb-3 text-[#D1D5DB]" />
-            <p className="font-body text-sm text-[#9CA3AF]">
+            <BookOpen size={32} className="mx-auto mb-3 text-border-strong" />
+            <p className="font-body text-sm text-muted-contrast">
               No lessons yet. Add your first lesson above.
             </p>
           </CardBody>
@@ -120,10 +122,10 @@ export function LessonEditor({
         <Card key={lesson.id} shadow="sm">
           <CardBody className="flex items-center gap-3 py-3">
             {/* Grip handle (decorative) */}
-            <GripVertical size={16} className="text-[#D1D5DB] shrink-0" />
+            <GripVertical size={16} className="text-border-strong shrink-0" />
 
             {/* Order badge */}
-            <span className="w-6 h-6 rounded-full bg-[#F3E8FF] text-[#3D006B] text-xs font-bold flex items-center justify-center shrink-0">
+            <span className="w-6 h-6 rounded-full bg-primary-soft text-primary text-xs font-bold flex items-center justify-center shrink-0">
               {i + 1}
             </span>
 
@@ -151,14 +153,14 @@ export function LessonEditor({
                 </button>
                 <button
                   onClick={() => setEditingId(null)}
-                  className="p-1.5 rounded-lg hover:bg-[#F3F4F6] text-[#6B7280]"
+                  className="p-1.5 rounded-lg hover:bg-surface-muted text-muted"
                   title="Cancel"
                 >
                   <X size={14} />
                 </button>
               </div>
             ) : (
-              <span className="font-body text-sm text-[#374151] truncate flex-1 min-w-0">
+              <span className="font-body text-sm text-foreground-soft truncate flex-1 min-w-0">
                 {lesson.title}
               </span>
             )}
@@ -178,7 +180,7 @@ export function LessonEditor({
                     setEditingId(lesson.id);
                     setEditTitle(lesson.title);
                   }}
-                  className="p-1.5 rounded-lg hover:bg-[#F3E8FF] text-[#6B7280] hover:text-[#3D006B] transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-primary-soft text-muted hover:text-primary transition-colors"
                   title="Rename"
                 >
                   <Pencil size={13} />
@@ -194,7 +196,7 @@ export function LessonEditor({
                     </button>
                     <button
                       onClick={() => setConfirmDeleteId(null)}
-                      className="p-1.5 rounded-lg hover:bg-[#F3F4F6] text-[#6B7280] transition-colors"
+                      className="p-1.5 rounded-lg hover:bg-surface-muted text-muted transition-colors"
                       title="Cancel"
                     >
                       <X size={13} />
@@ -203,7 +205,7 @@ export function LessonEditor({
                 ) : (
                   <button
                     onClick={() => setConfirmDeleteId(lesson.id)}
-                    className="p-1.5 rounded-lg hover:bg-red-50 text-[#6B7280] hover:text-red-600 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors"
                     title="Delete lesson"
                   >
                     <Trash2 size={13} />
@@ -215,7 +217,7 @@ export function LessonEditor({
             {/* Navigate to lesson detail */}
             <Link
               href={`/admin/courses/${courseId}/modules/${moduleId}/lessons/${lesson.id}`}
-              className="p-1.5 rounded-lg hover:bg-[#F3E8FF] text-[#6B7280] hover:text-[#3D006B] transition-colors shrink-0"
+              className="p-1.5 rounded-lg hover:bg-primary-soft text-muted hover:text-primary transition-colors shrink-0"
               title="Edit lesson content"
             >
               <ChevronRight size={16} />

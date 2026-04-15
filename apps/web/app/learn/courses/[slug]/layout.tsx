@@ -94,31 +94,31 @@ export default function CourseLayout({
     <div className="min-h-screen bg-dots">
       {/* Reading progress bar */}
       <div
-        className="fixed top-16 left-0 h-0.5 bg-[#3D006B] z-40 transition-all duration-200 ease-out"
+        className="fixed top-16 left-0 h-0.5 bg-primary z-40 transition-all duration-200 ease-out"
         style={{ width: `${readProgress}%` }}
       />
 
       <div className="lg:flex">
         {/* ── Desktop sidebar ── */}
-        <aside className="hidden lg:flex flex-col w-64 xl:w-72 bg-white dark:bg-[#111111] border-r border-[#E5E7EB] dark:border-[#2d2d2d] sticky top-16 h-[calc(100vh-4rem)] shrink-0">
-          <div className="px-4 pt-5 pb-4 border-b border-[#E5E7EB] dark:border-[#2d2d2d]">
+        <aside className="hidden lg:flex flex-col w-64 xl:w-72 bg-surface-shell border-r border-border sticky top-16 h-[calc(100vh-4rem)] shrink-0">
+          <div className="px-4 pt-5 pb-4 border-b border-border">
             <Link
               href="/learn"
-              className="inline-flex items-center gap-1.5 font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] hover:text-[#3D006B] dark:hover:text-[#C084FC] transition-colors mb-3"
+              className="inline-flex items-center gap-1.5 font-body text-xs text-muted-contrast hover:text-primary transition-colors mb-3"
             >
               <ArrowLeft size={13} /> All courses
             </Link>
-            <h2 className="font-heading font-bold text-sm text-[#0F0F0F] dark:text-[#F9FAFB] leading-snug line-clamp-2">
+            <h2 className="font-heading font-bold text-sm text-foreground leading-snug line-clamp-2">
               {course.title}
             </h2>
             <div className="flex items-center gap-2 mt-3">
-              <div className="flex-1 h-1.5 bg-[#E5E7EB] dark:bg-[#2d2d2d] rounded-full overflow-hidden">
+              <div className="flex-1 h-1.5 bg-border rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[#3D006B] rounded-full transition-all duration-500"
+                  className="h-full bg-primary rounded-full transition-all duration-500"
                   style={{ width: `${overallProgress}%` }}
                 />
               </div>
-              <span className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] shrink-0">
+              <span className="font-body text-xs text-muted-contrast shrink-0">
                 {overallProgress}%
               </span>
             </div>
@@ -140,18 +140,18 @@ export default function CourseLayout({
                       locked
                         ? "opacity-40 cursor-not-allowed"
                         : isActive
-                          ? "bg-[#F3E8FF] dark:bg-[#2d1a4a]"
-                          : "hover:bg-[#FAFAFA] dark:hover:bg-[#1e1e1e]",
+                          ? "bg-primary-soft"
+                          : "hover:bg-surface dark:hover:bg-editor",
                     )}
                   >
                     <span
                       className={cn(
                         "w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold transition-colors",
                         isDone
-                          ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400"
+                          ? "bg-green-100 text-green-700 dark:bg-green-600 dark:text-white"
                           : isActive
-                            ? "bg-[#3D006B] text-white"
-                            : "bg-[#E5E7EB] dark:bg-[#2d2d2d] text-[#9CA3AF] dark:text-[#6B7280]",
+                            ? "bg-primary text-white"
+                            : "bg-border text-muted-contrast",
                       )}
                     >
                       {isDone ? <CheckCircle2 size={11} /> : i + 1}
@@ -160,10 +160,10 @@ export default function CourseLayout({
                       className={cn(
                         "font-body text-sm leading-snug",
                         isActive
-                          ? "font-semibold text-[#3D006B] dark:text-[#C084FC]"
+                          ? "font-semibold text-primary"
                           : isDone
-                            ? "text-[#374151] dark:text-[#D1D5DB]"
-                            : "text-[#6B7280] dark:text-[#9CA3AF]",
+                            ? "text-foreground-soft"
+                            : "text-muted",
                       )}
                     >
                       {m.title}
@@ -172,7 +172,7 @@ export default function CourseLayout({
                       <ChevronDown
                         size={12}
                         className={cn(
-                          "ml-auto shrink-0 text-[#9CA3AF] transition-transform",
+                          "ml-auto shrink-0 text-muted-contrast transition-transform",
                           activeModuleId === m.id && "rotate-180",
                         )}
                       />
@@ -201,18 +201,18 @@ export default function CourseLayout({
                               lessonLocked
                                 ? "opacity-40 cursor-not-allowed"
                                 : isLessonActive
-                                  ? "bg-[#EDE5F7] dark:bg-[#2d1a4a] text-[#3D006B] dark:text-[#C084FC] font-semibold"
-                                  : "hover:bg-[#F3F4F6] dark:hover:bg-[#252525] text-[#6B7280] dark:text-[#9CA3AF]",
+                                  ? "bg-primary-soft text-foreground font-semibold"
+                                  : "hover:bg-surface-muted hover:bg-surface-subtle text-muted",
                             )}
                           >
                             <span
                               className={cn(
                                 "w-4 h-4 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold",
                                 lessonDone
-                                  ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400"
+                                  ? "bg-green-100 text-green-700 dark:bg-green-600 dark:text-white"
                                   : isLessonActive
-                                    ? "bg-[#3D006B] text-white"
-                                    : "bg-[#E5E7EB] dark:bg-[#2d2d2d] text-[#9CA3AF] dark:text-[#6B7280]",
+                                    ? "bg-primary text-white"
+                                    : "bg-border text-muted-contrast",
                               )}
                             >
                               {lessonDone ? <CheckCircle2 size={9} /> : li + 1}
@@ -225,8 +225,8 @@ export default function CourseLayout({
                   )}
                   {/* Module quiz sub-item — only show if module has quiz */}
                   {isQuizActive && (
-                    <div className="pl-11 pr-4 py-2 bg-[#F3E8FF] dark:bg-[#2d1a4a]">
-                      <span className="font-body text-xs font-semibold text-[#3D006B] dark:text-[#C084FC]">
+                    <div className="pl-11 pr-4 py-2 bg-primary-soft">
+                      <span className="font-body text-xs font-semibold text-foreground">
                         Quiz
                       </span>
                     </div>
@@ -244,18 +244,18 @@ export default function CourseLayout({
                   !allModulesDone
                     ? "opacity-40 cursor-not-allowed"
                     : isOnCourseQuiz
-                      ? "bg-[#F3E8FF] dark:bg-[#2d1a4a]"
-                      : "hover:bg-[#FAFAFA] dark:hover:bg-[#1e1e1e]",
+                      ? "bg-primary-soft"
+                      : "hover:bg-surface dark:hover:bg-editor",
                 )}
               >
                 <span
                   className={cn(
                     "w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 transition-colors",
                     courseQuizPassed
-                      ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400"
+                      ? "bg-green-100 text-green-700 dark:bg-green-600 dark:text-white"
                       : isOnCourseQuiz
-                        ? "bg-[#3D006B] text-white"
-                        : "bg-[#E5E7EB] dark:bg-[#2d2d2d] text-[#9CA3AF] dark:text-[#6B7280]",
+                        ? "bg-primary text-white"
+                        : "bg-border text-muted-contrast",
                   )}
                 >
                   {courseQuizPassed ? (
@@ -268,8 +268,8 @@ export default function CourseLayout({
                   className={cn(
                     "font-body text-sm leading-snug",
                     isOnCourseQuiz
-                      ? "font-semibold text-[#3D006B] dark:text-[#C084FC]"
-                      : "text-[#6B7280] dark:text-[#9CA3AF]",
+                      ? "font-semibold text-primary"
+                      : "text-muted",
                   )}
                 >
                   Final Quiz
@@ -282,29 +282,29 @@ export default function CourseLayout({
         {/* ── Main content ── */}
         <div className="flex-1 min-w-0">
           {/* Mobile top bar */}
-          <div className="lg:hidden bg-white dark:bg-[#111111] border-b border-[#E5E7EB] dark:border-[#2d2d2d] px-4 py-3 flex items-center gap-2">
+          <div className="lg:hidden bg-surface-shell border-b border-border px-4 py-3 flex items-center gap-2">
             <Link
               href="/learn"
-              className="inline-flex items-center gap-1.5 font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#3D006B] dark:hover:text-[#C084FC] transition-colors shrink-0"
+              className="inline-flex items-center gap-1.5 font-body text-sm text-muted hover:text-primary transition-colors shrink-0"
             >
               <ArrowLeft size={15} />
             </Link>
-            <span className="text-[#D1D5DB] select-none">/</span>
-            <h1 className="font-heading font-bold text-sm text-[#0F0F0F] dark:text-[#F9FAFB] truncate min-w-0">
+            <span className="text-border-strong select-none">/</span>
+            <h1 className="font-heading font-bold text-sm text-foreground truncate min-w-0">
               {course.title}
             </h1>
           </div>
 
           {/* Mobile progress bar */}
-          <div className="lg:hidden bg-[#FAFAFA] dark:bg-[#141414] border-b border-[#E5E7EB] dark:border-[#2d2d2d] px-4 py-3 flex flex-col gap-2">
+          <div className="lg:hidden bg-surface-panel border-b border-border px-4 py-3 flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <span className="font-body text-xs font-semibold text-[#0F0F0F] dark:text-[#F9FAFB]">
+              <span className="font-body text-xs font-semibold text-foreground">
                 {completedCount}/{totalSteps} done
               </span>
             </div>
-            <div className="h-1.5 bg-[#E5E7EB] dark:bg-[#2d2d2d] rounded-full overflow-hidden">
+            <div className="h-1.5 bg-border rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#3D006B] rounded-full transition-all duration-500"
+                className="h-full bg-primary rounded-full transition-all duration-500"
                 style={{ width: `${overallProgress}%` }}
               />
             </div>

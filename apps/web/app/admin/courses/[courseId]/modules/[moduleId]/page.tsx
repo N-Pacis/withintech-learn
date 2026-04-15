@@ -75,7 +75,7 @@ export default function ModuleDetailPage() {
       {/* Back */}
       <Link
         href={`/admin/courses/${courseId}`}
-        className="inline-flex items-center gap-2 font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors mb-8"
+        className="inline-flex items-center gap-2 font-body text-sm text-muted hover:text-primary transition-colors mb-8"
       >
         <svg
           width="16"
@@ -96,7 +96,7 @@ export default function ModuleDetailPage() {
       {/* Module header card */}
       <Card shadow="sm" className="mb-6">
         <CardHeader>
-          <span className="font-body text-xs text-[#9CA3AF] uppercase tracking-wide block mb-1">
+          <span className="font-body text-xs text-muted-contrast uppercase tracking-wide block mb-1">
             Module {module.orderIndex}
           </span>
 
@@ -147,7 +147,7 @@ export default function ModuleDetailPage() {
             </div>
           ) : (
             <div className="flex items-center gap-3 group mt-1">
-              <h1 className="font-heading font-black text-2xl text-[#0F0F0F] leading-tight flex-1">
+              <h1 className="font-heading font-black text-2xl text-foreground leading-tight flex-1">
                 {module.title}
               </h1>
               <button
@@ -156,7 +156,7 @@ export default function ModuleDetailPage() {
                   setTitleValue(module.title);
                   setTitleError("");
                 }}
-                className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-[#F3E8FF] text-[#6B7280] hover:text-[#3D006B] shrink-0"
+                className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-primary-soft text-muted hover:text-primary shrink-0"
                 title="Rename module"
               >
                 <svg
