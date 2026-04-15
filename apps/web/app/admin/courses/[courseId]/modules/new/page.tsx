@@ -93,15 +93,15 @@ function StepInfo({
           </FormField>
 
           {/* Position indicator */}
-          <div className="flex items-center gap-3 px-4 py-3 bg-[#F3E8FF]/50 rounded-lg border border-[#E5E7EB]">
-            <div className="w-7 h-7 rounded-full bg-[#3D006B] flex items-center justify-center shrink-0">
+          <div className="flex items-center gap-3 px-4 py-3 bg-primary-soft/50 rounded-lg border border-border">
+            <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center shrink-0">
               <span className="font-heading font-bold text-xs text-white">
                 {nextOrder}
               </span>
             </div>
-            <p className="font-body text-sm text-[#6B7280]">
+            <p className="font-body text-sm text-muted">
               This will be{" "}
-              <span className="text-[#0F0F0F] font-medium">
+              <span className="text-foreground font-medium">
                 module {nextOrder}
               </span>
               {modules && modules.length > 0
@@ -272,8 +272,8 @@ function StepQuiz({
   return (
     <div className="flex flex-col gap-4">
       {!addingQuiz ? (
-        <div className="flex flex-col items-center text-center py-14 border-2 border-dashed border-[#E5E7EB] rounded-xl">
-          <div className="w-14 h-14 rounded-full bg-[#F3E8FF] flex items-center justify-center mb-4">
+        <div className="flex flex-col items-center text-center py-14 border-2 border-dashed border-border rounded-xl">
+          <div className="w-14 h-14 rounded-full bg-primary-soft flex items-center justify-center mb-4">
             <svg
               width="22"
               height="22"
@@ -289,10 +289,10 @@ function StepQuiz({
               <line x1="12" y1="17" x2="12.01" y2="17" />
             </svg>
           </div>
-          <h3 className="font-heading font-bold text-base text-[#0F0F0F] mb-1">
+          <h3 className="font-heading font-bold text-base text-foreground mb-1">
             Would you like to add a quiz?
           </h3>
-          <p className="font-body text-sm text-[#6B7280] max-w-xs mb-6">
+          <p className="font-body text-sm text-muted max-w-xs mb-6">
             Quizzes let you assess student understanding. You can always add or
             edit one later from the module page.
           </p>
@@ -431,10 +431,10 @@ export default function NewModulePage() {
 
       {/* Step header */}
       <div className="mb-6">
-        <h1 className="font-heading font-black text-2xl text-[#0F0F0F]">
+        <h1 className="font-heading font-black text-2xl text-foreground">
           {title}
         </h1>
-        <p className="font-body text-sm text-[#6B7280] mt-1">{subtitle}</p>
+        <p className="font-body text-sm text-muted mt-1">{subtitle}</p>
       </div>
 
       {/* Step content */}

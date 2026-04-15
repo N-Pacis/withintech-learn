@@ -1,34 +1,26 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { PageLoader } from '@/components/ui';
-import { useUsers, useSetUserActive, UsersParams } from '@/hooks/queries/users';
-import UserRow from './components/UserRow';
-import UsersToolbar from './components/UsersToolbar';
-import { cn } from '@/lib/utils';
-import { useAuth } from '@/hooks/useAuth';
-
-function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
-  }, [value, delay]);
-  return debounced;
-}
+import { useState, useCallback } from "react";
+import { PageLoader } from "@/components/ui";
+import { useUsers, useSetUserActive, UsersParams } from "@/hooks/queries/users";
+import UserRow from "./components/UserRow";
+import UsersToolbar from "./components/UsersToolbar";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function UsersPage() {
-  const [rawSearch, setRawSearch] = useState('');
-  const [role, setRole]     = useState<UsersParams['role']>('');
-  const [status, setStatus] = useState<UsersParams['status']>('');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [rawSearch, setRawSearch] = useState("");
+  const [role, setRole] = useState<UsersParams["role"]>("");
+  const [status, setStatus] = useState<UsersParams["status"]>("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const debouncedSearch = useDebounce(rawSearch.trim(), 350);
 
   const params: UsersParams = {
-    search:    debouncedSearch || undefined,
-    role:      role || undefined,
-    status:    status || undefined,
+    search: debouncedSearch || undefined,
+    role: role || undefined,
+    status: status || undefined,
     sortOrder,
   };
 
@@ -37,24 +29,36 @@ export default function UsersPage() {
   const users = usersPage?.users;
   const { mutateAsync: setActive } = useSetUserActive();
 
-  const handleToggle = useCallback(async (userId: string, isActive: boolean) => {
-    await setActive({ userId, isActive });
-  }, [setActive]);
+  const handleToggle = useCallback(
+    async (userId: string, isActive: boolean) => {
+      await setActive({ userId, isActive });
+    },
+    [setActive],
+  );
 
   function handleToolbarChange(next: Partial<UsersParams>) {
-    if ('search' in next) setRawSearch(next.search ?? '');
-    if ('role' in next) setRole(next.role);
-    if ('status' in next) setStatus(next.status);
+    if ("search" in next) setRawSearch(next.search ?? "");
+    if ("role" in next) setRole(next.role);
+    if ("status" in next) setStatus(next.status);
   }
 
-  const toolbarParams: UsersParams = { search: rawSearch, role, status, sortOrder };
+  const toolbarParams: UsersParams = {
+    search: rawSearch,
+    role,
+    status,
+    sortOrder,
+  };
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="font-heading font-black text-2xl text-[#0F0F0F]">Users</h1>
-        <p className="font-body text-sm text-[#6B7280] mt-1">Manage student accounts and access.</p>
+        <h1 className="font-heading font-black text-2xl text-foreground">
+          Users
+        </h1>
+        <p className="font-body text-sm text-muted mt-1">
+          Manage student accounts and access.
+        </p>
       </div>
 
       {/* Toolbar */}
@@ -72,54 +76,85 @@ export default function UsersPage() {
 
       {!isLoading && !error && users && users.length === 0 && (
         <div className="text-center py-16">
-          <p className="font-body text-[#6B7280]">No users found.</p>
+          <p className="font-body text-muted">No users found.</p>
         </div>
       )}
 
       {users && users.length > 0 && (
-        <div className="bg-white rounded-xl ring-1 ring-[#E5E7EB] overflow-hidden shadow-sm">
+        <div className="bg-white rounded-xl ring-1 ring-border overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px]">
-            <thead>
-              <tr className="border-b border-[#E5E7EB] bg-[#F9FAFB]">
-                <th className="px-6 py-3 text-left font-body text-xs font-semibold text-[#6B7280] uppercase tracking-wider">User</th>
-                <th className="px-6 py-3 text-left font-body text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Role</th>
-                <th className="px-6 py-3 text-left font-body text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left font-body text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Last Login</th>
-                <th className="px-6 py-3 text-left">
-                  <button
-                    onClick={() => setSortOrder((s) => (s === 'desc' ? 'asc' : 'desc'))}
-                    className={cn(
-                      'flex items-center gap-1.5 font-body text-xs font-semibold uppercase tracking-wider transition-colors',
-                      'text-[#6B7280] hover:text-[#3D006B]',
-                    )}
-                  >
-                    Joined
-                    <span className="flex flex-col gap-px">
-                      <svg
-                        width="8" height="8" viewBox="0 0 8 8" fill="currentColor"
-                        className={sortOrder === 'asc' ? 'text-[#3D006B]' : 'text-[#D1D5DB]'}
-                      >
-                        <path d="M4 0L8 8H0L4 0Z" />
-                      </svg>
-                      <svg
-                        width="8" height="8" viewBox="0 0 8 8" fill="currentColor"
-                        className={sortOrder === 'desc' ? 'text-[#3D006B]' : 'text-[#D1D5DB]'}
-                      >
-                        <path d="M4 8L0 0H8L4 8Z" />
-                      </svg>
-                    </span>
-                  </button>
-                </th>
-                <th className="px-6 py-3 text-right font-body text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <UserRow key={user.id} user={user} currentUserId={currentUser?.id} onToggle={handleToggle} />
-              ))}
-            </tbody>
-          </table>
+            <table className="w-full min-w-[640px]">
+              <thead>
+                <tr className="border-b border-border bg-surface-panel">
+                  <th className="px-6 py-3 text-left font-body text-xs font-semibold text-muted uppercase tracking-wider">
+                    User
+                  </th>
+                  <th className="px-6 py-3 text-left font-body text-xs font-semibold text-muted uppercase tracking-wider">
+                    Role
+                  </th>
+                  <th className="px-6 py-3 text-left font-body text-xs font-semibold text-muted uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left font-body text-xs font-semibold text-muted uppercase tracking-wider">
+                    Last Login
+                  </th>
+                  <th className="px-6 py-3 text-left">
+                    <button
+                      onClick={() =>
+                        setSortOrder((s) => (s === "desc" ? "asc" : "desc"))
+                      }
+                      className={cn(
+                        "flex items-center gap-1.5 font-body text-xs font-semibold uppercase tracking-wider transition-colors",
+                        "text-muted hover:text-primary",
+                      )}
+                    >
+                      Joined
+                      <span className="flex flex-col gap-px">
+                        <svg
+                          width="8"
+                          height="8"
+                          viewBox="0 0 8 8"
+                          fill="currentColor"
+                          className={
+                            sortOrder === "asc"
+                              ? "text-primary"
+                              : "text-border-strong"
+                          }
+                        >
+                          <path d="M4 0L8 8H0L4 0Z" />
+                        </svg>
+                        <svg
+                          width="8"
+                          height="8"
+                          viewBox="0 0 8 8"
+                          fill="currentColor"
+                          className={
+                            sortOrder === "desc"
+                              ? "text-primary"
+                              : "text-border-strong"
+                          }
+                        >
+                          <path d="M4 8L0 0H8L4 8Z" />
+                        </svg>
+                      </span>
+                    </button>
+                  </th>
+                  <th className="px-6 py-3 text-right font-body text-xs font-semibold text-muted uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <UserRow
+                    key={user.id}
+                    user={user}
+                    currentUserId={currentUser?.id}
+                    onToggle={handleToggle}
+                  />
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

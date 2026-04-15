@@ -193,6 +193,7 @@ export const courseKeys = {
   // Public
   public: {
     top: ["courses", "public", "top"] as const,
+    all: ["courses", "public", "all"] as const,
   },
 };
 
@@ -457,6 +458,28 @@ export function useTopCourses() {
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
+  });
+}
+
+export interface PublicCourse {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  thumbnailUrl: string | null;
+  createdAt: string;
+  moduleCount: number;
+}
+
+export function usePublicAllCourses() {
+  return useQuery({
+    queryKey: courseKeys.public.all,
+    queryFn: async (): Promise<PublicCourse[]> => {
+      const res = await apiFetch<PublicCourse[]>("/public/courses/all");
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    staleTime: 10 * 60 * 1000,
   });
 }
 

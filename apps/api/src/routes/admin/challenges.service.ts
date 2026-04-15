@@ -184,15 +184,25 @@ export const addTestCase = async (challengeId: string, data: {
   const challenge = await prisma.challenge.findUnique({ where: { id: challengeId } });
   if (!challenge) throw notFound('Challenge not found');
 
-  // Shift existing test cases if orderIndex is taken
+  // Shift existing test cases if orderIndex is taken.
+  // Must iterate in descending order — updateMany with increment can trigger transient
+  // unique-constraint violations when the DB shifts rows in undefined order.
   const existing = await prisma.challengeTestCase.findFirst({
     where: { challengeId, orderIndex: data.orderIndex },
+    select: { id: true },
   });
   if (existing) {
-    await prisma.challengeTestCase.updateMany({
-      where: { challengeId, orderIndex: { gte: data.orderIndex } },
-      data: { orderIndex: { increment: 1 } },
+    const toShift = await prisma.challengeTestCase.findMany({
+      where:   { challengeId, orderIndex: { gte: data.orderIndex } },
+      orderBy: { orderIndex: 'desc' },
+      select:  { id: true, orderIndex: true },
     });
+    for (const tc of toShift) {
+      await prisma.challengeTestCase.update({
+        where: { id: tc.id },
+        data:  { orderIndex: tc.orderIndex + 1 },
+      });
+    }
   }
 
   const tc = await prisma.challengeTestCase.create({

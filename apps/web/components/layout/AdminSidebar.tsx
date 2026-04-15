@@ -191,7 +191,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           <Logo className="h-12" linked={false} variant="default" />
           <button
             onClick={onClose}
-            className="lg:hidden p-1.5 rounded-lg text-[#9CA3AF] hover:text-[#374151] hover:bg-[#F3F4F6] transition-colors"
+            className="lg:hidden p-1.5 rounded-lg text-muted-contrast hover:text-foreground-soft hover:bg-surface-muted transition-colors"
             aria-label="Close menu"
           >
             <svg
@@ -212,7 +212,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-2 flex flex-col gap-0.5 overflow-y-auto">
-          <p className="font-body text-[10px] font-semibold text-[#9CA3AF] tracking-widest uppercase px-3 mb-2">
+          <p className="font-body text-[10px] font-semibold text-muted-contrast tracking-widest uppercase px-3 mb-2">
             Menu
           </p>
           {navItems.map(({ label, href, exact, icon }) => {
@@ -244,7 +244,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         </nav>
 
         {/* User + sign out */}
-        <div className="px-3 py-4 border-t border-[#F0F0F0]">
+        <div className="px-3 py-4 border-t border-border-faint">
           <div className="flex items-center gap-3 px-3 py-2.5 mb-1">
             <div className="w-8 h-8 rounded-full bg-[#3D006B] flex items-center justify-center shrink-0">
               <span className="font-heading font-bold text-xs text-white">
@@ -252,7 +252,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
               </span>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="font-body text-sm font-medium text-[#0F0F0F] truncate leading-tight">
+              <p className="font-body text-sm font-medium text-foreground truncate leading-tight">
                 {user?.firstName} {user?.lastName}
               </p>
               <p className="font-body text-xs text-[#9CA3AF] truncate">
@@ -261,6 +261,10 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             </div>
           </div>
 
+          <div className="flex items-center justify-between px-3 py-1.5 mb-1">
+            <span className="font-body text-xs text-muted-contrast">Theme</span>
+            <ThemeToggle />
+          </div>
           <button
             onClick={() => {
               onClose();

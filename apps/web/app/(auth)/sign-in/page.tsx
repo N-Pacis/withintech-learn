@@ -1,12 +1,22 @@
 "use client";
 
-import { FormEvent, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { FormEvent, useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 // import { GoogleLogin } from '@react-oauth/google';
 import { Logo, AuthLoader } from "@/components/ui";
 import { useLogin, useProfile } from "@/hooks/queries/auth";
 import { Button, Input, FormField, PasswordInput } from "@/components/ui";
+
+// Redirect to `next` only if the user's role permits it; otherwise fall back to their home.
+function resolveDestination(next: string | null, role: string): string {
+  const home = role === "admin" ? "/admin" : "/learn";
+  if (!next) return home;
+  // Prevent students from being bounced into /admin and admins into /learn via a stale next param
+  if (next.startsWith("/admin") && role !== "admin") return home;
+  if (next.startsWith("/learn") && role === "admin") return home;
+  return next;
+}
 
 const features = [
   "Learn at your own pace, anytime",
@@ -14,11 +24,14 @@ const features = [
   "Certificates to showcase your skills",
 ];
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
   const { mutateAsync: login } = useLogin();
   // const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
-  const { data: profile, isLoading: profileLoading } = useProfile();
+  // initialData seeds from localStorage — data is available synchronously if cached
+  const { data: profile } = useProfile();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,10 +39,11 @@ export default function SignInPage() {
 
   useEffect(() => {
     if (!profile) return;
-    router.replace(profile.role === "admin" ? "/admin" : "/learn");
-  }, [profile, router]);
+    router.replace(resolveDestination(next, profile.role));
+  }, [profile, router, next]);
 
-  if (profileLoading) return <AuthLoader />;
+  // Already logged in — show loader immediately; useEffect above will redirect
+  if (profile) return <AuthLoader />;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -41,7 +55,7 @@ export default function SignInPage() {
         router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
         return;
       }
-      router.push(data.user.role === "admin" ? "/admin" : "/learn");
+      router.push(resolveDestination(next, data.user.role));
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Invalid email or password",
@@ -63,7 +77,7 @@ export default function SignInPage() {
   return (
     <div className="min-h-screen flex">
       {/* ── Left brand panel ─────────────────────────────────────── */}
-      <div className="hidden lg:flex lg:w-[42%] xl:w-[38%] flex-col bg-[#3D006B] relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[42%] xl:w-[38%] flex-col bg-primary relative overflow-hidden">
         {/* Dot overlay */}
         {/* Dot grid */}
         <div
@@ -124,11 +138,11 @@ export default function SignInPage() {
       </div>
 
       {/* ── Right form panel ─────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-white px-6 py-12 relative">
+      <div className="flex-1 flex flex-col items-center justify-center bg-surface-shell px-6 py-12 relative">
         {/* Back link */}
         <Link
           href="/"
-          className="absolute top-6 left-6 flex items-center gap-1.5 text-[#9CA3AF] hover:text-[#3D006B] transition-colors font-body text-sm"
+          className="absolute top-6 left-6 flex items-center gap-1.5 text-muted-contrast hover:text-primary transition-colors font-body text-sm"
         >
           <svg
             width="16"
@@ -150,10 +164,10 @@ export default function SignInPage() {
           <div className="flex justify-center mb-10">
             <Logo className="h-20" linked={false} />
           </div>
-          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] mb-1">
+          <h1 className="font-heading font-black text-2xl text-foreground mb-1">
             Welcome back
           </h1>
-          <p className="font-body text-sm text-[#6B7280] mb-7">
+          <p className="font-body text-sm text-muted mb-7">
             Sign in to continue learning.
           </p>
 
@@ -173,9 +187,9 @@ export default function SignInPage() {
             />
           </div>
           <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px bg-[#F3F4F6]" />
-            <span className="font-body text-xs text-[#D1D5DB]">or</span>
-            <div className="flex-1 h-px bg-[#F3F4F6]" />
+            <div className="flex-1 h-px bg-surface-muted" />
+            <span className="font-body text-xs text-border-strong">or</span>
+            <div className="flex-1 h-px bg-surface-muted" />
           </div> */}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -194,13 +208,13 @@ export default function SignInPage() {
               <div className="flex items-center justify-between mb-1.5">
                 <label
                   htmlFor="password"
-                  className="font-body text-sm font-medium text-[#374151]"
+                  className="font-body text-sm font-medium text-foreground-soft"
                 >
                   Password <span className="text-red-500">*</span>
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="font-body text-xs text-[#3D006B] hover:underline"
+                  className="font-body text-xs text-primary hover:underline"
                 >
                   Forgot password?
                 </Link>
@@ -230,11 +244,11 @@ export default function SignInPage() {
             </Button>
           </form>
 
-          <p className="font-body text-sm text-[#9CA3AF] text-center mt-6">
+          <p className="font-body text-sm text-muted-contrast text-center mt-6">
             Don&apos;t have an account?{" "}
             <Link
               href="/sign-up"
-              className="text-[#3D006B] font-medium hover:underline"
+              className="text-primary font-medium hover:underline"
             >
               Get Started
             </Link>
@@ -242,5 +256,13 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<AuthLoader />}>
+      <SignInForm />
+    </Suspense>
   );
 }

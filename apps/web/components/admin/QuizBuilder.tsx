@@ -45,8 +45,8 @@ function CorrectCheckbox({
       className={cn(
         "w-4.5 h-4.5 rounded flex items-center justify-center border-2 shrink-0 transition-all duration-150",
         checked
-          ? "bg-[#3D006B] border-[#3D006B]"
-          : "bg-white border-[#D1D5DB] hover:border-[#3D006B]/60",
+          ? "bg-primary border-primary"
+          : "bg-white border-border-strong hover:border-primary/60",
         disabled && "opacity-50 cursor-not-allowed",
       )}
     >
@@ -102,7 +102,7 @@ function OptionRow({
   }
 
   return (
-    <div className="group flex items-start gap-3 px-4 py-2.5 rounded-lg hover:bg-[#FAFAFA] transition-colors">
+    <div className="group flex items-start gap-3 px-4 py-2.5 rounded-lg hover:bg-surface transition-colors">
       <CorrectCheckbox
         checked={option.isCorrect}
         onChange={(val) => updateOption({ id: option.id, isCorrect: val })}
@@ -127,7 +127,7 @@ function OptionRow({
         disabled={isPending || readOnly}
         placeholder="Option text"
         rows={1}
-        className="flex-1 font-body text-sm text-[#0F0F0F] bg-transparent border-b border-transparent focus:border-[#3D006B]/40 focus:outline-none placeholder:text-[#9CA3AF] transition-colors py-0.5 min-w-0 resize-none overflow-hidden leading-relaxed disabled:cursor-default"
+        className="flex-1 font-body text-sm text-foreground bg-transparent border-b border-transparent focus:border-primary/40 focus:outline-none placeholder:text-muted-contrast transition-colors py-0.5 min-w-0 resize-none overflow-hidden leading-relaxed disabled:cursor-default"
       />
 
       {!readOnly &&
@@ -146,7 +146,7 @@ function OptionRow({
             </button>
             <button
               onClick={() => setConfirmDelete(false)}
-              className="font-body text-xs text-[#9CA3AF] hover:text-[#6B7280]"
+              className="font-body text-xs text-muted-contrast hover:text-muted"
             >
               Cancel
             </button>
@@ -154,7 +154,7 @@ function OptionRow({
         ) : (
           <button
             onClick={() => setConfirmDelete(true)}
-            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded text-[#9CA3AF] hover:text-red-500 hover:bg-red-50 shrink-0"
+            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded text-muted-contrast hover:text-red-500 hover:bg-red-50 shrink-0"
             title="Delete option"
           >
             <svg
@@ -250,7 +250,7 @@ function AddOptionRow({
           }
         />
       )}
-      <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-[#F9FAFB] border border-[#E5E7EB]">
+      <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-surface-panel border border-border">
         <CorrectCheckbox
           checked={isCorrect}
           onChange={setIsCorrect}
@@ -265,19 +265,19 @@ function AddOptionRow({
           onKeyDown={handleKeyDown}
           placeholder="New option…"
           disabled={isPending}
-          className="flex-1 font-body text-sm text-[#0F0F0F] bg-transparent border-b border-[#3D006B]/40 focus:outline-none placeholder:text-[#9CA3AF] py-0.5 min-w-0"
+          className="flex-1 font-body text-sm text-foreground bg-transparent border-b border-primary/40 focus:outline-none placeholder:text-muted-contrast py-0.5 min-w-0"
         />
         <button
           onClick={handleSave}
           disabled={isPending || !text.trim()}
-          className="font-body text-xs font-medium text-[#3D006B] hover:text-[#5a0099] disabled:opacity-40 disabled:cursor-not-allowed shrink-0 transition-colors"
+          className="font-body text-xs font-medium text-primary hover:text-primary-dark disabled:opacity-40 disabled:cursor-not-allowed shrink-0 transition-colors"
         >
           {isPending ? "Adding…" : "Add"}
         </button>
         <button
           onClick={handleSaveAndClose}
           disabled={isPending}
-          className="font-body text-xs text-[#9CA3AF] hover:text-[#6B7280] disabled:opacity-40 shrink-0 transition-colors"
+          className="font-body text-xs text-muted-contrast hover:text-muted disabled:opacity-40 shrink-0 transition-colors"
         >
           Done
         </button>
@@ -340,11 +340,11 @@ function QuestionCard({
   const correctCount = sortedOptions.filter((o) => o.isCorrect).length;
 
   return (
-    <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
+    <div className="bg-white border border-border rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
       {/* Question header */}
-      <div className="flex items-start gap-3 px-5 pt-5 pb-4 border-b border-[#F3F4F6]">
-        <div className="w-6 h-6 rounded-full bg-[#F3E8FF] flex items-center justify-center shrink-0 mt-0.5">
-          <span className="font-heading font-bold text-xs text-[#3D006B]">
+      <div className="flex items-start gap-3 px-5 pt-5 pb-4 border-b border-border-subtle">
+        <div className="w-6 h-6 rounded-full bg-primary-soft flex items-center justify-center shrink-0 mt-0.5">
+          <span className="font-heading font-bold text-xs text-primary">
             {number}
           </span>
         </div>
@@ -358,10 +358,12 @@ function QuestionCard({
             rows={2}
             disabled={readOnly}
             placeholder="Enter your question…"
-            className="w-full font-body text-sm text-[#0F0F0F] bg-transparent resize-none leading-relaxed border-b border-[#E5E7EB] focus:border-[#3D006B]/50 focus:outline-none placeholder:text-[#9CA3AF] transition-colors disabled:cursor-default"
+            className="w-full font-body text-sm text-foreground bg-transparent resize-none leading-relaxed border-b border-border focus:border-primary/50 focus:outline-none placeholder:text-muted-contrast transition-colors disabled:cursor-default"
           />
           {saving && (
-            <p className="font-body text-xs text-[#9CA3AF] mt-1">Saving…</p>
+            <p className="font-body text-xs text-muted-contrast mt-1">
+              Saving…
+            </p>
           )}
         </div>
 
@@ -381,7 +383,7 @@ function QuestionCard({
               </button>
               <button
                 onClick={() => setConfirmDelete(false)}
-                className="font-body text-xs text-[#9CA3AF]"
+                className="font-body text-xs text-muted-contrast"
               >
                 Cancel
               </button>
@@ -389,7 +391,7 @@ function QuestionCard({
           ) : (
             <button
               onClick={() => setConfirmDelete(true)}
-              className="p-1.5 rounded-lg text-[#9CA3AF] hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
+              className="p-1.5 rounded-lg text-muted-contrast hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
               title="Delete question"
             >
               <svg
@@ -414,7 +416,7 @@ function QuestionCard({
       {/* Options area */}
       <div className="px-2 py-3">
         <div className="flex items-center gap-2 px-3 mb-2">
-          <p className="font-body text-xs text-[#9CA3AF]">
+          <p className="font-body text-xs text-muted-contrast">
             Multiple choice: check all correct answers
           </p>
           {sortedOptions.length > 0 && (
@@ -423,7 +425,7 @@ function QuestionCard({
                 "font-body text-xs px-1.5 py-0.5 rounded-full shrink-0",
                 correctCount === 0
                   ? "text-amber-600 bg-amber-50"
-                  : "text-[#3D006B] bg-[#F3E8FF]",
+                  : "text-primary bg-primary-soft",
               )}
             >
               {correctCount} correct
@@ -454,7 +456,7 @@ function QuestionCard({
         {!readOnly && !addingOption && (
           <button
             onClick={() => setAddingOption(true)}
-            className="flex items-center gap-2 px-4 py-2 mt-1 font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors rounded-lg hover:bg-[#F3E8FF]/50 w-full text-left"
+            className="flex items-center gap-2 px-4 py-2 mt-1 font-body text-sm text-muted hover:text-primary transition-colors rounded-lg hover:bg-primary-soft/50 w-full text-left"
           >
             <svg
               width="13"
@@ -551,9 +553,9 @@ function QuizSettings({
   }
 
   return (
-    <div className="bg-white border border-[#E5E7EB] rounded-xl p-5">
+    <div className="bg-white border border-border rounded-xl p-5">
       <div className="flex items-center justify-between mb-5">
-        <h3 className="font-heading font-bold text-sm text-[#0F0F0F]">
+        <h3 className="font-heading font-bold text-sm text-foreground">
           Quiz Settings
         </h3>
         {dirty && !readOnly && (
@@ -583,7 +585,7 @@ function QuizSettings({
 
       <div className="flex flex-col gap-4">
         <div>
-          <label className="font-body text-xs font-medium text-[#374151] block mb-1.5">
+          <label className="font-body text-xs font-medium text-foreground-soft block mb-1.5">
             Quiz Title {!readOnly && <span className="text-red-400">*</span>}
           </label>
           <Input
@@ -597,7 +599,7 @@ function QuizSettings({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="font-body text-xs font-medium text-[#374151] block mb-1.5">
+            <label className="font-body text-xs font-medium text-foreground-soft block mb-1.5">
               Passing Score (%)
             </label>
             <div className="relative">
@@ -610,17 +612,17 @@ function QuizSettings({
                 className="pr-8"
                 disabled={readOnly}
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 font-body text-sm text-[#9CA3AF] pointer-events-none">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 font-body text-sm text-muted-contrast pointer-events-none">
                 %
               </span>
             </div>
-            <p className="font-body text-xs text-[#9CA3AF] mt-1">
+            <p className="font-body text-xs text-muted-contrast mt-1">
               Minimum to pass
             </p>
           </div>
 
           <div>
-            <label className="font-body text-xs font-medium text-[#374151] block mb-1.5">
+            <label className="font-body text-xs font-medium text-foreground-soft block mb-1.5">
               Max Attempts
             </label>
             <Input
@@ -630,7 +632,7 @@ function QuizSettings({
               onChange={(e) => mark("ma", e.target.value)}
               disabled={readOnly}
             />
-            <p className="font-body text-xs text-[#9CA3AF] mt-1">
+            <p className="font-body text-xs text-muted-contrast mt-1">
               Student retry limit
             </p>
           </div>
@@ -693,8 +695,8 @@ function CreateQuizPanel({
   }
 
   return (
-    <div className="flex flex-col items-center py-12 border-2 border-dashed border-[#E5E7EB] rounded-xl">
-      <div className="w-14 h-14 rounded-full bg-[#F3E8FF] flex items-center justify-center mb-4">
+    <div className="flex flex-col items-center py-12 border-2 border-dashed border-border rounded-xl">
+      <div className="w-14 h-14 rounded-full bg-primary-soft flex items-center justify-center mb-4">
         <svg
           width="22"
           height="22"
@@ -711,16 +713,16 @@ function CreateQuizPanel({
         </svg>
       </div>
 
-      <h3 className="font-heading font-bold text-base text-[#0F0F0F] mb-1">
+      <h3 className="font-heading font-bold text-base text-foreground mb-1">
         No quiz yet
       </h3>
-      <p className="font-body text-sm text-[#6B7280] mb-6 max-w-xs text-center">
+      <p className="font-body text-sm text-muted mb-6 max-w-xs text-center">
         Add a quiz to assess student understanding.
       </p>
 
       <div className="w-full max-w-sm flex flex-col gap-4 px-6">
         <div>
-          <label className="font-body text-xs font-medium text-[#374151] block mb-1.5">
+          <label className="font-body text-xs font-medium text-foreground-soft block mb-1.5">
             Quiz Title <span className="text-red-400">*</span>
           </label>
           <Input
@@ -736,7 +738,7 @@ function CreateQuizPanel({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="font-body text-xs font-medium text-[#374151] block mb-1.5">
+            <label className="font-body text-xs font-medium text-foreground-soft block mb-1.5">
               Passing Score
             </label>
             <div className="relative">
@@ -751,13 +753,13 @@ function CreateQuizPanel({
                 }}
                 className="pr-8"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 font-body text-sm text-[#9CA3AF] pointer-events-none">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 font-body text-sm text-muted-contrast pointer-events-none">
                 %
               </span>
             </div>
           </div>
           <div>
-            <label className="font-body text-xs font-medium text-[#374151] block mb-1.5">
+            <label className="font-body text-xs font-medium text-foreground-soft block mb-1.5">
               Max Attempts
             </label>
             <Input
@@ -840,16 +842,16 @@ function QuizEditor({
       <QuizSettings quiz={quiz} cacheKey={cacheKey} readOnly={readOnly} />
 
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-px bg-[#E5E7EB]" />
-        <span className="font-body text-xs text-[#9CA3AF] shrink-0 uppercase tracking-wide">
+        <div className="flex-1 h-px bg-fill-muted" />
+        <span className="font-body text-xs text-muted-contrast shrink-0 uppercase tracking-wide">
           Questions ({sortedQuestions.length})
         </span>
-        <div className="flex-1 h-px bg-[#E5E7EB]" />
+        <div className="flex-1 h-px bg-fill-muted" />
       </div>
 
       {sortedQuestions.length === 0 && (
-        <div className="flex flex-col items-center py-10 border-2 border-dashed border-[#E5E7EB] rounded-xl text-center">
-          <div className="w-10 h-10 rounded-full bg-[#F3E8FF] flex items-center justify-center mb-3">
+        <div className="flex flex-col items-center py-10 border-2 border-dashed border-border rounded-xl text-center">
+          <div className="w-10 h-10 rounded-full bg-primary-soft flex items-center justify-center mb-3">
             <svg
               width="16"
               height="16"
@@ -864,11 +866,9 @@ function QuizEditor({
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
           </div>
-          <p className="font-body text-sm text-[#6B7280] mb-1">
-            No questions yet
-          </p>
+          <p className="font-body text-sm text-muted mb-1">No questions yet</p>
           {!readOnly && (
-            <p className="font-body text-xs text-[#9CA3AF]">
+            <p className="font-body text-xs text-muted-contrast">
               Click &#34;Add Question&#34; to get started.
             </p>
           )}
@@ -940,7 +940,7 @@ function QuizEditor({
       )}
 
       {!readOnly && (
-        <div className="border-t border-[#E5E7EB] pt-4">
+        <div className="border-t border-border pt-4">
           {confirmDeleteQuiz ? (
             <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-lg">
               <p className="font-body text-sm text-red-700 flex-1">
@@ -965,7 +965,7 @@ function QuizEditor({
           ) : (
             <button
               onClick={() => setConfirmDeleteQuiz(true)}
-              className="font-body text-xs text-[#9CA3AF] hover:text-red-500 transition-colors flex items-center gap-1.5"
+              className="font-body text-xs text-muted-contrast hover:text-red-500 transition-colors flex items-center gap-1.5"
             >
               <svg
                 width="12"
@@ -1025,8 +1025,8 @@ function ModuleQuizBuilder({
   if (!quiz) {
     if (readOnly) {
       return (
-        <div className="flex flex-col items-center text-center py-10 border-2 border-dashed border-[#E5E7EB] rounded-xl">
-          <p className="font-body text-sm text-[#9CA3AF]">
+        <div className="flex flex-col items-center text-center py-10 border-2 border-dashed border-border rounded-xl">
+          <p className="font-body text-sm text-muted-contrast">
             No quiz was added to this module.
           </p>
         </div>
@@ -1059,8 +1059,8 @@ function CourseQuizBuilder({
   if (!quiz) {
     if (readOnly) {
       return (
-        <div className="flex flex-col items-center text-center py-10 border-2 border-dashed border-[#E5E7EB] rounded-xl">
-          <p className="font-body text-sm text-[#9CA3AF]">
+        <div className="flex flex-col items-center text-center py-10 border-2 border-dashed border-border rounded-xl">
+          <p className="font-body text-sm text-muted-contrast">
             No quiz was added to this course.
           </p>
         </div>
@@ -1093,8 +1093,8 @@ function LessonQuizBuilder({
   if (!quiz) {
     if (readOnly) {
       return (
-        <div className="flex flex-col items-center text-center py-10 border-2 border-dashed border-[#E5E7EB] rounded-xl">
-          <p className="font-body text-sm text-[#9CA3AF]">
+        <div className="flex flex-col items-center text-center py-10 border-2 border-dashed border-border rounded-xl">
+          <p className="font-body text-sm text-muted-contrast">
             No quiz was added to this lesson.
           </p>
         </div>

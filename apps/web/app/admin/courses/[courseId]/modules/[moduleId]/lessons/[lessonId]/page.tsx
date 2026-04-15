@@ -1,19 +1,27 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import { useLesson, useUpdateLesson } from '@/hooks/queries/modules';
-import { useCourse } from '@/hooks/queries/courses';
-import { Button, Card, CardHeader, PageLoader, Input, Tabs, type Tab } from '@/components/ui';
-import { LessonBlocksEditor } from '@/components/admin/LessonBlocksEditor';
-import { QuizBuilder } from '@/components/admin/QuizBuilder';
+import { useState, useEffect, useRef } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { useLesson, useUpdateLesson } from "@/hooks/queries/modules";
+import { useCourse } from "@/hooks/queries/courses";
+import {
+  Button,
+  Card,
+  CardHeader,
+  PageLoader,
+  Input,
+  Tabs,
+  type Tab,
+} from "@/components/ui";
+import { LessonBlocksEditor } from "@/components/admin/LessonBlocksEditor";
+import { QuizBuilder } from "@/components/admin/QuizBuilder";
 
-type TabValue = 'content' | 'quiz';
+type TabValue = "content" | "quiz";
 
 const TABS: Tab<TabValue>[] = [
-  { label: 'Content', value: 'content' },
-  { label: 'Quiz', value: 'quiz' },
+  { label: "Content", value: "content" },
+  { label: "Quiz", value: "quiz" },
 ];
 
 export default function LessonDetailPage() {
@@ -24,13 +32,14 @@ export default function LessonDetailPage() {
   }>();
   const { data: lesson, isLoading, error: loadError } = useLesson(lessonId);
   const { data: course } = useCourse(courseId);
-  const { mutateAsync: updateLesson, isPending: savingTitle } = useUpdateLesson(moduleId);
-  const isDraft = !course || course.status === 'draft';
+  const { mutateAsync: updateLesson, isPending: savingTitle } =
+    useUpdateLesson(moduleId);
+  const isDraft = !course || course.status === "draft";
 
-  const [activeTab, setActiveTab] = useState<TabValue>('content');
+  const [activeTab, setActiveTab] = useState<TabValue>("content");
   const [editingTitle, setEditingTitle] = useState(false);
-  const [titleValue, setTitleValue] = useState('');
-  const [titleError, setTitleError] = useState('');
+  const [titleValue, setTitleValue] = useState("");
+  const [titleError, setTitleError] = useState("");
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -39,15 +48,15 @@ export default function LessonDetailPage() {
 
   async function handleSaveTitle() {
     if (!titleValue.trim()) {
-      setTitleError('Title cannot be empty.');
+      setTitleError("Title cannot be empty.");
       return;
     }
     try {
       await updateLesson({ id: lessonId, title: titleValue.trim() });
       setEditingTitle(false);
-      setTitleError('');
+      setTitleError("");
     } catch (err) {
-      setTitleError(err instanceof Error ? err.message : 'Failed to save.');
+      setTitleError(err instanceof Error ? err.message : "Failed to save.");
     }
   }
 
@@ -65,7 +74,7 @@ export default function LessonDetailPage() {
       {/* Back */}
       <Link
         href={`/admin/courses/${courseId}/modules/${moduleId}`}
-        className="inline-flex items-center gap-2 font-body text-sm text-[#6B7280] hover:text-[#3D006B] transition-colors mb-8"
+        className="inline-flex items-center gap-2 font-body text-sm text-muted hover:text-primary transition-colors mb-8"
       >
         <svg
           width="16"
@@ -86,7 +95,7 @@ export default function LessonDetailPage() {
       {/* Lesson header card */}
       <Card shadow="sm" className="mb-6">
         <CardHeader>
-          <span className="font-body text-xs text-[#9CA3AF] uppercase tracking-wide block mb-1">
+          <span className="font-body text-xs text-muted-contrast uppercase tracking-wide block mb-1">
             Lesson {lesson.orderIndex}
           </span>
 
@@ -98,20 +107,24 @@ export default function LessonDetailPage() {
                   value={titleValue}
                   onChange={(e) => {
                     setTitleValue(e.target.value);
-                    setTitleError('');
+                    setTitleError("");
                   }}
                   maxLength={120}
                   className="w-full"
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleSaveTitle();
-                    if (e.key === 'Escape') {
+                    if (e.key === "Enter") handleSaveTitle();
+                    if (e.key === "Escape") {
                       setEditingTitle(false);
                       setTitleValue(lesson.title);
                     }
                   }}
                 />
                 <div className="flex items-center gap-2 shrink-0">
-                  <Button size="sm" loading={savingTitle} onClick={handleSaveTitle}>
+                  <Button
+                    size="sm"
+                    loading={savingTitle}
+                    onClick={handleSaveTitle}
+                  >
                     Save
                   </Button>
                   <Button
@@ -120,7 +133,7 @@ export default function LessonDetailPage() {
                     onClick={() => {
                       setEditingTitle(false);
                       setTitleValue(lesson.title);
-                      setTitleError('');
+                      setTitleError("");
                     }}
                   >
                     Cancel
@@ -133,7 +146,7 @@ export default function LessonDetailPage() {
             </div>
           ) : (
             <div className="flex items-center gap-3 group mt-1">
-              <h1 className="font-heading font-black text-2xl text-[#0F0F0F] leading-tight flex-1">
+              <h1 className="font-heading font-black text-2xl text-foreground leading-tight flex-1">
                 {lesson.title}
               </h1>
               {isDraft && (
@@ -141,9 +154,9 @@ export default function LessonDetailPage() {
                   onClick={() => {
                     setEditingTitle(true);
                     setTitleValue(lesson.title);
-                    setTitleError('');
+                    setTitleError("");
                   }}
-                  className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-[#F3E8FF] text-[#6B7280] hover:text-[#3D006B] shrink-0"
+                  className="sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-primary-soft text-muted hover:text-primary shrink-0"
                   title="Rename lesson"
                 >
                   <svg
@@ -167,13 +180,18 @@ export default function LessonDetailPage() {
       </Card>
 
       {/* Tabs */}
-      <Tabs tabs={TABS} value={activeTab} onChange={setActiveTab} className="mb-6" />
+      <Tabs
+        tabs={TABS}
+        value={activeTab}
+        onChange={setActiveTab}
+        className="mb-6"
+      />
 
       {/* Tab content */}
-      {activeTab === 'content' && (
+      {activeTab === "content" && (
         <LessonBlocksEditor lessonId={lessonId} isDraft={isDraft} />
       )}
-      {activeTab === 'quiz' &&
+      {activeTab === "quiz" &&
         (isDraft ? (
           <QuizBuilder lessonId={lessonId} />
         ) : (

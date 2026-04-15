@@ -1,5 +1,5 @@
-import { ReactNode, LabelHTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
+import { ReactNode, LabelHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
 interface FormFieldProps {
   label: string;
@@ -23,10 +23,10 @@ export function FormField({
   labelProps,
 }: FormFieldProps) {
   return (
-    <div className={cn('flex flex-col gap-1.5', className)}>
+    <div className={cn("flex flex-col gap-1.5", className)}>
       <label
         htmlFor={htmlFor}
-        className="font-body text-sm font-medium text-[#0F0F0F]"
+        className="font-body text-sm font-medium text-foreground"
         {...labelProps}
       >
         {label}
@@ -36,11 +36,9 @@ export function FormField({
       {children}
 
       {hint && !error && (
-        <p className="font-body text-xs text-[#9CA3AF]">{hint}</p>
+        <p className="font-body text-xs text-muted-contrast">{hint}</p>
       )}
-      {error && (
-        <p className="font-body text-xs text-red-500">{error}</p>
-      )}
+      {error && <p className="font-body text-xs text-red-500">{error}</p>}
     </div>
   );
 }
