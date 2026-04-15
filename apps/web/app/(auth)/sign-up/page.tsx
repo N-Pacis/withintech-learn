@@ -18,7 +18,7 @@ import { isAllowedEmail } from "@withintech-learn/shared";
 function Req({ met, label }: { met: boolean; label: string }) {
   return (
     <li className="flex items-center gap-1.5">
-      <span className={met ? "text-green-500" : "text-[#D1D5DB]"}>
+      <span className={met ? "text-green-500" : "text-border-strong"}>
         {met ? (
           <svg
             width="11"
@@ -48,7 +48,7 @@ function Req({ met, label }: { met: boolean; label: string }) {
         )}
       </span>
       <span
-        className={`font-body text-xs ${met ? "text-green-600" : "text-[#9CA3AF]"}`}
+        className={`font-body text-xs ${met ? "text-green-600" : "text-muted-contrast"}`}
       >
         {label}
       </span>
@@ -60,7 +60,7 @@ export default function SignUpPage() {
   const router = useRouter();
   const { mutateAsync: signUp } = useSignUp();
   // const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
-  const { data: profile, isLoading: profileLoading } = useProfile();
+  const { data: profile } = useProfile();
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -78,7 +78,8 @@ export default function SignUpPage() {
     router.replace(profile.role === "admin" ? "/admin" : "/learn");
   }, [profile, router]);
 
-  if (profileLoading) return <AuthLoader />;
+  // Already logged in — show loader immediately; useEffect above will redirect
+  if (profile) return <AuthLoader />;
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -145,7 +146,7 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen flex">
       {/* ── Left brand panel ─────────────────────────────────────── */}
-      <div className="hidden lg:flex lg:w-[38%] xl:w-[34%] flex-col bg-[#3D006B] relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[38%] xl:w-[34%] flex-col bg-primary relative overflow-hidden">
         {/* Dot grid */}
         <div
           className="absolute inset-0 opacity-[0.15]"
@@ -183,10 +184,10 @@ export default function SignUpPage() {
       </div>
 
       {/* ── Right form panel ─────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-white px-6 py-12 relative overflow-y-auto">
+      <div className="flex-1 flex flex-col items-center justify-center bg-surface-shell px-6 py-12 relative overflow-y-auto">
         <Link
           href="/"
-          className="absolute top-6 left-6 flex items-center gap-1.5 text-[#9CA3AF] hover:text-[#3D006B] transition-colors font-body text-sm"
+          className="absolute top-6 left-6 flex items-center gap-1.5 text-muted-contrast hover:text-primary transition-colors font-body text-sm"
         >
           <svg
             width="16"
@@ -208,10 +209,10 @@ export default function SignUpPage() {
           <div className="flex justify-center mb-10">
             <Logo className="h-20" linked={false} />
           </div>
-          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] mb-1">
+          <h1 className="font-heading font-black text-2xl text-foreground mb-1">
             Get Started
           </h1>
-          <p className="font-body text-sm text-[#6B7280] mb-6">
+          <p className="font-body text-sm text-muted mb-6">
             Create your account to start learning.
           </p>
 
@@ -231,9 +232,9 @@ export default function SignUpPage() {
             />
           </div>
           <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px bg-[#F3F4F6]" />
-            <span className="font-body text-xs text-[#D1D5DB]">or</span>
-            <div className="flex-1 h-px bg-[#F3F4F6]" />
+            <div className="flex-1 h-px bg-surface-muted" />
+            <span className="font-body text-xs text-border-strong">or</span>
+            <div className="flex-1 h-px bg-surface-muted" />
           </div> */}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -377,10 +378,10 @@ export default function SignUpPage() {
                 <div
                   className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
                     agreedToTerms
-                      ? "bg-[#3D006B] border-[#3D006B]"
+                      ? "bg-primary border-primary"
                       : errors.terms
-                        ? "border-red-400 bg-white"
-                        : "border-[#D1D5DB] bg-white group-hover:border-[#3D006B]"
+                        ? "border-red-400 bg-surface-card"
+                        : "border-border-strong border-border-strong bg-surface-card group-hover:border-primary"
                   }`}
                 >
                   {agreedToTerms && (
@@ -399,12 +400,12 @@ export default function SignUpPage() {
                   )}
                 </div>
               </div>
-              <span className="font-body text-xs text-[#6B7280] leading-relaxed">
+              <span className="font-body text-xs text-muted leading-relaxed">
                 I agree to WithinTech Learn&apos;s{" "}
                 <Link
                   href="/legal"
                   target="_blank"
-                  className="text-[#3D006B] hover:underline font-medium"
+                  className="text-primary hover:underline font-medium"
                 >
                   Terms of Service
                 </Link>{" "}
@@ -412,7 +413,7 @@ export default function SignUpPage() {
                 <Link
                   href="/legal#privacy"
                   target="_blank"
-                  className="text-[#3D006B] hover:underline font-medium"
+                  className="text-primary hover:underline font-medium"
                 >
                   Privacy Policy
                 </Link>
@@ -450,11 +451,11 @@ export default function SignUpPage() {
             </Button>
           </form>
 
-          <p className="font-body text-sm text-[#9CA3AF] text-center mt-5">
+          <p className="font-body text-sm text-muted-contrast text-center mt-5">
             Already have an account?{" "}
             <Link
               href="/sign-in"
-              className="text-[#3D006B] font-medium hover:underline"
+              className="text-primary font-medium hover:underline"
             >
               Sign In
             </Link>

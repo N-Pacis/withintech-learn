@@ -279,6 +279,7 @@ enum SubmissionStatus {
 
 model Challenge {
   id             String          @id @default(uuid())
+  number         Int             @unique @default(autoincrement())
   title          String
   slug           String          @unique
   description    String          // Rich text HTML

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -11,25 +11,34 @@ import {
   Legend,
   ResponsiveContainer,
   Cell,
-} from 'recharts';
-import type { TopCourse } from '@/hooks/queries/analytics';
-
-const tooltipStyle = {
-  fontFamily: 'var(--font-body)',
-  fontSize: 13,
-  borderRadius: 8,
-  border: '1px solid #E5E7EB',
-  boxShadow: '0 2px 8px rgb(0 0 0 / 0.06)',
-};
+} from "recharts";
+import type { TopCourse } from "@/hooks/queries/analytics";
+import {
+  chartLegendFormatter,
+  chartLegendStyle,
+  chartTickStyle,
+  chartTokens,
+  chartTooltipItemStyle,
+  chartTooltipLabelStyle,
+  chartTooltipStyle,
+} from "./chartTheme";
 
 // Truncate label based on available characters — caller passes the limit.
 function truncate(s: string, n: number) {
-  return s.length > n ? s.slice(0, n) + '…' : s;
+  return s.length > n ? s.slice(0, n) + "…" : s;
 }
 
 // Custom YAxis tick that renders at the measured width.
-function YTick({ x, y, payload, maxChars }: {
-  x?: number; y?: number; payload?: { value: string }; maxChars: number;
+function YTick({
+  x,
+  y,
+  payload,
+  maxChars,
+}: {
+  x?: number;
+  y?: number;
+  payload?: { value: string };
+  maxChars: number;
 }) {
   if (!payload) return null;
   return (
@@ -38,7 +47,7 @@ function YTick({ x, y, payload, maxChars }: {
       y={y}
       dy={4}
       textAnchor="end"
-      fill="#9CA3AF"
+      fill={chartTokens.tick}
       fontSize={11}
       fontFamily="var(--font-body)"
     >
@@ -49,7 +58,9 @@ function YTick({ x, y, payload, maxChars }: {
 
 export function TopCoursesChart({ data }: { data: TopCourse[] }) {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   if (!mounted) return <div style={{ height: 260 }} />;
 
   return (
@@ -61,10 +72,15 @@ export function TopCoursesChart({ data }: { data: TopCourse[] }) {
           margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
           barCategoryGap="30%"
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" horizontal={false} />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={chartTokens.grid}
+            strokeOpacity={0.8}
+            horizontal={false}
+          />
           <XAxis
             type="number"
-            tick={{ fontSize: 11, fontFamily: 'var(--font-body)', fill: '#9CA3AF' }}
+            tick={chartTickStyle}
             axisLine={false}
             tickLine={false}
             allowDecimals={false}
@@ -78,20 +94,41 @@ export function TopCoursesChart({ data }: { data: TopCourse[] }) {
             tick={<YTick maxChars={17} />}
           />
           <Tooltip
-            contentStyle={tooltipStyle}
-            formatter={(v, name) => [v, name === 'enrolled' ? 'Enrolled' : 'Completed']}
+            contentStyle={chartTooltipStyle}
+            labelStyle={chartTooltipLabelStyle}
+            itemStyle={chartTooltipItemStyle}
+            cursor={{ fill: chartTokens.grid, fillOpacity: 0.08 }}
+            formatter={(v, name) => [
+              v,
+              name === "enrolled" ? "Enrolled" : "Completed",
+            ]}
           />
           <Legend
-            wrapperStyle={{ fontFamily: 'var(--font-body)', fontSize: 12, paddingTop: 12 }}
+            wrapperStyle={chartLegendStyle}
+            formatter={chartLegendFormatter}
             iconType="circle"
             iconSize={8}
           />
-          <Bar dataKey="enrolled" name="enrolled" fill="#3D006B" radius={[0, 4, 4, 0]}>
+          <Bar
+            dataKey="enrolled"
+            name="enrolled"
+            fill={chartTokens.primary}
+            radius={[0, 4, 4, 0]}
+          >
             {data.map((_, i) => (
-              <Cell key={i} fill="#3D006B" fillOpacity={1 - i * 0.1} />
+              <Cell
+                key={i}
+                fill={chartTokens.primary}
+                fillOpacity={1 - i * 0.1}
+              />
             ))}
           </Bar>
-          <Bar dataKey="completed" name="completed" fill="#10B981" radius={[0, 4, 4, 0]} />
+          <Bar
+            dataKey="completed"
+            name="completed"
+            fill={chartTokens.success}
+            radius={[0, 4, 4, 0]}
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>

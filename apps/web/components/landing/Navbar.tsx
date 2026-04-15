@@ -1,30 +1,33 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import { Logo } from '@/components/ui';
-import { cn } from '@/lib/utils';
-import { useProfile } from '@/hooks/queries/auth';
+import { useState } from "react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { Logo, ThemeToggle } from "@/components/ui";
+import { cn } from "@/lib/utils";
+import { useProfile } from "@/hooks/queries/auth";
 
 const links = [
-  { label: 'Courses',      href: '#courses'      },
-  { label: 'Demo',         href: '#demo'         },
-  { label: 'How It Works', href: '#how-it-works' },
-  { label: 'FAQ',          href: '#faq'          },
+  { label: "Courses", href: "/courses" },
+  { label: "Challenges", href: "/challenges" },
+  { label: "How It Works", href: "/#how-it-works" },
+  { label: "FAQ", href: "/#faq" },
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const { data: profile } = useProfile();
 
-  const ctaHref  = profile ? (profile.role === 'admin' ? '/admin' : '/learn') : '/sign-in';
-  const ctaLabel = profile ? 'Continue' : 'Start Learning';
+  const ctaHref = profile
+    ? profile.role === "admin"
+      ? "/admin"
+      : "/learn"
+    : "/sign-in";
+  const ctaLabel = profile ? "Continue" : "Start Learning";
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-[#E5E7EB]">
+    <nav className="sticky top-0 z-50 bg-surface-shell border-b border-border">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
-
         {/* Logo */}
         <Logo className="h-14" />
 
@@ -34,31 +37,56 @@ export default function Navbar() {
             <Link
               key={href}
               href={href}
-              className="font-heading text-sm font-semibold text-[#0F0F0F] hover:text-[#3D006B] transition-colors"
+              className="font-heading text-sm font-semibold text-foreground hover:text-primary transition-colors"
             >
               {label}
             </Link>
           ))}
+          <ThemeToggle />
           <Link
             href={ctaHref}
-            className="inline-flex items-center gap-2 font-body text-sm font-medium bg-[#3D006B] text-white px-5 py-2 rounded-md hover:bg-[#2A004A] transition-colors"
+            className="inline-flex items-center gap-2 font-body text-sm font-medium bg-primary text-white px-5 py-2 rounded-md hover:bg-primary-dark transition-colors"
           >
             {ctaLabel} <ArrowRight size={14} />
           </Link>
         </div>
 
+        {/* Mobile: theme toggle (always visible) */}
+        <div className="md:hidden">
+          <ThemeToggle />
+        </div>
+
         {/* Mobile: hamburger */}
         <button
-          onClick={() => setOpen(v => !v)}
-          className="md:hidden p-2 rounded-md text-[#0F0F0F] hover:bg-[#F3F4F6] transition-colors"
-          aria-label={open ? 'Close menu' : 'Open menu'}
+          onClick={() => setOpen((v) => !v)}
+          className="md:hidden p-2 rounded-md text-foreground hover:bg-surface-muted transition-colors"
+          aria-label={open ? "Close menu" : "Open menu"}
         >
           {open ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="3" y1="6" x2="21" y2="6" />
               <line x1="3" y1="12" x2="21" y2="12" />
               <line x1="3" y1="18" x2="21" y2="18" />
@@ -68,17 +96,19 @@ export default function Navbar() {
       </div>
 
       {/* Mobile menu */}
-      <div className={cn(
-        'md:hidden overflow-hidden transition-all duration-200 ease-in-out border-t border-[#E5E7EB]',
-        open ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0',
-      )}>
-        <div className="px-6 py-4 flex flex-col gap-1 bg-white">
+      <div
+        className={cn(
+          "md:hidden overflow-hidden transition-all duration-200 ease-in-out border-t border-border",
+          open ? "max-h-64 opacity-100" : "max-h-0 opacity-0",
+        )}
+      >
+        <div className="px-6 py-4 flex flex-col gap-1 bg-surface-shell">
           {links.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              className="font-heading text-sm font-semibold text-[#0F0F0F] hover:text-[#3D006B] transition-colors py-2.5 border-b border-[#F3F4F6] last:border-0"
+              className="font-heading text-sm font-semibold text-foreground hover:text-primary transition-colors py-2.5 border-b border-border-subtle last:border-0"
             >
               {label}
             </Link>
@@ -86,7 +116,7 @@ export default function Navbar() {
           <Link
             href={ctaHref}
             onClick={() => setOpen(false)}
-            className="mt-3 inline-flex items-center justify-center gap-2 font-body text-sm font-medium bg-[#3D006B] text-white px-5 py-3 rounded-md hover:bg-[#2A004A] transition-colors"
+            className="mt-3 inline-flex items-center justify-center gap-2 font-body text-sm font-medium bg-primary text-white px-5 py-3 rounded-md hover:bg-primary-dark transition-colors"
           >
             {ctaLabel} <ArrowRight size={14} />
           </Link>

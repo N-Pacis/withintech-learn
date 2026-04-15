@@ -1,11 +1,16 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '@/lib/api';
-import type { User } from '@/lib/auth';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api";
+import type { User } from "@/lib/auth";
+import {
+  getCachedProfile,
+  setCachedProfile,
+  clearCachedProfile,
+} from "@/lib/profile-cache";
 
 // ─── Query keys ──────────────────────────────────────────────────────────────
 
 export const authKeys = {
-  profile: ['auth', 'profile'] as const,
+  profile: ["auth", "profile"] as const,
 };
 
 // ─── Queries ─────────────────────────────────────────────────────────────────
@@ -14,30 +19,62 @@ export function useProfile() {
   return useQuery({
     queryKey: authKeys.profile,
     queryFn: async (): Promise<User> => {
-      const res = await apiFetch<User>('/auth/profile', {}, { redirectOn401: false });
-      if (!res.success || !res.data) throw new Error(res.message);
+      const res = await apiFetch<User>(
+        "/auth/profile",
+        {},
+        { redirectOn401: false },
+      );
+      if (!res.success || !res.data) {
+        // Token is invalid/expired — clear stored profile and redirect without blocking
+        clearCachedProfile();
+        // Only redirect from protected routes — public pages (/, /challenges, /courses, etc.) must not redirect
+        const PROTECTED = ["/learn", "/admin"];
+        if (
+          typeof window !== "undefined" &&
+          PROTECTED.some((p) => window.location.pathname.startsWith(p))
+        ) {
+          const next = encodeURIComponent(
+            window.location.pathname + window.location.search,
+          );
+          window.location.href = `/sign-in?next=${next}`;
+        }
+        throw new Error(res.message);
+      }
+      setCachedProfile(res.data);
       return res.data;
     },
+    // Seed immediately from localStorage — no loading spinner on first render
+    initialData: () => getCachedProfile() ?? undefined,
     retry: false,
     refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // trust cached profile for 5 min before re-validating
+    gcTime: Infinity, // keep in memory while app is open
   });
 }
 
 // ─── Mutations ───────────────────────────────────────────────────────────────
 
 type AuthSuccess = { accessToken: string; refreshToken: string; user: User };
-type EmailVerificationRequired = { requiresEmailVerification: true; email: string };
+type EmailVerificationRequired = {
+  requiresEmailVerification: true;
+  email: string;
+};
 type LoginResult = AuthSuccess | EmailVerificationRequired;
 
 export function useGoogleAuth() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (idToken: string) => {
-      const res = await apiFetch<{ user: User }>('/auth/google', { method: 'POST', body: JSON.stringify({ idToken }) });
-      if (!res.success || !res.data) throw new Error(res.message ?? 'Google sign-in failed');
+      const res = await apiFetch<{ user: User }>("/auth/google", {
+        method: "POST",
+        body: JSON.stringify({ idToken }),
+      });
+      if (!res.success || !res.data)
+        throw new Error(res.message ?? "Google sign-in failed");
       return res.data;
     },
     onSuccess: (data) => {
+      setCachedProfile(data.user);
       queryClient.setQueryData(authKeys.profile, data.user);
     },
   });
@@ -47,13 +84,22 @@ export function useLogin() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (credentials: { email: string; password: string }): Promise<LoginResult> => {
-      const res = await apiFetch<LoginResult>('/auth/login', { method: 'POST', body: JSON.stringify(credentials) });
-      if (!res.success || !res.data) throw new Error(res.message ?? 'Login failed');
+    mutationFn: async (credentials: {
+      email: string;
+      password: string;
+    }): Promise<LoginResult> => {
+      const res = await apiFetch<LoginResult>(
+        "/auth/login",
+        { method: "POST", body: JSON.stringify(credentials) },
+        { skipRefresh: true },
+      );
+      if (!res.success || !res.data)
+        throw new Error(res.message ?? "Login failed");
       return res.data;
     },
     onSuccess: (data) => {
-      if ('requiresEmailVerification' in data) return;
+      if ("requiresEmailVerification" in data) return;
+      setCachedProfile(data.user);
       queryClient.setQueryData(authKeys.profile, data.user);
     },
   });
@@ -61,9 +107,18 @@ export function useLogin() {
 
 export function useSignUp() {
   return useMutation({
-    mutationFn: async (payload: { firstName: string; lastName: string; email: string; password: string }): Promise<EmailVerificationRequired> => {
-      const res = await apiFetch<EmailVerificationRequired>('/auth/signup', { method: 'POST', body: JSON.stringify(payload) });
-      if (!res.success || !res.data) throw new Error(res.message ?? 'Sign up failed');
+    mutationFn: async (payload: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      password: string;
+    }): Promise<EmailVerificationRequired> => {
+      const res = await apiFetch<EmailVerificationRequired>("/auth/signup", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      if (!res.success || !res.data)
+        throw new Error(res.message ?? "Sign up failed");
       return res.data;
     },
   });
@@ -73,15 +128,23 @@ export function useVerifyEmail() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ email, otp }: { email: string; otp: string }): Promise<AuthSuccess> => {
-      const res = await apiFetch<AuthSuccess>('/auth/email/verify', {
-        method: 'POST',
+    mutationFn: async ({
+      email,
+      otp,
+    }: {
+      email: string;
+      otp: string;
+    }): Promise<AuthSuccess> => {
+      const res = await apiFetch<AuthSuccess>("/auth/email/verify", {
+        method: "POST",
         body: JSON.stringify({ email, otp }),
       });
-      if (!res.success || !res.data) throw new Error(res.message ?? 'Invalid OTP');
+      if (!res.success || !res.data)
+        throw new Error(res.message ?? "Invalid OTP");
       return res.data;
     },
     onSuccess: (data) => {
+      setCachedProfile(data.user);
       queryClient.setQueryData(authKeys.profile, data.user);
     },
   });
@@ -90,11 +153,11 @@ export function useVerifyEmail() {
 export function useResendEmailVerification() {
   return useMutation({
     mutationFn: async (email: string) => {
-      const res = await apiFetch('/auth/email/resend', {
-        method: 'POST',
+      const res = await apiFetch("/auth/email/resend", {
+        method: "POST",
         body: JSON.stringify({ email }),
       });
-      if (!res.success) throw new Error(res.message ?? 'Failed to resend code');
+      if (!res.success) throw new Error(res.message ?? "Failed to resend code");
     },
   });
 }
@@ -102,23 +165,33 @@ export function useResendEmailVerification() {
 export function useRequestPasswordReset() {
   return useMutation({
     mutationFn: async (email: string) => {
-      const res = await apiFetch('/auth/password-reset/request', {
-        method: 'POST',
+      const res = await apiFetch("/auth/password-reset/request", {
+        method: "POST",
         body: JSON.stringify({ email }),
       });
-      if (!res.success) throw new Error(res.message ?? 'Failed to send OTP');
+      if (!res.success) throw new Error(res.message ?? "Failed to send OTP");
     },
   });
 }
 
 export function useVerifyResetOtp() {
   return useMutation({
-    mutationFn: async ({ email, otp }: { email: string; otp: string }): Promise<{ resetToken: string }> => {
-      const res = await apiFetch<{ resetToken: string }>('/auth/password-reset/verify', {
-        method: 'POST',
-        body: JSON.stringify({ email, otp }),
-      });
-      if (!res.success || !res.data) throw new Error(res.message ?? 'Invalid OTP');
+    mutationFn: async ({
+      email,
+      otp,
+    }: {
+      email: string;
+      otp: string;
+    }): Promise<{ resetToken: string }> => {
+      const res = await apiFetch<{ resetToken: string }>(
+        "/auth/password-reset/verify",
+        {
+          method: "POST",
+          body: JSON.stringify({ email, otp }),
+        },
+      );
+      if (!res.success || !res.data)
+        throw new Error(res.message ?? "Invalid OTP");
       return res.data;
     },
   });
@@ -127,15 +200,23 @@ export function useVerifyResetOtp() {
 export function useResetPassword() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ resetToken, newPassword }: { resetToken: string; newPassword: string }) => {
+    mutationFn: async ({
+      resetToken,
+      newPassword,
+    }: {
+      resetToken: string;
+      newPassword: string;
+    }) => {
       const res = await apiFetch<{ user: User }>(
-        '/auth/password-reset/confirm',
-        { method: 'POST', body: JSON.stringify({ resetToken, newPassword }) },
+        "/auth/password-reset/confirm",
+        { method: "POST", body: JSON.stringify({ resetToken, newPassword }) },
       );
-      if (!res.success || !res.data) throw new Error(res.message ?? 'Failed to reset password');
+      if (!res.success || !res.data)
+        throw new Error(res.message ?? "Failed to reset password");
       return res.data;
     },
     onSuccess: (data) => {
+      setCachedProfile(data.user);
       queryClient.setQueryData(authKeys.profile, data.user);
     },
   });
@@ -144,9 +225,10 @@ export function useResetPassword() {
 export function useLogout() {
   const queryClient = useQueryClient();
   return () => {
-    apiFetch('/auth/logout', { method: 'POST' }).finally(() => {
+    clearCachedProfile();
+    apiFetch("/auth/logout", { method: "POST" }).finally(() => {
       queryClient.clear();
-      window.location.href = '/sign-in';
+      window.location.href = "/sign-in";
     });
   };
 }

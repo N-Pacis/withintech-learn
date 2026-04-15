@@ -1,22 +1,27 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 
 interface DayRangePickerProps {
   from: string; // YYYY-MM-DD
-  to: string;   // YYYY-MM-DD
+  to: string; // YYYY-MM-DD
   onChange: (from: string, to: string) => void;
   maxDays?: number;
 }
 
 const inputClass = [
-  'font-body text-sm text-[#374151] bg-white',
-  'border border-[#E5E7EB] rounded-lg px-3 py-1.5',
-  'hover:border-[#3D006B]/40 focus:border-[#3D006B] focus:ring-2 focus:ring-[#3D006B]/10',
-  'outline-none transition-colors cursor-pointer',
-].join(' ');
+  "font-body text-sm text-foreground-soft bg-surface-card",
+  "border border-border rounded-lg px-3 py-1.5",
+  "hover:border-primary/40 focus:border-primary focus:ring-2 focus:ring-primary/10",
+  "outline-none transition-colors cursor-pointer",
+].join(" ");
 
-export function DayRangePicker({ from, to, onChange, maxDays = 30 }: DayRangePickerProps) {
+export function DayRangePicker({
+  from,
+  to,
+  onChange,
+  maxDays = 30,
+}: DayRangePickerProps) {
   function handleFrom(value: string) {
     if (!value) return;
     // clamp `to` so it stays within maxDays of the new `from`
@@ -61,7 +66,7 @@ export function DayRangePicker({ from, to, onChange, maxDays = 30 }: DayRangePic
         onChange={(e) => handleFrom(e.target.value)}
         className={inputClass}
       />
-      <span className="font-body text-xs text-[#9CA3AF]">→</span>
+      <span className="font-body text-xs text-muted-contrast">→</span>
       <input
         type="date"
         value={to}
@@ -75,5 +80,5 @@ export function DayRangePicker({ from, to, onChange, maxDays = 30 }: DayRangePic
 }
 
 function toIso(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
