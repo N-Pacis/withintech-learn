@@ -139,12 +139,12 @@ export default function Home() {
               <h3 className="font-heading font-bold text-xl text-foreground mb-2">
                 Get access
               </h3>
-              <p className="font-body text-base text-muted max-w-[200px]">
+              <p className="font-body text-base text-[#6B7280] max-w-50">
                 Sign in and find your courses ready to go.
               </p>
             </div>
 
-            <div className="flex-shrink-0 w-16 pt-6">
+            <div className="shrink-0 w-16 pt-6">
               <div className="border-t-2 border-dashed border-[#F97316]" />
             </div>
 
@@ -157,12 +157,12 @@ export default function Home() {
               <h3 className="font-heading font-bold text-xl text-foreground mb-2">
                 Study your modules
               </h3>
-              <p className="font-body text-base text-muted max-w-[200px]">
+              <p className="font-body text-base text-[#6B7280] max-w-50">
                 Work at your own pace, on any device, anywhere.
               </p>
             </div>
 
-            <div className="flex-shrink-0 w-16 pt-6">
+            <div className="shrink-0 w-16 pt-6">
               <div className="border-t-2 border-dashed border-[#F97316]" />
             </div>
 
@@ -175,7 +175,7 @@ export default function Home() {
               <h3 className="font-heading font-bold text-xl text-foreground mb-2">
                 Earn your certificate
               </h3>
-              <p className="font-body text-base text-muted max-w-[200px]">
+              <p className="font-body text-base text-[#6B7280] max-w-50">
                 Pass the quiz and download your certificate instantly.
               </p>
             </div>
@@ -200,14 +200,9 @@ export default function Home() {
                 desc: "Pass the quiz and download your certificate instantly.",
               },
             ].map(({ n, title, desc }) => (
-              <div
-                key={n}
-                className="flex gap-6 border-l-2 border-primary pl-6 pb-10 last:pb-0"
-              >
-                <div className="flex-shrink-0 -ml-[25px] w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-                  <span className="font-heading text-white font-bold text-lg">
-                    {n}
-                  </span>
+              <div key={n} className="flex gap-6 border-l-2 border-[#3D006B] pl-6 pb-10 last:pb-0">
+                <div className="shrink-0 -ml-6.25 w-12 h-12 rounded-full bg-[#3D006B] flex items-center justify-center">
+                  <span className="font-heading text-white font-bold text-lg">{n}</span>
                 </div>
                 <div className="pt-1">
                   <h3 className="font-heading font-bold text-xl text-foreground mb-2">
