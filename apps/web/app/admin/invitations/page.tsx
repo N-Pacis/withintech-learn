@@ -77,33 +77,33 @@ export default function InvitationsPage() {
   return (
     <div className="p-6 max-w-4xl">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-[#3D006B]/10 flex items-center justify-center">
-          <Mail size={20} className="text-[#3D006B]" />
+        <div className="w-10 h-10 rounded-xl bg-primary-soft flex items-center justify-center">
+          <Mail size={20} className="text-primary" />
         </div>
         <div>
-          <h1 className="font-heading font-bold text-xl text-[#0F0F0F]">
+          <h1 className="font-heading font-bold text-xl text-foreground">
             Send Invitations
           </h1>
-          <p className="font-body text-sm text-[#6B7280]">
+          <p className="font-body text-sm text-muted">
             Invite people to join WithinTech Learn via email
           </p>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6">
+      <div className="bg-surface-card rounded-2xl border border-border p-6">
         {/* Instructions */}
-        <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl px-4 py-3 mb-6">
-          <p className="font-body text-xs font-semibold text-[#374151] uppercase tracking-wide mb-1.5">
+        <div className="bg-surface-panel border border-border rounded-xl px-4 py-3 mb-6">
+          <p className="font-body text-xs font-semibold text-foreground-soft uppercase tracking-wide mb-1.5">
             File format
           </p>
-          <p className="font-body text-xs text-[#6B7280] leading-relaxed">
-            Upload an <strong className="text-[#0F0F0F]">.xlsx</strong>,{" "}
-            <strong className="text-[#0F0F0F]">.xls</strong>, or{" "}
-            <strong className="text-[#0F0F0F]">.csv</strong> file. The first
+          <p className="font-body text-xs text-muted leading-relaxed">
+            Upload an <strong className="text-foreground">.xlsx</strong>,{" "}
+            <strong className="text-foreground">.xls</strong>, or{" "}
+            <strong className="text-foreground">.csv</strong> file. The first
             row must be column headers. Required columns:{" "}
-            <strong className="text-[#0F0F0F]">First Name</strong>,{" "}
-            <strong className="text-[#0F0F0F]">Last Name</strong>,{" "}
-            <strong className="text-[#0F0F0F]">Email</strong>. Max 500 rows per
+            <strong className="text-foreground">First Name</strong>,{" "}
+            <strong className="text-foreground">Last Name</strong>,{" "}
+            <strong className="text-foreground">Email</strong>. Max 500 rows per
             upload. Already registered emails will be skipped.
           </p>
         </div>
@@ -124,30 +124,30 @@ export default function InvitationsPage() {
               className={cn(
                 "w-full rounded-xl border-2 border-dashed transition-colors px-4 py-10 flex flex-col items-center gap-3 text-center",
                 dragOver
-                  ? "border-[#3D006B] bg-[#F3E8FF]/50"
-                  : "border-[#E5E7EB] hover:border-[#3D006B]/40 hover:bg-[#FAFAFA]",
+                  ? "border-primary bg-primary-soft"
+                  : "border-border hover:border-primary/40 hover:bg-surface-panel",
                 isPending && "opacity-60 cursor-not-allowed",
               )}
             >
-              <div className="w-12 h-12 rounded-full bg-[#F3E8FF] flex items-center justify-center">
-                <Upload size={22} className="text-[#3D006B]" />
+              <div className="w-12 h-12 rounded-full bg-primary-soft flex items-center justify-center">
+                <Upload size={22} className="text-primary" />
               </div>
               {selectedFile ? (
                 <>
-                  <p className="font-body text-sm font-medium text-[#0F0F0F]">
+                  <p className="font-body text-sm font-medium text-foreground">
                     {selectedFile.name}
                   </p>
-                  <p className="font-body text-xs text-[#9CA3AF]">
+                  <p className="font-body text-xs text-muted-soft">
                     {(selectedFile.size / 1024).toFixed(1)} KB · Click to
                     change
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="font-body text-sm font-medium text-[#3D006B]">
+                  <p className="font-body text-sm font-medium text-primary">
                     {dragOver ? "Drop here" : "Click or drag to upload"}
                   </p>
-                  <p className="font-body text-xs text-[#9CA3AF]">
+                  <p className="font-body text-xs text-muted-soft">
                     .xlsx · .xls · .csv · max 10 MB
                   </p>
                 </>
@@ -212,13 +212,13 @@ export default function InvitationsPage() {
             </div>
 
             {(result.skipped > 0 || result.failed > 0) && (
-              <div className="border border-[#E5E7EB] rounded-xl overflow-hidden">
-                <div className="bg-[#F9FAFB] px-4 py-2.5 border-b border-[#E5E7EB]">
-                  <p className="font-body text-xs font-semibold text-[#374151] uppercase tracking-wide">
+              <div className="border border-border rounded-xl overflow-hidden">
+                <div className="bg-surface-panel px-4 py-2.5 border-b border-border">
+                  <p className="font-body text-xs font-semibold text-foreground-soft uppercase tracking-wide">
                     Details
                   </p>
                 </div>
-                <div className="divide-y divide-[#F3F4F6] max-h-64 overflow-y-auto">
+                <div className="divide-y divide-border-subtle max-h-64 overflow-y-auto">
                   {result.rows
                     .filter((r) => r.status !== "sent")
                     .map((r) => (
@@ -228,14 +228,14 @@ export default function InvitationsPage() {
                       >
                         {statusIcon(r.status)}
                         <div className="min-w-0 flex-1">
-                          <p className="font-body text-xs font-medium text-[#0F0F0F] truncate">
+                          <p className="font-body text-xs font-medium text-foreground truncate">
                             {r.firstName} {r.lastName}{" "}
-                            <span className="text-[#9CA3AF] font-normal">
+                            <span className="text-muted-soft font-normal">
                               · {r.email}
                             </span>
                           </p>
                           {r.reason && (
-                            <p className="font-body text-xs text-[#9CA3AF] mt-0.5">
+                            <p className="font-body text-xs text-muted-soft mt-0.5">
                               {r.reason}
                             </p>
                           )}
