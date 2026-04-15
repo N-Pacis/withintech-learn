@@ -1,23 +1,38 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { CheckCircle2, Circle, Code2, Trophy, Zap } from 'lucide-react';
-import { useStudentChallenges, type Difficulty, type ChallengeSort, type StudentChallengeListItem } from '@/hooks/queries/challenges';
-import { Badge, FilterPills, SortDropdown, Pagination } from '@/components/ui';
-import { DIFFICULTY_CONFIG, DIFFICULTY_FILTER_OPTIONS, CHALLENGE_SORT_OPTIONS } from '@/lib/challenges';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import { useState } from "react";
+import { CheckCircle2, Circle, Code2, Trophy, Zap } from "lucide-react";
+import {
+  useStudentChallenges,
+  type Difficulty,
+  type ChallengeSort,
+  type StudentChallengeListItem,
+} from "@/hooks/queries/challenges";
+import { Badge, FilterPills, SortDropdown, Pagination } from "@/components/ui";
+import {
+  DIFFICULTY_CONFIG,
+  DIFFICULTY_FILTER_OPTIONS,
+  CHALLENGE_SORT_OPTIONS,
+} from "@/lib/challenges";
+import { cn } from "@/lib/utils";
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function ChallengeListSkeleton() {
   return (
-    <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] overflow-hidden">
+    <div className="bg-surface-card rounded-xl border border-border overflow-hidden">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-4 px-5 py-4 border-b border-[#F3F4F6] dark:border-[#2d2d2d] last:border-0 animate-pulse">
-          <div className="w-5 h-5 rounded-full bg-[#E5E7EB] shrink-0" />
-          <div className="flex-1 h-4 bg-[#E5E7EB] rounded-md" style={{ width: `${50 + (i % 3) * 15}%` }} />
-          <div className="w-14 h-5 bg-[#E5E7EB] rounded-full shrink-0" />
+        <div
+          key={i}
+          className="flex items-center gap-4 px-5 py-4 border-b border-border-subtle last:border-0 animate-pulse"
+        >
+          <div className="w-5 h-5 rounded-full bg-fill-muted shrink-0" />
+          <div
+            className="flex-1 h-4 bg-fill-muted rounded-md"
+            style={{ width: `${50 + (i % 3) * 15}%` }}
+          />
+          <div className="w-14 h-5 bg-fill-muted rounded-full shrink-0" />
         </div>
       ))}
     </div>
@@ -26,56 +41,77 @@ function ChallengeListSkeleton() {
 
 // ─── Stats bar ────────────────────────────────────────────────────────────────
 
-function StatsBar({ challenges, total }: { challenges: StudentChallengeListItem[]; total: number }) {
-  const completed = challenges.filter(c => c.completed).length;
-  const easy      = challenges.filter(c => c.difficulty === 'easy').length;
-  const medium    = challenges.filter(c => c.difficulty === 'medium').length;
-  const hard      = challenges.filter(c => c.difficulty === 'hard').length;
-  const pct       = total > 0 ? Math.round((completed / total) * 100) : 0;
+function StatsBar({
+  challenges,
+  total,
+}: {
+  challenges: StudentChallengeListItem[];
+  total: number;
+}) {
+  const completed = challenges.filter((c) => c.completed).length;
+  const easy = challenges.filter((c) => c.difficulty === "easy").length;
+  const medium = challenges.filter((c) => c.difficulty === "medium").length;
+  const hard = challenges.filter((c) => c.difficulty === "hard").length;
+  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-      <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] px-4 py-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-lg bg-[#F3E8FF] dark:bg-[#2d1a4a] flex items-center justify-center shrink-0">
-          <Trophy size={16} className="text-[#3D006B] dark:text-[#C084FC]" />
+      <div className="bg-surface-card rounded-xl border border-border px-4 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-lg bg-primary-soft flex items-center justify-center shrink-0">
+          <Trophy size={16} className="text-primary" />
         </div>
         <div>
-          <div className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB] leading-none">
-            {completed}<span className="font-body font-normal text-xs text-[#9CA3AF] dark:text-[#6B7280] ml-1">/ {total}</span>
+          <div className="font-heading font-bold text-lg text-foreground leading-none">
+            {completed}
+            <span className="font-body font-normal text-xs text-muted-contrast ml-1">
+              / {total}
+            </span>
           </div>
-          <div className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF]">Solved</div>
+          <div className="font-body text-xs text-muted">Solved</div>
         </div>
       </div>
-      <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] px-4 py-3 flex items-center gap-3">
+      <div className="bg-surface-card rounded-xl border border-border px-4 py-3 flex items-center gap-3">
         <div className="w-9 h-9 rounded-lg bg-green-50 dark:bg-green-950/30 flex items-center justify-center shrink-0">
           <Zap size={16} className="text-green-600" />
         </div>
         <div>
-          <div className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB] leading-none">
-            {pct}<span className="font-body font-normal text-xs text-[#9CA3AF] dark:text-[#6B7280]">%</span>
+          <div className="font-heading font-bold text-lg text-foreground leading-none">
+            {pct}
+            <span className="font-body font-normal text-xs text-muted-contrast">
+              %
+            </span>
           </div>
-          <div className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF]">Completion</div>
+          <div className="font-body text-xs text-muted">Completion</div>
         </div>
       </div>
-      <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] px-4 py-3">
-        {(['easy', 'medium', 'hard'] as Difficulty[]).map((d, i) => {
+      <div className="bg-surface-card rounded-xl border border-border px-4 py-3">
+        {(["easy", "medium", "hard"] as Difficulty[]).map((d, i) => {
           const cfg = DIFFICULTY_CONFIG[d];
-          const count = d === 'easy' ? easy : d === 'medium' ? medium : hard;
+          const count = d === "easy" ? easy : d === "medium" ? medium : hard;
           return (
-            <div key={d} className={cn('flex items-center gap-1.5', i < 2 && 'mb-1.5')}>
-              <span className={cn('w-2 h-2 rounded-full shrink-0', cfg.dot)} />
-              <span className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF]">{cfg.label}</span>
-              <span className="font-heading font-bold text-sm text-[#0F0F0F] dark:text-[#F9FAFB] ml-auto">{count}</span>
+            <div
+              key={d}
+              className={cn("flex items-center gap-1.5", i < 2 && "mb-1.5")}
+            >
+              <span className={cn("w-2 h-2 rounded-full shrink-0", cfg.dot)} />
+              <span className="font-body text-xs text-muted">{cfg.label}</span>
+              <span className="font-heading font-bold text-sm text-foreground ml-auto">
+                {count}
+              </span>
             </div>
           );
         })}
       </div>
-      <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] px-4 py-3 flex flex-col justify-center gap-1.5">
-        <div className="flex justify-between font-body text-xs text-[#6B7280] dark:text-[#9CA3AF]">
-          <span>Progress</span><span>{pct}%</span>
+      <div className="bg-surface-card rounded-xl border border-border px-4 py-3 flex flex-col justify-center gap-1.5">
+        <div className="flex justify-between font-body text-xs text-muted">
+          <span>Progress</span>
+          <span>{pct}%</span>
         </div>
-        <div className="h-2 bg-[#F3F4F6] dark:bg-[#252525] rounded-full overflow-hidden">
-          <div className="h-full bg-[#3D006B] rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
+        <div className="h-2 bg-surface-muted rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary rounded-full transition-all duration-700"
+            style={{ width: `${pct}%` }}
+          />
         </div>
       </div>
     </div>
@@ -90,25 +126,34 @@ function ChallengeRow({ challenge }: { challenge: StudentChallengeListItem }) {
     <Link
       href={`/learn/challenges/${challenge.slug}`}
       prefetch={false}
-      className="group flex items-center gap-4 px-5 py-4 border-b border-[#F3F4F6] dark:border-[#2d2d2d] last:border-0 hover:bg-[#F9F5FF] dark:hover:bg-[#2d1a4a]/30 transition-colors"
+      className="group flex items-center gap-4 px-5 py-4 border-b border-border-subtle last:border-0 hover:bg-primary-soft-alt hover:bg-primary-soft/30 transition-colors"
     >
       <div className="flex items-center gap-3 shrink-0">
-        <span className="text-sm text-[#C4B5FD] font-semibold w-8 text-right shrink-0">
+        <span className="text-sm text-primary-tint font-semibold w-8 text-right shrink-0">
           {challenge.number}.
         </span>
-        {challenge.completed
-          ? <CheckCircle2 size={18} className="text-green-500 shrink-0" />
-          : <Circle size={18} className="text-[#D1D5DB] group-hover:text-[#C4B5FD] shrink-0 transition-colors" />}
+        {challenge.completed ? (
+          <CheckCircle2 size={18} className="text-green-500 shrink-0" />
+        ) : (
+          <Circle
+            size={18}
+            className="text-border-strong group-hover:text-primary-tint shrink-0 transition-colors"
+          />
+        )}
       </div>
-      <span className={cn(
-        'flex-1 font-body text-sm font-medium truncate transition-colors',
-        challenge.completed
-          ? 'text-[#6B7280] dark:text-[#9CA3AF] line-through decoration-[#D1D5DB]'
-          : 'text-[#0F0F0F] dark:text-[#F9FAFB] group-hover:text-[#3D006B] dark:group-hover:text-[#C084FC]',
-      )}>
+      <span
+        className={cn(
+          "flex-1 font-body text-sm font-medium truncate transition-colors",
+          challenge.completed
+            ? "text-muted line-through decoration-[#D1D5DB]"
+            : "text-foreground group-hover:text-primary",
+        )}
+      >
         {challenge.title}
       </span>
-      <Badge variant={cfg.variant} size="sm" className="shrink-0">{cfg.label}</Badge>
+      <Badge variant={cfg.variant} size="sm" className="shrink-0">
+        {cfg.label}
+      </Badge>
     </Link>
   );
 }
@@ -117,16 +162,18 @@ function ChallengeRow({ challenge }: { challenge: StudentChallengeListItem }) {
 
 function EmptyState({ filtered }: { filtered: boolean }) {
   return (
-    <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] py-20 flex flex-col items-center gap-4">
-      <div className="w-14 h-14 rounded-2xl bg-[#F3E8FF] dark:bg-[#2d1a4a] flex items-center justify-center">
-        <Code2 size={28} className="text-[#3D006B] dark:text-[#C084FC]" />
+    <div className="bg-surface-card rounded-xl border border-border py-20 flex flex-col items-center gap-4">
+      <div className="w-14 h-14 rounded-2xl bg-primary-soft flex items-center justify-center">
+        <Code2 size={28} className="text-primary" />
       </div>
       <div className="text-center">
-        <p className="font-heading font-bold text-base text-[#0F0F0F] dark:text-[#F9FAFB]">
-          {filtered ? 'No challenges match' : 'No challenges yet'}
+        <p className="font-heading font-bold text-base text-foreground">
+          {filtered ? "No challenges match" : "No challenges yet"}
         </p>
-        <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-1">
-          {filtered ? 'Try a different filter.' : 'Check back soon — challenges are coming!'}
+        <p className="font-body text-sm text-muted mt-1">
+          {filtered
+            ? "Try a different filter."
+            : "Check back soon — challenges are coming!"}
         </p>
       </div>
     </div>
@@ -136,14 +183,14 @@ function EmptyState({ filtered }: { filtered: boolean }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ChallengesPage() {
-  const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all');
-  const [sort, setSort]             = useState<ChallengeSort>('number_asc');
-  const [page, setPage]             = useState(1);
+  const [difficulty, setDifficulty] = useState<Difficulty | "all">("all");
+  const [sort, setSort] = useState<ChallengeSort>("number_asc");
+  const [page, setPage] = useState(1);
 
   const { data, isLoading } = useStudentChallenges({
     page,
     limit: 20,
-    difficulty: difficulty === 'all' ? undefined : difficulty,
+    difficulty: difficulty === "all" ? undefined : difficulty,
     sort,
   });
 
@@ -157,13 +204,17 @@ export default function ChallengesPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
       <div className="mb-6">
-        <h1 className="font-heading font-black text-3xl text-[#0F0F0F] dark:text-[#F9FAFB]">Challenges</h1>
-        <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-1">
+        <h1 className="font-heading font-black text-3xl text-foreground">
+          Challenges
+        </h1>
+        <p className="font-body text-sm text-muted mt-1">
           Solve problems in Python, Java, JavaScript, C, C++, or Go.
         </p>
       </div>
 
-      {!isLoading && data && <StatsBar challenges={data.challenges} total={data.total} />}
+      {!isLoading && data && (
+        <StatsBar challenges={data.challenges} total={data.total} />
+      )}
 
       {/* Filters + Sort */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
@@ -184,13 +235,19 @@ export default function ChallengesPage() {
       {isLoading ? (
         <ChallengeListSkeleton />
       ) : !data || data.challenges.length === 0 ? (
-        <EmptyState filtered={difficulty !== 'all' || sort !== 'number_asc'} />
+        <EmptyState filtered={difficulty !== "all" || sort !== "number_asc"} />
       ) : (
         <>
-          <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] overflow-hidden">
-            {data.challenges.map((c) => <ChallengeRow key={c.id} challenge={c} />)}
+          <div className="bg-surface-card rounded-xl border border-border overflow-hidden">
+            {data.challenges.map((c) => (
+              <ChallengeRow key={c.id} challenge={c} />
+            ))}
           </div>
-          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
         </>
       )}
     </div>

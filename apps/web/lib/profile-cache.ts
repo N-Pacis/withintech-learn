@@ -1,9 +1,9 @@
-import type { User } from './auth';
+import type { User } from "./auth";
 
-const KEY = 'wt_profile';
+const KEY = "wt_profile";
 
 export function getCachedProfile(): User | null {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(KEY);
     return raw ? (JSON.parse(raw) as User) : null;
@@ -13,14 +13,14 @@ export function getCachedProfile(): User | null {
 }
 
 export function setCachedProfile(user: User): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   try {
     localStorage.setItem(KEY, JSON.stringify(user));
   } catch {}
 }
 
 export function clearCachedProfile(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   try {
     localStorage.removeItem(KEY);
   } catch {}

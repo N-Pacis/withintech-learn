@@ -33,9 +33,10 @@ import { useDebounce } from "@/hooks/useDebounce";
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(date: string | null): CellValue {
-  if (!date) return <span className="font-body text-sm text-[#D1D5DB]">—</span>;
+  if (!date)
+    return <span className="font-body text-sm text-border-strong">—</span>;
   return (
-    <span className="font-body text-sm text-[#6B7280]">
+    <span className="font-body text-sm text-muted">
       {new Date(date).toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
@@ -173,13 +174,13 @@ const columns: Column[] = [
 //       <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
 //         {/* Header */}
 //         <div className="flex items-center justify-between">
-//           <h2 className="font-heading font-bold text-lg text-[#0F0F0F]">
+//           <h2 className="font-heading font-bold text-lg text-foreground">
 //             Import Students
 //           </h2>
 //           <button
 //             onClick={onClose}
 //             disabled={isPending}
-//             className="p-1.5 rounded-lg text-[#9CA3AF] hover:text-[#0F0F0F] hover:bg-[#F3F4F6] transition-colors disabled:opacity-40"
+//             className="p-1.5 rounded-lg text-muted-contrast hover:text-foreground hover:bg-surface-muted transition-colors disabled:opacity-40"
 //           >
 //             <svg
 //               width="16"
@@ -198,18 +199,18 @@ const columns: Column[] = [
 //         </div>
 
 //         {/* Instructions */}
-//         <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl px-4 py-3">
-//           <p className="font-body text-xs font-semibold text-[#374151] uppercase tracking-wide mb-1.5">
+//         <div className="bg-surface-panel border border-border rounded-xl px-4 py-3">
+//           <p className="font-body text-xs font-semibold text-foreground-soft uppercase tracking-wide mb-1.5">
 //             File format
 //           </p>
-//           <p className="font-body text-xs text-[#6B7280] leading-relaxed">
-//             Upload an <strong className="text-[#0F0F0F]">.xlsx</strong>,{" "}
-//             <strong className="text-[#0F0F0F]">.xls</strong>, or{" "}
-//             <strong className="text-[#0F0F0F]">.csv</strong> file. The first row
+//           <p className="font-body text-xs text-muted leading-relaxed">
+//             Upload an <strong className="text-foreground">.xlsx</strong>,{" "}
+//             <strong className="text-foreground">.xls</strong>, or{" "}
+//             <strong className="text-foreground">.csv</strong> file. The first row
 //             must be column headers. Required columns:{" "}
-//             <strong className="text-[#0F0F0F]">First Name</strong>,{" "}
-//             <strong className="text-[#0F0F0F]">Last Name</strong>,{" "}
-//             <strong className="text-[#0F0F0F]">Email</strong>. Max 500 rows per
+//             <strong className="text-foreground">First Name</strong>,{" "}
+//             <strong className="text-foreground">Last Name</strong>,{" "}
+//             <strong className="text-foreground">Email</strong>. Max 500 rows per
 //             import.
 //           </p>
 //         </div>
@@ -229,29 +230,29 @@ const columns: Column[] = [
 //             className={cn(
 //               "w-full rounded-xl border-2 border-dashed transition-colors px-4 py-8 flex flex-col items-center gap-2 text-center",
 //               dragOver
-//                 ? "border-[#3D006B] bg-[#F3E8FF]/50"
-//                 : "border-[#E5E7EB] hover:border-[#3D006B]/40 hover:bg-[#FAFAFA]",
+//                 ? "border-primary bg-primary-soft/50"
+//                 : "border-border hover:border-primary/40 hover:bg-surface",
 //               isPending && "opacity-60 cursor-not-allowed",
 //             )}
 //           >
-//             <div className="w-10 h-10 rounded-full bg-[#F3E8FF] flex items-center justify-center">
-//               <Upload size={18} className="text-[#3D006B]" />
+//             <div className="w-10 h-10 rounded-full bg-primary-soft flex items-center justify-center">
+//               <Upload size={18} className="text-primary" />
 //             </div>
 //             {selectedFile ? (
 //               <>
-//                 <p className="font-body text-sm font-medium text-[#0F0F0F]">
+//                 <p className="font-body text-sm font-medium text-foreground">
 //                   {selectedFile.name}
 //                 </p>
-//                 <p className="font-body text-xs text-[#9CA3AF]">
+//                 <p className="font-body text-xs text-muted-contrast">
 //                   {(selectedFile.size / 1024).toFixed(1)} KB · Click to change
 //                 </p>
 //               </>
 //             ) : (
 //               <>
-//                 <p className="font-body text-sm font-medium text-[#3D006B]">
+//                 <p className="font-body text-sm font-medium text-primary">
 //                   {dragOver ? "Drop here" : "Click or drag to upload"}
 //                 </p>
-//                 <p className="font-body text-xs text-[#9CA3AF]">
+//                 <p className="font-body text-xs text-muted-contrast">
 //                   .xlsx · .xls · .csv · max 10 MB
 //                 </p>
 //               </>
@@ -300,13 +301,13 @@ const columns: Column[] = [
 //             </div>
 
 //             {(result.skipped > 0 || result.failed > 0) && (
-//               <div className="border border-[#E5E7EB] rounded-xl overflow-hidden">
-//                 <div className="bg-[#F9FAFB] px-4 py-2.5 border-b border-[#E5E7EB]">
-//                   <p className="font-body text-xs font-semibold text-[#374151] uppercase tracking-wide">
+//               <div className="border border-border rounded-xl overflow-hidden">
+//                 <div className="bg-surface-panel px-4 py-2.5 border-b border-border">
+//                   <p className="font-body text-xs font-semibold text-foreground-soft uppercase tracking-wide">
 //                     Row details
 //                   </p>
 //                 </div>
-//                 <div className="divide-y divide-[#F3F4F6] max-h-52 overflow-y-auto">
+//                 <div className="divide-y divide-border-subtle max-h-52 overflow-y-auto">
 //                   {result.rows
 //                     .filter((r) => r.status !== "created")
 //                     .map((r) => (
@@ -316,14 +317,14 @@ const columns: Column[] = [
 //                       >
 //                         {statusIcon(r.status)}
 //                         <div className="min-w-0 flex-1">
-//                           <p className="font-body text-xs font-medium text-[#0F0F0F] truncate">
+//                           <p className="font-body text-xs font-medium text-foreground truncate">
 //                             {r.firstName} {r.lastName}{" "}
-//                             <span className="text-[#9CA3AF] font-normal">
+//                             <span className="text-muted-contrast font-normal">
 //                               · {r.email}
 //                             </span>
 //                           </p>
 //                           {r.reason && (
-//                             <p className="font-body text-xs text-[#9CA3AF] mt-0.5">
+//                             <p className="font-body text-xs text-muted-contrast mt-0.5">
 //                               {r.reason}
 //                             </p>
 //                           )}
@@ -423,15 +424,15 @@ function ExportModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-xl w-full max-w-sm p-6">
+      <div className="relative bg-surface-card rounded-2xl shadow-xl w-full max-w-sm p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB]">
+          <h2 className="font-heading font-bold text-lg text-foreground">
             Export Students
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#9CA3AF] hover:text-[#0F0F0F] dark:hover:text-[#F9FAFB] hover:bg-[#F3F4F6] dark:hover:bg-[#252525] transition-colors"
+            className="p-1.5 rounded-lg text-muted-contrast hover:text-foreground hover:text-foreground hover:bg-surface-muted hover:bg-surface-subtle transition-colors"
           >
             <svg
               width="16"
@@ -452,8 +453,8 @@ function ExportModal({
         <div className="flex flex-col gap-5">
           {/* Active filters */}
           {hasFilters && (
-            <div className="bg-[#F3E8FF] dark:bg-[#2d1a4a] rounded-lg px-4 py-3 flex flex-col gap-1.5">
-              <p className="font-body text-xs font-semibold text-[#3D006B] dark:text-[#C084FC]">
+            <div className="bg-primary-soft rounded-lg px-4 py-3 flex flex-col gap-1.5">
+              <p className="font-body text-xs font-semibold text-primary">
                 Active filters will be applied
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -474,7 +475,7 @@ function ExportModal({
           {/* Column selection */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <p className="font-body text-sm font-medium text-[#0F0F0F] dark:text-[#F9FAFB]">
+              <p className="font-body text-sm font-medium text-foreground">
                 Columns
               </p>
               <button
@@ -485,7 +486,7 @@ function ExportModal({
                       : new Set(EXPORT_COLS.map((c) => c.key)),
                   )
                 }
-                className="font-body text-xs text-[#3D006B] hover:text-[#6B21A8] transition-colors"
+                className="font-body text-xs text-primary hover:text-[#6B21A8] transition-colors"
               >
                 {allSelected ? "Deselect all" : "Select all"}
               </button>
@@ -500,9 +501,9 @@ function ExportModal({
                     type="checkbox"
                     checked={selected.has(col.key)}
                     onChange={() => toggle(col.key)}
-                    className="w-4 h-4 rounded border-[#D1D5DB] accent-[#3D006B] cursor-pointer shrink-0"
+                    className="w-4 h-4 rounded border-border-strong accent-primary cursor-pointer shrink-0"
                   />
-                  <span className="font-body text-sm text-[#374151] dark:text-[#D1D5DB]">
+                  <span className="font-body text-sm text-foreground-soft">
                     {col.label}
                   </span>
                 </label>
@@ -513,7 +514,7 @@ function ExportModal({
           {/* Actions */}
           <div className="flex flex-col gap-3 pt-1">
             {selected.size === 0 && (
-              <p className="font-body text-xs text-[#9CA3AF] text-center">
+              <p className="font-body text-xs text-muted-contrast text-center">
                 Select at least one column to export
               </p>
             )}
@@ -867,16 +868,16 @@ export default function StudentsPage() {
       id: u.id,
       user: (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#3D006B]/10 flex items-center justify-center shrink-0">
-            <span className="font-heading font-bold text-xs text-[#3D006B]">
+          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <span className="font-heading font-bold text-xs text-primary">
               {u.firstName[0]?.toUpperCase()}
             </span>
           </div>
           <div>
-            <p className="font-body text-sm font-medium text-[#0F0F0F] dark:text-[#F9FAFB]">
+            <p className="font-body text-sm font-medium text-foreground">
               {u.firstName} {u.lastName}
             </p>
-            <p className="font-body text-xs text-[#9CA3AF]">{u.email}</p>
+            <p className="font-body text-xs text-muted-contrast">{u.email}</p>
           </div>
         </div>
       ),
@@ -895,24 +896,21 @@ export default function StudentsPage() {
       actions: (
         <div className="flex items-center gap-2">
           {!u.emailVerified && (
-            <button
+            <Button
+              variant="secondary"
               onClick={() => verifyEmail(u.id)}
-              className="font-body text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors text-emerald-700 border-emerald-200 hover:bg-emerald-50"
+              className="text-xs py-1.5 px-3"
             >
               Verify Email
-            </button>
+            </Button>
           )}
-          <button
+          <Button
+            variant={u.isActive ? "danger" : "secondary"}
             onClick={() => setActive({ userId: u.id, isActive: !u.isActive })}
-            className={cn(
-              "font-body text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors",
-              u.isActive
-                ? "text-red-600 border-red-200 hover:bg-red-50"
-                : "text-[#3D006B] border-[#3D006B]/20 hover:bg-[#3D006B]/5",
-            )}
+            className="text-xs py-1.5 px-3"
           >
             {u.isActive ? "Deactivate" : "Activate"}
-          </button>
+          </Button>
         </div>
       ),
     };
@@ -936,10 +934,10 @@ export default function StudentsPage() {
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-8">
           <div>
-            <h1 className="font-heading font-black text-2xl text-[#0F0F0F] dark:text-[#F9FAFB]">
+            <h1 className="font-heading font-black text-2xl text-foreground">
               Students
             </h1>
-            <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-1">
+            <p className="font-body text-sm text-muted mt-1">
               Manage student accounts.
             </p>
           </div>
@@ -966,7 +964,7 @@ export default function StudentsPage() {
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1 min-w-0">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-contrast pointer-events-none">
               <svg
                 width="15"
                 height="15"
@@ -987,9 +985,9 @@ export default function StudentsPage() {
               value={rawSearch}
               onChange={(e) => setRawSearch(e.target.value)}
               className={cn(
-                "font-body text-sm w-full pl-9 pr-4 py-2 rounded-lg border border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] text-[#0F0F0F] dark:text-[#F9FAFB]",
-                "placeholder-[#9CA3AF] outline-none transition-all",
-                "focus:border-[#3D006B] focus:ring-2 focus:ring-[#3D006B]/10",
+                "font-body text-sm w-full pl-9 pr-4 py-2 rounded-lg border border-border bg-surface-card text-foreground",
+                "placeholder:text-muted-contrast outline-none transition-all",
+                "focus:border-primary focus:ring-2 focus:ring-primary/10",
               )}
             />
           </div>
@@ -1006,9 +1004,9 @@ export default function StudentsPage() {
           <button
             onClick={() => setSortOrder((s) => (s === "desc" ? "asc" : "desc"))}
             className={cn(
-              "font-body text-sm text-[#374151] dark:text-[#D1D5DB] bg-white dark:bg-[#1a1a1a] border border-[#E5E7EB] dark:border-[#2d2d2d] rounded-lg",
+              "font-body text-sm text-foreground-soft bg-surface-card border border-border rounded-lg",
               "px-3 py-2 outline-none cursor-pointer transition-colors flex items-center gap-1.5",
-              "hover:border-[#3D006B]/40",
+              "hover:border-primary/40",
             )}
           >
             Joined
@@ -1019,7 +1017,7 @@ export default function StudentsPage() {
                 viewBox="0 0 8 8"
                 fill="currentColor"
                 className={
-                  sortOrder === "asc" ? "text-[#3D006B]" : "text-[#D1D5DB]"
+                  sortOrder === "asc" ? "text-primary" : "text-border-strong"
                 }
               >
                 <path d="M4 0L8 8H0L4 0Z" />
@@ -1030,7 +1028,7 @@ export default function StudentsPage() {
                 viewBox="0 0 8 8"
                 fill="currentColor"
                 className={
-                  sortOrder === "desc" ? "text-[#3D006B]" : "text-[#D1D5DB]"
+                  sortOrder === "desc" ? "text-primary" : "text-border-strong"
                 }
               >
                 <path d="M4 8L0 0H8L4 8Z" />
@@ -1049,7 +1047,7 @@ export default function StudentsPage() {
 
         {!isLoading && !error && students?.length === 0 && (
           <div className="text-center py-16">
-            <p className="font-body text-[#6B7280] dark:text-[#9CA3AF]">No students found.</p>
+            <p className="font-body text-muted">No students found.</p>
           </div>
         )}
 

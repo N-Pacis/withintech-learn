@@ -37,7 +37,7 @@ function BlockDisplay({ block }: { block: LessonBlock }) {
   if (block.type === "text") {
     return (
       <div
-        className="prose prose-sm max-w-none font-body text-sm text-[#374151]"
+        className="prose prose-sm max-w-none font-body text-sm text-foreground-soft"
         dangerouslySetInnerHTML={{ __html: block.content ?? "" }}
       />
     );
@@ -46,7 +46,7 @@ function BlockDisplay({ block }: { block: LessonBlock }) {
     return (
       <div className="flex flex-col gap-1">
         {block.url ? (
-          <div className="relative w-full h-48 rounded-lg overflow-hidden bg-[#F3F4F6]">
+          <div className="relative w-full h-48 rounded-lg overflow-hidden bg-surface-muted">
             <Image
               src={block.url}
               alt={block.caption ?? ""}
@@ -56,12 +56,12 @@ function BlockDisplay({ block }: { block: LessonBlock }) {
             />
           </div>
         ) : (
-          <div className="h-24 bg-[#F3F4F6] rounded-lg flex items-center justify-center text-[#9CA3AF] text-xs">
+          <div className="h-24 bg-surface-muted rounded-lg flex items-center justify-center text-muted-contrast text-xs">
             No image uploaded
           </div>
         )}
         {block.caption && (
-          <span className="font-body text-xs text-[#9CA3AF]">
+          <span className="font-body text-xs text-muted-contrast">
             {block.caption}
           </span>
         )}
@@ -70,11 +70,11 @@ function BlockDisplay({ block }: { block: LessonBlock }) {
   }
   // code
   return (
-    <div className="rounded-lg overflow-hidden border border-[#E5E7EB]">
-      <div className="bg-[#F3F4F6] px-3 py-1 text-xs font-mono text-[#6B7280]">
+    <div className="rounded-lg overflow-hidden border border-border">
+      <div className="bg-surface-muted px-3 py-1 text-xs font-mono text-muted">
         {block.language ?? "code"}
       </div>
-      <pre className="p-3 text-xs font-mono text-[#374151] overflow-x-auto max-h-32">
+      <pre className="p-3 text-xs font-mono text-foreground-soft overflow-x-auto max-h-32">
         {block.content}
       </pre>
     </div>
@@ -206,11 +206,11 @@ export function LessonBlocksEditor({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2">
-        <h3 className="font-heading font-bold text-base text-[#0F0F0F]">
+        <h3 className="font-heading font-bold text-base text-foreground">
           Content Blocks
         </h3>
         {sortedBlocks.length > 0 && (
-          <span className="font-body text-sm text-[#9CA3AF]">
+          <span className="font-body text-sm text-muted-contrast">
             ({sortedBlocks.length})
           </span>
         )}
@@ -220,8 +220,11 @@ export function LessonBlocksEditor({
       {sortedBlocks.map((block, i) => (
         <Card key={block.id} shadow="sm">
           <div className="flex items-start gap-3 p-4">
-            <GripVertical size={16} className="text-[#D1D5DB] shrink-0 mt-1" />
-            <span className="w-5 h-5 rounded-full bg-[#F3E8FF] text-[#3D006B] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+            <GripVertical
+              size={16}
+              className="text-border-strong shrink-0 mt-1"
+            />
+            <span className="w-5 h-5 rounded-full bg-primary-soft text-primary text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
               {i + 1}
             </span>
 
@@ -264,7 +267,7 @@ export function LessonBlocksEditor({
                 </div>
               ) : deletingBlockId === block.id ? (
                 <div className="flex items-center gap-2 py-1">
-                  <p className="font-body text-xs text-[#6B7280] flex-1">
+                  <p className="font-body text-xs text-muted flex-1">
                     Delete this block?
                   </p>
                   <Button
@@ -298,7 +301,7 @@ export function LessonBlocksEditor({
                 <div className="flex items-center gap-1 shrink-0">
                   <button
                     onClick={() => startEdit(block)}
-                    className="p-1.5 rounded-lg hover:bg-[#F3E8FF] text-[#6B7280] hover:text-[#3D006B] transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-primary-soft text-muted hover:text-primary transition-colors"
                     title="Edit"
                   >
                     <Pencil size={13} />
@@ -308,7 +311,7 @@ export function LessonBlocksEditor({
                       setEditingBlockId(null);
                       setDeletingBlockId(block.id);
                     }}
-                    className="p-1.5 rounded-lg hover:bg-red-50 text-[#6B7280] hover:text-red-600 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-colors"
                     title="Delete"
                   >
                     <Trash2 size={13} />
@@ -321,11 +324,11 @@ export function LessonBlocksEditor({
 
       {/* Empty state */}
       {sortedBlocks.length === 0 && !addingType && (
-        <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-[#E5E7EB] rounded-xl">
-          <p className="font-body text-sm text-[#6B7280] mb-1">
+        <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border rounded-xl">
+          <p className="font-body text-sm text-muted mb-1">
             No content blocks yet.
           </p>
-          <p className="font-body text-xs text-[#9CA3AF]">
+          <p className="font-body text-xs text-muted-contrast">
             Add text, image, or code blocks below.
           </p>
         </div>

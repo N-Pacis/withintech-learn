@@ -31,7 +31,7 @@ function ImageBlock({ block }: { block: StudentBlock }) {
   return (
     <figure className="flex flex-col gap-2">
       <div
-        className="relative w-full rounded-xl overflow-hidden bg-[#F3F4F6]"
+        className="relative w-full rounded-xl overflow-hidden bg-surface-muted"
         style={{ aspectRatio: "16/9" }}
       >
         <Image
@@ -43,7 +43,7 @@ function ImageBlock({ block }: { block: StudentBlock }) {
         />
       </div>
       {block.caption && (
-        <figcaption className="font-body text-xs text-[#9CA3AF] text-center">
+        <figcaption className="font-body text-xs text-muted-contrast text-center">
           {block.caption}
         </figcaption>
       )}
@@ -137,19 +137,19 @@ export default function ModulePage() {
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-32 lg:pb-10">
       {/* Breadcrumb badge */}
       <div className="flex items-center justify-between mb-6">
-        <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#F3E8FF] dark:bg-[#2d1a4a] text-[#3D006B] dark:text-[#C084FC] font-body text-xs font-semibold">
+        <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary-soft text-primary font-body text-xs font-semibold">
           Module {moduleIndex + 1} of {modules.length}
         </span>
         {isCompleted && (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 text-green-700 font-body text-xs font-medium border border-green-200">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 text-green-700 dark:bg-green-600 dark:text-white font-body text-xs font-medium border border-green-200 dark:border-green-600">
             <CheckCircle2 size={11} /> Completed
           </span>
         )}
       </div>
 
       {/* Content card */}
-      <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-[#E5E7EB] dark:border-[#2d2d2d] shadow-sm p-6 sm:p-8">
-        <h2 className="font-heading font-black text-2xl text-[#0F0F0F] dark:text-[#F9FAFB] mb-6">
+      <div className="bg-surface-card rounded-2xl border border-border shadow-sm p-6 sm:p-8">
+        <h2 className="font-heading font-black text-2xl text-foreground mb-6">
           {mod.title}
         </h2>
         <div className="flex flex-col gap-6">
@@ -160,8 +160,8 @@ export default function ModulePage() {
 
         {/* Take Quiz prompt at end of content */}
         {needsQuiz && (
-          <div className="mt-8 pt-6 border-t border-[#E5E7EB] dark:border-[#2d2d2d] flex flex-col gap-3">
-            <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF]">
+          <div className="mt-8 pt-6 border-t border-border flex flex-col gap-3">
+            <p className="font-body text-sm text-muted">
               You&apos;ve reached the end of this module. Take the quiz to
               continue.
             </p>
@@ -179,7 +179,7 @@ export default function ModulePage() {
       </div>
 
       {/* Desktop nav */}
-      <div className="hidden lg:flex flex-row items-center justify-between gap-3 mt-8 pt-6 border-t border-[#E5E7EB] dark:border-[#2d2d2d]">
+      <div className="hidden lg:flex flex-row items-center justify-between gap-3 mt-8 pt-6 border-t border-border">
         <Button
           variant="secondary"
           size="md"
@@ -258,7 +258,7 @@ export default function ModulePage() {
       </div>
 
       {/* Mobile sticky nav */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white dark:bg-[#111111] border-t border-[#E5E7EB] dark:border-[#2d2d2d] shadow-[0_-4px_16px_rgba(0,0,0,0.06)] px-4 py-3 flex items-center justify-between gap-3">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-shell border-t border-border shadow-[0_-4px_16px_rgba(0,0,0,0.06)] px-4 py-3 flex items-center justify-between gap-3">
         <Button
           variant="secondary"
           size="md"
@@ -268,7 +268,7 @@ export default function ModulePage() {
         >
           <ChevronLeft size={16} />
         </Button>
-        <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] truncate flex-1 text-center">
+        <p className="font-body text-xs text-muted-contrast truncate flex-1 text-center">
           {mod.title}
         </p>
         {needsQuiz ? (

@@ -10,11 +10,11 @@ import { Button, Input, FormField, PasswordInput } from "@/components/ui";
 
 // Redirect to `next` only if the user's role permits it; otherwise fall back to their home.
 function resolveDestination(next: string | null, role: string): string {
-  const home = role === 'admin' ? '/admin' : '/learn';
+  const home = role === "admin" ? "/admin" : "/learn";
   if (!next) return home;
   // Prevent students from being bounced into /admin and admins into /learn via a stale next param
-  if (next.startsWith('/admin') && role !== 'admin') return home;
-  if (next.startsWith('/learn') && role === 'admin') return home;
+  if (next.startsWith("/admin") && role !== "admin") return home;
+  if (next.startsWith("/learn") && role === "admin") return home;
   return next;
 }
 
@@ -77,7 +77,7 @@ function SignInForm() {
   return (
     <div className="min-h-screen flex">
       {/* ── Left brand panel ─────────────────────────────────────── */}
-      <div className="hidden lg:flex lg:w-[42%] xl:w-[38%] flex-col bg-[#3D006B] relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[42%] xl:w-[38%] flex-col bg-primary relative overflow-hidden">
         {/* Dot overlay */}
         {/* Dot grid */}
         <div
@@ -138,11 +138,11 @@ function SignInForm() {
       </div>
 
       {/* ── Right form panel ─────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-[#0f0f0f] px-6 py-12 relative">
+      <div className="flex-1 flex flex-col items-center justify-center bg-surface-shell px-6 py-12 relative">
         {/* Back link */}
         <Link
           href="/"
-          className="absolute top-6 left-6 flex items-center gap-1.5 text-[#9CA3AF] hover:text-[#3D006B] transition-colors font-body text-sm"
+          className="absolute top-6 left-6 flex items-center gap-1.5 text-muted-contrast hover:text-primary transition-colors font-body text-sm"
         >
           <svg
             width="16"
@@ -164,10 +164,10 @@ function SignInForm() {
           <div className="flex justify-center mb-10">
             <Logo className="h-20" linked={false} />
           </div>
-          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] dark:text-[#F9FAFB] mb-1">
+          <h1 className="font-heading font-black text-2xl text-foreground mb-1">
             Welcome back
           </h1>
-          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-7">
+          <p className="font-body text-sm text-muted mb-7">
             Sign in to continue learning.
           </p>
 
@@ -187,9 +187,9 @@ function SignInForm() {
             />
           </div>
           <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px bg-[#F3F4F6]" />
-            <span className="font-body text-xs text-[#D1D5DB]">or</span>
-            <div className="flex-1 h-px bg-[#F3F4F6]" />
+            <div className="flex-1 h-px bg-surface-muted" />
+            <span className="font-body text-xs text-border-strong">or</span>
+            <div className="flex-1 h-px bg-surface-muted" />
           </div> */}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -208,13 +208,13 @@ function SignInForm() {
               <div className="flex items-center justify-between mb-1.5">
                 <label
                   htmlFor="password"
-                  className="font-body text-sm font-medium text-[#374151] dark:text-[#D1D5DB]"
+                  className="font-body text-sm font-medium text-foreground-soft"
                 >
                   Password <span className="text-red-500">*</span>
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="font-body text-xs text-[#3D006B] hover:underline"
+                  className="font-body text-xs text-primary hover:underline"
                 >
                   Forgot password?
                 </Link>
@@ -244,11 +244,11 @@ function SignInForm() {
             </Button>
           </form>
 
-          <p className="font-body text-sm text-[#9CA3AF] dark:text-[#6B7280] text-center mt-6">
+          <p className="font-body text-sm text-muted-contrast text-center mt-6">
             Don&apos;t have an account?{" "}
             <Link
               href="/sign-up"
-              className="text-[#3D006B] font-medium hover:underline"
+              className="text-primary font-medium hover:underline"
             >
               Get Started
             </Link>

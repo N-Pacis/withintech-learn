@@ -1,77 +1,57 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Logo, ThemeToggle } from '@/components/ui';
-import { useAuth } from '@/hooks/useAuth';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  BookOpen,
+  LayoutGrid,
+  Shield,
+  Users,
+  ClipboardCheck,
+  Zap,
+  X,
+  LogOut,
+} from "lucide-react";
+import { Logo, ThemeToggle } from "@/components/ui";
+import { useAuth } from "@/hooks/useAuth";
+import { cn } from "@/lib/utils";
 
 const navItems = [
   {
-    label: 'Dashboard',
-    href: '/admin',
+    label: "Dashboard",
+    href: "/admin",
     exact: true,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
-      </svg>
-    ),
+    icon: <LayoutGrid size={16} />,
   },
   {
-    label: 'Courses',
-    href: '/admin/courses',
+    label: "Courses",
+    href: "/admin/courses",
     exact: false,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-      </svg>
-    ),
+    icon: <BookOpen size={16} />,
   },
   {
-    label: 'Challenges',
-    href: '/admin/challenges',
+    label: "Challenges",
+    href: "/admin/challenges",
     exact: false,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
-      </svg>
-    ),
+    icon: <Zap size={16} />,
   },
   {
-    label: 'Admins',
-    href: '/admin/admins',
+    label: "Admins",
+    href: "/admin/admins",
     exact: false,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      </svg>
-    ),
+    icon: <Shield size={16} />,
   },
   {
-    label: 'Students',
-    href: '/admin/students',
+    label: "Students",
+    href: "/admin/students",
     exact: false,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
+    icon: <Users size={16} />,
   },
   {
-    label: 'Enrollments',
-    href: '/admin/enrollments',
+    label: "Enrollments",
+    href: "/admin/enrollments",
     exact: false,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M9 11l3 3L22 4" />
-        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-      </svg>
-    ),
+    icon: <ClipboardCheck size={16} />,
   },
 ];
 
@@ -89,7 +69,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
   const initials = [user?.firstName?.[0], user?.lastName?.[0]]
     .filter(Boolean)
-    .join('')
+    .join("")
     .toUpperCase();
 
   return (
@@ -104,11 +84,11 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
       <aside
         className={cn(
-          'fixed top-0 left-0 z-40 w-64 h-screen bg-white dark:bg-[#111111] flex flex-col',
-          'border-r border-[#F0F0F0] dark:border-[#2d2d2d] shadow-[1px_0_0_0_#F0F0F0] dark:shadow-[1px_0_0_0_#2d2d2d]',
-          'transition-transform duration-300 ease-in-out',
-          'lg:translate-x-0 lg:sticky lg:top-0',
-          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+          "fixed top-0 left-0 z-40 w-64 h-screen bg-surface-shell flex flex-col",
+          "border-r border-border-faint shadow-sm",
+          "transition-transform duration-300 ease-in-out",
+          "lg:translate-x-0 lg:sticky lg:top-0",
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
       >
         {/* Logo */}
@@ -116,18 +96,16 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           <Logo className="h-12" linked={false} variant="default" />
           <button
             onClick={onClose}
-            className="lg:hidden p-1.5 rounded-lg text-[#9CA3AF] hover:text-[#374151] hover:bg-[#F3F4F6] transition-colors"
+            className="lg:hidden p-1.5 rounded-lg text-muted-contrast hover:text-foreground-soft hover:bg-surface-muted transition-colors"
             aria-label="Close menu"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+            <X size={16} />
           </button>
         </div>
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-2 flex flex-col gap-0.5 overflow-y-auto">
-          <p className="font-body text-[10px] font-semibold text-[#9CA3AF] dark:text-[#6B7280] tracking-widest uppercase px-3 mb-2">
+          <p className="font-body text-[10px] font-semibold text-muted-contrast tracking-widest uppercase px-3 mb-2">
             Menu
           </p>
           {navItems.map(({ label, href, exact, icon }) => {
@@ -138,13 +116,18 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                 href={href}
                 onClick={onClose}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm font-medium transition-all',
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm font-medium transition-all",
                   active
-                    ? 'bg-[#3D006B] text-white shadow-sm'
-                    : 'text-[#6B7280] hover:text-[#374151] hover:bg-[#F3F4F6] dark:text-[#9CA3AF] dark:hover:text-[#F9FAFB] dark:hover:bg-[#252525]',
+                    ? "bg-primary text-white shadow-sm"
+                    : "text-muted hover:text-foreground hover:bg-surface-subtle",
                 )}
               >
-                <span className={cn('shrink-0', active ? 'text-white' : 'text-[#9CA3AF]')}>
+                <span
+                  className={cn(
+                    "shrink-0",
+                    active ? "text-white" : "text-muted-contrast",
+                  )}
+                >
                   {icon}
                 </span>
                 {label}
@@ -154,32 +137,35 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         </nav>
 
         {/* User + sign out */}
-        <div className="px-3 py-4 border-t border-[#F0F0F0] dark:border-[#2d2d2d]">
+        <div className="px-3 py-4 border-t border-border-faint">
           <div className="flex items-center gap-3 px-3 py-2.5 mb-1">
-            <div className="w-8 h-8 rounded-full bg-[#3D006B] flex items-center justify-center shrink-0">
-              <span className="font-heading font-bold text-xs text-white">{initials || '?'}</span>
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+              <span className="font-heading font-bold text-xs text-white">
+                {initials || "?"}
+              </span>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="font-body text-sm font-medium text-[#0F0F0F] dark:text-[#F9FAFB] truncate leading-tight">
+              <p className="font-body text-sm font-medium text-foreground truncate leading-tight">
                 {user?.firstName} {user?.lastName}
               </p>
-              <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] truncate">{user?.email}</p>
+              <p className="font-body text-xs text-muted-contrast truncate">
+                {user?.email}
+              </p>
             </div>
           </div>
 
           <div className="flex items-center justify-between px-3 py-1.5 mb-1">
-            <span className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280]">Theme</span>
+            <span className="font-body text-xs text-muted-contrast">Theme</span>
             <ThemeToggle />
           </div>
           <button
-            onClick={() => { onClose(); logout(); }}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-[#6B7280] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 transition-colors font-body text-sm"
+            onClick={() => {
+              onClose();
+              logout();
+            }}
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-muted hover:text-red-600 hover:bg-red-50 transition-colors font-body text-sm"
           >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
+            <LogOut size={15} />
             Sign Out
           </button>
         </div>

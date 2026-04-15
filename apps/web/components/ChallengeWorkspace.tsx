@@ -22,7 +22,10 @@ import { SubmissionResults } from "@/app/learn/challenges/[slug]/components/Subm
 import { SubmissionHistory } from "@/app/learn/challenges/[slug]/components/SubmissionHistory";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { CHALLENGE_LANGUAGES, normalizeVisibleChallengeCode } from "@/lib/challenges";
+import {
+  CHALLENGE_LANGUAGES,
+  normalizeVisibleChallengeCode,
+} from "@/lib/challenges";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -37,9 +40,9 @@ export interface ChallengeWorkspaceProps {
 // ─── Difficulty map ───────────────────────────────────────────────────────────
 
 const DIFFICULTY_BADGE = {
-  easy:   { variant: "success"  as const, label: "Easy"   },
-  medium: { variant: "warning"  as const, label: "Medium" },
-  hard:   { variant: "danger"   as const, label: "Hard"   },
+  easy: { variant: "success" as const, label: "Easy" },
+  medium: { variant: "warning" as const, label: "Medium" },
+  hard: { variant: "danger" as const, label: "Hard" },
 };
 
 type RightTab = "results" | "history";
@@ -50,26 +53,34 @@ function WorkspaceSkeleton({ isInsideLayout }: { isInsideLayout?: boolean }) {
   const h = isInsideLayout ? "h-[calc(100vh-64px)]" : "h-[100dvh]";
   return (
     <div className={cn("flex animate-pulse flex-col", h)}>
-      <div className="h-[52px] bg-white dark:bg-[#1a1a1a] border-b border-[#E5E7EB] dark:border-[#2d2d2d] shrink-0" />
+      <div className="h-[52px] bg-surface-card border-b border-border shrink-0" />
       <div className="hidden md:flex flex-1 overflow-hidden">
-        <div className="w-[42%] border-r border-[#E5E7EB] dark:border-[#2d2d2d] p-5 flex flex-col gap-4 bg-white dark:bg-[#1a1a1a]">
-          <div className="h-6 w-2/3 bg-[#E5E7EB] dark:bg-[#252525] rounded-md" />
+        <div className="w-[42%] border-r border-border p-5 flex flex-col gap-4 bg-surface-card">
+          <div className="h-6 w-2/3 bg-fill-muted rounded-md" />
           {[100, 80, 90, 60, 70, 85].map((w, i) => (
-            <div key={i} className="h-3.5 bg-[#E5E7EB] dark:bg-[#252525] rounded" style={{ width: `${w}%` }} />
+            <div
+              key={i}
+              className="h-3.5 bg-fill-muted rounded"
+              style={{ width: `${w}%` }}
+            />
           ))}
-          <div className="h-28 bg-[#E5E7EB] dark:bg-[#252525] rounded-lg mt-2" />
+          <div className="h-28 bg-fill-muted rounded-lg mt-2" />
         </div>
         <div className="flex-1 flex flex-col">
-          <div className="h-10 bg-[#2d2d2d] border-b border-[#3a3a3a]" />
-          <div className="flex-1 bg-[#1e1e1e]" />
+          <div className="h-10 bg-editor-panel border-b border-editor-border" />
+          <div className="flex-1 bg-editor" />
         </div>
       </div>
-      <div className="md:hidden flex-1 p-5 flex flex-col gap-4 bg-white dark:bg-[#1a1a1a]">
-        <div className="h-6 w-2/3 bg-[#E5E7EB] dark:bg-[#252525] rounded-md" />
+      <div className="md:hidden flex-1 p-5 flex flex-col gap-4 bg-surface-card">
+        <div className="h-6 w-2/3 bg-fill-muted rounded-md" />
         {[100, 80, 90, 60, 70].map((w, i) => (
-          <div key={i} className="h-3.5 bg-[#E5E7EB] dark:bg-[#252525] rounded" style={{ width: `${w}%` }} />
+          <div
+            key={i}
+            className="h-3.5 bg-fill-muted rounded"
+            style={{ width: `${w}%` }}
+          />
         ))}
-        <div className="mt-auto h-11 bg-[#E5E7EB] dark:bg-[#252525] rounded-lg" />
+        <div className="mt-auto h-11 bg-fill-muted rounded-lg" />
       </div>
     </div>
   );
@@ -96,10 +107,16 @@ function AcceptedBanner({ onDismiss }: { onDismiss: () => void }) {
 
 // ─── Input display (pretty-print structured test case input) ──────────────────
 
-function InputDisplay({ input, params }: { input: string; params: FunctionParam[] | null }) {
+function InputDisplay({
+  input,
+  params,
+}: {
+  input: string;
+  params: FunctionParam[] | null;
+}) {
   if (!params || params.length === 0) {
     return input ? (
-      <pre className="bg-[#F3F4F6] dark:bg-[#252525] dark:text-[#D1D5DB] rounded px-2 py-1 whitespace-pre-wrap break-all text-xs font-mono">
+      <pre className="bg-surface-muted text-foreground-soft rounded px-2 py-1 whitespace-pre-wrap break-all text-xs font-mono">
         {input}
       </pre>
     ) : null;
@@ -109,7 +126,7 @@ function InputDisplay({ input, params }: { input: string; params: FunctionParam[
     values = JSON.parse(input) as unknown[];
   } catch {
     return (
-      <pre className="bg-[#F3F4F6] dark:bg-[#252525] dark:text-[#D1D5DB] rounded px-2 py-1 whitespace-pre-wrap break-all text-xs font-mono">
+      <pre className="bg-surface-muted text-foreground-soft rounded px-2 py-1 whitespace-pre-wrap break-all text-xs font-mono">
         {input}
       </pre>
     );
@@ -117,10 +134,15 @@ function InputDisplay({ input, params }: { input: string; params: FunctionParam[
   return (
     <div className="flex flex-col gap-1">
       {params.map((p, i) => (
-        <div key={p.name} className="flex items-start gap-1.5 text-xs font-mono">
-          <span className="text-[#9CA3AF] shrink-0">{p.name} =</span>
-          <pre className="bg-[#F3F4F6] dark:bg-[#252525] dark:text-[#D1D5DB] rounded px-1.5 py-0.5 whitespace-pre-wrap break-all flex-1">
-            {Array.isArray(values[i]) ? JSON.stringify(values[i]) : String(values[i] ?? "")}
+        <div
+          key={p.name}
+          className="flex items-start gap-1.5 text-xs font-mono"
+        >
+          <span className="text-muted-contrast shrink-0">{p.name} =</span>
+          <pre className="bg-surface-muted text-foreground-soft rounded px-1.5 py-0.5 whitespace-pre-wrap break-all flex-1">
+            {Array.isArray(values[i])
+              ? JSON.stringify(values[i])
+              : String(values[i] ?? "")}
           </pre>
         </div>
       ))}
@@ -140,36 +162,43 @@ function EmptyResultsState({
 }) {
   return (
     <div className="p-5">
-      <p className="font-body text-xs text-[#9CA3AF] mb-3">
+      <p className="font-body text-xs text-muted-contrast mb-3">
         Write your solution and press{" "}
-        <kbd className="font-mono bg-[#F3F4F6] dark:bg-[#252525] border border-[#E5E7EB] dark:border-[#2d2d2d] rounded px-1 py-0.5 text-[10px]">
+        <kbd className="font-mono bg-surface-muted border border-border rounded px-1 py-0.5 text-[10px]">
           ⌘ Enter
         </kbd>{" "}
         or click <strong>Submit</strong> to run against all test cases.
       </p>
       {challenge.visibleTestCases.length > 0 && (
         <div className="flex flex-col gap-2">
-          <p className="font-body text-xs font-medium text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider">
+          <p className="font-body text-xs font-medium text-muted uppercase tracking-wider">
             Example test cases
           </p>
           {challenge.visibleTestCases.map((tc, i) => (
             <div
               key={tc.id}
-              className="border border-[#E5E7EB] dark:border-[#2d2d2d] rounded-lg overflow-hidden text-xs font-mono"
+              className="border border-border rounded-lg overflow-hidden text-xs font-mono"
             >
-              <div className="px-3 py-1.5 bg-[#F9FAFB] dark:bg-[#141414] border-b border-[#E5E7EB] dark:border-[#2d2d2d] font-body text-[11px] text-[#9CA3AF] dark:text-[#6B7280]">
+              <div className="px-3 py-1.5 bg-surface-panel border-b border-border font-body text-[11px] text-muted-contrast">
                 Example {i + 1}
               </div>
-              <div className="p-3 grid gap-2 bg-white dark:bg-[#1a1a1a]">
+              <div className="p-3 grid gap-2 bg-surface-card">
                 {tc.input !== "" && (
                   <div>
-                    <div className="font-body text-[11px] text-[#9CA3AF] mb-1">Input</div>
-                    <InputDisplay input={tc.input} params={challenge.functionParams} />
+                    <div className="font-body text-[11px] text-muted-contrast mb-1">
+                      Input
+                    </div>
+                    <InputDisplay
+                      input={tc.input}
+                      params={challenge.functionParams}
+                    />
                   </div>
                 )}
                 <div>
-                  <div className="font-body text-[11px] text-[#9CA3AF] mb-0.5">Expected</div>
-                  <pre className="bg-[#F3F4F6] rounded px-2 py-1 whitespace-pre-wrap break-all">
+                  <div className="font-body text-[11px] text-muted-contrast mb-0.5">
+                    Expected
+                  </div>
+                  <pre className="bg-surface-muted rounded px-2 py-1 whitespace-pre-wrap break-all">
                     {tc.expectedOutput}
                   </pre>
                 </div>
@@ -199,7 +228,11 @@ function LockedWorkspace({
   const signInHref = `/sign-in?next=/challenges/${slug}`;
   const h = isInsideLayout ? "h-[calc(100vh-64px)]" : "h-[100dvh]";
   const previewCode = useMemo(
-    () => normalizeVisibleChallengeCode("python", (challenge.starterCode as StarterCode).python),
+    () =>
+      normalizeVisibleChallengeCode(
+        "python",
+        (challenge.starterCode as StarterCode).python,
+      ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [(challenge.starterCode as StarterCode).python],
   );
@@ -207,21 +240,30 @@ function LockedWorkspace({
   return (
     <div className={cn("flex flex-col", h)}>
       {/* Top bar */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] shrink-0">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-surface-card shrink-0">
         <Link
           href={backHref}
-          className="text-[#9CA3AF] hover:text-[#3D006B] dark:hover:text-[#C084FC] transition-colors shrink-0"
+          className="text-muted-contrast hover:text-primary transition-colors shrink-0"
           title="Back to challenges"
         >
           <ArrowLeft size={18} />
         </Link>
-        <span className="font-heading font-semibold text-sm text-[#0F0F0F] dark:text-[#F9FAFB] flex-1 truncate">
+        <span className="font-heading font-semibold text-sm text-foreground flex-1 truncate">
           {challenge.title}
         </span>
-        <Badge variant={badge.variant} size="sm" className="shrink-0 hidden sm:inline-flex">
+        <Badge
+          variant={badge.variant}
+          size="sm"
+          className="shrink-0 hidden sm:inline-flex"
+        >
           {badge.label}
         </Badge>
-        <Button asChild variant="primary" size="sm" className="shrink-0 hidden md:inline-flex">
+        <Button
+          asChild
+          variant="primary"
+          size="sm"
+          className="shrink-0 hidden md:inline-flex"
+        >
           <Link href={signInHref}>
             <Lock size={13} className="mr-1" />
             Sign in to solve
@@ -231,7 +273,7 @@ function LockedWorkspace({
 
       {/* Desktop: split layout */}
       <div className="hidden md:flex flex-1 overflow-hidden min-h-0">
-        <div className="flex flex-col w-[42%] min-w-[300px] border-r border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] overflow-y-auto">
+        <div className="flex flex-col w-[42%] min-w-[300px] border-r border-border bg-surface-card overflow-y-auto">
           <ProblemPanel
             title={challenge.title}
             description={challenge.description}
@@ -241,13 +283,15 @@ function LockedWorkspace({
           />
         </div>
         <div className="flex-1 flex flex-col overflow-hidden min-w-0 relative">
-          <div className="flex items-center gap-1 px-3 py-2 bg-[#1e1e1e] border-b border-[#3a3a3a] shrink-0 overflow-x-auto">
+          <div className="flex items-center gap-1 px-3 py-2 bg-editor border-b border-editor-border shrink-0 overflow-x-auto">
             {CHALLENGE_LANGUAGES.map((l) => (
               <span
                 key={l.value}
                 className={cn(
                   "px-3 py-1 rounded font-mono text-xs font-medium whitespace-nowrap",
-                  l.value === "python" ? "bg-[#3D006B] text-white" : "text-[#9CA3AF]",
+                  l.value === "python"
+                    ? "bg-primary text-white"
+                    : "text-muted-contrast",
                 )}
               >
                 {l.label}
@@ -263,17 +307,18 @@ function LockedWorkspace({
             />
           </div>
           {/* Lock overlay */}
-          <div className="absolute inset-0 top-[40px] flex flex-col items-center justify-center bg-[#1e1e1e]/80 backdrop-blur-[2px] z-10 px-6">
-            <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-2xl border border-[#E5E7EB] dark:border-[#2d2d2d] px-8 py-8 flex flex-col items-center gap-4 max-w-xs w-full text-center">
-              <div className="w-12 h-12 rounded-xl bg-[#F3E8FF] dark:bg-[#2d1a4a] flex items-center justify-center">
-                <Lock size={22} className="text-[#3D006B] dark:text-[#C084FC]" />
+          <div className="absolute inset-0 top-[40px] flex flex-col items-center justify-center bg-editor/80 backdrop-blur-[2px] z-10 px-6">
+            <div className="bg-surface-card rounded-2xl shadow-2xl border border-border px-8 py-8 flex flex-col items-center gap-4 max-w-xs w-full text-center">
+              <div className="w-12 h-12 rounded-xl bg-primary-soft flex items-center justify-center">
+                <Lock size={22} className="text-primary" />
               </div>
               <div>
-                <p className="font-heading font-bold text-base text-[#0F0F0F] dark:text-[#F9FAFB] mb-1">
+                <p className="font-heading font-bold text-base text-foreground mb-1">
                   Sign in to start coding
                 </p>
-                <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF]">
-                  Create a free account to submit solutions and track your progress.
+                <p className="font-body text-sm text-muted">
+                  Create a free account to submit solutions and track your
+                  progress.
                 </p>
               </div>
               <Button asChild variant="primary" fullWidth>
@@ -281,7 +326,7 @@ function LockedWorkspace({
               </Button>
               <Link
                 href={backHref}
-                className="font-body text-xs text-[#9CA3AF] hover:text-[#3D006B] transition-colors"
+                className="font-body text-xs text-muted-contrast hover:text-primary transition-colors"
               >
                 ← Back to all challenges
               </Link>
@@ -291,7 +336,7 @@ function LockedWorkspace({
       </div>
 
       {/* Mobile: problem + sticky CTA */}
-      <div className="md:hidden flex flex-col flex-1 overflow-hidden min-h-0 bg-white dark:bg-[#1a1a1a]">
+      <div className="md:hidden flex flex-col flex-1 overflow-hidden min-h-0 bg-surface-card">
         <div className="flex-1 overflow-y-auto">
           <ProblemPanel
             title={challenge.title}
@@ -301,7 +346,7 @@ function LockedWorkspace({
             functionParams={challenge.functionParams}
           />
         </div>
-        <div className="shrink-0 border-t border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] px-4 py-4 flex flex-col gap-2">
+        <div className="shrink-0 border-t border-border bg-surface-card px-4 py-4 flex flex-col gap-2">
           <Button asChild variant="primary" fullWidth>
             <Link href={signInHref}>
               <Lock size={14} />
@@ -336,24 +381,28 @@ function AuthedWorkspace({
   const starterCodeByLang = useMemo<Record<ChallengeLanguage, string>>(() => {
     const starter = challenge.starterCode as StarterCode;
     return {
-      python:     normalizeVisibleChallengeCode("python",     starter.python),
-      java:       normalizeVisibleChallengeCode("java",       starter.java),
-      javascript: normalizeVisibleChallengeCode("javascript", starter.javascript),
-      c:          normalizeVisibleChallengeCode("c",          starter.c),
-      cpp:        normalizeVisibleChallengeCode("cpp",        starter.cpp),
-      go:         normalizeVisibleChallengeCode("go",         starter.go),
+      python: normalizeVisibleChallengeCode("python", starter.python),
+      java: normalizeVisibleChallengeCode("java", starter.java),
+      javascript: normalizeVisibleChallengeCode(
+        "javascript",
+        starter.javascript,
+      ),
+      c: normalizeVisibleChallengeCode("c", starter.c),
+      cpp: normalizeVisibleChallengeCode("cpp", starter.cpp),
+      go: normalizeVisibleChallengeCode("go", starter.go),
     };
   }, [challenge.starterCode]);
 
-  const [codeByLang, setCodeByLang] = useState<Record<ChallengeLanguage, string>>(starterCodeByLang);
-  const [seededId, setSeededId]     = useState<string | null>(null);
-  const [language, setLanguage]     = useState<ChallengeLanguage>("python");
-  const [rightTab, setRightTab]     = useState<RightTab>("results");
+  const [codeByLang, setCodeByLang] =
+    useState<Record<ChallengeLanguage, string>>(starterCodeByLang);
+  const [seededId, setSeededId] = useState<string | null>(null);
+  const [language, setLanguage] = useState<ChallengeLanguage>("python");
+  const [rightTab, setRightTab] = useState<RightTab>("results");
   const [lastResult, setLastResult] = useState<SubmissionResult | null>(null);
   const [showBanner, setShowBanner] = useState(false);
-  const [warningCount, setWarningCount]   = useState(0);
+  const [warningCount, setWarningCount] = useState(0);
   const [warningVisible, setWarningVisible] = useState(false);
-  const [mobilePanel, setMobilePanel]     = useState<"problem" | "code">("problem");
+  const [mobilePanel, setMobilePanel] = useState<"problem" | "code">("problem");
 
   // Seed starter code once per challenge
   if (challenge && seededId !== challenge.id) {
@@ -384,13 +433,21 @@ function AuthedWorkspace({
       setRightTab("results");
       if (res.data.status === "accepted") {
         setShowBanner(true);
-        toast.success(`Accepted — ${res.data.testsPassed}/${res.data.totalTests} tests passed`, { duration: 5000 });
+        toast.success(
+          `Accepted — ${res.data.testsPassed}/${res.data.totalTests} tests passed`,
+          { duration: 5000 },
+        );
       } else if (res.data.status === "compile_error") {
         toast.error("Compile error — check your code.", { duration: 4000 });
       } else if (res.data.status === "time_limit_exceeded") {
-        toast.error("Time limit exceeded — optimize your solution.", { duration: 4000 });
+        toast.error("Time limit exceeded — optimize your solution.", {
+          duration: 4000,
+        });
       } else {
-        toast.error(`${res.data.testsPassed}/${res.data.totalTests} tests passed.`, { duration: 4000 });
+        toast.error(
+          `${res.data.testsPassed}/${res.data.totalTests} tests passed.`,
+          { duration: 4000 },
+        );
       }
     } catch {
       toast.dismiss(toastId);
@@ -400,9 +457,16 @@ function AuthedWorkspace({
 
   // Focus/visibility warning detection
   useEffect(() => {
-    const markWarning = () => { setWarningCount((n) => n + 1); setWarningVisible(true); };
-    const handleVisibility = () => { if (document.visibilityState === "hidden") markWarning(); };
-    const handleBlur = () => { if (document.visibilityState === "visible") markWarning(); };
+    const markWarning = () => {
+      setWarningCount((n) => n + 1);
+      setWarningVisible(true);
+    };
+    const handleVisibility = () => {
+      if (document.visibilityState === "hidden") markWarning();
+    };
+    const handleBlur = () => {
+      if (document.visibilityState === "visible") markWarning();
+    };
     document.addEventListener("visibilitychange", handleVisibility);
     window.addEventListener("pagehide", markWarning);
     window.addEventListener("blur", handleBlur);
@@ -438,19 +502,19 @@ function AuthedWorkspace({
       />
 
       {/* Top bar */}
-      <div className="flex items-center gap-3 px-4 py-2.5 border-b border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] shrink-0">
+      <div className="flex items-center gap-3 px-4 py-2.5 border-b border-border bg-surface-card shrink-0">
         <Link
           href={backHref}
-          className="text-[#9CA3AF] hover:text-[#3D006B] dark:hover:text-[#C084FC] transition-colors shrink-0"
+          className="text-muted-contrast hover:text-primary transition-colors shrink-0"
           title="Back to challenges"
         >
           <ArrowLeft size={18} />
         </Link>
-        <span className="font-heading font-semibold text-sm text-[#0F0F0F] dark:text-[#F9FAFB] flex-1 truncate">
+        <span className="font-heading font-semibold text-sm text-foreground flex-1 truncate">
           {challenge.title}
         </span>
         {challenge.completed && (
-          <span className="hidden sm:flex items-center gap-1 font-body text-xs text-green-600 bg-green-50 px-2.5 py-1 rounded-full shrink-0">
+          <span className="hidden sm:flex items-center gap-1 font-body text-xs text-green-600 dark:text-white bg-green-50 dark:bg-green-600 px-2.5 py-1 rounded-full shrink-0">
             <CheckCircle2 size={12} />
             Solved
           </span>
@@ -469,7 +533,7 @@ function AuthedWorkspace({
       </div>
 
       {/* Mobile panel toggle */}
-      <div className="md:hidden flex shrink-0 border-b border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a]">
+      <div className="md:hidden flex shrink-0 border-b border-border bg-surface-card">
         {(["problem", "code"] as const).map((panel) => (
           <button
             key={panel}
@@ -477,8 +541,8 @@ function AuthedWorkspace({
             className={cn(
               "flex-1 py-2.5 font-body text-sm font-medium capitalize transition-colors",
               mobilePanel === panel
-                ? "text-[#3D006B] border-b-2 border-[#3D006B]"
-                : "text-[#6B7280]",
+                ? "text-primary border-b-2 border-primary"
+                : "text-muted",
             )}
           >
             {panel === "problem" ? "Problem" : "Code"}
@@ -491,7 +555,7 @@ function AuthedWorkspace({
         {/* Left: Problem */}
         <div
           className={cn(
-            "flex flex-col overflow-hidden bg-white dark:bg-[#1a1a1a] border-r border-[#E5E7EB] dark:border-[#2d2d2d]",
+            "flex flex-col overflow-hidden bg-surface-card border-r border-border",
             "md:flex md:w-[42%] md:min-w-70",
             mobilePanel === "problem" ? "flex flex-1" : "hidden",
           )}
@@ -516,7 +580,7 @@ function AuthedWorkspace({
           )}
         >
           {/* Language selector */}
-          <div className="flex items-center gap-1 px-3 py-2 bg-[#1e1e1e] border-b border-[#3a3a3a] shrink-0 overflow-x-auto">
+          <div className="flex items-center gap-1 px-3 py-2 bg-editor border-b border-editor-border shrink-0 overflow-x-auto">
             {CHALLENGE_LANGUAGES.map((l) => (
               <button
                 key={l.value}
@@ -524,15 +588,15 @@ function AuthedWorkspace({
                 className={cn(
                   "px-3 py-1 rounded font-mono text-xs font-medium whitespace-nowrap transition-colors",
                   language === l.value
-                    ? "bg-[#3D006B] text-white"
-                    : "text-[#9CA3AF] hover:text-white hover:bg-[#3a3a3a]",
+                    ? "bg-primary text-white"
+                    : "text-muted-contrast hover:text-white hover:bg-editor-border",
                 )}
               >
                 {l.label}
               </button>
             ))}
             <div className="ml-auto pl-2 shrink-0">
-              <span className="font-mono text-[10px] text-[#555] select-none hidden sm:block">
+              <span className="font-mono text-[10px] text-editor-subtle select-none hidden sm:block">
                 ⌘↵ Submit
               </span>
             </div>
@@ -549,13 +613,17 @@ function AuthedWorkspace({
 
           {/* Results / History drawer */}
           <div
-            className="shrink-0 border-t border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] flex flex-col"
+            className="shrink-0 border-t border-border bg-surface-card flex flex-col"
             style={{ maxHeight: "45%" }}
           >
-            <div className="flex items-center border-b border-[#E5E7EB] dark:border-[#2d2d2d] px-1 shrink-0">
+            <div className="flex items-center border-b border-border px-1 shrink-0">
               {[
                 { id: "results" as RightTab, label: "Results" },
-                { id: "history" as RightTab, label: "Submissions", icon: <History size={11} /> },
+                {
+                  id: "history" as RightTab,
+                  label: "Submissions",
+                  icon: <History size={11} />,
+                },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -563,8 +631,8 @@ function AuthedWorkspace({
                   className={cn(
                     "flex items-center gap-1.5 px-4 py-2.5 font-body text-xs font-medium transition-colors",
                     rightTab === tab.id
-                      ? "text-[#3D006B] border-b-2 border-[#3D006B]"
-                      : "text-[#6B7280] hover:text-[#3D006B]",
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-muted hover:text-primary",
                   )}
                 >
                   {tab.icon}
@@ -573,7 +641,9 @@ function AuthedWorkspace({
                     <span
                       className={cn(
                         "ml-1 w-1.5 h-1.5 rounded-full shrink-0",
-                        lastResult.status === "accepted" ? "bg-green-500" : "bg-red-400",
+                        lastResult.status === "accepted"
+                          ? "bg-green-500"
+                          : "bg-red-400",
                       )}
                     />
                   )}
@@ -605,13 +675,19 @@ function AuthedWorkspace({
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 
-export function ChallengeWorkspace({ slug, backHref, isInsideLayout }: ChallengeWorkspaceProps) {
+export function ChallengeWorkspace({
+  slug,
+  backHref,
+  isInsideLayout,
+}: ChallengeWorkspaceProps) {
   const { data: user } = useProfile();
   const isAuthed = !!user;
 
   // Fetch only the relevant resource based on auth state
-  const { data: publicChallenge, isLoading: publicLoading } = usePublicChallenge(slug, { enabled: !isAuthed });
-  const { data: studentChallenge, isLoading: studentLoading } = useStudentChallenge(slug, { enabled: isAuthed });
+  const { data: publicChallenge, isLoading: publicLoading } =
+    usePublicChallenge(slug, { enabled: !isAuthed });
+  const { data: studentChallenge, isLoading: studentLoading } =
+    useStudentChallenge(slug, { enabled: isAuthed });
 
   const isLoading = isAuthed ? studentLoading : publicLoading;
   const challenge = isAuthed ? studentChallenge : publicChallenge;
@@ -621,7 +697,7 @@ export function ChallengeWorkspace({ slug, backHref, isInsideLayout }: Challenge
   if (!challenge) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4 px-6">
-        <p className="font-body text-sm text-[#6B7280]">Challenge not found.</p>
+        <p className="font-body text-sm text-muted">Challenge not found.</p>
         <Button asChild variant="secondary" size="sm">
           <Link href={backHref}>Back to Challenges</Link>
         </Button>

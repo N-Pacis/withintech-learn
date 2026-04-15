@@ -1,15 +1,19 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import Link from 'next/link';
-import { FaLinkedin, FaWhatsapp } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6';
-import { useStudentCertificates, StudentCertificateSummary } from '@/hooks/queries/courses';
-import { useProfile } from '@/hooks/queries/auth';
-import { PageLoader } from '@/components/ui';
-import { Certificate } from '@/components/Certificate';
+import { useState, useRef, useEffect, useCallback } from "react";
+import Link from "next/link";
+import { FaLinkedin, FaWhatsapp } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import {
+  useStudentCertificates,
+  StudentCertificateSummary,
+} from "@/hooks/queries/courses";
+import { useProfile } from "@/hooks/queries/auth";
+import { PageLoader } from "@/components/ui";
+import { Certificate } from "@/components/Certificate";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://learn.withintech.org';
+const APP_URL =
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://learn.withintech.org";
 
 function certUrl(userId: string, courseSlug: string) {
   return `${APP_URL}/certificates/${userId}/${courseSlug}`;
@@ -34,45 +38,55 @@ function SharePopover({ cert, userId, rect, onClose }: SharePopoverProps) {
     function onDown(e: PointerEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) onClose();
     }
-    const id = setTimeout(() => document.addEventListener('pointerdown', onDown), 0);
-    return () => { clearTimeout(id); document.removeEventListener('pointerdown', onDown); };
+    const id = setTimeout(
+      () => document.addEventListener("pointerdown", onDown),
+      0,
+    );
+    return () => {
+      clearTimeout(id);
+      document.removeEventListener("pointerdown", onDown);
+    };
   }, [onClose]);
 
   const spaceBelow = window.innerHeight - rect.bottom;
   const top = spaceBelow > 240 ? rect.bottom + 8 : rect.top - 8;
-  const translateY = spaceBelow > 240 ? '0%' : '-100%';
+  const translateY = spaceBelow > 240 ? "0%" : "-100%";
 
   const links = [
     {
-      label: 'LinkedIn',
-      sublabel: 'Add to profile',
+      label: "LinkedIn",
+      sublabel: "Add to profile",
       href: `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(cert.courseTitle)}&organizationName=WithinTech+Learn&issueYear=${year}&issueMonth=${month}&certUrl=${encodeURIComponent(url)}&certId=${encodeURIComponent(cert.id)}`,
       icon: <FaLinkedin size={18} color="#0A66C2" />,
-      bg: '#EEF4FB',
+      bg: "#EEF4FB",
     },
     {
-      label: 'WhatsApp',
-      sublabel: 'Share with contacts',
+      label: "WhatsApp",
+      sublabel: "Share with contacts",
       href: `https://wa.me/?text=${encodeURIComponent(`🎓 I just completed "${cert.courseTitle}" on WithinTech Learn!\n\nView my certificate: ${url}`)}`,
       icon: <FaWhatsapp size={18} color="#25D366" />,
-      bg: '#EDFBF2',
+      bg: "#EDFBF2",
     },
     {
-      label: 'X (Twitter)',
-      sublabel: 'Post to your timeline',
+      label: "X (Twitter)",
+      sublabel: "Post to your timeline",
       href: `https://x.com/intent/tweet?text=${encodeURIComponent(`🎓 Just completed "${cert.courseTitle}" on @WithinTechLearn!\n\n`)}&url=${encodeURIComponent(url)}`,
       icon: <FaXTwitter size={18} color="#000000" />,
-      bg: '#F3F4F6',
+      bg: "#F3F4F6",
     },
   ];
 
   return (
     <div
       ref={ref}
-      className="fixed z-9999 w-64 bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-xl border border-[#E5E7EB] dark:border-[#2d2d2d] py-3"
-      style={{ top, right: window.innerWidth - rect.right, transform: `translateY(${translateY})` }}
+      className="fixed z-9999 w-64 bg-surface-card rounded-2xl shadow-xl border border-border py-3"
+      style={{
+        top,
+        right: window.innerWidth - rect.right,
+        transform: `translateY(${translateY})`,
+      }}
     >
-      <p className="font-body text-[10px] font-semibold text-[#9CA3AF] dark:text-[#6B7280] uppercase tracking-wider px-4 mb-2">
+      <p className="font-body text-[10px] font-semibold text-muted-contrast uppercase tracking-wider px-4 mb-2">
         Share Certificate
       </p>
       {links.map((l) => (
@@ -82,14 +96,21 @@ function SharePopover({ cert, userId, rect, onClose }: SharePopoverProps) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={onClose}
-          className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#F9FAFB] dark:hover:bg-[#252525] transition-colors"
+          className="flex items-center gap-3 px-4 py-2.5 hover:bg-surface-subtle transition-colors"
         >
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: l.bg }}>
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+            style={{ background: l.bg }}
+          >
             {l.icon}
           </div>
           <div>
-            <p className="font-body text-sm font-medium text-[#0F0F0F] dark:text-[#F9FAFB] leading-tight">{l.label}</p>
-            <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280]">{l.sublabel}</p>
+            <p className="font-body text-sm font-medium text-foreground leading-tight">
+              {l.label}
+            </p>
+            <p className="font-body text-xs text-muted-contrast">
+              {l.sublabel}
+            </p>
           </div>
         </a>
       ))}
@@ -99,7 +120,10 @@ function SharePopover({ cert, userId, rect, onClose }: SharePopoverProps) {
 
 // ─── Certificate card ─────────────────────────────────────────────────────────
 
-interface ActiveShare { cert: StudentCertificateSummary; rect: DOMRect }
+interface ActiveShare {
+  cert: StudentCertificateSummary;
+  rect: DOMRect;
+}
 
 function CertificateCard({
   cert,
@@ -122,8 +146,7 @@ function CertificateCard({
   };
 
   return (
-    <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-[#E5E7EB] dark:border-[#2d2d2d] shadow-sm hover:shadow-md hover:border-[#D1D5DB] dark:hover:border-[#4B5563] transition-all flex flex-col">
-
+    <div className="bg-surface-card rounded-2xl border border-border shadow-sm hover:shadow-md hover:border-border-strong transition-all flex flex-col">
       {/* Preview: click opens full certificate */}
       <Link
         href={certUrl(userId, cert.courseSlug)}
@@ -137,33 +160,51 @@ function CertificateCard({
       {/* Content */}
       <div className="p-4 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="font-heading font-bold text-sm text-[#0F0F0F] dark:text-[#F9FAFB] leading-snug line-clamp-2">
+          <h3 className="font-heading font-bold text-sm text-foreground leading-snug line-clamp-2">
             {cert.courseTitle}
           </h3>
-          <span className="shrink-0 text-[10px] font-body font-semibold text-[#059669] bg-[#ECFDF5] dark:bg-green-950/30 px-2 py-0.5 rounded-full">
+          <span className="shrink-0 text-[10px] font-body font-semibold text-[#059669] dark:text-white bg-[#ECFDF5] dark:bg-green-600 px-2 py-0.5 rounded-full">
             Earned
           </span>
         </div>
-        <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] mb-4">
-          {new Date(cert.completedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+        <p className="font-body text-xs text-muted-contrast mb-4">
+          {new Date(cert.completedAt).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
         </p>
 
         <div className="flex gap-2 mt-auto">
           <Link
             href={`/learn/courses/${cert.courseSlug}`}
-            className="flex-1 flex items-center justify-center gap-1.5 font-body text-sm font-medium text-[#3D006B] bg-[#F3E8FF] hover:bg-[#EDE9FE] px-3 py-2 rounded-lg transition-colors"
+            className="flex-1 flex items-center justify-center gap-1.5 font-body text-sm font-medium text-primary bg-primary-soft hover:bg-primary-pale px-3 py-2 rounded-lg transition-colors"
           >
             Go to Course
           </Link>
 
           <button
             ref={btnRef}
-            onClick={() => btnRef.current && onShare(cert, btnRef.current.getBoundingClientRect())}
-            className="w-9 h-9 flex items-center justify-center rounded-lg border border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] hover:bg-[#F9FAFB] dark:hover:bg-[#252525] text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#374151] dark:hover:text-[#D1D5DB] transition-colors"
+            onClick={() =>
+              btnRef.current &&
+              onShare(cert, btnRef.current.getBoundingClientRect())
+            }
+            className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-surface-card hover:bg-surface-subtle text-muted hover:text-foreground-soft hover:text-foreground-soft transition-colors"
             aria-label="Share certificate"
           >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
               <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
               <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
             </svg>
@@ -181,16 +222,22 @@ export default function CertificatesPage() {
   const { data: profile } = useProfile();
   const [activeShare, setActiveShare] = useState<ActiveShare | null>(null);
 
-  const openShare = useCallback((cert: StudentCertificateSummary, rect: DOMRect) => {
-    setActiveShare((prev) => prev?.cert.id === cert.id ? null : { cert, rect });
-  }, []);
+  const openShare = useCallback(
+    (cert: StudentCertificateSummary, rect: DOMRect) => {
+      setActiveShare((prev) =>
+        prev?.cert.id === cert.id ? null : { cert, rect },
+      );
+    },
+    [],
+  );
 
   return (
     <div className="px-6 py-10 max-w-7xl mx-auto w-full">
-
       <div className="mb-8">
-        <h1 className="font-heading font-black text-3xl text-[#0F0F0F] dark:text-[#F9FAFB]">My Certificates</h1>
-        <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-1">
+        <h1 className="font-heading font-black text-3xl text-foreground">
+          My Certificates
+        </h1>
+        <p className="font-body text-sm text-muted mt-1">
           Certificates you have earned by completing courses.
         </p>
       </div>
@@ -205,23 +252,35 @@ export default function CertificatesPage() {
 
       {!isLoading && !isError && certs?.length === 0 && (
         <div className="flex flex-col items-center justify-center py-32 text-center">
-          <div className="w-16 h-16 rounded-full bg-[#F3E8FF] flex items-center justify-center mb-5">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3D006B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <div className="w-16 h-16 rounded-full bg-primary-soft flex items-center justify-center mb-5">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#3D006B"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <circle cx="12" cy="8" r="6" />
               <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
             </svg>
           </div>
-          <h3 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB] mb-2">No certificates yet</h3>
-          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] max-w-xs">
-            Complete all modules and pass the final quiz to earn your first certificate.
+          <h3 className="font-heading font-bold text-lg text-foreground mb-2">
+            No certificates yet
+          </h3>
+          <p className="font-body text-sm text-muted max-w-xs">
+            Complete all modules and pass the final quiz to earn your first
+            certificate.
           </p>
         </div>
       )}
 
       {certs && certs.length > 0 && profile && (
         <>
-          <p className="font-body text-sm text-[#9CA3AF] dark:text-[#6B7280] mb-6">
-            {certs.length} certificate{certs.length !== 1 ? 's' : ''} earned
+          <p className="font-body text-sm text-muted-contrast mb-6">
+            {certs.length} certificate{certs.length !== 1 ? "s" : ""} earned
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
             {certs.map((cert) => (
@@ -244,7 +303,6 @@ export default function CertificatesPage() {
           onClose={() => setActiveShare(null)}
         />
       )}
-
     </div>
   );
 }
