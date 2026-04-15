@@ -200,9 +200,14 @@ export default function Home() {
                 desc: "Pass the quiz and download your certificate instantly.",
               },
             ].map(({ n, title, desc }) => (
-              <div key={n} className="flex gap-6 border-l-2 border-[#3D006B] pl-6 pb-10 last:pb-0">
+              <div
+                key={n}
+                className="flex gap-6 border-l-2 border-[#3D006B] pl-6 pb-10 last:pb-0"
+              >
                 <div className="shrink-0 -ml-6.25 w-12 h-12 rounded-full bg-[#3D006B] flex items-center justify-center">
-                  <span className="font-heading text-white font-bold text-lg">{n}</span>
+                  <span className="font-heading text-white font-bold text-lg">
+                    {n}
+                  </span>
                 </div>
                 <div className="pt-1">
                   <h3 className="font-heading font-bold text-xl text-foreground mb-2">
