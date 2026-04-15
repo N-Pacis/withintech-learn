@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { createContext, useContext } from 'react';
-import { useProfile, useLogin, useLogout } from '@/hooks/queries/auth';
-import type { User } from '@/lib/auth';
+import { createContext, useContext } from "react";
+import { useProfile, useLogin, useLogout } from "@/hooks/queries/auth";
+import type { User } from "@/lib/auth";
 
 interface AuthContextValue {
   user: User | null;
@@ -18,12 +18,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginMutation = useLogin();
   const logout = useLogout();
 
-  const login = async (email: string, password: string): Promise<{ error?: string }> => {
+  const login = async (
+    email: string,
+    password: string,
+  ): Promise<{ error?: string }> => {
     try {
       await loginMutation.mutateAsync({ email, password });
       return {};
     } catch (err) {
-      return { error: err instanceof Error ? err.message : 'Login failed' };
+      return { error: err instanceof Error ? err.message : "Login failed" };
     }
   };
 
@@ -36,6 +39,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 }
