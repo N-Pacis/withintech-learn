@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Logo } from "@/components/ui";
+import { Logo, ThemeToggle } from "@/components/ui";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
