@@ -128,7 +128,7 @@ export default function ModuleQuizPage() {
       </div>
 
       {/* Mobile sticky nav */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-shell border-t border-border shadow-[0_-4px_16px_rgba(0,0,0,0.06)] px-4 py-3 flex items-center justify-between gap-3">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-shell border-t border-border shadow-[0_-4px_16px_rgba(15,15,15,0.08)] dark:shadow-[0_-4px_16px_rgba(0,0,0,0.36)] px-4 py-3 flex items-center justify-between gap-3">
         <Button
           variant="secondary"
           size="md"

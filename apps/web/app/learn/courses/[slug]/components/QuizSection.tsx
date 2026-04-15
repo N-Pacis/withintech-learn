@@ -186,7 +186,7 @@ export function QuizSection({
             </p>
           </div>
           {alreadyPassed && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 text-green-700 border border-green-200 dark:bg-green-600 dark:text-white dark:border-green-600 shrink-0">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 text-green-700 border border-green-200 dark:bg-green-950/30 dark:text-green-300 dark:border-green-900 shrink-0">
               <Trophy size={13} />
               <span className="font-body text-xs font-semibold">Passed</span>
             </div>
@@ -255,7 +255,7 @@ export function QuizSection({
         ) : isPending ? (
           /* ── Processing state ── */
           <div className="flex flex-col items-center justify-center py-16 gap-6">
-            <div className="w-24 h-24 rounded-2xl bg-primary-soft flex items-center justify-center shadow-[0_0_0_6px_rgba(61,0,107,0.07)]">
+            <div className="w-24 h-24 rounded-2xl bg-primary-soft flex items-center justify-center ring-6 ring-primary/10 dark:ring-primary/20">
               <GridLoader color="var(--primary)" size={10} margin={3} />
             </div>
             <div className="flex flex-col items-center gap-1">
@@ -274,7 +274,7 @@ export function QuizSection({
               className={cn(
                 "flex items-center gap-2 px-4 py-3 rounded-xl mb-6 font-body text-sm font-medium",
                 result.attempt.status === "pass"
-                  ? "bg-green-50 text-green-700 dark:bg-green-600 dark:text-white"
+                  ? "bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-300"
                   : "bg-red-50 text-red-600 dark:bg-red-950/30 dark:text-red-300",
               )}
             >
