@@ -53,7 +53,7 @@ export function CourseCard({ course, href, badge, footer, featured, locked }: Co
   const titleSize = featured ? 'text-base' : 'text-sm';
 
   const thumbnail = (
-    <div className={`relative ${thumbnailHeight} bg-[#F3F4F6] shrink-0 block`}>
+    <div className={`relative ${thumbnailHeight} bg-[#F3F4F6] dark:bg-[#252525] shrink-0 block`}>
       {course.thumbnailUrl ? (
         <Image src={course.thumbnailUrl} alt={course.title} fill className="object-cover" unoptimized />
       ) : (
@@ -74,25 +74,25 @@ export function CourseCard({ course, href, badge, footer, featured, locked }: Co
 
   const body = (
     <div className="flex flex-col gap-1 p-4 flex-1">
-      <p className={`font-heading font-bold ${titleSize} text-[#0F0F0F] line-clamp-2 leading-snug ${!locked ? 'group-hover:text-[#3D006B]' : ''} transition-colors`}>
+      <p className={`font-heading font-bold ${titleSize} text-[#0F0F0F] dark:text-[#F9FAFB] line-clamp-2 leading-snug ${!locked ? 'group-hover:text-[#3D006B] dark:group-hover:text-[#C084FC]' : ''} transition-colors`}>
         {course.title}
       </p>
       {course.description && (
-        <p className={`font-body text-xs text-[#6B7280] mt-0.5 ${featured ? 'line-clamp-3' : 'line-clamp-2'}`}>{course.description}</p>
+        <p className={`font-body text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-0.5 ${featured ? 'line-clamp-3' : 'line-clamp-2'}`}>{course.description}</p>
       )}
       <div className="flex items-center gap-3 mt-auto pt-3 flex-wrap">
         {course.module_count !== undefined && (
-          <span className="font-body text-xs text-[#9CA3AF]">
+          <span className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280]">
             {course.module_count} module{course.module_count !== 1 ? 's' : ''}
           </span>
         )}
         {course.enrolled_at && (
-          <span className="font-body text-xs text-[#9CA3AF]">
+          <span className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280]">
             Started {formatDate(course.enrolled_at)}
           </span>
         )}
         {!course.enrolled_at && course.module_count === undefined && course.createdAt && (
-          <span className="font-body text-xs text-[#9CA3AF]">
+          <span className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280]">
             Created {formatDate(course.createdAt)}
           </span>
         )}
@@ -101,7 +101,7 @@ export function CourseCard({ course, href, badge, footer, featured, locked }: Co
   );
 
   return (
-    <div className={`group flex flex-col bg-white rounded-xl border border-[#E5E7EB] overflow-hidden transition-all h-full ${locked ? 'cursor-default' : 'hover:shadow-md hover:border-[#3D006B]/20'}`}>
+    <div className={`group flex flex-col bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] overflow-hidden transition-all h-full ${locked ? 'cursor-default' : 'hover:shadow-md hover:border-[#3D006B]/20 dark:hover:border-[#7C3AED]/30'}`}>
 
       {/* Thumbnail */}
       {locked ? thumbnail : <Link href={href} className="block">{thumbnail}</Link>}
@@ -114,7 +114,7 @@ export function CourseCard({ course, href, badge, footer, featured, locked }: Co
         <div className="px-4 pb-4 flex flex-col gap-2">
           {footer}
           {locked && (
-            <p className="font-body text-xs text-[#9CA3AF] flex items-center gap-1.5">
+            <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] flex items-center gap-1.5">
               <Info size={12} className="shrink-0" />
               Enroll to access the course modules
             </p>

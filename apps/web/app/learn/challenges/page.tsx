@@ -12,9 +12,9 @@ import { cn } from '@/lib/utils';
 
 function ChallengeListSkeleton() {
   return (
-    <div className="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
+    <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] overflow-hidden">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-4 px-5 py-4 border-b border-[#F3F4F6] last:border-0 animate-pulse">
+        <div key={i} className="flex items-center gap-4 px-5 py-4 border-b border-[#F3F4F6] dark:border-[#2d2d2d] last:border-0 animate-pulse">
           <div className="w-5 h-5 rounded-full bg-[#E5E7EB] shrink-0" />
           <div className="flex-1 h-4 bg-[#E5E7EB] rounded-md" style={{ width: `${50 + (i % 3) * 15}%` }} />
           <div className="w-14 h-5 bg-[#E5E7EB] rounded-full shrink-0" />
@@ -35,46 +35,46 @@ function StatsBar({ challenges, total }: { challenges: StudentChallengeListItem[
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-      <div className="bg-white rounded-xl border border-[#E5E7EB] px-4 py-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-lg bg-[#F3E8FF] flex items-center justify-center shrink-0">
-          <Trophy size={16} className="text-[#3D006B]" />
+      <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] px-4 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-lg bg-[#F3E8FF] dark:bg-[#2d1a4a] flex items-center justify-center shrink-0">
+          <Trophy size={16} className="text-[#3D006B] dark:text-[#C084FC]" />
         </div>
         <div>
-          <div className="font-heading font-bold text-lg text-[#0F0F0F] leading-none">
-            {completed}<span className="font-body font-normal text-xs text-[#9CA3AF] ml-1">/ {total}</span>
+          <div className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB] leading-none">
+            {completed}<span className="font-body font-normal text-xs text-[#9CA3AF] dark:text-[#6B7280] ml-1">/ {total}</span>
           </div>
-          <div className="font-body text-xs text-[#6B7280]">Solved</div>
+          <div className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF]">Solved</div>
         </div>
       </div>
-      <div className="bg-white rounded-xl border border-[#E5E7EB] px-4 py-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center shrink-0">
+      <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] px-4 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-lg bg-green-50 dark:bg-green-950/30 flex items-center justify-center shrink-0">
           <Zap size={16} className="text-green-600" />
         </div>
         <div>
-          <div className="font-heading font-bold text-lg text-[#0F0F0F] leading-none">
-            {pct}<span className="font-body font-normal text-xs text-[#9CA3AF]">%</span>
+          <div className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB] leading-none">
+            {pct}<span className="font-body font-normal text-xs text-[#9CA3AF] dark:text-[#6B7280]">%</span>
           </div>
-          <div className="font-body text-xs text-[#6B7280]">Completion</div>
+          <div className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF]">Completion</div>
         </div>
       </div>
-      <div className="bg-white rounded-xl border border-[#E5E7EB] px-4 py-3">
+      <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] px-4 py-3">
         {(['easy', 'medium', 'hard'] as Difficulty[]).map((d, i) => {
           const cfg = DIFFICULTY_CONFIG[d];
           const count = d === 'easy' ? easy : d === 'medium' ? medium : hard;
           return (
             <div key={d} className={cn('flex items-center gap-1.5', i < 2 && 'mb-1.5')}>
               <span className={cn('w-2 h-2 rounded-full shrink-0', cfg.dot)} />
-              <span className="font-body text-xs text-[#6B7280]">{cfg.label}</span>
-              <span className="font-heading font-bold text-sm text-[#0F0F0F] ml-auto">{count}</span>
+              <span className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF]">{cfg.label}</span>
+              <span className="font-heading font-bold text-sm text-[#0F0F0F] dark:text-[#F9FAFB] ml-auto">{count}</span>
             </div>
           );
         })}
       </div>
-      <div className="bg-white rounded-xl border border-[#E5E7EB] px-4 py-3 flex flex-col justify-center gap-1.5">
-        <div className="flex justify-between font-body text-xs text-[#6B7280]">
+      <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] px-4 py-3 flex flex-col justify-center gap-1.5">
+        <div className="flex justify-between font-body text-xs text-[#6B7280] dark:text-[#9CA3AF]">
           <span>Progress</span><span>{pct}%</span>
         </div>
-        <div className="h-2 bg-[#F3F4F6] rounded-full overflow-hidden">
+        <div className="h-2 bg-[#F3F4F6] dark:bg-[#252525] rounded-full overflow-hidden">
           <div className="h-full bg-[#3D006B] rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
         </div>
       </div>
@@ -90,7 +90,7 @@ function ChallengeRow({ challenge }: { challenge: StudentChallengeListItem }) {
     <Link
       href={`/learn/challenges/${challenge.slug}`}
       prefetch={false}
-      className="group flex items-center gap-4 px-5 py-4 border-b border-[#F3F4F6] last:border-0 hover:bg-[#F9F5FF] transition-colors"
+      className="group flex items-center gap-4 px-5 py-4 border-b border-[#F3F4F6] dark:border-[#2d2d2d] last:border-0 hover:bg-[#F9F5FF] dark:hover:bg-[#2d1a4a]/30 transition-colors"
     >
       <div className="flex items-center gap-3 shrink-0">
         <span className="text-sm text-[#C4B5FD] font-semibold w-8 text-right shrink-0">
@@ -103,8 +103,8 @@ function ChallengeRow({ challenge }: { challenge: StudentChallengeListItem }) {
       <span className={cn(
         'flex-1 font-body text-sm font-medium truncate transition-colors',
         challenge.completed
-          ? 'text-[#6B7280] line-through decoration-[#D1D5DB]'
-          : 'text-[#0F0F0F] group-hover:text-[#3D006B]',
+          ? 'text-[#6B7280] dark:text-[#9CA3AF] line-through decoration-[#D1D5DB]'
+          : 'text-[#0F0F0F] dark:text-[#F9FAFB] group-hover:text-[#3D006B] dark:group-hover:text-[#C084FC]',
       )}>
         {challenge.title}
       </span>
@@ -117,15 +117,15 @@ function ChallengeRow({ challenge }: { challenge: StudentChallengeListItem }) {
 
 function EmptyState({ filtered }: { filtered: boolean }) {
   return (
-    <div className="bg-white rounded-xl border border-[#E5E7EB] py-20 flex flex-col items-center gap-4">
-      <div className="w-14 h-14 rounded-2xl bg-[#F3E8FF] flex items-center justify-center">
-        <Code2 size={28} className="text-[#3D006B]" />
+    <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] py-20 flex flex-col items-center gap-4">
+      <div className="w-14 h-14 rounded-2xl bg-[#F3E8FF] dark:bg-[#2d1a4a] flex items-center justify-center">
+        <Code2 size={28} className="text-[#3D006B] dark:text-[#C084FC]" />
       </div>
       <div className="text-center">
-        <p className="font-heading font-bold text-base text-[#0F0F0F]">
+        <p className="font-heading font-bold text-base text-[#0F0F0F] dark:text-[#F9FAFB]">
           {filtered ? 'No challenges match' : 'No challenges yet'}
         </p>
-        <p className="font-body text-sm text-[#6B7280] mt-1">
+        <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-1">
           {filtered ? 'Try a different filter.' : 'Check back soon — challenges are coming!'}
         </p>
       </div>
@@ -157,8 +157,8 @@ export default function ChallengesPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
       <div className="mb-6">
-        <h1 className="font-heading font-black text-3xl text-[#0F0F0F]">Challenges</h1>
-        <p className="font-body text-sm text-[#6B7280] mt-1">
+        <h1 className="font-heading font-black text-3xl text-[#0F0F0F] dark:text-[#F9FAFB]">Challenges</h1>
+        <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-1">
           Solve problems in Python, Java, JavaScript, C, C++, or Go.
         </p>
       </div>
@@ -187,7 +187,7 @@ export default function ChallengesPage() {
         <EmptyState filtered={difficulty !== 'all' || sort !== 'number_asc'} />
       ) : (
         <>
-          <div className="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
+          <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] overflow-hidden">
             {data.challenges.map((c) => <ChallengeRow key={c.id} challenge={c} />)}
           </div>
           <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />

@@ -166,17 +166,17 @@ export function QuizSection({
       onClose={() => setWarningVisible(false)}
     />
 
-    <div className="mt-10 pt-8 border-t border-[#E5E7EB]">
+    <div className="mt-10 pt-8 border-t border-[#E5E7EB] dark:border-[#2d2d2d]">
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
-          <p className="font-body text-xs text-[#9CA3AF] uppercase tracking-widest mb-1.5">
+          <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] uppercase tracking-widest mb-1.5">
             {quizLabel}
           </p>
-          <h3 className="font-heading font-bold text-xl text-[#0F0F0F]">
+          <h3 className="font-heading font-bold text-xl text-[#0F0F0F] dark:text-[#F9FAFB]">
             {quiz.title}
           </h3>
-          <p className="font-body text-sm text-[#6B7280] mt-1">
+          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-1">
             Pass score: {quiz.passingScore}% &middot; {quiz.questions.length}{" "}
             question{quiz.questions.length !== 1 ? "s" : ""}
           </p>
@@ -211,29 +211,29 @@ export function QuizSection({
               Last attempt: <strong>{lastAttempt.score}%</strong> (Failed)
             </div>
           )}
-          <div className="rounded-xl border border-[#E5E7EB] bg-[#FAFAFA] divide-y divide-[#E5E7EB]">
+          <div className="rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] bg-[#FAFAFA] dark:bg-[#141414] divide-y divide-[#E5E7EB] dark:divide-[#2d2d2d]">
             <div className="flex items-center justify-between px-5 py-4">
-              <span className="font-body text-sm text-[#6B7280]">
+              <span className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF]">
                 Questions
               </span>
-              <span className="font-body text-sm font-semibold text-[#0F0F0F]">
+              <span className="font-body text-sm font-semibold text-[#0F0F0F] dark:text-[#F9FAFB]">
                 {quiz.questions.length}
               </span>
             </div>
             <div className="flex items-center justify-between px-5 py-4">
-              <span className="font-body text-sm text-[#6B7280]">
+              <span className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF]">
                 Passing score
               </span>
-              <span className="font-body text-sm font-semibold text-[#0F0F0F]">
+              <span className="font-body text-sm font-semibold text-[#0F0F0F] dark:text-[#F9FAFB]">
                 {quiz.passingScore}%
               </span>
             </div>
             {isCourseQuiz && (
               <div className="flex items-center justify-between px-5 py-4">
-                <span className="font-body text-sm text-[#6B7280]">
+                <span className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF]">
                   Answers revealed
                 </span>
-                <span className="font-body text-sm font-semibold text-[#0F0F0F]">
+                <span className="font-body text-sm font-semibold text-[#0F0F0F] dark:text-[#F9FAFB]">
                   Only for chosen options
                 </span>
               </div>
@@ -250,14 +250,14 @@ export function QuizSection({
       ) : isPending ? (
         /* ── Processing state ── */
         <div className="flex flex-col items-center justify-center py-16 gap-6">
-          <div className="w-24 h-24 rounded-2xl bg-[#F3E8FF] flex items-center justify-center shadow-[0_0_0_6px_rgba(61,0,107,0.07)]">
+          <div className="w-24 h-24 rounded-2xl bg-[#F3E8FF] dark:bg-[#2d1a4a] flex items-center justify-center shadow-[0_0_0_6px_rgba(61,0,107,0.07)]">
             <GridLoader color="#3D006B" size={10} margin={3} />
           </div>
           <div className="flex flex-col items-center gap-1">
-            <p className="font-heading font-bold text-base text-[#0F0F0F]">
+            <p className="font-heading font-bold text-base text-[#0F0F0F] dark:text-[#F9FAFB]">
               Grading your answers
             </p>
-            <p className="font-body text-sm text-[#6B7280]">
+            <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF]">
               The system is processing your results…
             </p>
           </div>
@@ -330,7 +330,7 @@ export function QuizSection({
                   <span className="w-6 h-6 rounded-full bg-[#3D006B] text-white font-body text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                     {i + 1}
                   </span>
-                  <p className="font-body text-sm font-medium text-[#0F0F0F] pt-0.5 select-none">
+                  <p className="font-body text-sm font-medium text-[#0F0F0F] dark:text-[#F9FAFB] pt-0.5 select-none">
                     {q.text}
                   </p>
                 </div>
@@ -343,8 +343,8 @@ export function QuizSection({
                         className={cn(
                           "flex items-start gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-all",
                           chosen
-                            ? "border-[#3D006B] bg-[#F3E8FF] shadow-sm"
-                            : "border-[#E5E7EB] hover:border-[#C4B5FD] hover:bg-[#FAFAFA]",
+                            ? "border-[#3D006B] bg-[#F3E8FF] dark:bg-[#2d1a4a] shadow-sm"
+                            : "border-[#E5E7EB] dark:border-[#2d2d2d] hover:border-[#C4B5FD] hover:bg-[#FAFAFA] dark:hover:bg-[#252525]",
                         )}
                       >
                         <input
@@ -353,7 +353,7 @@ export function QuizSection({
                           onChange={() => toggleOption(q.id, opt.id)}
                           className="accent-[#3D006B] mt-0.5 shrink-0"
                         />
-                        <span className="font-body text-sm text-[#374151] flex-1 min-w-0 wrap-break-word select-none">
+                        <span className="font-body text-sm text-[#374151] dark:text-[#D1D5DB] flex-1 min-w-0 wrap-break-word select-none">
                           {opt.text}
                         </span>
                       </label>
@@ -404,7 +404,7 @@ function MarkedQuestionRow({
         >
           {index + 1}
         </span>
-        <p className="font-body text-sm font-medium text-[#0F0F0F] min-w-0 pt-0.5">
+        <p className="font-body text-sm font-medium text-[#0F0F0F] dark:text-[#F9FAFB] min-w-0 pt-0.5">
           {question.text}
         </p>
       </div>
@@ -421,7 +421,7 @@ function MarkedQuestionRow({
                     ? "border-green-500 bg-green-50 text-green-800"
                     : !question.isCorrect && opt.wasChosen
                       ? "border-red-400 bg-red-50 text-red-700"
-                      : "border-[#E5E7EB] text-[#6B7280]",
+                      : "border-[#E5E7EB] dark:border-[#2d2d2d] text-[#6B7280] dark:text-[#9CA3AF]",
                 )}
               >
                 <span className="flex-1 min-w-0 wrap-break-word">{opt.text}</span>
@@ -458,7 +458,7 @@ function MarkedQuestionRow({
                   "border-red-400 bg-red-50 text-red-700",
                 !opt.wasChosen &&
                   (!opt.isCorrect || autoAwarded) &&
-                  "border-[#E5E7EB] text-[#6B7280]",
+                  "border-[#E5E7EB] dark:border-[#2d2d2d] text-[#6B7280] dark:text-[#9CA3AF]",
               )}
             >
               <span className="flex-1 min-w-0 wrap-break-word">{opt.text}</span>

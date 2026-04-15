@@ -19,14 +19,14 @@ export function ModuleCards({ courseId, isDraft }: { courseId: string; isDraft: 
     <div>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="font-heading font-bold text-lg text-[#0F0F0F]">
+          <h2 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB]">
             Modules
             {modules.length > 0 && (
-              <span className="text-[#9CA3AF] font-normal ml-2 text-base">({modules.length})</span>
+              <span className="text-[#9CA3AF] dark:text-[#6B7280] font-normal ml-2 text-base">({modules.length})</span>
             )}
           </h2>
           {modules.length > 0 && (
-            <p className="font-body text-xs text-[#9CA3AF] mt-0.5">Click a module to view and edit its content.</p>
+            <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] mt-0.5">Click a module to view and edit its content.</p>
           )}
         </div>
         {isDraft && (
@@ -47,13 +47,13 @@ export function ModuleCards({ courseId, isDraft }: { courseId: string; isDraft: 
         <Card>
           <CardBody>
             <div className="flex flex-col items-center text-center py-8">
-              <div className="w-12 h-12 rounded-full bg-[#F3E8FF] flex items-center justify-center mb-3">
+              <div className="w-12 h-12 rounded-full bg-[#F3E8FF] dark:bg-[#2d1a4a] flex items-center justify-center mb-3">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3D006B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 5v14M5 12h14" />
                 </svg>
               </div>
-              <p className="font-heading font-semibold text-sm text-[#0F0F0F] mb-1">No modules yet</p>
-              <p className="font-body text-xs text-[#9CA3AF] mb-4">Add your first module to start building this course.</p>
+              <p className="font-heading font-semibold text-sm text-[#0F0F0F] dark:text-[#F9FAFB] mb-1">No modules yet</p>
+              <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] mb-4">Add your first module to start building this course.</p>
               {isDraft && (
                 <Button size="sm" asChild>
                   <Link href={`/admin/courses/${courseId}/modules/new`}>Add first module</Link>
@@ -68,20 +68,20 @@ export function ModuleCards({ courseId, isDraft }: { courseId: string; isDraft: 
             <div
               key={mod.id}
               className={cn(
-                'group flex items-center gap-4 px-5 py-4 bg-white border border-[#E5E7EB] rounded-xl cursor-pointer',
+                'group flex items-center gap-4 px-5 py-4 bg-white dark:bg-[#1a1a1a] border border-[#E5E7EB] dark:border-[#2d2d2d] rounded-xl cursor-pointer',
                 'hover:border-[#3D006B]/30 hover:shadow-[0_2px_12px_rgba(61,0,107,0.08)] transition-all duration-200',
               )}
               onClick={() => router.push(`/admin/courses/${courseId}/modules/${mod.id}`)}
             >
-              <div className="w-9 h-9 rounded-full bg-[#F3E8FF] flex items-center justify-center shrink-0 group-hover:bg-[#3D006B] transition-colors duration-200">
-                <span className="font-heading font-bold text-sm text-[#3D006B] group-hover:text-white transition-colors duration-200">
+              <div className="w-9 h-9 rounded-full bg-[#F3E8FF] dark:bg-[#2d1a4a] flex items-center justify-center shrink-0 group-hover:bg-[#3D006B] transition-colors duration-200">
+                <span className="font-heading font-bold text-sm text-[#3D006B] dark:text-[#C084FC] group-hover:text-white transition-colors duration-200">
                   {mod.orderIndex}
                 </span>
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className="font-heading font-semibold text-sm text-[#0F0F0F] truncate">{mod.title}</p>
-                <p className="font-body text-xs text-[#9CA3AF] mt-0.5">Module {mod.orderIndex}</p>
+                <p className="font-heading font-semibold text-sm text-[#0F0F0F] dark:text-[#F9FAFB] truncate">{mod.title}</p>
+                <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] mt-0.5">Module {mod.orderIndex}</p>
               </div>
 
               {!mod.hasQuiz && (

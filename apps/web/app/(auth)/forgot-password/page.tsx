@@ -76,7 +76,7 @@ function OtpInput({
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={handlePaste}
           onFocus={(e) => e.target.select()}
-          className="w-11 h-14 text-center font-heading font-black text-xl text-[#0F0F0F] rounded-xl border-2 border-[#E5E7EB] bg-white outline-none transition-all focus:border-[#3D006B] focus:ring-4 focus:ring-[#3D006B]/10 caret-transparent"
+          className="w-11 h-14 text-center font-heading font-black text-xl text-[#0F0F0F] dark:text-[#F9FAFB] rounded-xl border-2 border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] outline-none transition-all focus:border-[#3D006B] focus:ring-4 focus:ring-[#3D006B]/10 caret-transparent"
         />
       ))}
     </div>
@@ -139,7 +139,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div
-      className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden"
+      className="min-h-screen bg-white dark:bg-[#0f0f0f] flex items-center justify-center relative overflow-hidden"
       style={{
         backgroundImage: 'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
         backgroundSize: '22px 22px',
@@ -170,8 +170,8 @@ export default function ForgotPasswordPage() {
           {/* ── Step 1: Email ── */}
           {step === 'email' && (
             <>
-              <h1 className="font-heading font-black text-2xl text-[#0F0F0F] mb-1">Forgot password?</h1>
-              <p className="font-body text-sm text-[#6B7280] mb-8">
+              <h1 className="font-heading font-black text-2xl text-[#0F0F0F] dark:text-[#F9FAFB] mb-1">Forgot password?</h1>
+              <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-8">
                 Enter your email and we&apos;ll send you a 6-digit code.
               </p>
               <form onSubmit={handleEmailSubmit} className="flex flex-col gap-5">
@@ -198,11 +198,11 @@ export default function ForgotPasswordPage() {
           {/* ── Step 2: OTP ── */}
           {step === 'otp' && (
             <>
-              <h1 className="font-heading font-black text-2xl text-[#0F0F0F] mb-1">Check your email</h1>
-              <p className="font-body text-sm text-[#6B7280] mb-2">
-                We sent a 6-digit code to <span className="font-medium text-[#0F0F0F]">{email}</span>.
+              <h1 className="font-heading font-black text-2xl text-[#0F0F0F] dark:text-[#F9FAFB] mb-1">Check your email</h1>
+              <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-2">
+                We sent a 6-digit code to <span className="font-medium text-[#0F0F0F] dark:text-[#F9FAFB]">{email}</span>.
               </p>
-              <p className="font-body text-xs text-[#9CA3AF] mb-8">Don&apos;t see it? Check your spam folder.</p>
+              <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] mb-8">Don&apos;t see it? Check your spam folder.</p>
 
               <form onSubmit={handleOtpSubmit} className="flex flex-col gap-6">
                 <OtpInput value={otp} onChange={setOtp} />
@@ -215,7 +215,7 @@ export default function ForgotPasswordPage() {
                   Verify Code
                 </Button>
 
-                <p className="font-body text-sm text-[#6B7280] text-center">
+                <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] text-center">
                   Wrong email?{' '}
                   <button
                     type="button"
@@ -232,8 +232,8 @@ export default function ForgotPasswordPage() {
           {/* ── Step 3: New password ── */}
           {step === 'password' && (
             <>
-              <h1 className="font-heading font-black text-2xl text-[#0F0F0F] mb-1">Set new password</h1>
-              <p className="font-body text-sm text-[#6B7280] mb-8">
+              <h1 className="font-heading font-black text-2xl text-[#0F0F0F] dark:text-[#F9FAFB] mb-1">Set new password</h1>
+              <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-8">
                 Choose a strong password, at least 8 characters.
               </p>
               <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-5">

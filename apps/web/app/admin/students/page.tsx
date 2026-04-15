@@ -423,15 +423,15 @@ function ExportModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+      <div className="relative bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-xl w-full max-w-sm p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-heading font-bold text-lg text-[#0F0F0F]">
+          <h2 className="font-heading font-bold text-lg text-[#0F0F0F] dark:text-[#F9FAFB]">
             Export Students
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#9CA3AF] hover:text-[#0F0F0F] hover:bg-[#F3F4F6] transition-colors"
+            className="p-1.5 rounded-lg text-[#9CA3AF] hover:text-[#0F0F0F] dark:hover:text-[#F9FAFB] hover:bg-[#F3F4F6] dark:hover:bg-[#252525] transition-colors"
           >
             <svg
               width="16"
@@ -452,8 +452,8 @@ function ExportModal({
         <div className="flex flex-col gap-5">
           {/* Active filters */}
           {hasFilters && (
-            <div className="bg-[#F3E8FF] rounded-lg px-4 py-3 flex flex-col gap-1.5">
-              <p className="font-body text-xs font-semibold text-[#3D006B]">
+            <div className="bg-[#F3E8FF] dark:bg-[#2d1a4a] rounded-lg px-4 py-3 flex flex-col gap-1.5">
+              <p className="font-body text-xs font-semibold text-[#3D006B] dark:text-[#C084FC]">
                 Active filters will be applied
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -474,7 +474,7 @@ function ExportModal({
           {/* Column selection */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <p className="font-body text-sm font-medium text-[#0F0F0F]">
+              <p className="font-body text-sm font-medium text-[#0F0F0F] dark:text-[#F9FAFB]">
                 Columns
               </p>
               <button
@@ -502,7 +502,7 @@ function ExportModal({
                     onChange={() => toggle(col.key)}
                     className="w-4 h-4 rounded border-[#D1D5DB] accent-[#3D006B] cursor-pointer shrink-0"
                   />
-                  <span className="font-body text-sm text-[#374151]">
+                  <span className="font-body text-sm text-[#374151] dark:text-[#D1D5DB]">
                     {col.label}
                   </span>
                 </label>
@@ -873,7 +873,7 @@ export default function StudentsPage() {
             </span>
           </div>
           <div>
-            <p className="font-body text-sm font-medium text-[#0F0F0F]">
+            <p className="font-body text-sm font-medium text-[#0F0F0F] dark:text-[#F9FAFB]">
               {u.firstName} {u.lastName}
             </p>
             <p className="font-body text-xs text-[#9CA3AF]">{u.email}</p>
@@ -936,10 +936,10 @@ export default function StudentsPage() {
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-8">
           <div>
-            <h1 className="font-heading font-black text-2xl text-[#0F0F0F]">
+            <h1 className="font-heading font-black text-2xl text-[#0F0F0F] dark:text-[#F9FAFB]">
               Students
             </h1>
-            <p className="font-body text-sm text-[#6B7280] mt-1">
+            <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-1">
               Manage student accounts.
             </p>
           </div>
@@ -987,7 +987,7 @@ export default function StudentsPage() {
               value={rawSearch}
               onChange={(e) => setRawSearch(e.target.value)}
               className={cn(
-                "font-body text-sm w-full pl-9 pr-4 py-2 rounded-lg border border-[#E5E7EB] bg-white text-[#0F0F0F]",
+                "font-body text-sm w-full pl-9 pr-4 py-2 rounded-lg border border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] text-[#0F0F0F] dark:text-[#F9FAFB]",
                 "placeholder-[#9CA3AF] outline-none transition-all",
                 "focus:border-[#3D006B] focus:ring-2 focus:ring-[#3D006B]/10",
               )}
@@ -1006,7 +1006,7 @@ export default function StudentsPage() {
           <button
             onClick={() => setSortOrder((s) => (s === "desc" ? "asc" : "desc"))}
             className={cn(
-              "font-body text-sm text-[#374151] bg-white border border-[#E5E7EB] rounded-lg",
+              "font-body text-sm text-[#374151] dark:text-[#D1D5DB] bg-white dark:bg-[#1a1a1a] border border-[#E5E7EB] dark:border-[#2d2d2d] rounded-lg",
               "px-3 py-2 outline-none cursor-pointer transition-colors flex items-center gap-1.5",
               "hover:border-[#3D006B]/40",
             )}
@@ -1049,7 +1049,7 @@ export default function StudentsPage() {
 
         {!isLoading && !error && students?.length === 0 && (
           <div className="text-center py-16">
-            <p className="font-body text-[#6B7280]">No students found.</p>
+            <p className="font-body text-[#6B7280] dark:text-[#9CA3AF]">No students found.</p>
           </div>
         )}
 

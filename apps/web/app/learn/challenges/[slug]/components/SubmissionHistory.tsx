@@ -45,9 +45,9 @@ export function SubmissionHistory({ slug }: { slug: string }) {
       <div className="p-4 flex flex-col gap-2 animate-pulse">
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-lg">
-            <div className="w-4 h-4 rounded-full bg-[#E5E7EB] shrink-0" />
-            <div className="flex-1 h-3 bg-[#E5E7EB] rounded" />
-            <div className="w-20 h-3 bg-[#E5E7EB] rounded" />
+            <div className="w-4 h-4 rounded-full bg-[#E5E7EB] dark:bg-[#252525] shrink-0" />
+            <div className="flex-1 h-3 bg-[#E5E7EB] dark:bg-[#252525] rounded" />
+            <div className="w-20 h-3 bg-[#E5E7EB] dark:bg-[#252525] rounded" />
           </div>
         ))}
       </div>
@@ -57,7 +57,7 @@ export function SubmissionHistory({ slug }: { slug: string }) {
   if (!submissions || submissions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-10 gap-3">
-        <div className="w-10 h-10 rounded-xl bg-[#F3F4F6] flex items-center justify-center">
+        <div className="w-10 h-10 rounded-xl bg-[#F3F4F6] dark:bg-[#252525] flex items-center justify-center">
           <FileCode2 size={18} className="text-[#9CA3AF]" />
         </div>
         <div className="text-center">
@@ -76,7 +76,7 @@ export function SubmissionHistory({ slug }: { slug: string }) {
         return (
           <div
             key={s.id}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#F9FAFB] transition-colors border border-transparent hover:border-[#F3F4F6]"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#F9FAFB] dark:hover:bg-[#252525] transition-colors border border-transparent hover:border-[#F3F4F6] dark:hover:border-[#2d2d2d]"
           >
             <span className={cn('shrink-0', config.color)}>{config.icon}</span>
             <div className="flex-1 min-w-0">

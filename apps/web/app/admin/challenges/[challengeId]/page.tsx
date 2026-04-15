@@ -120,7 +120,7 @@ function prettyInput(
 ): React.ReactNode {
   if (!params || params.length === 0 || !input) {
     return (
-      <pre className="font-mono text-xs bg-[#F3F4F6] rounded-lg px-3 py-2.5 whitespace-pre-wrap break-all">
+      <pre className="font-mono text-xs bg-[#F3F4F6] dark:bg-[#252525] dark:text-[#D1D5DB] rounded-lg px-3 py-2.5 whitespace-pre-wrap break-all">
         {input || "(empty)"}
       </pre>
     );
@@ -134,7 +134,7 @@ function prettyInput(
             <span className="font-mono text-[11px] text-[#9CA3AF] shrink-0 pt-0.5">
               {p.name} =
             </span>
-            <pre className="font-mono text-xs bg-[#F3F4F6] rounded px-2 py-0.5 whitespace-pre-wrap break-all flex-1">
+            <pre className="font-mono text-xs bg-[#F3F4F6] dark:bg-[#252525] dark:text-[#D1D5DB] rounded px-2 py-0.5 whitespace-pre-wrap break-all flex-1">
               {formatParamForDisplay(p.type, values[i])}
             </pre>
           </div>
@@ -143,7 +143,7 @@ function prettyInput(
     );
   } catch {
     return (
-      <pre className="font-mono text-xs bg-[#F3F4F6] rounded-lg px-3 py-2.5 whitespace-pre-wrap break-all">
+      <pre className="font-mono text-xs bg-[#F3F4F6] dark:bg-[#252525] dark:text-[#D1D5DB] rounded-lg px-3 py-2.5 whitespace-pre-wrap break-all">
         {input}
       </pre>
     );
@@ -166,12 +166,12 @@ function TestCaseRow({
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="border border-[#E5E7EB] rounded-xl overflow-hidden">
+    <div className="border border-[#E5E7EB] dark:border-[#2d2d2d] rounded-xl overflow-hidden">
       <button
-        className="w-full flex items-center gap-3 px-4 py-3 bg-[#F9FAFB] hover:bg-[#F3F4F6] transition-colors text-left"
+        className="w-full flex items-center gap-3 px-4 py-3 bg-[#F9FAFB] dark:bg-[#141414] hover:bg-[#F3F4F6] dark:hover:bg-[#252525] transition-colors text-left"
         onClick={() => setExpanded((v) => !v)}
       >
-        <span className="font-body text-xs font-medium text-[#374151] flex-1">
+        <span className="font-body text-xs font-medium text-[#374151] dark:text-[#D1D5DB] flex-1">
           Test #{tc.orderIndex + 1}
         </span>
         {tc.isHidden ? (
@@ -206,18 +206,18 @@ function TestCaseRow({
       </button>
 
       {expanded && (
-        <div className="p-4 grid gap-3 bg-white">
+        <div className="p-4 grid gap-3 bg-white dark:bg-[#1a1a1a]">
           <div>
-            <span className="font-body text-[11px] font-medium text-[#9CA3AF] uppercase tracking-wider block mb-1.5">
+            <span className="font-body text-[11px] font-medium text-[#9CA3AF] dark:text-[#6B7280] uppercase tracking-wider block mb-1.5">
               Input
             </span>
             {prettyInput(tc.input, functionParams)}
           </div>
           <div>
-            <span className="font-body text-[11px] font-medium text-[#9CA3AF] uppercase tracking-wider block mb-1">
+            <span className="font-body text-[11px] font-medium text-[#9CA3AF] dark:text-[#6B7280] uppercase tracking-wider block mb-1">
               Expected Output
             </span>
-            <pre className="font-mono text-xs bg-[#F3F4F6] rounded-lg px-3 py-2.5 whitespace-pre-wrap break-all leading-relaxed text-[#374151]">
+            <pre className="font-mono text-xs bg-[#F3F4F6] dark:bg-[#252525] rounded-lg px-3 py-2.5 whitespace-pre-wrap break-all leading-relaxed text-[#374151] dark:text-[#D1D5DB]">
               {tc.expectedOutput}
             </pre>
           </div>
@@ -277,7 +277,7 @@ function AddTestCaseForm({
     return (
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center justify-center gap-2 w-full py-3 border-2 border-dashed border-[#E5E7EB] rounded-xl font-body text-sm text-[#9CA3AF] hover:border-[#3D006B]/40 hover:text-[#3D006B] transition-colors"
+        className="flex items-center justify-center gap-2 w-full py-3 border-2 border-dashed border-[#E5E7EB] dark:border-[#2d2d2d] rounded-xl font-body text-sm text-[#9CA3AF] dark:text-[#6B7280] hover:border-[#3D006B]/40 hover:text-[#3D006B] dark:hover:text-[#C084FC] transition-colors"
       >
         <Plus size={15} /> Add Test Case
       </button>
@@ -285,14 +285,14 @@ function AddTestCaseForm({
   }
 
   return (
-    <div className="border-2 border-[#3D006B]/30 rounded-xl p-5 bg-[#F9F5FF] flex flex-col gap-4">
-      <h3 className="font-heading font-semibold text-sm text-[#3D006B]">
+    <div className="border-2 border-[#3D006B]/30 rounded-xl p-5 bg-[#F9F5FF] dark:bg-[#2d1a4a]/20 flex flex-col gap-4">
+      <h3 className="font-heading font-semibold text-sm text-[#3D006B] dark:text-[#C084FC]">
         New Test Case #{nextIndex + 1}
       </h3>
 
       {hasParams ? (
         <div className="flex flex-col gap-3">
-          <p className="font-body text-xs text-[#6B7280]">
+          <p className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF]">
             Enter a value for each parameter:
           </p>
           {functionParams.map((p) => (
@@ -314,7 +314,7 @@ function AddTestCaseForm({
                     setParamValues((v) => ({ ...v, [p.name]: e.target.value }))
                   }
                   placeholder={paramInputPlaceholder(p.type)}
-                  className="w-full font-mono text-xs border border-[#E5E7EB] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#3D006B]/30 focus:border-[#3D006B] bg-white"
+                  className="w-full font-mono text-xs border border-[#E5E7EB] dark:border-[#2d2d2d] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#3D006B]/30 focus:border-[#3D006B] bg-white dark:bg-[#1a1a1a] dark:text-[#F9FAFB]"
                 />
               )}
             </FormField>
@@ -356,9 +356,9 @@ function AddTestCaseForm({
           onChange={(e) => setIsHidden(e.target.checked)}
           className="w-4 h-4 rounded border-[#E5E7EB] accent-[#3D006B]"
         />
-        <span className="font-body text-sm text-[#374151]">
+        <span className="font-body text-sm text-[#374151] dark:text-[#D1D5DB]">
           Hidden from students
-          <span className="text-[#9CA3AF] ml-1 text-xs">
+          <span className="text-[#9CA3AF] dark:text-[#6B7280] ml-1 text-xs">
             (recommended for most test cases)
           </span>
         </span>
@@ -420,15 +420,15 @@ function StatsHero({ stats }: { stats: ChallengeStats }) {
       {heroItems.map(({ label, value, highlight }) => (
         <div
           key={label}
-          className={`rounded-xl border px-5 py-4 ${highlight ? "bg-[#F3E8FF] border-[#E9D5FF]" : "bg-white border-[#E5E7EB]"}`}
+          className={`rounded-xl border px-5 py-4 ${highlight ? "bg-[#F3E8FF] dark:bg-[#2d1a4a] border-[#E9D5FF] dark:border-[#4a2878]" : "bg-white dark:bg-[#1a1a1a] border-[#E5E7EB] dark:border-[#2d2d2d]"}`}
         >
           <p
-            className={`font-body text-xs uppercase tracking-widest mb-1 ${highlight ? "text-[#7C3AED]" : "text-[#9CA3AF]"}`}
+            className={`font-body text-xs uppercase tracking-widest mb-1 ${highlight ? "text-[#7C3AED] dark:text-[#C084FC]" : "text-[#9CA3AF] dark:text-[#6B7280]"}`}
           >
             {label}
           </p>
           <p
-            className={`font-heading font-black text-2xl ${highlight ? "text-[#3D006B]" : "text-[#0F0F0F]"}`}
+            className={`font-heading font-black text-2xl ${highlight ? "text-[#3D006B] dark:text-[#C084FC]" : "text-[#0F0F0F] dark:text-[#F9FAFB]"}`}
           >
             {value}
           </p>
@@ -452,19 +452,19 @@ function HBar({
   const pct = total > 0 ? Math.round((value / total) * 100) : 0;
   return (
     <div className="flex items-center gap-3">
-      <span className="font-body text-xs text-[#6B7280] w-35 shrink-0 truncate">
+      <span className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF] w-35 shrink-0 truncate">
         {label}
       </span>
-      <div className="flex-1 bg-[#F3F4F6] rounded-full h-2 overflow-hidden">
+      <div className="flex-1 bg-[#F3F4F6] dark:bg-[#252525] rounded-full h-2 overflow-hidden">
         <div
           className="h-2 rounded-full transition-all"
           style={{ width: `${pct}%`, background: color }}
         />
       </div>
-      <span className="font-body text-xs text-[#374151] w-10 text-right shrink-0">
+      <span className="font-body text-xs text-[#374151] dark:text-[#D1D5DB] w-10 text-right shrink-0">
         {value}
       </span>
-      <span className="font-body text-xs text-[#9CA3AF] w-8 shrink-0">
+      <span className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] w-8 shrink-0">
         {pct}%
       </span>
     </div>
@@ -574,11 +574,11 @@ function StatisticsTab({ challengeId }: { challengeId: string }) {
       <div className="flex flex-col gap-4 animate-pulse">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-20 rounded-xl bg-[#F3F4F6]" />
+            <div key={i} className="h-20 rounded-xl bg-[#F3F4F6] dark:bg-[#252525]" />
           ))}
         </div>
-        <div className="h-48 rounded-xl bg-[#F3F4F6]" />
-        <div className="h-32 rounded-xl bg-[#F3F4F6]" />
+        <div className="h-48 rounded-xl bg-[#F3F4F6] dark:bg-[#252525]" />
+        <div className="h-32 rounded-xl bg-[#F3F4F6] dark:bg-[#252525]" />
       </div>
     );
   }
@@ -603,13 +603,13 @@ function StatisticsTab({ challengeId }: { challengeId: string }) {
       <StatsHero stats={stats} />
 
       {/* Pass rate ring + status breakdown side by side */}
-      <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 flex flex-col sm:flex-row gap-6">
+      <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] p-5 flex flex-col sm:flex-row gap-6">
         <div className="flex flex-col items-center justify-center gap-2 shrink-0">
           <PassRingMini rate={stats.passRate} />
           <p className="font-body text-xs text-[#9CA3AF]">pass rate</p>
         </div>
         <div className="flex-1 flex flex-col gap-2.5">
-          <p className="font-body text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-1">
+          <p className="font-body text-xs font-semibold text-[#9CA3AF] dark:text-[#6B7280] uppercase tracking-wider mb-1">
             Outcome Breakdown
           </p>
           {statusEntries.length === 0 ? (
@@ -633,7 +633,7 @@ function StatisticsTab({ challengeId }: { challengeId: string }) {
       {/* Language breakdown */}
       {langEntries.length > 0 && (
         <div className="bg-white rounded-xl border border-[#E5E7EB] p-5">
-          <p className="font-body text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">
+          <p className="font-body text-xs font-semibold text-[#9CA3AF] dark:text-[#6B7280] uppercase tracking-wider mb-4">
             Language Usage
           </p>
           <div className="flex flex-col gap-2.5">
@@ -651,8 +651,8 @@ function StatisticsTab({ challengeId }: { challengeId: string }) {
       )}
 
       {/* 30-day submission trend */}
-      <div className="bg-white rounded-xl border border-[#E5E7EB] p-5">
-        <p className="font-body text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider mb-4">
+      <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] p-5">
+        <p className="font-body text-xs font-semibold text-[#9CA3AF] dark:text-[#6B7280] uppercase tracking-wider mb-4">
           Submissions — Last 30 Days
         </p>
         <TrendChart data={stats.submissionTrend} />
@@ -847,7 +847,7 @@ function EditChallengeContent({
           <ArrowLeft size={20} />
         </Link>
         <div className="flex-1 min-w-0">
-          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] truncate">
+          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] dark:text-[#F9FAFB] truncate">
             {challenge.title}
           </h1>
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
@@ -886,7 +886,7 @@ function EditChallengeContent({
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-0 border-b border-[#E5E7EB] mb-6 overflow-x-auto">
+      <div className="flex gap-0 border-b border-[#E5E7EB] dark:border-[#2d2d2d] mb-6 overflow-x-auto">
         {tabItems.map((tab) => (
           <button
             key={tab.id}
@@ -905,7 +905,7 @@ function EditChallengeContent({
                   "text-[10px] font-mono px-1.5 py-0.5 rounded-full",
                   activeTab === tab.id
                     ? "bg-[#3D006B] text-white"
-                    : "bg-[#F3F4F6] text-[#6B7280]",
+                    : "bg-[#F3F4F6] dark:bg-[#252525] text-[#6B7280] dark:text-[#9CA3AF]",
                 )}
               >
                 {tab.badge}
@@ -933,13 +933,13 @@ function EditChallengeContent({
 
       {/* ── Details tab ─────────────────────────────────────────────────────── */}
       {activeTab === "details" && (
-        <div className="bg-white rounded-xl border border-[#E5E7EB] p-6 flex flex-col gap-5">
+        <div className="bg-white dark:bg-[#1a1a1a] rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] p-6 flex flex-col gap-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="font-heading font-semibold text-lg text-[#0F0F0F]">
+              <h2 className="font-heading font-semibold text-lg text-[#0F0F0F] dark:text-[#F9FAFB]">
                 Problem
               </h2>
-              <p className="font-body text-sm text-[#6B7280] mt-1">
+              <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mt-1">
                 Review the current problem statement, then edit only when you
                 need to.
               </p>
@@ -1009,7 +1009,7 @@ function EditChallengeContent({
               </div>
             </>
           ) : (
-            <div className="rounded-xl border border-[#E5E7EB] bg-[#FCFCFD] p-5">
+            <div className="rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] bg-[#FCFCFD] dark:bg-[#141414] p-5">
               <TiptapViewer
                 content={challenge.description}
                 className="tiptap-viewer text-[#0F0F0F]"
@@ -1022,12 +1022,12 @@ function EditChallengeContent({
       {/* ── Sandbox tab ─────────────────────────────────────────────────────── */}
       {activeTab === "sandbox" && (
         <div className="flex flex-col gap-4">
-          <div className="bg-[#F9F5FF] border border-[#E9D5FF] rounded-xl p-4 flex items-start gap-3">
+          <div className="bg-[#F9F5FF] dark:bg-[#2d1a4a]/20 border border-[#E9D5FF] dark:border-[#4a2878]/40 rounded-xl p-4 flex items-start gap-3">
             <FlaskConical
               size={18}
-              className="text-[#3D006B] mt-0.5 shrink-0"
+              className="text-[#3D006B] dark:text-[#C084FC] mt-0.5 shrink-0"
             />
-            <div className="font-body text-sm text-[#6B7280] leading-relaxed">
+            <div className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">
               This sandbox mirrors the student workspace, but hidden test
               failures stay visible here so you can debug the challenge before
               publishing.
@@ -1041,11 +1041,11 @@ function EditChallengeContent({
           </div>
 
           <div
-            className="flex flex-col overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white"
+            className="flex flex-col overflow-hidden rounded-2xl border border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a]"
             style={{ height: "72vh" }}
           >
-            <div className="flex items-center gap-3 px-4 py-2.5 border-b border-[#E5E7EB] bg-white shrink-0">
-              <span className="font-heading font-semibold text-sm text-[#0F0F0F] flex-1 truncate">
+            <div className="flex items-center gap-3 px-4 py-2.5 border-b border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] shrink-0">
+              <span className="font-heading font-semibold text-sm text-[#0F0F0F] dark:text-[#F9FAFB] flex-1 truncate">
                 {challenge.title}
               </span>
 
@@ -1063,7 +1063,7 @@ function EditChallengeContent({
             </div>
 
             {/* Mobile panel toggle */}
-            <div className="md:hidden flex shrink-0 border-b border-[#E5E7EB] bg-white">
+            <div className="md:hidden flex shrink-0 border-b border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a]">
               {(["problem", "code"] as const).map((panel) => (
                 <button
                   key={panel}
@@ -1083,7 +1083,7 @@ function EditChallengeContent({
             <div className="flex-1 flex overflow-hidden min-h-0">
               <div
                 className={cn(
-                  "flex flex-col overflow-hidden bg-white border-r border-[#E5E7EB]",
+                  "flex flex-col overflow-hidden bg-white dark:bg-[#1a1a1a] border-r border-[#E5E7EB] dark:border-[#2d2d2d]",
                   "md:flex md:w-[42%] md:min-w-70",
                   mobileSandboxPanel === "problem" ? "flex flex-1" : "hidden",
                 )}
@@ -1140,11 +1140,11 @@ function EditChallengeContent({
                 </div>
 
                 <div
-                  className="shrink-0 border-t border-[#E5E7EB] bg-white flex flex-col"
+                  className="shrink-0 border-t border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] flex flex-col"
                   style={{ maxHeight: "45%" }}
                 >
-                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#E5E7EB]">
-                    <div className="font-body text-xs font-medium text-[#3D006B]">
+                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#E5E7EB] dark:border-[#2d2d2d]">
+                    <div className="font-body text-xs font-medium text-[#3D006B] dark:text-[#C084FC]">
                       Results
                     </div>
                     {challenge.testCases.length === 0 && (
@@ -1186,8 +1186,8 @@ function EditChallengeContent({
       {activeTab === "tests" && (
         <div className="flex flex-col gap-4">
           {/* Guidance */}
-          <div className="bg-[#F9F5FF] border border-[#E9D5FF] rounded-xl p-4 font-body text-sm text-[#6B7280] leading-relaxed">
-            <strong className="text-[#3D006B] font-semibold">Tips:</strong> Add
+          <div className="bg-[#F9F5FF] dark:bg-[#2d1a4a]/20 border border-[#E9D5FF] dark:border-[#4a2878]/40 rounded-xl p-4 font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">
+            <strong className="text-[#3D006B] dark:text-[#C084FC] font-semibold">Tips:</strong> Add
             at least one visible example (students see it) and several hidden
             test cases that cover edge cases. Publishing requires at least one
             test case.

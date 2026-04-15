@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { Logo } from '@/components/ui';
+import { Logo, ThemeToggle } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useProfile } from '@/hooks/queries/auth';
 
@@ -22,7 +22,7 @@ export default function Navbar() {
   const ctaLabel = profile ? 'Continue' : 'Start Learning';
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-[#E5E7EB]">
+    <nav className="sticky top-0 z-50 bg-white dark:bg-[#0f0f0f] border-b border-[#E5E7EB] dark:border-[#2d2d2d]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
 
         {/* Logo */}
@@ -34,11 +34,12 @@ export default function Navbar() {
             <Link
               key={href}
               href={href}
-              className="font-heading text-sm font-semibold text-[#0F0F0F] hover:text-[#3D006B] transition-colors"
+              className="font-heading text-sm font-semibold text-[#0F0F0F] dark:text-[#F9FAFB] hover:text-[#3D006B] dark:hover:text-[#C084FC] transition-colors"
             >
               {label}
             </Link>
           ))}
+          <ThemeToggle />
           <Link
             href={ctaHref}
             className="inline-flex items-center gap-2 font-body text-sm font-medium bg-[#3D006B] text-white px-5 py-2 rounded-md hover:bg-[#2A004A] transition-colors"
@@ -69,16 +70,16 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       <div className={cn(
-        'md:hidden overflow-hidden transition-all duration-200 ease-in-out border-t border-[#E5E7EB]',
+        'md:hidden overflow-hidden transition-all duration-200 ease-in-out border-t border-[#E5E7EB] dark:border-[#2d2d2d]',
         open ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0',
       )}>
-        <div className="px-6 py-4 flex flex-col gap-1 bg-white">
+        <div className="px-6 py-4 flex flex-col gap-1 bg-white dark:bg-[#0f0f0f]">
           {links.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              className="font-heading text-sm font-semibold text-[#0F0F0F] hover:text-[#3D006B] transition-colors py-2.5 border-b border-[#F3F4F6] last:border-0"
+              className="font-heading text-sm font-semibold text-[#0F0F0F] dark:text-[#F9FAFB] hover:text-[#3D006B] dark:hover:text-[#C084FC] transition-colors py-2.5 border-b border-[#F3F4F6] dark:border-[#222222] last:border-0"
             >
               {label}
             </Link>

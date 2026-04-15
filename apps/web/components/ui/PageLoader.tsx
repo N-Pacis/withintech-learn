@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 // ─── Primitive ────────────────────────────────────────────────────────────────
 
 function Bone({ className }: { className?: string }) {
-  return <div className={cn('bg-[#E5E7EB] rounded-lg animate-pulse', className)} />;
+  return <div className={cn('bg-[#E5E7EB] dark:bg-[#2d2d2d] rounded-lg animate-pulse', className)} />;
 }
 
 // ─── Variants ─────────────────────────────────────────────────────────────────
@@ -14,7 +14,7 @@ function CardsLoader({ count = 8 }: { count?: number }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="flex flex-col rounded-xl border border-[#E5E7EB] overflow-hidden">
+        <div key={i} className="flex flex-col rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] overflow-hidden">
           <Bone className="h-40 rounded-none" />
           <div className="p-4 flex flex-col gap-2">
             <Bone className="h-4 w-3/4" />
@@ -48,8 +48,8 @@ function DetailLoader() {
 
       {/* Section cards */}
       {[140, 120, 90].map((h, i) => (
-        <div key={i} className="rounded-xl border border-[#E5E7EB] overflow-hidden">
-          <div className="px-6 py-4 border-b border-[#E5E7EB] flex items-center justify-between">
+        <div key={i} className="rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#E5E7EB] dark:border-[#2d2d2d] flex items-center justify-between">
             <Bone className="h-4 w-24" />
             <Bone className="h-7 w-20 rounded-lg" />
           </div>
@@ -83,7 +83,7 @@ function FormLoader() {
       </div>
 
       {/* Form card */}
-      <div className="rounded-xl border border-[#E5E7EB] overflow-hidden">
+      <div className="rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] overflow-hidden">
         <div className="px-6 py-4 border-b border-[#E5E7EB]">
           <Bone className="h-4 w-28" />
         </div>
@@ -100,7 +100,7 @@ function FormLoader() {
       </div>
 
       {/* Thumbnail card */}
-      <div className="rounded-xl border border-[#E5E7EB] overflow-hidden">
+      <div className="rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] overflow-hidden">
         <div className="px-6 py-4 border-b border-[#E5E7EB]">
           <Bone className="h-4 w-24" />
         </div>
@@ -133,9 +133,9 @@ function ContentLoader({ blocks = 3 }: { blocks?: number }) {
       <Bone className="h-5 w-24" />
 
       {/* Block cards */}
-      <div className="rounded-xl border border-[#E5E7EB] overflow-hidden">
+      <div className="rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] overflow-hidden">
         {Array.from({ length: blocks }).map((_, i) => (
-          <div key={i} className="flex gap-3 p-4 border-b border-[#E5E7EB] last:border-0">
+          <div key={i} className="flex gap-3 p-4 border-b border-[#E5E7EB] dark:border-[#2d2d2d] last:border-0">
             {/* Order column */}
             <div className="flex flex-col items-center gap-1 pt-1 shrink-0">
               <Bone className="h-4 w-4 rounded" />
@@ -173,9 +173,9 @@ function ListLoader({ rows = 5 }: { rows?: number }) {
       </div>
 
       {/* Rows */}
-      <div className="rounded-xl border border-[#E5E7EB] overflow-hidden">
+      <div className="rounded-xl border border-[#E5E7EB] dark:border-[#2d2d2d] overflow-hidden">
         {Array.from({ length: rows }).map((_, i) => (
-          <div key={i} className="flex items-center gap-4 px-6 py-4 border-b border-[#E5E7EB] last:border-0">
+          <div key={i} className="flex items-center gap-4 px-6 py-4 border-b border-[#E5E7EB] dark:border-[#2d2d2d] last:border-0">
             <Bone className="h-6 w-6 rounded-full shrink-0" />
             <div className="flex-1 flex flex-col gap-1.5">
               <Bone className="h-3.5 w-48" />
@@ -196,7 +196,7 @@ function ListLoader({ rows = 5 }: { rows?: number }) {
  *  session is being established (profile fetch / token refresh). */
 export function AuthLoader() {
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
+    <div className="min-h-screen bg-white dark:bg-[#0f0f0f] flex items-center justify-center">
       <Image
         src="/logo.png"
         alt="WithinTech Learn"

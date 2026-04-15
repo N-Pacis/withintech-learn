@@ -138,7 +138,7 @@ function SignInForm() {
       </div>
 
       {/* ── Right form panel ─────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-white px-6 py-12 relative">
+      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-[#0f0f0f] px-6 py-12 relative">
         {/* Back link */}
         <Link
           href="/"
@@ -164,10 +164,10 @@ function SignInForm() {
           <div className="flex justify-center mb-10">
             <Logo className="h-20" linked={false} />
           </div>
-          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] mb-1">
+          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] dark:text-[#F9FAFB] mb-1">
             Welcome back
           </h1>
-          <p className="font-body text-sm text-[#6B7280] mb-7">
+          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-7">
             Sign in to continue learning.
           </p>
 
@@ -208,7 +208,7 @@ function SignInForm() {
               <div className="flex items-center justify-between mb-1.5">
                 <label
                   htmlFor="password"
-                  className="font-body text-sm font-medium text-[#374151]"
+                  className="font-body text-sm font-medium text-[#374151] dark:text-[#D1D5DB]"
                 >
                   Password <span className="text-red-500">*</span>
                 </label>
@@ -244,7 +244,7 @@ function SignInForm() {
             </Button>
           </form>
 
-          <p className="font-body text-sm text-[#9CA3AF] text-center mt-6">
+          <p className="font-body text-sm text-[#9CA3AF] dark:text-[#6B7280] text-center mt-6">
             Don&apos;t have an account?{" "}
             <Link
               href="/sign-up"

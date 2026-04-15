@@ -184,7 +184,7 @@ export default function SignUpPage() {
       </div>
 
       {/* ── Right form panel ─────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-white px-6 py-12 relative overflow-y-auto">
+      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-[#0f0f0f] px-6 py-12 relative overflow-y-auto">
         <Link
           href="/"
           className="absolute top-6 left-6 flex items-center gap-1.5 text-[#9CA3AF] hover:text-[#3D006B] transition-colors font-body text-sm"
@@ -209,10 +209,10 @@ export default function SignUpPage() {
           <div className="flex justify-center mb-10">
             <Logo className="h-20" linked={false} />
           </div>
-          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] mb-1">
+          <h1 className="font-heading font-black text-2xl text-[#0F0F0F] dark:text-[#F9FAFB] mb-1">
             Get Started
           </h1>
-          <p className="font-body text-sm text-[#6B7280] mb-6">
+          <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-6">
             Create your account to start learning.
           </p>
 
@@ -380,8 +380,8 @@ export default function SignUpPage() {
                     agreedToTerms
                       ? "bg-[#3D006B] border-[#3D006B]"
                       : errors.terms
-                        ? "border-red-400 bg-white"
-                        : "border-[#D1D5DB] bg-white group-hover:border-[#3D006B]"
+                        ? "border-red-400 bg-white dark:bg-[#1a1a1a]"
+                        : "border-[#D1D5DB] dark:border-[#4B5563] bg-white dark:bg-[#1a1a1a] group-hover:border-[#3D006B]"
                   }`}
                 >
                   {agreedToTerms && (
@@ -400,7 +400,7 @@ export default function SignUpPage() {
                   )}
                 </div>
               </div>
-              <span className="font-body text-xs text-[#6B7280] leading-relaxed">
+              <span className="font-body text-xs text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">
                 I agree to WithinTech Learn&apos;s{" "}
                 <Link
                   href="/legal"
@@ -451,7 +451,7 @@ export default function SignUpPage() {
             </Button>
           </form>
 
-          <p className="font-body text-sm text-[#9CA3AF] text-center mt-5">
+          <p className="font-body text-sm text-[#9CA3AF] dark:text-[#6B7280] text-center mt-5">
             Already have an account?{" "}
             <Link
               href="/sign-in"

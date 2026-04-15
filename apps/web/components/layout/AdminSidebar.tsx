@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Logo } from '@/components/ui';
+import { Logo, ThemeToggle } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
@@ -104,8 +104,8 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
       <aside
         className={cn(
-          'fixed top-0 left-0 z-40 w-64 h-screen bg-white flex flex-col',
-          'border-r border-[#F0F0F0] shadow-[1px_0_0_0_#F0F0F0]',
+          'fixed top-0 left-0 z-40 w-64 h-screen bg-white dark:bg-[#111111] flex flex-col',
+          'border-r border-[#F0F0F0] dark:border-[#2d2d2d] shadow-[1px_0_0_0_#F0F0F0] dark:shadow-[1px_0_0_0_#2d2d2d]',
           'transition-transform duration-300 ease-in-out',
           'lg:translate-x-0 lg:sticky lg:top-0',
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
@@ -127,7 +127,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-2 flex flex-col gap-0.5 overflow-y-auto">
-          <p className="font-body text-[10px] font-semibold text-[#9CA3AF] tracking-widest uppercase px-3 mb-2">
+          <p className="font-body text-[10px] font-semibold text-[#9CA3AF] dark:text-[#6B7280] tracking-widest uppercase px-3 mb-2">
             Menu
           </p>
           {navItems.map(({ label, href, exact, icon }) => {
@@ -141,7 +141,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                   'flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm font-medium transition-all',
                   active
                     ? 'bg-[#3D006B] text-white shadow-sm'
-                    : 'text-[#6B7280] hover:text-[#374151] hover:bg-[#F3F4F6]',
+                    : 'text-[#6B7280] hover:text-[#374151] hover:bg-[#F3F4F6] dark:text-[#9CA3AF] dark:hover:text-[#F9FAFB] dark:hover:bg-[#252525]',
                 )}
               >
                 <span className={cn('shrink-0', active ? 'text-white' : 'text-[#9CA3AF]')}>
@@ -154,22 +154,26 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         </nav>
 
         {/* User + sign out */}
-        <div className="px-3 py-4 border-t border-[#F0F0F0]">
+        <div className="px-3 py-4 border-t border-[#F0F0F0] dark:border-[#2d2d2d]">
           <div className="flex items-center gap-3 px-3 py-2.5 mb-1">
             <div className="w-8 h-8 rounded-full bg-[#3D006B] flex items-center justify-center shrink-0">
               <span className="font-heading font-bold text-xs text-white">{initials || '?'}</span>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="font-body text-sm font-medium text-[#0F0F0F] truncate leading-tight">
+              <p className="font-body text-sm font-medium text-[#0F0F0F] dark:text-[#F9FAFB] truncate leading-tight">
                 {user?.firstName} {user?.lastName}
               </p>
-              <p className="font-body text-xs text-[#9CA3AF] truncate">{user?.email}</p>
+              <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280] truncate">{user?.email}</p>
             </div>
           </div>
 
+          <div className="flex items-center justify-between px-3 py-1.5 mb-1">
+            <span className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280]">Theme</span>
+            <ThemeToggle />
+          </div>
           <button
             onClick={() => { onClose(); logout(); }}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-[#6B7280] hover:text-red-600 hover:bg-red-50 transition-colors font-body text-sm"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-[#6B7280] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 transition-colors font-body text-sm"
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />

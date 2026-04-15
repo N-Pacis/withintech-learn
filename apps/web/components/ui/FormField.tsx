@@ -26,7 +26,7 @@ export function FormField({
     <div className={cn('flex flex-col gap-1.5', className)}>
       <label
         htmlFor={htmlFor}
-        className="font-body text-sm font-medium text-[#0F0F0F]"
+        className="font-body text-sm font-medium text-[#0F0F0F] dark:text-[#F9FAFB]"
         {...labelProps}
       >
         {label}
@@ -36,7 +36,7 @@ export function FormField({
       {children}
 
       {hint && !error && (
-        <p className="font-body text-xs text-[#9CA3AF]">{hint}</p>
+        <p className="font-body text-xs text-[#9CA3AF] dark:text-[#6B7280]">{hint}</p>
       )}
       {error && (
         <p className="font-body text-xs text-red-500">{error}</p>

@@ -2,7 +2,7 @@ import { HTMLAttributes, forwardRef } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
-const cardVariants = cva('bg-white rounded-xl border border-[#E5E7EB]', {
+const cardVariants = cva('bg-white rounded-xl border border-[#E5E7EB] dark:bg-[#1a1a1a] dark:border-[#2d2d2d]', {
   variants: {
     shadow: {
       none: '',
@@ -37,7 +37,7 @@ Card.displayName = 'Card';
 // Composable sub-components
 const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('px-6 py-5 border-b border-[#E5E7EB]', className)} {...props} />
+    <div ref={ref} className={cn('px-6 py-5 border-b border-[#E5E7EB] dark:border-[#2d2d2d]', className)} {...props} />
   ),
 );
 CardHeader.displayName = 'CardHeader';
@@ -53,7 +53,7 @@ const CardFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('px-6 py-4 border-t border-[#E5E7EB] bg-[#FAFAFA] rounded-b-xl', className)}
+      className={cn('px-6 py-4 border-t border-[#E5E7EB] bg-[#FAFAFA] rounded-b-xl dark:border-[#2d2d2d] dark:bg-[#141414]', className)}
       {...props}
     />
   ),

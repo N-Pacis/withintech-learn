@@ -269,18 +269,18 @@ function FeatureRow({ eyebrow, headline, body, bullets, mockup, reverse }: Featu
           <span className="inline-block font-body text-[10px] tracking-widest uppercase text-[#F97316] border border-[#F97316]/40 px-3 py-1 rounded mb-4">
             {eyebrow}
           </span>
-          <h3 className="font-heading font-black text-3xl lg:text-4xl text-[#0F0F0F] tracking-tight leading-tight">
+          <h3 className="font-heading font-black text-3xl lg:text-4xl text-[#0F0F0F] dark:text-[#F9FAFB] tracking-tight leading-tight">
             {headline}
           </h3>
         </div>
-        <p className="font-body text-base text-[#6B7280] leading-relaxed">{body}</p>
+        <p className="font-body text-base text-[#6B7280] dark:text-[#9CA3AF] leading-relaxed">{body}</p>
         <ul className="flex flex-col gap-3">
           {bullets.map((b) => (
             <li key={b} className="flex items-start gap-3">
               <span className="shrink-0 w-5 h-5 rounded-full bg-[#3D006B]/10 flex items-center justify-center text-[#3D006B] mt-0.5">
                 <CheckIcon />
               </span>
-              <span className="font-body text-sm text-[#374151]">{b}</span>
+              <span className="font-body text-sm text-[#374151] dark:text-[#D1D5DB]">{b}</span>
             </li>
           ))}
         </ul>
@@ -298,7 +298,7 @@ function FeatureRow({ eyebrow, headline, body, bullets, mockup, reverse }: Featu
 
 export default function FeatureHighlights() {
   return (
-    <section id="demo" className="bg-[#FAFAFA] py-20 lg:py-32 border-y border-[#E5E7EB]">
+    <section id="demo" className="bg-[#FAFAFA] dark:bg-[#0a0a0a] py-20 lg:py-32 border-y border-[#E5E7EB] dark:border-[#2d2d2d]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
 
         {/* Section header */}
@@ -306,7 +306,7 @@ export default function FeatureHighlights() {
           <p className="font-heading text-xs tracking-widest uppercase text-[#3D006B] font-bold mb-4">
             Everything you need
           </p>
-          <h2 className="font-heading font-black text-3xl lg:text-5xl text-[#0F0F0F] tracking-tight max-w-2xl leading-tight">
+          <h2 className="font-heading font-black text-3xl lg:text-5xl text-[#0F0F0F] dark:text-[#F9FAFB] tracking-tight max-w-2xl leading-tight">
             Learning, built around how you actually learn.
           </h2>
         </div>

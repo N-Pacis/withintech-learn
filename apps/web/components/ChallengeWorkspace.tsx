@@ -50,26 +50,26 @@ function WorkspaceSkeleton({ isInsideLayout }: { isInsideLayout?: boolean }) {
   const h = isInsideLayout ? "h-[calc(100vh-64px)]" : "h-[100dvh]";
   return (
     <div className={cn("flex animate-pulse flex-col", h)}>
-      <div className="h-[52px] bg-white border-b border-[#E5E7EB] shrink-0" />
+      <div className="h-[52px] bg-white dark:bg-[#1a1a1a] border-b border-[#E5E7EB] dark:border-[#2d2d2d] shrink-0" />
       <div className="hidden md:flex flex-1 overflow-hidden">
-        <div className="w-[42%] border-r border-[#E5E7EB] p-5 flex flex-col gap-4 bg-white">
-          <div className="h-6 w-2/3 bg-[#E5E7EB] rounded-md" />
+        <div className="w-[42%] border-r border-[#E5E7EB] dark:border-[#2d2d2d] p-5 flex flex-col gap-4 bg-white dark:bg-[#1a1a1a]">
+          <div className="h-6 w-2/3 bg-[#E5E7EB] dark:bg-[#252525] rounded-md" />
           {[100, 80, 90, 60, 70, 85].map((w, i) => (
-            <div key={i} className="h-3.5 bg-[#E5E7EB] rounded" style={{ width: `${w}%` }} />
+            <div key={i} className="h-3.5 bg-[#E5E7EB] dark:bg-[#252525] rounded" style={{ width: `${w}%` }} />
           ))}
-          <div className="h-28 bg-[#E5E7EB] rounded-lg mt-2" />
+          <div className="h-28 bg-[#E5E7EB] dark:bg-[#252525] rounded-lg mt-2" />
         </div>
         <div className="flex-1 flex flex-col">
           <div className="h-10 bg-[#2d2d2d] border-b border-[#3a3a3a]" />
           <div className="flex-1 bg-[#1e1e1e]" />
         </div>
       </div>
-      <div className="md:hidden flex-1 p-5 flex flex-col gap-4 bg-white">
-        <div className="h-6 w-2/3 bg-[#E5E7EB] rounded-md" />
+      <div className="md:hidden flex-1 p-5 flex flex-col gap-4 bg-white dark:bg-[#1a1a1a]">
+        <div className="h-6 w-2/3 bg-[#E5E7EB] dark:bg-[#252525] rounded-md" />
         {[100, 80, 90, 60, 70].map((w, i) => (
-          <div key={i} className="h-3.5 bg-[#E5E7EB] rounded" style={{ width: `${w}%` }} />
+          <div key={i} className="h-3.5 bg-[#E5E7EB] dark:bg-[#252525] rounded" style={{ width: `${w}%` }} />
         ))}
-        <div className="mt-auto h-11 bg-[#E5E7EB] rounded-lg" />
+        <div className="mt-auto h-11 bg-[#E5E7EB] dark:bg-[#252525] rounded-lg" />
       </div>
     </div>
   );
@@ -99,7 +99,7 @@ function AcceptedBanner({ onDismiss }: { onDismiss: () => void }) {
 function InputDisplay({ input, params }: { input: string; params: FunctionParam[] | null }) {
   if (!params || params.length === 0) {
     return input ? (
-      <pre className="bg-[#F3F4F6] rounded px-2 py-1 whitespace-pre-wrap break-all text-xs font-mono">
+      <pre className="bg-[#F3F4F6] dark:bg-[#252525] dark:text-[#D1D5DB] rounded px-2 py-1 whitespace-pre-wrap break-all text-xs font-mono">
         {input}
       </pre>
     ) : null;
@@ -109,7 +109,7 @@ function InputDisplay({ input, params }: { input: string; params: FunctionParam[
     values = JSON.parse(input) as unknown[];
   } catch {
     return (
-      <pre className="bg-[#F3F4F6] rounded px-2 py-1 whitespace-pre-wrap break-all text-xs font-mono">
+      <pre className="bg-[#F3F4F6] dark:bg-[#252525] dark:text-[#D1D5DB] rounded px-2 py-1 whitespace-pre-wrap break-all text-xs font-mono">
         {input}
       </pre>
     );
@@ -119,7 +119,7 @@ function InputDisplay({ input, params }: { input: string; params: FunctionParam[
       {params.map((p, i) => (
         <div key={p.name} className="flex items-start gap-1.5 text-xs font-mono">
           <span className="text-[#9CA3AF] shrink-0">{p.name} =</span>
-          <pre className="bg-[#F3F4F6] rounded px-1.5 py-0.5 whitespace-pre-wrap break-all flex-1">
+          <pre className="bg-[#F3F4F6] dark:bg-[#252525] dark:text-[#D1D5DB] rounded px-1.5 py-0.5 whitespace-pre-wrap break-all flex-1">
             {Array.isArray(values[i]) ? JSON.stringify(values[i]) : String(values[i] ?? "")}
           </pre>
         </div>
@@ -142,25 +142,25 @@ function EmptyResultsState({
     <div className="p-5">
       <p className="font-body text-xs text-[#9CA3AF] mb-3">
         Write your solution and press{" "}
-        <kbd className="font-mono bg-[#F3F4F6] border border-[#E5E7EB] rounded px-1 py-0.5 text-[10px]">
+        <kbd className="font-mono bg-[#F3F4F6] dark:bg-[#252525] border border-[#E5E7EB] dark:border-[#2d2d2d] rounded px-1 py-0.5 text-[10px]">
           ⌘ Enter
         </kbd>{" "}
         or click <strong>Submit</strong> to run against all test cases.
       </p>
       {challenge.visibleTestCases.length > 0 && (
         <div className="flex flex-col gap-2">
-          <p className="font-body text-xs font-medium text-[#6B7280] uppercase tracking-wider">
+          <p className="font-body text-xs font-medium text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wider">
             Example test cases
           </p>
           {challenge.visibleTestCases.map((tc, i) => (
             <div
               key={tc.id}
-              className="border border-[#E5E7EB] rounded-lg overflow-hidden text-xs font-mono"
+              className="border border-[#E5E7EB] dark:border-[#2d2d2d] rounded-lg overflow-hidden text-xs font-mono"
             >
-              <div className="px-3 py-1.5 bg-[#F9FAFB] border-b border-[#E5E7EB] font-body text-[11px] text-[#9CA3AF]">
+              <div className="px-3 py-1.5 bg-[#F9FAFB] dark:bg-[#141414] border-b border-[#E5E7EB] dark:border-[#2d2d2d] font-body text-[11px] text-[#9CA3AF] dark:text-[#6B7280]">
                 Example {i + 1}
               </div>
-              <div className="p-3 grid gap-2 bg-white">
+              <div className="p-3 grid gap-2 bg-white dark:bg-[#1a1a1a]">
                 {tc.input !== "" && (
                   <div>
                     <div className="font-body text-[11px] text-[#9CA3AF] mb-1">Input</div>
@@ -207,15 +207,15 @@ function LockedWorkspace({
   return (
     <div className={cn("flex flex-col", h)}>
       {/* Top bar */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-[#E5E7EB] bg-white shrink-0">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] shrink-0">
         <Link
           href={backHref}
-          className="text-[#9CA3AF] hover:text-[#3D006B] transition-colors shrink-0"
+          className="text-[#9CA3AF] hover:text-[#3D006B] dark:hover:text-[#C084FC] transition-colors shrink-0"
           title="Back to challenges"
         >
           <ArrowLeft size={18} />
         </Link>
-        <span className="font-heading font-semibold text-sm text-[#0F0F0F] flex-1 truncate">
+        <span className="font-heading font-semibold text-sm text-[#0F0F0F] dark:text-[#F9FAFB] flex-1 truncate">
           {challenge.title}
         </span>
         <Badge variant={badge.variant} size="sm" className="shrink-0 hidden sm:inline-flex">
@@ -231,7 +231,7 @@ function LockedWorkspace({
 
       {/* Desktop: split layout */}
       <div className="hidden md:flex flex-1 overflow-hidden min-h-0">
-        <div className="flex flex-col w-[42%] min-w-[300px] border-r border-[#E5E7EB] bg-white overflow-y-auto">
+        <div className="flex flex-col w-[42%] min-w-[300px] border-r border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] overflow-y-auto">
           <ProblemPanel
             title={challenge.title}
             description={challenge.description}
@@ -264,15 +264,15 @@ function LockedWorkspace({
           </div>
           {/* Lock overlay */}
           <div className="absolute inset-0 top-[40px] flex flex-col items-center justify-center bg-[#1e1e1e]/80 backdrop-blur-[2px] z-10 px-6">
-            <div className="bg-white rounded-2xl shadow-2xl border border-[#E5E7EB] px-8 py-8 flex flex-col items-center gap-4 max-w-xs w-full text-center">
-              <div className="w-12 h-12 rounded-xl bg-[#F3E8FF] flex items-center justify-center">
-                <Lock size={22} className="text-[#3D006B]" />
+            <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-2xl border border-[#E5E7EB] dark:border-[#2d2d2d] px-8 py-8 flex flex-col items-center gap-4 max-w-xs w-full text-center">
+              <div className="w-12 h-12 rounded-xl bg-[#F3E8FF] dark:bg-[#2d1a4a] flex items-center justify-center">
+                <Lock size={22} className="text-[#3D006B] dark:text-[#C084FC]" />
               </div>
               <div>
-                <p className="font-heading font-bold text-base text-[#0F0F0F] mb-1">
+                <p className="font-heading font-bold text-base text-[#0F0F0F] dark:text-[#F9FAFB] mb-1">
                   Sign in to start coding
                 </p>
-                <p className="font-body text-sm text-[#6B7280]">
+                <p className="font-body text-sm text-[#6B7280] dark:text-[#9CA3AF]">
                   Create a free account to submit solutions and track your progress.
                 </p>
               </div>
@@ -291,7 +291,7 @@ function LockedWorkspace({
       </div>
 
       {/* Mobile: problem + sticky CTA */}
-      <div className="md:hidden flex flex-col flex-1 overflow-hidden min-h-0 bg-white">
+      <div className="md:hidden flex flex-col flex-1 overflow-hidden min-h-0 bg-white dark:bg-[#1a1a1a]">
         <div className="flex-1 overflow-y-auto">
           <ProblemPanel
             title={challenge.title}
@@ -301,7 +301,7 @@ function LockedWorkspace({
             functionParams={challenge.functionParams}
           />
         </div>
-        <div className="shrink-0 border-t border-[#E5E7EB] bg-white px-4 py-4 flex flex-col gap-2">
+        <div className="shrink-0 border-t border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] px-4 py-4 flex flex-col gap-2">
           <Button asChild variant="primary" fullWidth>
             <Link href={signInHref}>
               <Lock size={14} />
@@ -438,15 +438,15 @@ function AuthedWorkspace({
       />
 
       {/* Top bar */}
-      <div className="flex items-center gap-3 px-4 py-2.5 border-b border-[#E5E7EB] bg-white shrink-0">
+      <div className="flex items-center gap-3 px-4 py-2.5 border-b border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] shrink-0">
         <Link
           href={backHref}
-          className="text-[#9CA3AF] hover:text-[#3D006B] transition-colors shrink-0"
+          className="text-[#9CA3AF] hover:text-[#3D006B] dark:hover:text-[#C084FC] transition-colors shrink-0"
           title="Back to challenges"
         >
           <ArrowLeft size={18} />
         </Link>
-        <span className="font-heading font-semibold text-sm text-[#0F0F0F] flex-1 truncate">
+        <span className="font-heading font-semibold text-sm text-[#0F0F0F] dark:text-[#F9FAFB] flex-1 truncate">
           {challenge.title}
         </span>
         {challenge.completed && (
@@ -469,7 +469,7 @@ function AuthedWorkspace({
       </div>
 
       {/* Mobile panel toggle */}
-      <div className="md:hidden flex shrink-0 border-b border-[#E5E7EB] bg-white">
+      <div className="md:hidden flex shrink-0 border-b border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a]">
         {(["problem", "code"] as const).map((panel) => (
           <button
             key={panel}
@@ -491,7 +491,7 @@ function AuthedWorkspace({
         {/* Left: Problem */}
         <div
           className={cn(
-            "flex flex-col overflow-hidden bg-white border-r border-[#E5E7EB]",
+            "flex flex-col overflow-hidden bg-white dark:bg-[#1a1a1a] border-r border-[#E5E7EB] dark:border-[#2d2d2d]",
             "md:flex md:w-[42%] md:min-w-70",
             mobilePanel === "problem" ? "flex flex-1" : "hidden",
           )}
@@ -549,10 +549,10 @@ function AuthedWorkspace({
 
           {/* Results / History drawer */}
           <div
-            className="shrink-0 border-t border-[#E5E7EB] bg-white flex flex-col"
+            className="shrink-0 border-t border-[#E5E7EB] dark:border-[#2d2d2d] bg-white dark:bg-[#1a1a1a] flex flex-col"
             style={{ maxHeight: "45%" }}
           >
-            <div className="flex items-center border-b border-[#E5E7EB] px-1 shrink-0">
+            <div className="flex items-center border-b border-[#E5E7EB] dark:border-[#2d2d2d] px-1 shrink-0">
               {[
                 { id: "results" as RightTab, label: "Results" },
                 { id: "history" as RightTab, label: "Submissions", icon: <History size={11} /> },
