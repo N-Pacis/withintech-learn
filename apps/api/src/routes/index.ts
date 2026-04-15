@@ -16,6 +16,7 @@ import adminUsersRouter from "./admin/users.routes";
 import adminEnrollmentsRouter from "./admin/enrollments.routes";
 import adminAnalyticsRouter from "./admin/analytics.routes";
 import adminChallengesRouter from "./admin/challenges.routes";
+import adminInvitationsRouter from "./admin/invitations.routes";
 import studentCoursesRouter from "./student/courses.routes";
 import studentQuizRouter from "./student/quiz.routes";
 import studentChallengesRouter from "./student/challenges.routes";
@@ -48,6 +49,7 @@ router.use(adminUsersRouter);
 router.use(adminEnrollmentsRouter);
 router.use(adminAnalyticsRouter);
 router.use(adminChallengesRouter);
+router.use(adminInvitationsRouter);
 
 // ── Student routes ────────────────────────────────────────────────────────────
 router.use("/student", authenticate);
