@@ -85,10 +85,8 @@ function ModuleMockup() {
         </div>
 
         {/* Image block placeholder */}
-        <div className="rounded-xl overflow-hidden h-20 bg-gradient-to-br from-primary-soft to-primary-pale/70 dark:from-primary-soft dark:to-primary-pale/80 flex items-center justify-center border border-primary-pale/40">
-          <span className="font-body text-xs text-primary opacity-70 dark:opacity-85">
-            diagram.png
-          </span>
+        <div className="rounded-xl overflow-hidden h-20 bg-linear-to-br from-[#EDE9FE] to-[#DDD6FE] flex items-center justify-center">
+          <span className="font-body text-xs text-[#7C3AED] opacity-60">diagram.png</span>
         </div>
       </div>
     </div>
@@ -253,8 +251,8 @@ function ProgressMockup() {
               50%
             </span>
           </div>
-          <div className="w-full h-2.5 bg-surface-muted rounded-full overflow-hidden">
-            <div className="h-full w-1/2 bg-gradient-to-r from-primary to-primary-tint rounded-full" />
+          <div className="w-full h-2.5 bg-[#F3F4F6] rounded-full overflow-hidden">
+            <div className="h-full w-1/2 bg-linear-to-r from-[#3D006B] to-[#7C3AED] rounded-full" />
           </div>
           <p className="font-body text-[10px] text-muted-contrast mt-1">
             2 of 4 courses completed

@@ -13,7 +13,7 @@ export default function CertificateCard() {
             </h3>
           </div>
           {/* Orange seal */}
-          <div className="w-12 h-12 rounded-full bg-[#F97316] flex items-center justify-center flex-shrink-0 ml-4">
+          <div className="w-12 h-12 rounded-full bg-[#F97316] flex items-center justify-center shrink-0 ml-4">
             <span className="font-heading font-black text-white text-sm leading-none">
               WT
             </span>
