@@ -6,6 +6,7 @@ import CertificateCard from "@/components/landing/CertificateCard";
 import CoursesSection from "@/components/landing/CoursesSection";
 import ChallengesSection from "@/components/landing/ChallengesSection";
 import FeatureHighlights from "@/components/landing/FeatureHighlights";
+import StatsSection from "@/components/landing/StatsSection";
 import { Logo } from "@/components/ui";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -86,6 +87,8 @@ export default function Home() {
       </section>
 
       <CoursesSection />
+
+      <StatsSection />
 
       <ChallengesSection />
 
