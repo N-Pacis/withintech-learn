@@ -201,33 +201,99 @@
       "Lesson": {
         "type": "object",
         "properties": {
-          "id":         { "type": "string", "format": "uuid" },
-          "moduleId":   { "type": "string", "format": "uuid" },
-          "title":      { "type": "string" },
-          "orderIndex": { "type": "integer" },
-          "hasQuiz":    { "type": "boolean" },
-          "createdAt":  { "type": "string", "format": "date-time" },
-          "updatedAt":  { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "moduleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "orderIndex": {
+            "type": "integer"
+          },
+          "hasQuiz": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "LessonBlock": {
         "type": "object",
         "properties": {
-          "id":         { "type": "string", "format": "uuid" },
-          "lessonId":   { "type": "string", "format": "uuid" },
-          "type":       { "type": "string", "enum": ["text", "image", "code"] },
-          "content":    { "type": "string", "nullable": true },
-          "storageKey": { "type": "string", "nullable": true },
-          "url":        { "type": "string", "nullable": true },
-          "caption":    { "type": "string", "nullable": true },
-          "language": {
+          "id": {
             "type": "string",
-            "enum": ["html","css","javascript","typescript","python","markdown","text","bash","cpp","csharp","rust","java","xml","yaml"],
+            "format": "uuid"
+          },
+          "lessonId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "image",
+              "code"
+            ]
+          },
+          "content": {
+            "type": "string",
             "nullable": true
           },
-          "orderIndex": { "type": "integer" },
-          "createdAt":  { "type": "string", "format": "date-time" },
-          "updatedAt":  { "type": "string", "format": "date-time" }
+          "storageKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "caption": {
+            "type": "string",
+            "nullable": true
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "html",
+              "css",
+              "javascript",
+              "typescript",
+              "python",
+              "markdown",
+              "text",
+              "bash",
+              "cpp",
+              "csharp",
+              "rust",
+              "java",
+              "xml",
+              "yaml"
+            ],
+            "nullable": true
+          },
+          "orderIndex": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "Quiz": {
@@ -422,7 +488,7 @@
         },
         "responses": {
           "200": {
-            "description": "Login successful. Sets `wt_access` (15m) and `wt_refresh` (7d) httpOnly cookies.",
+            "description": "Login successful",
             "content": {
               "application/json": {
                 "schema": {
@@ -465,7 +531,6 @@
           "Auth"
         ],
         "summary": "Logout",
-        "description": "Clears the `wt_access` and `wt_refresh` httpOnly cookies.",
         "responses": {
           "200": {
             "description": "Logged out.",
@@ -520,19 +585,27 @@
         },
         "responses": {
           "201": {
-            "description": "Account created — email verification OTP sent.",
+            "description": "Account created",
             "content": {
               "application/json": {
                 "schema": {
                   "allOf": [
-                    { "$ref": "#/components/schemas/SuccessResponse" },
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
                     {
                       "properties": {
                         "data": {
                           "type": "object",
                           "properties": {
-                            "requiresEmailVerification": { "type": "boolean", "example": true },
-                            "email": { "type": "string", "format": "email" }
+                            "requiresEmailVerification": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "email": {
+                              "type": "string",
+                              "format": "email"
+                            }
                           }
                         }
                       }
@@ -556,19 +629,30 @@
     },
     "/auth/email/verify": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Verify email with OTP",
-        "description": "Verifies the user's email using the 6-digit OTP sent during sign-up or login (unverified). Returns access and refresh tokens on success.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email", "otp"],
+                "required": [
+                  "email",
+                  "otp"
+                ],
                 "properties": {
-                  "email": { "type": "string", "format": "email" },
-                  "otp": { "type": "string", "minLength": 6, "maxLength": 6 }
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 6
+                  }
                 }
               }
             }
@@ -576,21 +660,29 @@
         },
         "responses": {
           "200": {
-            "description": "Email verified — tokens returned",
+            "description": "Email verified",
             "content": {
               "application/json": {
                 "schema": {
                   "allOf": [
-                    { "$ref": "#/components/schemas/SuccessResponse" },
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
                     {
                       "type": "object",
                       "properties": {
                         "data": {
                           "type": "object",
                           "properties": {
-                            "accessToken": { "type": "string" },
-                            "refreshToken": { "type": "string" },
-                            "user": { "$ref": "#/components/schemas/User" }
+                            "accessToken": {
+                              "type": "string"
+                            },
+                            "refreshToken": {
+                              "type": "string"
+                            },
+                            "user": {
+                              "$ref": "#/components/schemas/User"
+                            }
                           }
                         }
                       }
@@ -600,60 +692,87 @@
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "429": { "$ref": "#/components/responses/TooManyRequests" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
         }
       }
     },
     "/auth/email/resend": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Resend email verification OTP",
-        "description": "Sends a new verification OTP to the given email.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email"],
+                "required": [
+                  "email"
+                ],
                 "properties": {
-                  "email": { "type": "string", "format": "email" }
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "$ref": "#/components/responses/Success" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "429": { "$ref": "#/components/responses/TooManyRequests" }
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
         }
       }
     },
     "/auth/google": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Sign in / sign up with Google",
-        "description": "Verifies a Google ID token. Creates an account if none exists. Rejects if email is registered with email/password. Sets httpOnly auth cookies on success.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["idToken"],
+                "required": [
+                  "idToken"
+                ],
                 "properties": {
-                  "idToken": { "type": "string" }
+                  "idToken": {
+                    "type": "string"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "$ref": "#/components/responses/Success" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       }
     },
@@ -663,10 +782,9 @@
           "Auth"
         ],
         "summary": "Refresh access token",
-        "description": "Reads the `wt_refresh` httpOnly cookie. Sets a new `wt_access` cookie (15m). No request body required.",
         "responses": {
           "200": {
-            "description": "New access token issued via cookie.",
+            "description": "Token refreshed",
             "content": {
               "application/json": {
                 "schema": {
@@ -687,7 +805,6 @@
           "Auth"
         ],
         "summary": "Request a password reset OTP",
-        "description": "Sends a 6-digit OTP to the given email if an account exists.",
         "requestBody": {
           "required": true,
           "content": {
@@ -726,7 +843,9 @@
     },
     "/auth/password-reset/verify": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Verify OTP",
         "requestBody": {
           "required": true,
@@ -734,24 +853,40 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email", "otp"],
+                "required": [
+                  "email",
+                  "otp"
+                ],
                 "properties": {
-                  "email": { "type": "string", "format": "email" },
-                  "otp": { "type": "string", "minLength": 6, "maxLength": 6 }
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "otp": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 6
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "OTP verified, resetToken returned (valid 10 min)" },
-          "400": { "$ref": "#/components/responses/BadRequest" }
+          "200": {
+            "description": "OTP verified"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
         }
       }
     },
     "/auth/password-reset/confirm": {
       "post": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Set new password",
         "requestBody": {
           "required": true,
@@ -759,19 +894,33 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["resetToken", "newPassword"],
+                "required": [
+                  "resetToken",
+                  "newPassword"
+                ],
                 "properties": {
-                  "resetToken": { "type": "string" },
-                  "newPassword": { "type": "string", "minLength": 8 }
+                  "resetToken": {
+                    "type": "string"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 8
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Password reset, accessToken + refreshToken + user returned" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "200": {
+            "description": "Password reset"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
@@ -1287,7 +1436,6 @@
           "Admin / Courses"
         ],
         "summary": "Upload course thumbnail",
-        "description": "Multipart form upload. Field name: `image`. Replaces existing thumbnail.",
         "security": [
           {
             "bearerAuth": []
@@ -1322,7 +1470,7 @@
         },
         "responses": {
           "200": {
-            "description": "Thumbnail uploaded. Returns storageKey and signed URL.",
+            "description": "Thumbnail uploaded",
             "content": {
               "application/json": {
                 "schema": {
@@ -1717,7 +1865,6 @@
           "Admin / Blocks"
         ],
         "summary": "Add a block to a module",
-        "description": "For `text` blocks supply `content`. For `image` blocks supply optional `caption`. For `code` blocks supply `content` and `language` (html|css|javascript|python). Upload images separately via the upload-image endpoint.",
         "security": [
           {
             "bearerAuth": []
@@ -1822,7 +1969,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Ordered list of blocks. Image blocks include a signed `url`.",
+            "description": "Ordered list of blocks",
             "content": {
               "application/json": {
                 "schema": {
@@ -2072,7 +2219,6 @@
           "Admin / Blocks"
         ],
         "summary": "Upload image for an image block",
-        "description": "Block must exist and be of type `image`. Multipart form upload. Field name: `image`. Replaces existing image.",
         "security": [
           {
             "bearerAuth": []
@@ -2116,7 +2262,7 @@
         },
         "responses": {
           "200": {
-            "description": "Image uploaded. Returns storageKey and signed URL.",
+            "description": "Image uploaded",
             "content": {
               "application/json": {
                 "schema": {
@@ -2149,11 +2295,25 @@
     },
     "/admin/modules/{moduleId}/lessons": {
       "post": {
-        "tags": ["Admin / Lessons"],
+        "tags": [
+          "Admin / Lessons"
+        ],
         "summary": "Add a lesson to a module",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "moduleId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "moduleId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -2161,46 +2321,114 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["title", "orderIndex"],
+                "required": [
+                  "title",
+                  "orderIndex"
+                ],
                 "properties": {
-                  "title":      { "type": "string", "minLength": 1 },
-                  "orderIndex": { "type": "integer", "minimum": 1 }
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "orderIndex": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Lesson created.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Module not found." },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "201": {
+            "description": "Lesson created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Module not found."
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       },
       "get": {
-        "tags": ["Admin / Lessons"],
+        "tags": [
+          "Admin / Lessons"
+        ],
         "summary": "List lessons for a module",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "moduleId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "moduleId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Ordered list of lessons. Each item includes `hasQuiz`.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "200": {
+            "description": "Ordered list of lessons",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/admin/modules/{moduleId}/lessons/reorder": {
       "post": {
-        "tags": ["Admin / Lessons"],
+        "tags": [
+          "Admin / Lessons"
+        ],
         "summary": "Reorder lessons atomically",
-        "description": "`orderIndex` values must be contiguous starting from 1.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "moduleId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "moduleId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -2208,17 +2436,28 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["items"],
+                "required": [
+                  "items"
+                ],
                 "properties": {
                   "items": {
                     "type": "array",
                     "minItems": 1,
                     "items": {
                       "type": "object",
-                      "required": ["id", "orderIndex"],
+                      "required": [
+                        "id",
+                        "orderIndex"
+                      ],
                       "properties": {
-                        "id":         { "type": "string", "format": "uuid" },
-                        "orderIndex": { "type": "integer", "minimum": 1 }
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "orderIndex": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
                       }
                     }
                   }
@@ -2228,35 +2467,85 @@
           }
         },
         "responses": {
-          "200": { "description": "Lessons reordered." },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "200": {
+            "description": "Lessons reordered."
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/admin/lessons/{id}": {
       "get": {
-        "tags": ["Admin / Lessons"],
+        "tags": [
+          "Admin / Lessons"
+        ],
         "summary": "Get lesson detail with blocks",
-        "description": "Returns the lesson, its ordered blocks (image blocks include a signed `url`), and `hasQuiz`.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Lesson with blocks.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Lesson not found." }
+          "200": {
+            "description": "Lesson with blocks.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Lesson not found."
+          }
         }
       },
       "patch": {
-        "tags": ["Admin / Lessons"],
+        "tags": [
+          "Admin / Lessons"
+        ],
         "summary": "Update lesson title",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -2264,46 +2553,102 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["title"],
+                "required": [
+                  "title"
+                ],
                 "properties": {
-                  "title": { "type": "string", "minLength": 1 }
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Lesson updated.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Lesson not found." }
+          "200": {
+            "description": "Lesson updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Lesson not found."
+          }
         }
       },
       "delete": {
-        "tags": ["Admin / Lessons"],
+        "tags": [
+          "Admin / Lessons"
+        ],
         "summary": "Delete a lesson",
-        "description": "Also deletes all blocks (and their S3 images) and any associated quiz.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Lesson deleted." },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Lesson not found." }
+          "200": {
+            "description": "Lesson deleted."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Lesson not found."
+          }
         }
       }
     },
     "/admin/lessons/{lessonId}/blocks": {
       "post": {
-        "tags": ["Admin / Lesson Blocks"],
+        "tags": [
+          "Admin / Lesson Blocks"
+        ],
         "summary": "Add a block to a lesson",
-        "description": "For `text` supply `content`. For `image` supply optional `caption`. For `code` supply `content` and `language`. Upload images via the upload-image endpoint.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "lessonId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -2311,49 +2656,143 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["type", "orderIndex"],
+                "required": [
+                  "type",
+                  "orderIndex"
+                ],
                 "properties": {
-                  "type":       { "type": "string", "enum": ["text", "image", "code"] },
-                  "content":    { "type": "string" },
-                  "caption":    { "type": "string" },
-                  "language":   { "type": "string", "enum": ["html","css","javascript","typescript","python","markdown","text","bash","cpp","csharp","rust","java","xml","yaml"] },
-                  "orderIndex": { "type": "integer", "minimum": 1 }
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "text",
+                      "image",
+                      "code"
+                    ]
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "caption": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string",
+                    "enum": [
+                      "html",
+                      "css",
+                      "javascript",
+                      "typescript",
+                      "python",
+                      "markdown",
+                      "text",
+                      "bash",
+                      "cpp",
+                      "csharp",
+                      "rust",
+                      "java",
+                      "xml",
+                      "yaml"
+                    ]
+                  },
+                  "orderIndex": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Block added.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Lesson not found." },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "201": {
+            "description": "Block added.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Lesson not found."
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       },
       "get": {
-        "tags": ["Admin / Lesson Blocks"],
+        "tags": [
+          "Admin / Lesson Blocks"
+        ],
         "summary": "List blocks for a lesson",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "lessonId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Ordered list of blocks. Image blocks include a signed `url`.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "200": {
+            "description": "Ordered list of blocks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/admin/lessons/{lessonId}/blocks/reorder": {
       "post": {
-        "tags": ["Admin / Lesson Blocks"],
+        "tags": [
+          "Admin / Lesson Blocks"
+        ],
         "summary": "Reorder lesson blocks atomically",
-        "description": "`orderIndex` values must be contiguous starting from 1.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "lessonId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -2361,17 +2800,28 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["items"],
+                "required": [
+                  "items"
+                ],
                 "properties": {
                   "items": {
                     "type": "array",
                     "minItems": 1,
                     "items": {
                       "type": "object",
-                      "required": ["id", "orderIndex"],
+                      "required": [
+                        "id",
+                        "orderIndex"
+                      ],
                       "properties": {
-                        "id":         { "type": "string", "format": "uuid" },
-                        "orderIndex": { "type": "integer", "minimum": 1 }
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "orderIndex": {
+                          "type": "integer",
+                          "minimum": 1
+                        }
                       }
                     }
                   }
@@ -2381,22 +2831,51 @@
           }
         },
         "responses": {
-          "200": { "description": "Blocks reordered." },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "200": {
+            "description": "Blocks reordered."
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/admin/lessons/{lessonId}/blocks/{id}": {
       "patch": {
-        "tags": ["Admin / Lesson Blocks"],
+        "tags": [
+          "Admin / Lesson Blocks"
+        ],
         "summary": "Update a lesson block's content",
-        "description": "Only editable fields: `content`, `caption`, `language`. Block `type` cannot be changed.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } },
-          { "in": "path", "name": "id",       "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "lessonId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -2405,48 +2884,138 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "content":  { "type": "string", "minLength": 1 },
-                  "caption":  { "type": "string" },
-                  "language": { "type": "string", "enum": ["html","css","javascript","typescript","python","markdown","text","bash","cpp","csharp","rust","java","xml","yaml"] }
+                  "content": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "caption": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string",
+                    "enum": [
+                      "html",
+                      "css",
+                      "javascript",
+                      "typescript",
+                      "python",
+                      "markdown",
+                      "text",
+                      "bash",
+                      "cpp",
+                      "csharp",
+                      "rust",
+                      "java",
+                      "xml",
+                      "yaml"
+                    ]
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Block updated.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Block not found." }
+          "200": {
+            "description": "Block updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Block not found."
+          }
         }
       },
       "delete": {
-        "tags": ["Admin / Lesson Blocks"],
+        "tags": [
+          "Admin / Lesson Blocks"
+        ],
         "summary": "Delete a lesson block",
-        "description": "If the block is an image block, the S3 object is also deleted.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } },
-          { "in": "path", "name": "id",       "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "lessonId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Block deleted." },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Block not found." }
+          "200": {
+            "description": "Block deleted."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Block not found."
+          }
         }
       }
     },
     "/admin/lessons/{lessonId}/blocks/{blockId}/upload-image": {
       "post": {
-        "tags": ["Admin / Lesson Blocks"],
+        "tags": [
+          "Admin / Lesson Blocks"
+        ],
         "summary": "Upload image for a lesson image block",
-        "description": "Block must exist and be of type `image`. Multipart form upload. Field name: `image`. Replaces existing image.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } },
-          { "in": "path", "name": "blockId",  "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "lessonId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "path",
+            "name": "blockId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -2455,18 +3024,38 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "image": { "type": "string", "format": "binary" }
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Image uploaded. Returns `storageKey` and signed `url`.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Block not found." }
+          "200": {
+            "description": "Image uploaded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Block not found."
+          }
         }
       }
     },
@@ -2605,25 +3194,68 @@
     },
     "/admin/lessons/{lessonId}/quiz": {
       "get": {
-        "tags": ["Admin / Quizzes"],
+        "tags": [
+          "Admin / Quizzes"
+        ],
         "summary": "Get quiz for a lesson (null if none exists)",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "lessonId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Quiz with questions and options, or null.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Lesson not found." }
+          "200": {
+            "description": "Quiz detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Lesson not found."
+          }
         }
       },
       "post": {
-        "tags": ["Admin / Quizzes"],
+        "tags": [
+          "Admin / Quizzes"
+        ],
         "summary": "Create quiz for a lesson",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "in": "path", "name": "lessonId", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "in": "path",
+            "name": "lessonId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -2631,23 +3263,54 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["title", "passingScore"],
+                "required": [
+                  "title",
+                  "passingScore"
+                ],
                 "properties": {
-                  "title":        { "type": "string" },
-                  "passingScore": { "type": "integer", "minimum": 0, "maximum": 100 },
-                  "maxAttempts":  { "type": "integer", "default": 3 }
+                  "title": {
+                    "type": "string"
+                  },
+                  "passingScore": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "maxAttempts": {
+                    "type": "integer",
+                    "default": 3
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Lesson quiz created.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SuccessResponse" } } } },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Lesson not found." },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "201": {
+            "description": "Lesson quiz created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Lesson not found."
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
         }
       }
     },
@@ -3374,7 +4037,6 @@
           "Admin / Options"
         ],
         "summary": "Delete an option",
-        "description": "Cannot delete the last correct option for a question.",
         "security": [
           {
             "bearerAuth": []
@@ -3465,45 +4127,101 @@
     },
     "/admin/admins": {
       "post": {
-        "tags": ["Admin / Users"],
+        "tags": [
+          "Admin / Users"
+        ],
         "summary": "Create a new admin account",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["firstName", "lastName", "email"],
+                "required": [
+                  "firstName",
+                  "lastName",
+                  "email"
+                ],
                 "properties": {
-                  "firstName": { "type": "string" },
-                  "lastName":  { "type": "string" },
-                  "email":     { "type": "string", "format": "email" }
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Admin created" },
-          "400": { "description": "Validation error or email already in use" }
+          "201": {
+            "description": "Admin created"
+          },
+          "400": {
+            "description": "Validation error or email already in use"
+          }
         }
       }
     },
     "/admin/users/export": {
       "get": {
-        "tags": ["Admin / Users"],
+        "tags": [
+          "Admin / Users"
+        ],
         "summary": "Export all students",
-        "description": "Returns all matching students without pagination. Supports the same search/status/sortOrder filters as the list endpoint.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "search",    "in": "query", "schema": { "type": "string" } },
-          { "name": "status",    "in": "query", "schema": { "type": "string", "enum": ["active", "inactive"] } },
-          { "name": "sortOrder", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"] } }
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Array of all matching users" },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "200": {
+            "description": "Array of all matching users"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
@@ -3654,26 +4372,52 @@
     },
     "/admin/users/{id}/verify-email": {
       "patch": {
-        "tags": ["Admin / Users"],
+        "tags": [
+          "Admin / Users"
+        ],
         "summary": "Manually verify a user's email",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Email marked as verified." },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "200": {
+            "description": "Email marked as verified."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
     "/admin/analytics/enrollment-trend": {
       "get": {
-        "tags": ["Admin / Analytics"],
+        "tags": [
+          "Admin / Analytics"
+        ],
         "summary": "Enrollment trend",
-        "description": "Monthly enrolled vs completed counts for the last 12 months.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Array of monthly data points",
@@ -3682,15 +4426,24 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": {
+                      "type": "boolean"
+                    },
                     "data": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "properties": {
-                          "month": { "type": "string", "example": "2024-01" },
-                          "enrolled": { "type": "integer" },
-                          "completed": { "type": "integer" }
+                          "month": {
+                            "type": "string",
+                            "example": "2024-01"
+                          },
+                          "enrolled": {
+                            "type": "integer"
+                          },
+                          "completed": {
+                            "type": "integer"
+                          }
                         }
                       }
                     }
@@ -3699,16 +4452,23 @@
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/admin/analytics/top-courses": {
       "get": {
-        "tags": ["Admin / Analytics"],
+        "tags": [
+          "Admin / Analytics"
+        ],
         "summary": "Top courses by enrollment",
-        "description": "Top 5 published courses ranked by enrollment count with completion rates.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Array of top courses",
@@ -3717,17 +4477,29 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": {
+                      "type": "boolean"
+                    },
                     "data": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": { "type": "string" },
-                          "title": { "type": "string" },
-                          "enrolled": { "type": "integer" },
-                          "completed": { "type": "integer" },
-                          "completionRate": { "type": "integer" }
+                          "id": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "enrolled": {
+                            "type": "integer"
+                          },
+                          "completed": {
+                            "type": "integer"
+                          },
+                          "completionRate": {
+                            "type": "integer"
+                          }
                         }
                       }
                     }
@@ -3736,16 +4508,23 @@
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/admin/analytics/retention": {
       "get": {
-        "tags": ["Admin / Analytics"],
+        "tags": [
+          "Admin / Analytics"
+        ],
         "summary": "Student retention",
-        "description": "Counts students who enrolled in 2+ courses (returning students).",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Retention stats",
@@ -3754,13 +4533,21 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": {
+                      "type": "boolean"
+                    },
                     "data": {
                       "type": "object",
                       "properties": {
-                        "totalStudents": { "type": "integer" },
-                        "returningStudents": { "type": "integer" },
-                        "retentionRate": { "type": "integer" }
+                        "totalStudents": {
+                          "type": "integer"
+                        },
+                        "returningStudents": {
+                          "type": "integer"
+                        },
+                        "retentionRate": {
+                          "type": "integer"
+                        }
                       }
                     }
                   }
@@ -3768,115 +4555,202 @@
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/admin/analytics/daily-active-learners": {
       "get": {
-        "tags": ["Admin / Analytics"],
+        "tags": [
+          "Admin / Analytics"
+        ],
         "summary": "Daily active learners",
-        "description": "Distinct students who completed at least one module per day. Max 30-day window.",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          { "name": "from", "in": "query", "required": true, "schema": { "type": "string", "example": "2026-03-01" } },
-          { "name": "to",   "in": "query", "required": true, "schema": { "type": "string", "example": "2026-03-30" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
-        "responses": {
-          "200": {
-            "description": "Array of daily active learner counts",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean" },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "date":   { "type": "string", "example": "2026-03-15" },
-                          "active": { "type": "integer" }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
-        }
-      }
-    },
-    "/admin/analytics/users-over-time": {
-      "get": {
-        "tags": ["Admin / Analytics"],
-        "summary": "Users over time",
-        "description": "New user registrations per day. Max 30-day window.",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          { "name": "from", "in": "query", "required": true, "schema": { "type": "string", "example": "2026-03-01" } },
-          { "name": "to",   "in": "query", "required": true, "schema": { "type": "string", "example": "2026-03-30" } }
-        ],
-        "responses": {
-          "200": {
-            "description": "Array of daily registration counts",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean" },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "date":  { "type": "string", "example": "2026-03-15" },
-                          "users": { "type": "integer" }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
-        }
-      }
-    },
-    "/admin/analytics/challenges": {
-      "get": {
-        "tags": ["Admin / Analytics"],
-        "summary": "Challenges analytics overview",
-        "security": [{ "bearerAuth": [] }],
-        "responses": { "200": { "description": "Challenges analytics" } }
-      }
-    },
-    "/admin/analytics/challenge-leaderboard": {
-      "get": {
-        "tags": ["Admin / Analytics"],
-        "summary": "Weekly challenge leaderboard",
-        "description": "Top 5 students ranked by unique challenges completed in the date range. Tiebreaker: average pass rate across their submissions in the range.",
-        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "name": "from",
             "in": "query",
             "required": true,
-            "schema": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+            "schema": {
+              "type": "string",
+              "example": "2026-03-01"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "2026-03-30"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daily active learner counts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "date": {
+                            "type": "string",
+                            "example": "2026-03-15"
+                          },
+                          "active": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/admin/analytics/users-over-time": {
+      "get": {
+        "tags": [
+          "Admin / Analytics"
+        ],
+        "summary": "Users over time",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "2026-03-01"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "2026-03-30"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daily registration counts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "date": {
+                            "type": "string",
+                            "example": "2026-03-15"
+                          },
+                          "users": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/admin/analytics/challenges": {
+      "get": {
+        "tags": [
+          "Admin / Analytics"
+        ],
+        "summary": "Challenges analytics overview",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Challenges analytics"
+          }
+        }
+      }
+    },
+    "/admin/analytics/challenge-leaderboard": {
+      "get": {
+        "tags": [
+          "Admin / Analytics"
+        ],
+        "summary": "Weekly challenge leaderboard",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
             "description": "Start date (YYYY-MM-DD)"
           },
           {
             "name": "to",
             "in": "query",
             "required": true,
-            "schema": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
             "description": "End date (YYYY-MM-DD, max 30 days from `from`)"
           }
         ],
@@ -3888,17 +4762,30 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": {
+                      "type": "boolean"
+                    },
                     "data": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "properties": {
-                          "userId":         { "type": "string" },
-                          "firstName":      { "type": "string" },
-                          "lastName":       { "type": "string" },
-                          "problemsSolved": { "type": "integer" },
-                          "avgPassRate":    { "type": "integer", "description": "0–100" }
+                          "userId": {
+                            "type": "string"
+                          },
+                          "firstName": {
+                            "type": "string"
+                          },
+                          "lastName": {
+                            "type": "string"
+                          },
+                          "problemsSolved": {
+                            "type": "integer"
+                          },
+                          "avgPassRate": {
+                            "type": "integer",
+                            "description": "0\u2013100"
+                          }
                         }
                       }
                     }
@@ -3907,31 +4794,44 @@
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
         }
       }
     },
     "/admin/enrollments": {
       "get": {
-        "tags": ["Admin / Enrollments"],
+        "tags": [
+          "Admin / Enrollments"
+        ],
         "summary": "List all enrollments",
-        "description": "Returns all student enrollments with optional filters for student name or course title.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "search",
             "in": "query",
             "description": "Filter by student first or last name (case-insensitive)",
             "required": false,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "course",
             "in": "query",
             "description": "Filter by course title (case-insensitive)",
             "required": false,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3942,19 +4842,40 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": {
+                      "type": "boolean"
+                    },
                     "data": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": { "type": "string" },
-                          "studentId": { "type": "string" },
-                          "studentName": { "type": "string" },
-                          "courseId": { "type": "string" },
-                          "courseTitle": { "type": "string" },
-                          "enrolledAt": { "type": "string", "format": "date-time" },
-                          "status": { "type": "string", "enum": ["in_progress", "completed"] }
+                          "id": {
+                            "type": "string"
+                          },
+                          "studentId": {
+                            "type": "string"
+                          },
+                          "studentName": {
+                            "type": "string"
+                          },
+                          "courseId": {
+                            "type": "string"
+                          },
+                          "courseTitle": {
+                            "type": "string"
+                          },
+                          "enrolledAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "in_progress",
+                              "completed"
+                            ]
+                          }
                         }
                       }
                     }
@@ -3963,23 +4884,34 @@
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
         }
       }
     },
     "/admin/enrollments/{id}/progress": {
       "get": {
-        "tags": ["Admin / Enrollments"],
+        "tags": [
+          "Admin / Enrollments"
+        ],
         "summary": "Get module progress for an enrollment",
-        "description": "Returns module-level completion progress for a specific student enrollment.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3990,25 +4922,49 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean" },
+                    "success": {
+                      "type": "boolean"
+                    },
                     "data": {
                       "type": "object",
                       "properties": {
-                        "enrollmentId": { "type": "string" },
-                        "studentName": { "type": "string" },
-                        "courseTitle": { "type": "string" },
-                        "totalModules": { "type": "integer" },
-                        "completedModules": { "type": "integer" },
+                        "enrollmentId": {
+                          "type": "string"
+                        },
+                        "studentName": {
+                          "type": "string"
+                        },
+                        "courseTitle": {
+                          "type": "string"
+                        },
+                        "totalModules": {
+                          "type": "integer"
+                        },
+                        "completedModules": {
+                          "type": "integer"
+                        },
                         "modules": {
                           "type": "array",
                           "items": {
                             "type": "object",
                             "properties": {
-                              "id": { "type": "string" },
-                              "title": { "type": "string" },
-                              "orderIndex": { "type": "integer" },
-                              "completed": { "type": "boolean" },
-                              "completedAt": { "type": "string", "format": "date-time", "nullable": true }
+                              "id": {
+                                "type": "string"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "orderIndex": {
+                                "type": "integer"
+                              },
+                              "completed": {
+                                "type": "boolean"
+                              },
+                              "completedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true
+                              }
                             }
                           }
                         },
@@ -4016,10 +4972,20 @@
                           "nullable": true,
                           "type": "object",
                           "properties": {
-                            "id": { "type": "string" },
-                            "title": { "type": "string" },
-                            "passed": { "type": "boolean" },
-                            "passedAt": { "type": "string", "format": "date-time", "nullable": true }
+                            "id": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "passed": {
+                              "type": "boolean"
+                            },
+                            "passedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "nullable": true
+                            }
                           }
                         }
                       }
@@ -4029,9 +4995,57 @@
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/public/stats": {
+      "get": {
+        "tags": [
+          "Public"
+        ],
+        "summary": "Platform headline statistics",
+        "responses": {
+          "200": {
+            "description": "Platform stats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "students": {
+                          "type": "integer"
+                        },
+                        "courses": {
+                          "type": "integer"
+                        },
+                        "certificatesIssued": {
+                          "type": "integer"
+                        },
+                        "challengeSolvers": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -4041,7 +5055,6 @@
           "Public"
         ],
         "summary": "List top published courses (public)",
-        "description": "Returns up to 3 published courses: (1) most enrolled, (2) latest by creation date, (3) a random pick from the rest. No authentication required.",
         "responses": {
           "200": {
             "description": "Top published courses.",
@@ -4089,7 +5102,10 @@
                               },
                               "tag": {
                                 "type": "string",
-                                "enum": ["popular", "new"],
+                                "enum": [
+                                  "popular",
+                                  "new"
+                                ],
                                 "nullable": true
                               },
                               "createdAt": {
@@ -4119,7 +5135,6 @@
           "Student / Courses"
         ],
         "summary": "List published courses with enrollment status",
-        "description": "Returns a paginated list of published courses including enrollment status for the authenticated student. Supports search and filter.",
         "security": [
           {
             "bearerAuth": []
@@ -4170,7 +5185,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Paginated courses with enrollment data."
+            "description": "Paginated course list"
           },
           "400": {
             "$ref": "#/components/responses/BadRequest"
@@ -4241,7 +5256,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Course detail with modules, quiz, and enrollment status"
+            "description": "Course detail"
           },
           "404": {
             "description": "Course not found"
@@ -4251,19 +5266,47 @@
     },
     "/student/courses/{slug}/modules/{moduleId}": {
       "get": {
-        "tags": ["Student - Courses"],
+        "tags": [
+          "Student - Courses"
+        ],
         "summary": "Get a single module's content",
-        "description": "Returns module blocks and quiz. Requires enrollment. Returns 403 if any previous module has not been completed (sequential progression enforced).",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } },
-          { "name": "moduleId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moduleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Module content with blocks, quiz, and last attempt" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "200": {
+            "description": "Module content"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
         }
       }
     },
@@ -4273,7 +5316,6 @@
           "Student - Courses"
         ],
         "summary": "Mark a course as completed (PASSED)",
-        "description": "Sets enrollment status to PASSED. Requires all modules to be done. If the course has a quiz, the student must have passed it first.",
         "security": [
           {
             "bearerAuth": []
@@ -4314,7 +5356,6 @@
           "Student - Courses"
         ],
         "summary": "Mark a module as completed",
-        "description": "Saves module progress. Requires all previous modules to be completed (sequential progression). If the module has a quiz, the student must have passed it first.",
         "security": [
           {
             "bearerAuth": []
@@ -4360,40 +5401,114 @@
     },
     "/student/courses/{slug}/modules/{moduleId}/lessons/{lessonId}": {
       "get": {
-        "tags": ["Student - Courses"],
+        "tags": [
+          "Student - Courses"
+        ],
         "summary": "Get a single lesson's content",
-        "description": "Returns lesson blocks (image blocks include signed `url`), embedded quiz, and last quiz attempt. Requires enrollment and all previous lessons to be completed (sequential progression enforced).",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "slug",     "in": "path", "required": true, "schema": { "type": "string" } },
-          { "name": "moduleId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
-          { "name": "lessonId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moduleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "lessonId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Lesson content with blocks, quiz, and last attempt." },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Course, module, or lesson not found." }
+          "200": {
+            "description": "Lesson content"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
         }
       }
     },
     "/student/courses/{slug}/modules/{moduleId}/lessons/{lessonId}/progress": {
       "post": {
-        "tags": ["Student - Courses"],
+        "tags": [
+          "Student - Courses"
+        ],
         "summary": "Mark a lesson as completed",
-        "description": "Saves lesson progress. Requires all previous lessons to be completed. If the lesson has a quiz, the student must have passed it first. Auto-completes the module (and course) when all lessons are done and no module-level quiz exists.",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "slug",     "in": "path", "required": true, "schema": { "type": "string" } },
-          { "name": "moduleId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
-          { "name": "lessonId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moduleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "lessonId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
-          "201": { "description": "Lesson marked as completed." },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "description": "Course, module, or lesson not found." }
+          "201": {
+            "description": "Lesson marked as completed."
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
         }
       }
     },
@@ -4578,28 +5693,43 @@
     },
     "/admin/stats": {
       "get": {
-        "tags": ["Admin / Dashboard"],
+        "tags": [
+          "Admin / Dashboard"
+        ],
         "summary": "Get basic platform statistics",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
-          "200": { "description": "{ totalStudents, activeCourses, certificatesIssued }" }
+          "200": {
+            "description": "Platform stats"
+          }
         }
       }
     },
     "/student/certificates": {
       "get": {
-        "tags": ["Student"],
+        "tags": [
+          "Student"
+        ],
         "summary": "List all certificates earned by the authenticated student",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
-          "200": { "description": "Array of certificate summaries" }
+          "200": {
+            "description": "Array of certificate summaries"
+          }
         }
       }
     },
     "/certificates/{userId}/{courseSlug}": {
       "get": {
         "summary": "Get certificate by userId and course slug",
-        "description": "Public endpoint \u2014 no authentication required. Returns certificate info for display.",
         "tags": [
           "Certificates"
         ],
@@ -4674,214 +5804,596 @@
     },
     "/admin/challenges": {
       "post": {
-        "tags": ["Admin - Challenges"],
+        "tags": [
+          "Admin - Challenges"
+        ],
         "summary": "Create a challenge",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["title", "description", "difficulty"],
+                "required": [
+                  "title",
+                  "description",
+                  "difficulty"
+                ],
                 "properties": {
-                  "title":          { "type": "string" },
-                  "description":    { "type": "string" },
-                  "difficulty":     { "type": "string", "enum": ["easy", "medium", "hard"] },
-                  "timeLimit":      { "type": "integer", "default": 5 },
-                  "orderIndex":     { "type": "integer", "default": 0 },
-                  "starterCode":    { "type": "object" },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "difficulty": {
+                    "type": "string",
+                    "enum": [
+                      "easy",
+                      "medium",
+                      "hard"
+                    ]
+                  },
+                  "timeLimit": {
+                    "type": "integer",
+                    "default": 5
+                  },
+                  "orderIndex": {
+                    "type": "integer",
+                    "default": 0
+                  },
+                  "starterCode": {
+                    "type": "object"
+                  },
                   "functionParams": {
                     "type": "array",
                     "items": {
                       "type": "object",
-                      "required": ["name", "type"],
+                      "required": [
+                        "name",
+                        "type"
+                      ],
                       "properties": {
-                        "name": { "type": "string" },
-                        "type": { "type": "string", "description": "e.g. int, string, int[], int[][]" }
+                        "name": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "e.g. int, string, int[], int[][]"
+                        }
                       }
                     }
                   },
-                  "returnType": { "type": "string", "description": "e.g. int, void, string, int[]" }
+                  "returnType": {
+                    "type": "string",
+                    "description": "e.g. int, void, string, int[]"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Challenge created" },
-          "400": { "description": "Validation error" },
-          "401": { "description": "Unauthorized" },
-          "403": { "description": "Forbidden" }
+          "201": {
+            "description": "Challenge created"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
         }
       },
       "get": {
-        "tags": ["Admin - Challenges"],
+        "tags": [
+          "Admin - Challenges"
+        ],
         "summary": "List all challenges",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "page",       "in": "query", "schema": { "type": "integer" } },
-          { "name": "limit",      "in": "query", "schema": { "type": "integer" } },
-          { "name": "difficulty", "in": "query", "schema": { "type": "string", "enum": ["easy", "medium", "hard"] } },
-          { "name": "status",     "in": "query", "schema": { "type": "string", "enum": ["draft", "published"] } }
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "difficulty",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "easy",
+                "medium",
+                "hard"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published"
+              ]
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Paginated challenge list" },
-          "401": { "description": "Unauthorized" }
+          "200": {
+            "description": "Paginated challenge list"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
         }
       }
     },
     "/admin/challenges/{id}": {
       "get": {
-        "tags": ["Admin - Challenges"],
+        "tags": [
+          "Admin - Challenges"
+        ],
         "summary": "Get a challenge with test cases",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
-          "200": { "description": "Challenge detail" },
-          "404": { "description": "Not found" }
+          "200": {
+            "description": "Challenge detail"
+          },
+          "404": {
+            "description": "Not found"
+          }
         }
       },
       "patch": {
-        "tags": ["Admin - Challenges"],
+        "tags": [
+          "Admin - Challenges"
+        ],
         "summary": "Update a challenge",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": { "200": { "description": "Challenge updated" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Challenge updated"
+          }
+        }
       },
       "delete": {
-        "tags": ["Admin - Challenges"],
+        "tags": [
+          "Admin - Challenges"
+        ],
         "summary": "Delete a draft challenge",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": { "200": { "description": "Challenge deleted" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Challenge deleted"
+          }
+        }
       }
     },
     "/admin/challenges/{id}/publish": {
       "patch": {
-        "tags": ["Admin - Challenges"],
+        "tags": [
+          "Admin - Challenges"
+        ],
         "summary": "Publish a challenge",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": { "200": { "description": "Challenge published" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Challenge published"
+          }
+        }
       }
     },
     "/admin/challenges/{id}/unpublish": {
       "patch": {
-        "tags": ["Admin - Challenges"],
+        "tags": [
+          "Admin - Challenges"
+        ],
         "summary": "Unpublish a challenge",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": { "200": { "description": "Challenge unpublished" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Challenge unpublished"
+          }
+        }
       }
     },
     "/admin/challenges/{id}/stats": {
       "get": {
-        "tags": ["Admin - Challenges"],
+        "tags": [
+          "Admin - Challenges"
+        ],
         "summary": "Get statistics for a challenge",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": { "200": { "description": "Challenge statistics" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Challenge statistics"
+          }
+        }
       }
     },
     "/admin/challenges/{id}/test-cases": {
       "post": {
-        "tags": ["Admin - Challenges"],
+        "tags": [
+          "Admin - Challenges"
+        ],
         "summary": "Add a test case to a challenge",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["expectedOutput", "orderIndex"],
-                "properties": {
-                  "input":          { "type": "string" },
-                  "expectedOutput": { "type": "string" },
-                  "isHidden":       { "type": "boolean", "default": true },
-                  "orderIndex":     { "type": "integer" }
-                }
-              }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
-        },
-        "responses": { "201": { "description": "Test case added" } }
-      }
-    },
-    "/admin/test-cases/{testCaseId}": {
-      "patch": {
-        "tags": ["Admin - Challenges"],
-        "summary": "Update a test case",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "name": "testCaseId", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": { "200": { "description": "Test case updated" } }
-      },
-      "delete": {
-        "tags": ["Admin - Challenges"],
-        "summary": "Delete a test case",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "name": "testCaseId", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": { "200": { "description": "Test case deleted" } }
-      }
-    },
-    "/student/challenges": {
-      "get": {
-        "tags": ["Student - Challenges"],
-        "summary": "List published challenges with completion status",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          { "name": "page",       "in": "query", "schema": { "type": "integer" } },
-          { "name": "limit",      "in": "query", "schema": { "type": "integer" } },
-          { "name": "difficulty", "in": "query", "schema": { "type": "string", "enum": ["easy", "medium", "hard"] } }
         ],
-        "responses": { "200": { "description": "Paginated challenge list" } }
-      }
-    },
-    "/student/challenges/{slug}": {
-      "get": {
-        "tags": ["Student - Challenges"],
-        "summary": "Get challenge detail with visible test cases",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": { "200": { "description": "Challenge detail" }, "404": { "description": "Not found" } }
-      }
-    },
-    "/student/challenges/{slug}/submit": {
-      "post": {
-        "tags": ["Student - Challenges"],
-        "summary": "Submit a solution",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["language", "code"],
+                "required": [
+                  "expectedOutput",
+                  "orderIndex"
+                ],
                 "properties": {
-                  "language": { "type": "string", "enum": ["python", "java", "javascript", "c", "cpp", "go"] },
-                  "code":     { "type": "string" }
+                  "input": {
+                    "type": "string"
+                  },
+                  "expectedOutput": {
+                    "type": "string"
+                  },
+                  "isHidden": {
+                    "type": "boolean",
+                    "default": true
+                  },
+                  "orderIndex": {
+                    "type": "integer"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Submission result with per-test-case verdict" },
-          "429": { "description": "Rate limit exceeded" }
+          "201": {
+            "description": "Test case added"
+          }
+        }
+      }
+    },
+    "/admin/test-cases/{testCaseId}": {
+      "patch": {
+        "tags": [
+          "Admin - Challenges"
+        ],
+        "summary": "Update a test case",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "testCaseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Test case updated"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admin - Challenges"
+        ],
+        "summary": "Delete a test case",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "testCaseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Test case deleted"
+          }
+        }
+      }
+    },
+    "/student/challenges": {
+      "get": {
+        "tags": [
+          "Student - Challenges"
+        ],
+        "summary": "List published challenges with completion status",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "difficulty",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "easy",
+                "medium",
+                "hard"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated challenge list"
+          }
+        }
+      }
+    },
+    "/student/challenges/{slug}": {
+      "get": {
+        "tags": [
+          "Student - Challenges"
+        ],
+        "summary": "Get challenge detail with visible test cases",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Challenge detail"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/student/challenges/{slug}/submit": {
+      "post": {
+        "tags": [
+          "Student - Challenges"
+        ],
+        "summary": "Submit a solution",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "language",
+                  "code"
+                ],
+                "properties": {
+                  "language": {
+                    "type": "string",
+                    "enum": [
+                      "python",
+                      "java",
+                      "javascript",
+                      "c",
+                      "cpp",
+                      "go"
+                    ]
+                  },
+                  "code": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Submission result"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
         }
       }
     },
     "/student/challenges/{slug}/submissions": {
       "get": {
-        "tags": ["Student - Challenges"],
+        "tags": [
+          "Student - Challenges"
+        ],
         "summary": "Get my submission history for a challenge",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }],
-        "responses": { "200": { "description": "List of past submissions" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of past submissions"
+          }
+        }
       }
     }
   }
