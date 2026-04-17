@@ -69,7 +69,7 @@ export default function UsersPage() {
       {isLoading && <PageLoader type="list" />}
 
       {error && (
-        <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-3 rounded-lg">
+        <p className="font-body text-sm text-danger bg-danger-soft px-4 py-3 rounded-lg">
           Failed to load users. Please try again.
         </p>
       )}
@@ -81,7 +81,7 @@ export default function UsersPage() {
       )}
 
       {users && users.length > 0 && (
-        <div className="bg-white rounded-xl ring-1 ring-border overflow-hidden shadow-sm">
+        <div className="bg-surface-card rounded-xl ring-1 ring-border overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px]">
               <thead>

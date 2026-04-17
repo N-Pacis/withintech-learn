@@ -285,7 +285,7 @@ function AddTestCaseForm({
   }
 
   return (
-    <div className="border-2 border-primary/30 rounded-xl p-5 bg-[#F9F5FF] dark:bg-[#2d1a4a]/20 flex flex-col gap-4">
+    <div className="border-2 border-primary/30 rounded-xl p-5 bg-primary-soft flex flex-col gap-4">
       <h3 className="font-heading font-semibold text-sm text-primary">
         New Test Case #{nextIndex + 1}
       </h3>
@@ -631,7 +631,7 @@ function StatisticsTab({ challengeId }: { challengeId: string }) {
 
       {/* Language breakdown */}
       {langEntries.length > 0 && (
-        <div className="bg-white rounded-xl border border-border p-5">
+        <div className="bg-surface-card rounded-xl border border-border p-5">
           <p className="font-body text-xs font-semibold text-muted-contrast uppercase tracking-wider mb-4">
             Language Usage
           </p>
@@ -969,7 +969,7 @@ function EditChallengeContent({
                   content={description}
                   onChange={(html) => setDescription(html)}
                   placeholder="Write a Rwanda-themed challenge, like optimizing stops on a Kigali moto route, and use tables for examples if needed."
-                  className="bg-white"
+                  className="bg-surface-card"
                 />
               </FormField>
               <div className="flex justify-end gap-2">
@@ -1010,7 +1010,7 @@ function EditChallengeContent({
               </div>
             </>
           ) : (
-            <div className="rounded-xl border border-border bg-[#FCFCFD] bg-surface-panel p-5">
+            <div className="rounded-xl border border-border bg-surface-panel p-5">
               <TiptapViewer
                 content={challenge.description}
                 className="tiptap-viewer text-foreground"
@@ -1023,7 +1023,7 @@ function EditChallengeContent({
       {/* ── Sandbox tab ─────────────────────────────────────────────────────── */}
       {activeTab === "sandbox" && (
         <div className="flex flex-col gap-4">
-          <div className="bg-[#F9F5FF] dark:bg-[#2d1a4a]/20 border border-primary-pale/40 rounded-xl p-4 flex items-start gap-3">
+          <div className="bg-primary-soft border border-primary-pale/40 rounded-xl p-4 flex items-start gap-3">
             <FlaskConical size={18} className="text-primary mt-0.5 shrink-0" />
             <div className="font-body text-sm text-muted leading-relaxed">
               This sandbox mirrors the student workspace, but hidden test
@@ -1146,7 +1146,7 @@ function EditChallengeContent({
                       Results
                     </div>
                     {challenge.testCases.length === 0 && (
-                      <div className="font-body text-[11px] text-amber-700">
+                      <div className="font-body text-[11px] text-warning-dark">
                         Add test cases to run the sandbox.
                       </div>
                     )}
@@ -1184,7 +1184,7 @@ function EditChallengeContent({
       {activeTab === "tests" && (
         <div className="flex flex-col gap-4">
           {/* Guidance */}
-          <div className="bg-[#F9F5FF] dark:bg-[#2d1a4a]/20 border border-primary-pale/40 rounded-xl p-4 font-body text-sm text-muted leading-relaxed">
+          <div className="bg-primary-soft border border-primary-pale/40 rounded-xl p-4 font-body text-sm text-muted leading-relaxed">
             <strong className="text-primary font-semibold">Tips:</strong> Add at
             least one visible example (students see it) and several hidden test
             cases that cover edge cases. Publishing requires at least one test
@@ -1193,7 +1193,7 @@ function EditChallengeContent({
 
           {/* Require publishing to have test cases */}
           {challenge.testCases?.length === 0 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 font-body text-xs text-amber-700 flex items-center gap-2">
+            <div className="bg-warning-soft border border-warning/20 rounded-xl p-3 font-body text-xs text-warning-dark flex items-center gap-2">
               <EyeOff size={14} /> Add at least one test case before publishing.
             </div>
           )}

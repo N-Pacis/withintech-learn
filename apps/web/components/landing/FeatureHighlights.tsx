@@ -137,7 +137,7 @@ function QuizMockup() {
                   ? "bg-green-500 border-green-500 text-white"
                   : state === "wrong"
                     ? "bg-red-400 border-red-400 text-white"
-                    : "border-blue-400 bg-white dark:bg-surface-card"
+                    : "border-blue-400 bg-surface-card"
               }`}
             >
               {state === "correct" && (
