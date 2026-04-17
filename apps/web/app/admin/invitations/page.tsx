@@ -195,11 +195,11 @@ export default function InvitationsPage() {
                   Sent
                 </p>
               </div>
-              <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-center">
-                <p className="font-heading font-black text-xl text-amber-600">
+              <div className="rounded-xl border border-warning/20 bg-warning-soft px-3 py-3 text-center">
+                <p className="font-heading font-black text-xl text-warning-dark">
                   {result.skipped}
                 </p>
-                <p className="font-body text-xs text-amber-500 mt-0.5">
+                <p className="font-body text-xs text-warning mt-0.5">
                   Skipped
                 </p>
               </div>

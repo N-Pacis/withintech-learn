@@ -40,9 +40,9 @@ const STATUS_CONFIG: Record<
     label: "Time Limit Exceeded",
     variant: "warning",
     icon: <AlertCircle size={18} />,
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    textColor: "text-amber-700",
+    bg: "bg-warning-soft",
+    border: "border-warning/20",
+    textColor: "text-warning-dark",
   },
   runtime_error: {
     label: "Runtime Error",
@@ -151,18 +151,18 @@ function TestCaseRow({
                 <span className="font-body text-[11px] font-medium text-muted-contrast uppercase tracking-wider block mb-1">
                   Got
                 </span>
-                <pre className="bg-red-50 text-red-700 rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">
+                <pre className="bg-danger-soft text-danger-dark rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">
                   {result.actualOutput || "(empty output)"}
                 </pre>
               </div>
             )}
           {result.actualOutput === "Time Limit Exceeded" && (
-            <div className="flex items-center gap-2 text-amber-600 font-body text-xs bg-amber-50 rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2 text-warning-dark font-body text-xs bg-warning-soft rounded-lg px-3 py-2">
               <AlertCircle size={12} /> Time limit exceeded for this test case
             </div>
           )}
           {result.actualOutput === "Runtime Error" && (
-            <div className="flex items-center gap-2 text-red-600 font-body text-xs bg-red-50 rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2 text-danger-dark font-body text-xs bg-danger-soft rounded-lg px-3 py-2">
               <XCircle size={12} /> Runtime error
             </div>
           )}
@@ -171,7 +171,7 @@ function TestCaseRow({
               <span className="font-body text-[11px] font-medium text-muted-contrast uppercase tracking-wider block mb-1">
                 Stderr
               </span>
-              <pre className="bg-amber-50 text-amber-700 rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">
+              <pre className="bg-warning-soft text-warning-dark rounded-lg px-3 py-2 whitespace-pre-wrap break-all leading-relaxed">
                 {result.stderr}
               </pre>
             </div>
@@ -218,11 +218,11 @@ export function SubmissionResults({ result }: { result: SubmissionResult }) {
         </div>
 
         {/* Mini progress bar */}
-        <div className="h-1.5 bg-white/60 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-surface-muted rounded-full overflow-hidden">
           <div
             className={cn(
               "h-full rounded-full transition-all duration-700",
-              result.status === "accepted" ? "bg-green-500" : "bg-red-400",
+              result.status === "accepted" ? "bg-success" : "bg-danger",
             )}
             style={{ width: `${pct}%` }}
           />
@@ -231,11 +231,11 @@ export function SubmissionResults({ result }: { result: SubmissionResult }) {
 
       {/* Compile error */}
       {result.compileError && (
-        <div className="rounded-xl border border-red-200 overflow-hidden">
-          <div className="px-4 py-2 bg-red-50 border-b border-red-200 font-body text-xs font-medium text-red-600 uppercase tracking-wider">
+        <div className="rounded-xl border border-danger/20 overflow-hidden">
+          <div className="px-4 py-2 bg-danger-soft border-b border-danger/20 font-body text-xs font-medium text-danger uppercase tracking-wider">
             Compile Error
           </div>
-          <pre className="p-4 font-mono text-xs text-red-700 whitespace-pre-wrap break-all bg-surface-card leading-relaxed overflow-x-auto">
+          <pre className="p-4 font-mono text-xs text-danger-dark whitespace-pre-wrap break-all bg-surface-card leading-relaxed overflow-x-auto">
             {result.compileError}
           </pre>
         </div>
