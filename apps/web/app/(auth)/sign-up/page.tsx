@@ -160,7 +160,7 @@ export default function SignUpPage() {
         <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-white opacity-[0.05] blur-3xl" />
         <div className="absolute -bottom-15 -left-15 w-80 h-80 rounded-full bg-white opacity-[0.06] blur-3xl" />
         {/* Gradient fade at bottom */}
-        <div className="absolute bottom-0 inset-x-0 h-40 bg-linear-to-t from-[#2A004A] to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-40 bg-linear-to-t from-primary-dark to-transparent" />
 
         <div className="relative z-10 flex flex-col h-full px-10 py-10">
           <div className="flex-1 flex flex-col justify-center">
@@ -381,7 +381,7 @@ export default function SignUpPage() {
                       ? "bg-primary border-primary"
                       : errors.terms
                         ? "border-danger bg-surface-card"
-                        : "border-border-strong border-border-strong bg-surface-card group-hover:border-primary"
+                        : "border-border-strong bg-surface-card group-hover:border-primary"
                   }`}
                 >
                   {agreedToTerms && (
