@@ -228,7 +228,7 @@ export default function ForgotPasswordPage() {
                   />
                 </FormField>
                 {error && (
-                  <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-2.5 rounded-lg">
+                  <p className="font-body text-sm text-danger bg-danger-soft px-4 py-2.5 rounded-lg">
                     {error}
                   </p>
                 )}
@@ -262,7 +262,7 @@ export default function ForgotPasswordPage() {
                 <OtpInput value={otp} onChange={setOtp} />
 
                 {error && (
-                  <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-2.5 rounded-lg text-center">
+                  <p className="font-body text-sm text-danger bg-danger-soft px-4 py-2.5 rounded-lg text-center">
                     {error}
                   </p>
                 )}
@@ -331,7 +331,7 @@ export default function ForgotPasswordPage() {
                   />
                 </FormField>
                 {error && (
-                  <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-2.5 rounded-lg">
+                  <p className="font-body text-sm text-danger bg-danger-soft px-4 py-2.5 rounded-lg">
                     {error}
                   </p>
                 )}

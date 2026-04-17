@@ -211,13 +211,13 @@ function VerifyEmailContent() {
             <OtpInput value={otp} onChange={setOtp} />
 
             {error && (
-              <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-2.5 rounded-lg text-center">
+              <p className="font-body text-sm text-danger bg-danger-soft px-4 py-2.5 rounded-lg text-center">
                 {error}
               </p>
             )}
 
             {resendSuccess && (
-              <p className="font-body text-sm text-green-600 bg-green-50 px-4 py-2.5 rounded-lg text-center">
+              <p className="font-body text-sm text-success-dark bg-success-soft px-4 py-2.5 rounded-lg text-center">
                 A new code has been sent to your email.
               </p>
             )}
