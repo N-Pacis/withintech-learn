@@ -81,32 +81,63 @@ export const listChallenges = async ({
       take: limit,
       orderBy: [{ orderIndex: 'asc' }, { createdAt: 'desc' }],
       include: {
-        _count: { select: { testCases: true, submissions: true } },
+        _count: { select: { testCases: true } },
         createdBy: { select: { id: true, firstName: true, lastName: true } },
       },
     }),
   ]);
-  return { total, page, limit, challenges };
+
+  // Distinct submitter counts (users who attempted each challenge)
+  const ids = challenges.map(c => c.id);
+  const distinctMap: Record<string, number> = {};
+  if (ids.length > 0) {
+    const rows = await prisma.$queryRaw<{ challengeId: string; cnt: number }[]>`
+      SELECT "challengeId", COUNT(DISTINCT "userId")::int AS cnt
+      FROM "ChallengeSubmission"
+      WHERE "challengeId" = ANY(${ids})
+      GROUP BY "challengeId"
+    `;
+    for (const r of rows) distinctMap[r.challengeId] = Number(r.cnt);
+  }
+
+  const enriched = challenges.map(c => ({
+    ...c,
+    _count: { ...c._count, submissions: distinctMap[c.id] ?? 0 },
+  }));
+
+  return { total, page, limit, challenges: enriched };
 };
 
 export const getChallenge = async (id: string) => {
   const cached = await getCachedAdminChallenge(id);
   if (cached) return cached;
 
-  const challenge = await prisma.challenge.findUnique({
-    where: { id },
-    include: {
-      testCases:  { orderBy: { orderIndex: 'asc' } },
-      createdBy:  { select: { id: true, firstName: true, lastName: true } },
-      _count:     { select: { submissions: true } },
-    },
-  });
+  const [challenge, [{ cnt: distinctSubmitters }]] = await Promise.all([
+    prisma.challenge.findUnique({
+      where: { id },
+      include: {
+        testCases: { orderBy: { orderIndex: 'asc' } },
+        createdBy: { select: { id: true, firstName: true, lastName: true } },
+        _count:    { select: { testCases: true } },
+      },
+    }),
+    prisma.$queryRaw<[{ cnt: number }]>`
+      SELECT COUNT(DISTINCT "userId")::int AS cnt
+      FROM "ChallengeSubmission"
+      WHERE "challengeId" = ${id}
+    `,
+  ]);
   if (!challenge) throw notFound('Challenge not found');
+
+  const result = {
+    ...challenge,
+    _count: { ...challenge._count, submissions: Number(distinctSubmitters) },
+  };
 
   // Populate cache for next request — fire-and-forget
   buildAndCacheChallenge(id).catch(() => {});
 
-  return challenge;
+  return result;
 };
 
 export const updateChallenge = async (id: string, data: {
