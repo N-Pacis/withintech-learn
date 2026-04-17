@@ -18,7 +18,7 @@ import { isAllowedEmail } from "@withintech-learn/shared";
 function Req({ met, label }: { met: boolean; label: string }) {
   return (
     <li className="flex items-center gap-1.5">
-      <span className={met ? "text-green-500" : "text-border-strong"}>
+      <span className={met ? "text-success" : "text-border-strong"}>
         {met ? (
           <svg
             width="11"
@@ -48,7 +48,7 @@ function Req({ met, label }: { met: boolean; label: string }) {
         )}
       </span>
       <span
-        className={`font-body text-xs ${met ? "text-green-600" : "text-muted-contrast"}`}
+        className={`font-body text-xs ${met ? "text-success-dark" : "text-muted-contrast"}`}
       >
         {label}
       </span>
@@ -325,7 +325,7 @@ export default function SignUpPage() {
                 </FormField>
                 {form.confirmPassword && (
                   <p
-                    className={`font-body text-xs flex items-center gap-1 mt-1.5 ${passwordsMatch ? "text-green-600" : "text-red-500"}`}
+                    className={`font-body text-xs flex items-center gap-1 mt-1.5 ${passwordsMatch ? "text-success-dark" : "text-danger"}`}
                   >
                     {passwordsMatch ? (
                       <svg
@@ -380,7 +380,7 @@ export default function SignUpPage() {
                     agreedToTerms
                       ? "bg-primary border-primary"
                       : errors.terms
-                        ? "border-red-400 bg-surface-card"
+                        ? "border-danger bg-surface-card"
                         : "border-border-strong border-border-strong bg-surface-card group-hover:border-primary"
                   }`}
                 >
@@ -422,13 +422,13 @@ export default function SignUpPage() {
               </span>
             </label>
             {errors.terms && (
-              <p className="font-body text-xs text-red-500 -mt-2 pl-7">
+              <p className="font-body text-xs text-danger -mt-2 pl-7">
                 {errors.terms}
               </p>
             )}
 
             {serverError && (
-              <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-2.5 rounded-lg">
+              <p className="font-body text-sm text-danger bg-danger-soft px-4 py-2.5 rounded-lg">
                 {serverError}
               </p>
             )}
