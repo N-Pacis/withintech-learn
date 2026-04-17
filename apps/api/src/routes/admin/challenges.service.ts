@@ -321,7 +321,7 @@ export const getChallengeStats = async (id: string) => {
     uniqueAttempts: uniqueAttempts.length,
     uniqueSolvers: uniqueSolvers.length,
     acceptedCount: Number(acceptedCount),
-    passRate: totalSubmissions > 0 ? Math.round((Number(acceptedCount) / totalSubmissions) * 100) : 0,
+    passRate: uniqueAttempts.length > 0 ? Math.round((uniqueSolvers.length / uniqueAttempts.length) * 100) : 0,
     statusBreakdown,
     languageBreakdown,
     submissionTrend: trendRows.map(r => ({

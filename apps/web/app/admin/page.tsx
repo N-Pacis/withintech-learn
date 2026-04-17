@@ -472,8 +472,8 @@ export default function AdminDashboard() {
                 href: "/admin/challenges",
               },
               {
-                label: "Submissions",
-                value: challenges.totalSubmissions,
+                label: "Attempts",
+                value: challenges.totalAttempts,
                 href: null,
               },
               {

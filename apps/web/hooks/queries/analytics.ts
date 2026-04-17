@@ -43,7 +43,7 @@ export interface ChallengeLeaderboardEntry {
 export interface ChallengeAnalytics {
   totalPublished: number;
   totalDraft: number;
-  totalSubmissions: number;
+  totalAttempts: number;
   overallPassRate: number;
   totalSolvers: number;
   topChallenges: {
