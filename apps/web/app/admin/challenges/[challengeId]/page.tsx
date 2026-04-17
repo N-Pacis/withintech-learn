@@ -411,12 +411,11 @@ const LANG_COLORS: Record<string, string> = {
 function StatsHero({ stats }: { stats: ChallengeStats }) {
   const heroItems = [
     { label: "Pass Rate", value: `${stats.passRate}%`, highlight: true },
-    { label: "Submissions", value: stats.totalSubmissions },
+    { label: "Attempts", value: stats.uniqueAttempts },
     { label: "Unique Solvers", value: stats.uniqueSolvers },
-    { label: "Attempted By", value: stats.uniqueAttempts },
   ];
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
       {heroItems.map(({ label, value, highlight }) => (
         <div
           key={label}
@@ -861,7 +860,7 @@ function EditChallengeContent({
             </Badge>
             <span className="font-body text-xs text-muted-contrast">·</span>
             <span className="font-body text-xs text-muted-contrast">
-              {challenge._count.submissions} submission
+              {challenge._count.submissions} attempt
               {challenge._count.submissions !== 1 ? "s" : ""}
             </span>
           </div>
