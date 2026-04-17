@@ -64,8 +64,8 @@ export function CourseHeader({
       )}
 
       {isArchived && (
-        <div className="shrink-0 mt-1 px-3 py-1.5 bg-[#FEF3C7] border border-[#FDE68A] rounded-lg">
-          <p className="font-body text-xs text-[#92400E]">
+        <div className="shrink-0 mt-1 px-3 py-1.5 bg-warning-soft border border-warning/20 rounded-lg">
+          <p className="font-body text-xs text-warning-dark">
             This course is archived
           </p>
         </div>
