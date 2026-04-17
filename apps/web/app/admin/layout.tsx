@@ -58,7 +58,7 @@ function AdminGuard({ children }: { children: React.ReactNode }) {
           <span className="font-heading font-bold text-base text-white">
             WithinTech
           </span>
-          <span className="font-heading font-bold text-base text-[#F97316]">
+          <span className="font-heading font-bold text-base text-accent">
             Learn
           </span>
         </div>
