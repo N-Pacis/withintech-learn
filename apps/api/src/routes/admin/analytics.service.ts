@@ -198,7 +198,7 @@ export async function challengeLeaderboard(from: string, to: string): Promise<Ch
 export interface ChallengeAnalytics {
   totalPublished: number;
   totalDraft: number;
-  totalSubmissions: number;
+  totalAttempts: number;
   overallPassRate: number;
   totalSolvers: number;
   topChallenges: { id: string; title: string; difficulty: string; submissions: number; passRate: number }[];
@@ -211,9 +211,10 @@ export async function challengeAnalytics(): Promise<ChallengeAnalytics> {
       by: ['status'],
       _count: { id: true },
     }),
-    prisma.$queryRaw<{ total: number; accepted: number }[]>`
+    prisma.$queryRaw<{ total: number; accepted: number; attempts: number }[]>`
       SELECT COUNT(*)::int AS total,
-             COUNT(*) FILTER (WHERE status = 'accepted')::int AS accepted
+             COUNT(*) FILTER (WHERE status = 'accepted')::int AS accepted,
+             COUNT(DISTINCT "userId")::int AS attempts
       FROM "ChallengeSubmission"
     `,
     // Top 5 by submission count (published only)
@@ -252,8 +253,9 @@ export async function challengeAnalytics(): Promise<ChallengeAnalytics> {
   const statusMap: Record<string, number> = {};
   for (const row of counts) statusMap[row.status] = row._count.id;
 
-  const totalSubs = submissionRows[0] ? Number(submissionRows[0].total) : 0;
-  const totalAcc  = submissionRows[0] ? Number(submissionRows[0].accepted) : 0;
+  const totalSubs     = submissionRows[0] ? Number(submissionRows[0].total) : 0;
+  const totalAcc      = submissionRows[0] ? Number(submissionRows[0].accepted) : 0;
+  const totalAttempts = submissionRows[0] ? Number(submissionRows[0].attempts) : 0;
 
   const toRow = (r: { id: string; title: string; difficulty: string; submissions: number; accepted: number }) => ({
     id: r.id,
@@ -268,8 +270,8 @@ export async function challengeAnalytics(): Promise<ChallengeAnalytics> {
   return {
     totalPublished: statusMap['published'] ?? 0,
     totalDraft: statusMap['draft'] ?? 0,
-    totalSubmissions: totalSubs,
-    overallPassRate: totalSubs > 0 ? Math.round((totalAcc / totalSubs) * 100) : 0,
+    totalAttempts,
+    overallPassRate: totalAttempts > 0 ? Math.round((solversResult.length / totalAttempts) * 100) : 0,
     totalSolvers: solversResult.length,
     topChallenges: topRows.map(toRow),
     hardestChallenges: hardestRows.map(toRow),
