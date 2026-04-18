@@ -7,8 +7,6 @@
 !**/.yarn/releases
 !**/.yarn/versions
 
-**/.env
-**/.env.*
 !**/.env.example
 
 **/dist/
@@ -38,3 +36,4 @@
 # Database backups
 backups/
 /video
+config.bat
