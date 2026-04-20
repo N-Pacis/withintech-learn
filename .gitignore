@@ -37,4 +37,5 @@
 backups/
 /video
 config.bat
-.env
+**/.env
+**/.env.*
