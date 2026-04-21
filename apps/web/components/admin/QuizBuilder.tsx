@@ -46,7 +46,7 @@ function CorrectCheckbox({
         "w-4.5 h-4.5 rounded flex items-center justify-center border-2 shrink-0 transition-all duration-150",
         checked
           ? "bg-primary border-primary"
-          : "bg-white border-border-strong hover:border-primary/60",
+          : "bg-surface-card border-border-strong hover:border-primary/60",
         disabled && "opacity-50 cursor-not-allowed",
       )}
     >
@@ -140,7 +140,7 @@ function OptionRow({
             <button
               onClick={() => deleteOption(option.id)}
               disabled={deleting}
-              className="font-body text-xs text-red-500 hover:text-red-600 px-1.5 py-0.5 rounded hover:bg-red-50 transition-colors"
+              className="font-body text-xs text-danger hover:text-danger-dark px-1.5 py-0.5 rounded hover:bg-danger-soft transition-colors"
             >
               {deleting ? "Deleting…" : "Delete"}
             </button>
@@ -154,7 +154,7 @@ function OptionRow({
         ) : (
           <button
             onClick={() => setConfirmDelete(true)}
-            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded text-muted-contrast hover:text-red-500 hover:bg-red-50 shrink-0"
+            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded text-muted-contrast hover:text-danger hover:bg-danger-soft shrink-0"
             title="Delete option"
           >
             <svg
@@ -340,7 +340,7 @@ function QuestionCard({
   const correctCount = sortedOptions.filter((o) => o.isCorrect).length;
 
   return (
-    <div className="bg-white border border-border rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
+    <div className="bg-surface-card border border-border rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
       {/* Question header */}
       <div className="flex items-start gap-3 px-5 pt-5 pb-4 border-b border-border-subtle">
         <div className="w-6 h-6 rounded-full bg-primary-soft flex items-center justify-center shrink-0 mt-0.5">
@@ -377,7 +377,7 @@ function QuestionCard({
               <button
                 onClick={() => deleteQuestion(question.id)}
                 disabled={deleting}
-                className="font-body text-xs text-red-500 hover:text-red-600 transition-colors"
+                className="font-body text-xs text-danger hover:text-danger-dark transition-colors"
               >
                 {deleting ? "Deleting…" : "Delete"}
               </button>
@@ -391,7 +391,7 @@ function QuestionCard({
           ) : (
             <button
               onClick={() => setConfirmDelete(true)}
-              className="p-1.5 rounded-lg text-muted-contrast hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
+              className="p-1.5 rounded-lg text-muted-contrast hover:text-danger hover:bg-danger-soft transition-colors shrink-0"
               title="Delete question"
             >
               <svg
@@ -424,7 +424,7 @@ function QuestionCard({
               className={cn(
                 "font-body text-xs px-1.5 py-0.5 rounded-full shrink-0",
                 correctCount === 0
-                  ? "text-amber-600 bg-amber-50"
+                  ? "text-warning-dark bg-warning-soft"
                   : "text-primary bg-primary-soft",
               )}
             >
@@ -479,7 +479,7 @@ function QuestionCard({
       {/* Validation hints — only in edit mode */}
       {!readOnly && sortedOptions.length === 0 && (
         <div className="px-5 pb-4">
-          <p className="font-body text-xs text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg">
+          <p className="font-body text-xs text-warning-dark bg-warning-soft px-3 py-1.5 rounded-lg">
             Add at least two options to this question.
           </p>
         </div>
@@ -553,7 +553,7 @@ function QuizSettings({
   }
 
   return (
-    <div className="bg-white border border-border rounded-xl p-5">
+    <div className="bg-surface-card border border-border rounded-xl p-5">
       <div className="flex items-center justify-between mb-5">
         <h3 className="font-heading font-bold text-sm text-foreground">
           Quiz Settings
@@ -564,13 +564,13 @@ function QuizSettings({
           </Button>
         )}
         {readOnly && (
-          <span className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 border border-amber-200 rounded-lg">
+          <span className="flex items-center gap-1.5 px-2.5 py-1 bg-warning-soft border border-warning/20 rounded-lg text-warning-dark">
             <svg
               width="11"
               height="11"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#D97706"
+              stroke="currentColor"
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -578,7 +578,7 @@ function QuizSettings({
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
-            <span className="font-body text-xs text-amber-700">Locked</span>
+            <span className="font-body text-xs">Locked</span>
           </span>
         )}
       </div>
@@ -586,7 +586,7 @@ function QuizSettings({
       <div className="flex flex-col gap-4">
         <div>
           <label className="font-body text-xs font-medium text-foreground-soft block mb-1.5">
-            Quiz Title {!readOnly && <span className="text-red-400">*</span>}
+            Quiz Title {!readOnly && <span className="text-danger">*</span>}
           </label>
           <Input
             value={title}
@@ -639,7 +639,7 @@ function QuizSettings({
         </div>
 
         {error && (
-          <p className="font-body text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg">
+          <p className="font-body text-sm text-danger bg-danger-soft px-3 py-2 rounded-lg">
             {error}
           </p>
         )}
@@ -702,10 +702,11 @@ function CreateQuizPanel({
           height="22"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#3D006B"
+          stroke="currentColor"
           strokeWidth="1.8"
           strokeLinecap="round"
           strokeLinejoin="round"
+          className="text-primary"
         >
           <circle cx="12" cy="12" r="10" />
           <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
@@ -723,7 +724,7 @@ function CreateQuizPanel({
       <div className="w-full max-w-sm flex flex-col gap-4 px-6">
         <div>
           <label className="font-body text-xs font-medium text-foreground-soft block mb-1.5">
-            Quiz Title <span className="text-red-400">*</span>
+            Quiz Title <span className="text-danger">*</span>
           </label>
           <Input
             placeholder="e.g. Module 1 Assessment"
@@ -775,7 +776,7 @@ function CreateQuizPanel({
         </div>
 
         {error && (
-          <p className="font-body text-sm text-red-500 bg-red-50 px-3 py-2 rounded-lg">
+          <p className="font-body text-sm text-danger bg-danger-soft px-3 py-2 rounded-lg">
             {error}
           </p>
         )}
@@ -857,10 +858,11 @@ function QuizEditor({
               height="16"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#3D006B"
+              stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              className="text-primary"
             >
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
@@ -890,7 +892,7 @@ function QuizEditor({
             />
             {hasNoCorrect && !readOnly && (
               <div className="px-2">
-                <p className="font-body text-xs font-medium text-red-600 bg-red-50 border border-red-100 px-3 py-2 rounded-lg flex items-center gap-2">
+                <p className="font-body text-xs font-medium text-danger bg-danger-soft border border-danger/20 px-3 py-2 rounded-lg flex items-center gap-2">
                   <svg
                     width="12"
                     height="12"
@@ -942,8 +944,8 @@ function QuizEditor({
       {!readOnly && (
         <div className="border-t border-border pt-4">
           {confirmDeleteQuiz ? (
-            <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-100 rounded-lg">
-              <p className="font-body text-sm text-red-700 flex-1">
+            <div className="flex items-center gap-3 p-3 bg-danger-soft border border-danger/20 rounded-lg">
+              <p className="font-body text-sm text-danger-dark flex-1">
                 Delete this quiz and all its questions?
               </p>
               <Button
@@ -965,7 +967,7 @@ function QuizEditor({
           ) : (
             <button
               onClick={() => setConfirmDeleteQuiz(true)}
-              className="font-body text-xs text-muted-contrast hover:text-red-500 transition-colors flex items-center gap-1.5"
+              className="font-body text-xs text-muted-contrast hover:text-danger transition-colors flex items-center gap-1.5"
             >
               <svg
                 width="12"
@@ -1017,7 +1019,7 @@ function ModuleQuizBuilder({
   if (isLoading) return <PageLoader type="list" count={2} />;
   if (isError) {
     return (
-      <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-3 rounded-lg">
+      <p className="font-body text-sm text-danger bg-danger-soft px-4 py-3 rounded-lg">
         Failed to load quiz. Please refresh.
       </p>
     );
@@ -1051,7 +1053,7 @@ function CourseQuizBuilder({
   if (isLoading) return <PageLoader type="list" count={2} />;
   if (isError) {
     return (
-      <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-3 rounded-lg">
+      <p className="font-body text-sm text-danger bg-danger-soft px-4 py-3 rounded-lg">
         Failed to load quiz. Please refresh.
       </p>
     );
@@ -1085,7 +1087,7 @@ function LessonQuizBuilder({
   if (isLoading) return <PageLoader type="list" count={2} />;
   if (isError) {
     return (
-      <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-3 rounded-lg">
+      <p className="font-body text-sm text-danger bg-danger-soft px-4 py-3 rounded-lg">
         Failed to load quiz. Please refresh.
       </p>
     );

@@ -126,7 +126,7 @@ export function ModuleCards({
               </div>
 
               {!mod.hasQuiz && (
-                <span className="shrink-0 px-2 py-0.5 rounded font-body text-xs font-medium bg-amber-50 text-amber-600 border border-amber-200">
+                <span className="shrink-0 px-2 py-0.5 rounded font-body text-xs font-medium bg-warning-soft text-warning-dark border border-warning/20">
                   No quiz
                 </span>
               )}

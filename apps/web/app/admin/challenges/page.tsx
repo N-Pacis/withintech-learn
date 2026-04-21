@@ -314,7 +314,7 @@ export default function AdminChallengesPage() {
                       Tests
                     </th>
                     <th className="hidden sm:table-cell text-left px-4 py-3 font-body font-semibold text-xs text-muted uppercase tracking-wider w-20">
-                      Submissions
+                      Attempts
                     </th>
                     <th className="w-28" />
                   </tr>

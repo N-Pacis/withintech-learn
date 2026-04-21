@@ -6,6 +6,7 @@ import CertificateCard from "@/components/landing/CertificateCard";
 import CoursesSection from "@/components/landing/CoursesSection";
 import ChallengesSection from "@/components/landing/ChallengesSection";
 import FeatureHighlights from "@/components/landing/FeatureHighlights";
+import StatsSection from "@/components/landing/StatsSection";
 import { Logo } from "@/components/ui";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -54,7 +55,7 @@ export default function Home() {
 
             {/* Right: dashboard mockup — bleeds toward the right edge */}
             <div className="lg:w-[52%] lg:-mr-12 self-end hidden lg:block">
-              <div className="rounded-l-xl overflow-hidden shadow-xl ring-1 ring-purple-100">
+              <div className="rounded-l-xl overflow-hidden shadow-xl ring-1 ring-primary-pale/40">
                 <Image
                   src="/homepage/hero.jpg"
                   alt="Course dashboard preview"
@@ -68,7 +69,7 @@ export default function Home() {
 
             {/* Mobile-only image */}
             <div className="lg:hidden w-full pb-12">
-              <div className="rounded-md overflow-hidden shadow-xl ring-1 ring-purple-100">
+              <div className="rounded-md overflow-hidden shadow-xl ring-1 ring-primary-pale/40">
                 <Image
                   src="/homepage/hero.jpg"
                   alt="Course dashboard preview"
@@ -87,6 +88,8 @@ export default function Home() {
 
       <CoursesSection />
 
+      <StatsSection />
+
       <ChallengesSection />
 
       {/* ── 6. Certificate Moment ───────────────────────────────────────────── */}
@@ -97,7 +100,7 @@ export default function Home() {
           <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
             {/* Left: copy */}
             <div className="lg:w-1/2">
-              <span className="inline-block font-body text-[10px] tracking-widest uppercase text-[#F97316] border border-[#F97316]/40 px-3 py-1 rounded mb-8">
+              <span className="inline-block font-body text-[10px] tracking-widest uppercase text-accent border border-accent/40 px-3 py-1 rounded mb-8">
                 Certified
               </span>
               <h2 className="font-heading font-black text-4xl lg:text-5xl text-white tracking-tight leading-tight mb-6">
@@ -105,7 +108,7 @@ export default function Home() {
                 <br />
                 officially recognized.
               </h2>
-              <p className="font-body text-lg text-[#C4B5D4] leading-relaxed max-w-md">
+              <p className="font-body text-lg text-primary-pale leading-relaxed max-w-md">
                 Your name, your course, your date. A real document issued by
                 WithinTech Rwanda.
               </p>
@@ -139,13 +142,13 @@ export default function Home() {
               <h3 className="font-heading font-bold text-xl text-foreground mb-2">
                 Get access
               </h3>
-              <p className="font-body text-base text-[#6B7280] max-w-50">
+              <p className="font-body text-base text-muted max-w-50">
                 Sign in and find your courses ready to go.
               </p>
             </div>
 
             <div className="shrink-0 w-16 pt-6">
-              <div className="border-t-2 border-dashed border-[#F97316]" />
+              <div className="border-t-2 border-dashed border-accent" />
             </div>
 
             <div className="flex-1">
@@ -157,13 +160,13 @@ export default function Home() {
               <h3 className="font-heading font-bold text-xl text-foreground mb-2">
                 Study your modules
               </h3>
-              <p className="font-body text-base text-[#6B7280] max-w-50">
+              <p className="font-body text-base text-muted max-w-50">
                 Work at your own pace, on any device, anywhere.
               </p>
             </div>
 
             <div className="shrink-0 w-16 pt-6">
-              <div className="border-t-2 border-dashed border-[#F97316]" />
+              <div className="border-t-2 border-dashed border-accent" />
             </div>
 
             <div className="flex-1">
@@ -175,7 +178,7 @@ export default function Home() {
               <h3 className="font-heading font-bold text-xl text-foreground mb-2">
                 Earn your certificate
               </h3>
-              <p className="font-body text-base text-[#6B7280] max-w-50">
+              <p className="font-body text-base text-muted max-w-50">
                 Pass the quiz and download your certificate instantly.
               </p>
             </div>
@@ -202,9 +205,9 @@ export default function Home() {
             ].map(({ n, title, desc }) => (
               <div
                 key={n}
-                className="flex gap-6 border-l-2 border-[#3D006B] pl-6 pb-10 last:pb-0"
+                className="flex gap-6 border-l-2 border-primary pl-6 pb-10 last:pb-0"
               >
-                <div className="shrink-0 -ml-6.25 w-12 h-12 rounded-full bg-[#3D006B] flex items-center justify-center">
+                <div className="shrink-0 -ml-6.25 w-12 h-12 rounded-full bg-primary flex items-center justify-center">
                   <span className="font-heading text-white font-bold text-lg">
                     {n}
                   </span>
@@ -338,7 +341,7 @@ export default function Home() {
 
             {/* Right: illustration */}
             <div className="lg:w-1/2 flex justify-center lg:justify-end">
-              <div className="rounded-xl overflow-hidden shadow-lg ring-1 ring-purple-100 w-full max-w-md">
+              <div className="rounded-xl overflow-hidden shadow-lg ring-1 ring-primary-pale/40 w-full max-w-md">
                 <Image
                   src="/homepage/ready-to-start-learning.jpg"
                   alt="Start learning illustration"

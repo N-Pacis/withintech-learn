@@ -64,7 +64,9 @@ export function Stepper({
                       isDone && isClickable && "hover:opacity-80",
                       isCurrent &&
                         "bg-primary border-primary shadow-[0_0_0_4px_rgba(61,0,107,0.14)]",
-                      !isDone && !isCurrent && "bg-white border-border-strong",
+                      !isDone &&
+                        !isCurrent &&
+                        "bg-surface-card border-border-strong",
                     )}
                   >
                     <Trophy
@@ -108,7 +110,9 @@ export function Stepper({
                     isDone && isClickable && "hover:opacity-80",
                     isCurrent &&
                       "bg-primary border-primary shadow-[0_0_0_4px_rgba(61,0,107,0.14)]",
-                    !isDone && !isCurrent && "bg-white border-border-strong",
+                    !isDone &&
+                      !isCurrent &&
+                      "bg-surface-card border-border-strong",
                   )}
                 >
                   {isDone ? (
