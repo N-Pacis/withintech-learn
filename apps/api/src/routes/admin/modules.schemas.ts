@@ -30,6 +30,7 @@ const CODE_LANGUAGES = [
   'rust',
   'java',
   'xml',
+  'php',
   'yaml',
 ] as const;
 
