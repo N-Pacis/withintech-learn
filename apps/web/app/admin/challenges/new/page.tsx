@@ -25,21 +25,21 @@ const DIFFICULTY_OPTIONS: {
     label: "Easy",
     desc: "Straightforward, single concept",
     color:
-      "border-green-300 text-green-700 bg-green-50 data-[active=true]:ring-green-300",
+      "border-success/30 text-success-dark bg-success-soft data-[active=true]:ring-success/30",
   },
   {
     value: "medium",
     label: "Medium",
     desc: "Requires some algorithmic thinking",
     color:
-      "border-amber-300 text-amber-700 bg-amber-50 data-[active=true]:ring-amber-300",
+      "border-warning/30 text-warning-dark bg-warning-soft data-[active=true]:ring-warning/30",
   },
   {
     value: "hard",
     label: "Hard",
     desc: "Complex algorithms or data structures",
     color:
-      "border-red-300 text-red-700 bg-red-50 data-[active=true]:ring-red-300",
+      "border-danger/30 text-danger-dark bg-danger-soft data-[active=true]:ring-danger/30",
   },
 ];
 
@@ -131,7 +131,7 @@ function FunctionSignatureBuilder({
               onChange={(e) =>
                 updateParam(i, "type", e.target.value as ParamType)
               }
-              className="font-mono text-xs border border-border rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white"
+              className="font-mono text-xs border border-border rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-surface-card text-foreground"
             >
               {PARAM_TYPES.map((t) => (
                 <option key={t} value={t}>
@@ -158,7 +158,7 @@ function FunctionSignatureBuilder({
         <select
           value={returnType}
           onChange={(e) => onReturnTypeChange(e.target.value)}
-          className="font-mono text-xs border border-border rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-white"
+          className="font-mono text-xs border border-border rounded-lg px-2 py-2 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-surface-card text-foreground"
         >
           {RETURN_TYPES.map((t) => (
             <option key={t} value={t}>
@@ -264,7 +264,7 @@ export default function NewChallengePage() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         {/* Title + Problem */}
-        <div className="bg-white rounded-xl border border-border p-5 flex flex-col gap-5">
+        <div className="bg-surface-card rounded-xl border border-border p-5 flex flex-col gap-5">
           <FormField label="Title" required error={errors.title}>
             <Input
               value={title}
@@ -290,13 +290,13 @@ export default function NewChallengePage() {
                 setErrors((v) => ({ ...v, description: undefined }));
               }}
               placeholder="Write a Rwanda-themed challenge and use tables for examples if needed."
-              className="bg-white"
+              className="bg-surface-card"
             />
           </FormField>
         </div>
 
         {/* Function Signature */}
-        <div className="bg-white rounded-xl border border-border p-5 flex flex-col gap-3">
+        <div className="bg-surface-card rounded-xl border border-border p-5 flex flex-col gap-3">
           <div>
             <h2 className="font-heading font-semibold text-sm text-foreground">
               Function Signature
@@ -316,7 +316,7 @@ export default function NewChallengePage() {
         </div>
 
         {/* Difficulty */}
-        <div className="bg-white rounded-xl border border-border p-5">
+        <div className="bg-surface-card rounded-xl border border-border p-5">
           <FormField label="Difficulty" required>
             <div className="grid grid-cols-3 gap-3 mt-1">
               {DIFFICULTY_OPTIONS.map((o) => (
@@ -345,7 +345,7 @@ export default function NewChallengePage() {
         </div>
 
         {/* Time limit */}
-        <div className="bg-white rounded-xl border border-border p-5">
+        <div className="bg-surface-card rounded-xl border border-border p-5">
           <FormField
             label="Time Limit"
             hint={`Maximum CPU time per test case. ${timeLimit}s is recommended for most problems.`}

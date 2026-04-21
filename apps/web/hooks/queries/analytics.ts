@@ -43,7 +43,7 @@ export interface ChallengeLeaderboardEntry {
 export interface ChallengeAnalytics {
   totalPublished: number;
   totalDraft: number;
-  totalSubmissions: number;
+  totalAttempts: number;
   overallPassRate: number;
   totalSolvers: number;
   topChallenges: {
@@ -62,8 +62,16 @@ export interface ChallengeAnalytics {
   }[];
 }
 
+export interface PublicStats {
+  students: number;
+  courses: number;
+  certificatesIssued: number;
+  challengeSolvers: number;
+}
+
 export const analyticsKeys = {
   all: ["analytics"] as const,
+  publicStats: () => ["public-stats"] as const,
   enrollmentTrend: (from: string, to: string) =>
     [...analyticsKeys.all, "enrollment-trend", from, to] as const,
   topCourses: () => [...analyticsKeys.all, "top-courses"] as const,
@@ -178,5 +186,17 @@ export function useChallengeLeaderboard(from: string, to: string) {
     },
     staleTime: STALE,
     enabled: !!from && !!to,
+  });
+}
+
+export function usePublicStats() {
+  return useQuery({
+    queryKey: analyticsKeys.publicStats(),
+    queryFn: async (): Promise<PublicStats> => {
+      const res = await apiFetch<PublicStats>("/public/stats");
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    staleTime: 10 * 60 * 1000, // 10 min — changes rarely
   });
 }

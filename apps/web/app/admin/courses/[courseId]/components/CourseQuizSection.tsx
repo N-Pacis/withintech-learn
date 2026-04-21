@@ -47,11 +47,11 @@ export function CourseQuizSection({
               height="15"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#3D006B"
+              stroke="currentColor"
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="group-hover:stroke-white transition-colors duration-200"
+              className="text-primary group-hover:text-white transition-colors duration-200"
             >
               <circle cx="12" cy="12" r="10" />
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
@@ -144,10 +144,11 @@ export function CourseQuizSection({
               height="20"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#3D006B"
+              stroke="currentColor"
               strokeWidth="1.8"
               strokeLinecap="round"
               strokeLinejoin="round"
+              className="text-primary"
             >
               <circle cx="12" cy="12" r="10" />
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />

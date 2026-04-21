@@ -45,7 +45,7 @@ export default function UsersToolbar({ params, onChange }: UsersToolbarProps) {
           value={params.search ?? ""}
           onChange={(e) => onChange({ search: e.target.value })}
           className={cn(
-            "font-body text-sm w-full pl-9 pr-4 py-2 rounded-lg border border-border bg-white text-foreground",
+            "font-body text-sm w-full pl-9 pr-4 py-2 rounded-lg border border-border bg-surface-card text-foreground",
             "placeholder:text-muted-contrast outline-none transition-all",
             "focus:border-primary focus:ring-2 focus:ring-primary/10",
           )}

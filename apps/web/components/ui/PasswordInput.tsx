@@ -21,7 +21,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             ref={ref}
             type={visible ? "text" : "password"}
             className={cn(
-              "font-body text-sm w-full px-4 py-3 pr-11 rounded-lg border bg-white text-foreground",
+              "font-body text-sm w-full px-4 py-3 pr-11 rounded-lg border text-foreground",
               "bg-surface-card text-foreground placeholder:text-muted",
               "placeholder:text-muted-contrast outline-none transition-all",
               error

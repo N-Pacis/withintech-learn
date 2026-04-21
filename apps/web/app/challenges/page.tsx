@@ -151,8 +151,8 @@ function GhostCard({ difficulty }: { difficulty: Difficulty }) {
           background: `linear-gradient(135deg, ${from} 0%, ${to} 100%)`,
         }}
       >
-        <div className="h-2.5 w-24 bg-white/30 rounded mb-2" />
-        <div className="h-2.5 w-16 bg-white/20 rounded" />
+        <div className="h-2.5 w-24 bg-surface-inverse/30 rounded mb-2" />
+        <div className="h-2.5 w-16 bg-surface-inverse/20 rounded" />
       </div>
       <div className="p-5 flex flex-col gap-3">
         <div className="h-4 bg-surface-muted rounded-md w-3/4" />

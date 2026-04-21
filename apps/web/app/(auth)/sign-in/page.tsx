@@ -210,7 +210,7 @@ function SignInForm() {
                   htmlFor="password"
                   className="font-body text-sm font-medium text-foreground-soft"
                 >
-                  Password <span className="text-red-500">*</span>
+                  Password <span className="text-danger">*</span>
                 </label>
                 <Link
                   href="/forgot-password"
@@ -229,7 +229,7 @@ function SignInForm() {
             </div>
 
             {error && (
-              <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-2.5 rounded-lg">
+              <p className="font-body text-sm text-danger bg-danger-soft px-4 py-2.5 rounded-lg">
                 {error}
               </p>
             )}

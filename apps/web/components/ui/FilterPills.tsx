@@ -33,7 +33,7 @@ export function FilterPills<T extends string>({
               "font-body text-sm px-3.5 py-1.5 rounded-full border transition-all duration-150 select-none",
               active
                 ? "bg-primary text-white border-primary shadow-sm"
-                : "bg-white text-muted border-border hover:border-primary/50 hover:text-primary hover:bg-primary-soft-alt dark:bg-transparent text-muted border-border hover:border-primary/50 hover:text-primary hover:bg-primary-soft",
+                : "bg-surface-card text-muted border-border hover:border-primary/50 hover:text-primary hover:bg-primary-soft",
             )}
           >
             {opt.label}

@@ -179,8 +179,8 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
       <aside
         className={cn(
-          "fixed top-0 left-0 z-40 w-64 h-screen bg-white flex flex-col",
-          "border-r border-[#F0F0F0] shadow-[1px_0_0_0_#F0F0F0]",
+          "fixed top-0 left-0 z-40 w-64 h-screen bg-surface-shell text-foreground flex flex-col",
+          "border-r border-border-faint shadow-[1px_0_0_0_var(--border-faint)]",
           "transition-transform duration-300 ease-in-out",
           "lg:translate-x-0 lg:sticky lg:top-0",
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
@@ -226,13 +226,13 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm font-medium transition-all",
                   active
                     ? "bg-[#3D006B] text-white shadow-sm"
-                    : "text-[#6B7280] hover:text-[#374151] hover:bg-[#F3F4F6]",
+                    : "text-muted hover:text-foreground-soft hover:bg-surface-muted",
                 )}
               >
                 <span
                   className={cn(
                     "shrink-0",
-                    active ? "text-white" : "text-[#9CA3AF]",
+                    active ? "text-white" : "text-muted-soft",
                   )}
                 >
                   {icon}
@@ -255,7 +255,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
               <p className="font-body text-sm font-medium text-foreground truncate leading-tight">
                 {user?.firstName} {user?.lastName}
               </p>
-              <p className="font-body text-xs text-[#9CA3AF] truncate">
+              <p className="font-body text-xs text-muted-soft truncate">
                 {user?.email}
               </p>
             </div>
@@ -270,7 +270,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
               onClose();
               logout();
             }}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-[#6B7280] hover:text-red-600 hover:bg-red-50 transition-colors font-body text-sm"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-muted hover:text-red-600 hover:bg-red-50 dark:hover:text-red-300 dark:hover:bg-red-950/30 transition-colors font-body text-sm"
           >
             <svg
               width="15"
