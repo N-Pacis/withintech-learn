@@ -29,6 +29,7 @@ const CODE_LANGUAGES = [
   'csharp',
   'rust',
   'java',
+  'php',
   'xml',
   'yaml',
 ] as const;

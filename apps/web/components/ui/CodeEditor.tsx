@@ -9,6 +9,7 @@ import { python } from "@codemirror/lang-python";
 import { markdown } from "@codemirror/lang-markdown";
 import { cpp } from "@codemirror/lang-cpp";
 import { java } from "@codemirror/lang-java";
+import { php } from "@codemirror/lang-php";
 import { rust } from "@codemirror/lang-rust";
 import { xml } from "@codemirror/lang-xml";
 import { yaml } from "@codemirror/lang-yaml";
@@ -29,6 +30,7 @@ export type CodeLanguage =
   | "rust"
   | "java"
   | "xml"
+  | "php"
   | "yaml";
 
 const LANGUAGES: { value: CodeLanguage; label: string }[] = [
@@ -46,6 +48,7 @@ const LANGUAGES: { value: CodeLanguage; label: string }[] = [
   { value: "java", label: "Java" },
   { value: "xml", label: "XML" },
   { value: "yaml", label: "YAML" },
+  { value: "php", label: "PHP" },
 ];
 
 function getExtension(lang: CodeLanguage) {
@@ -78,6 +81,8 @@ function getExtension(lang: CodeLanguage) {
       return [xml()];
     case "yaml":
       return [yaml()];
+    case "php":
+      return [php()];
     default:
       return [];
   }
