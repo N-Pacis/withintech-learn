@@ -500,7 +500,7 @@ strong {
 
 .dark .tiptap-editor .ProseMirror a,
 .dark .tiptap-viewer .ProseMirror a {
-  color: var(--primary);
+  color: var(--primary-tint);
 }
 
 .dark .tiptap-editor .ProseMirror blockquote,
@@ -517,5 +517,5 @@ strong {
 .dark .tiptap-editor .ProseMirror mark,
 .dark .tiptap-viewer .ProseMirror mark {
   background-color: var(--mark);
-  color: var(--warning-soft);
+  color: var(--foreground);
 }
