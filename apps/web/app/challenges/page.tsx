@@ -34,18 +34,18 @@ function CardSkeleton() {
   return (
     <div className="bg-surface-card rounded-2xl border border-border p-6 animate-pulse flex flex-col gap-4">
       <div className="flex items-start justify-between">
-        <div className="h-3 w-6 bg-border rounded" />
-        <div className="h-5 w-14 bg-border rounded-full" />
+        <div className="h-3 w-6 bg-fill-muted rounded" />
+        <div className="h-5 w-14 bg-fill-muted rounded-full" />
       </div>
-      <div className="h-5 w-3/4 bg-border rounded-md" />
+      <div className="h-5 w-3/4 bg-fill-muted rounded-md" />
       <div className="flex flex-col gap-1.5">
-        <div className="h-3 bg-border rounded w-full" />
-        <div className="h-3 bg-border rounded w-5/6" />
-        <div className="h-3 bg-border rounded w-4/6" />
+        <div className="h-3 bg-fill-muted rounded w-full" />
+        <div className="h-3 bg-fill-muted rounded w-5/6" />
+        <div className="h-3 bg-fill-muted rounded w-4/6" />
       </div>
       <div className="mt-auto pt-3 border-t border-border-subtle flex items-center justify-between">
-        <div className="h-3 w-16 bg-border rounded" />
-        <div className="h-3 w-20 bg-border rounded" />
+        <div className="h-3 w-16 bg-fill-muted rounded" />
+        <div className="h-3 w-20 bg-fill-muted rounded" />
       </div>
     </div>
   );
@@ -326,7 +326,7 @@ function PublicList() {
                 ))}
               </div>
 
-              <div className="absolute inset-x-0 -top-24 bottom-0 bg-gradient-to-b from-transparent via-[#FAFAFA]/80 to-[#FAFAFA] dark:via-[#0a0a0a]/80 dark:to-[#0a0a0a]" />
+              <div className="absolute inset-x-0 -top-24 bottom-0 bg-gradient-to-b from-transparent via-[#FAFAFA]/80 to-[#FAFAFA] dark:via-[#141414]/80 dark:to-[#141414]" />
               <div className="absolute inset-0 flex flex-col items-center justify-end pb-6 gap-4">
                 <div className="bg-surface-card border border-border rounded-2xl shadow-lg px-5 sm:px-8 py-6 flex flex-col items-center gap-3 text-center max-w-sm mx-4 w-full">
                   <div className="w-10 h-10 rounded-xl bg-primary-soft flex items-center justify-center">

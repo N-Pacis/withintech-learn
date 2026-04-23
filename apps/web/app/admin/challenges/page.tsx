@@ -392,7 +392,7 @@ export default function AdminChallengesPage() {
                                 "p-1.5 rounded-lg text-muted-contrast transition-colors",
                                 c.status === "published"
                                   ? "opacity-20 cursor-not-allowed"
-                                  : "hover:bg-red-50 hover:text-red-500",
+                                  : "hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500 dark:hover:text-red-400",
                               )}
                             >
                               <Trash2 size={15} />

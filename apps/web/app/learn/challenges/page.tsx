@@ -72,7 +72,7 @@ function StatsBar({
       </div>
       <div className="bg-surface-card rounded-xl border border-border px-4 py-3 flex items-center gap-3">
         <div className="w-9 h-9 rounded-lg bg-green-50 dark:bg-green-950/30 flex items-center justify-center shrink-0">
-          <Zap size={16} className="text-green-600" />
+          <Zap size={16} className="text-green-600 dark:text-green-400" />
         </div>
         <div>
           <div className="font-heading font-bold text-lg text-foreground leading-none">
@@ -145,7 +145,7 @@ function ChallengeRow({ challenge }: { challenge: StudentChallengeListItem }) {
         className={cn(
           "flex-1 font-body text-sm font-medium truncate transition-colors",
           challenge.completed
-            ? "text-muted line-through decoration-[#D1D5DB]"
+            ? "text-muted line-through decoration-[#D1D5DB] dark:decoration-[#4B5563]"
             : "text-foreground group-hover:text-primary",
         )}
       >
