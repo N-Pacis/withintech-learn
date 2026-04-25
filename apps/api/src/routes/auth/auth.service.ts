@@ -56,9 +56,17 @@ const authSessionUserSelect = {
   },
 } satisfies Prisma.UserSelect;
 
-type AuthUserRecord = Prisma.UserGetPayload<{ select: typeof authUserSelect }>;
+type SafeUserRecord = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: {
+    name: string;
+  };
+};
 
-const safeUser = (u: AuthUserRecord) => ({
+const safeUser = (u: SafeUserRecord) => ({
   id: u.id,
   email: u.email,
   firstName: u.firstName,
