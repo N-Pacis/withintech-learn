@@ -75,6 +75,7 @@ export const sendInvitations = async (
     // Check if user already exists
     const existing = await prisma.user.findUnique({
       where: { email: normalizedEmail },
+      select: { id: true },
     });
 
     if (existing) {
