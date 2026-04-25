@@ -9,17 +9,18 @@ import { AuthLoader } from "@/components/ui";
 function StudentGuard({ children }: { children: React.ReactNode }) {
   const { user, isLoading, isFetching } = useAuth();
   const router = useRouter();
+  const isCheckingAuth = !user && (isLoading || isFetching);
 
   useEffect(() => {
-    if (isLoading || isFetching) return;
+    if (isCheckingAuth) return;
     if (!user) {
       router.replace("/sign-in");
     } else if (user.role === "admin") {
       router.replace("/admin");
     }
-  }, [user, isLoading, isFetching, router]);
+  }, [user, isCheckingAuth, router]);
 
-  if (isLoading || isFetching) return <AuthLoader />;
+  if (isCheckingAuth) return <AuthLoader />;
 
   if (!user || user.role === "admin") return null;
 
