@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "../../db/prisma";
 import { hashPassword } from "../../utils/password";
 import { notFound, conflict } from "../../utils/errors";
@@ -6,6 +7,28 @@ import { sendEmail } from "../../services/email.service";
 import { adminInviteEmailTemplate } from "../../templates/admin-invite-email";
 import { studentWelcomeEmailTemplate } from "../../templates/student-welcome-email";
 import { signMagicLoginToken } from "../../utils/jwt";
+
+const adminUserSelect = {
+  id: true,
+  firstName: true,
+  lastName: true,
+  email: true,
+  isActive: true,
+  emailVerified: true,
+  createdAt: true,
+  lastLoggedIn: true,
+  createdById: true,
+  score: true,
+  role: {
+    select: {
+      name: true,
+    },
+  },
+} satisfies Prisma.UserSelect;
+
+type AdminUserRecord = Prisma.UserGetPayload<{
+  select: typeof adminUserSelect;
+}>;
 
 function randomDateBetween(start: Date, end: Date): Date {
   return new Date(
@@ -52,19 +75,7 @@ function buildSearchConditions(search: string) {
   return conditions;
 }
 
-function formatUser(u: {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: { name: string };
-  isActive: boolean;
-  emailVerified: boolean;
-  createdAt: Date;
-  lastLoggedIn: Date | null;
-  createdById: string | null;
-  score: number;
-}) {
+function formatUser(u: AdminUserRecord) {
   return {
     id: u.id,
     firstName: u.firstName,
@@ -96,12 +107,13 @@ export const listUsers = async ({
       status !== undefined ? { isActive: status === "active" } : {},
     ],
   };
-  const orderBy = sortBy === "score" ? { score: sortOrder } : { createdAt: sortOrder };
+  const orderBy =
+    sortBy === "score" ? { score: sortOrder } : { createdAt: sortOrder };
   const [total, users] = await Promise.all([
     prisma.user.count({ where }),
     prisma.user.findMany({
       where,
-      include: { role: true },
+      select: adminUserSelect,
       orderBy,
       skip: (page - 1) * limit,
       take: limit,
@@ -124,10 +136,11 @@ export const exportUsers = async ({
       status !== undefined ? { isActive: status === "active" } : {},
     ],
   };
-  const orderBy = sortBy === "score" ? { score: sortOrder } : { createdAt: sortOrder };
+  const orderBy =
+    sortBy === "score" ? { score: sortOrder } : { createdAt: sortOrder };
   const users = await prisma.user.findMany({
     where,
-    include: { role: true },
+    select: adminUserSelect,
     orderBy,
   });
   return users.map(formatUser);
@@ -142,13 +155,13 @@ export const setUserActive = async ({
 }) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { role: true },
+    select: { id: true },
   });
   if (!user) throw notFound("User not found");
   const updated = await prisma.user.update({
     where: { id: userId },
     data: { isActive },
-    include: { role: true },
+    select: adminUserSelect,
   });
   return formatUser(updated);
 };
@@ -156,13 +169,13 @@ export const setUserActive = async ({
 export const verifyUserEmail = async ({ userId }: { userId: string }) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { role: true },
+    select: { id: true },
   });
   if (!user) throw notFound("User not found");
   const updated = await prisma.user.update({
     where: { id: userId },
     data: { emailVerified: true },
-    include: { role: true },
+    select: adminUserSelect,
   });
   return formatUser(updated);
 };
@@ -189,6 +202,10 @@ export const createAdmin = async ({
 
   const inviter = await prisma.user.findUniqueOrThrow({
     where: { id: createdById },
+    select: {
+      firstName: true,
+      lastName: true,
+    },
   });
 
   const user = await prisma.user.create({
@@ -202,7 +219,7 @@ export const createAdmin = async ({
       emailVerified: true,
       createdById,
     },
-    include: { role: true },
+    select: adminUserSelect,
   });
 
   await sendEmail({
