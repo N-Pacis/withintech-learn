@@ -7,24 +7,24 @@ import AdminSidebar from "@/components/layout/AdminSidebar";
 import { AuthLoader } from "@/components/ui";
 
 function AdminGuard({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isFetching } = useAuth();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || isFetching) return;
     if (!user) {
       router.replace("/sign-in");
     } else if (user.role !== "admin") {
       router.replace("/learn");
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading, isFetching, router]);
 
   // Close sidebar on route changes (resize from mobile to desktop is fine too)
   // Re-evaluated: This empty effect that sets state to false is not needed if the component initializes it as false,
   // and it was triggering cascading renders. Removed.
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return <AuthLoader />;
   }
 

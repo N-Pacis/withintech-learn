@@ -12,12 +12,14 @@ export interface AdminUser {
   createdAt: string;
   lastLoggedIn: string | null;
   createdById: string | null;
+  score: number;
 }
 
 export interface UsersParams {
   search?: string;
   role?: "admin" | "student" | "";
   status?: "active" | "inactive" | "";
+  sortBy?: "createdAt" | "score";
   sortOrder?: "asc" | "desc";
   page?: number;
   limit?: number;
@@ -42,6 +44,7 @@ export function useUsers(params: UsersParams = {}) {
       if (params.search) qs.set("search", params.search);
       if (params.role) qs.set("role", params.role);
       if (params.status) qs.set("status", params.status);
+      if (params.sortBy) qs.set("sortBy", params.sortBy);
       if (params.sortOrder) qs.set("sortOrder", params.sortOrder);
       if (params.page) qs.set("page", String(params.page));
       if (params.limit) qs.set("limit", String(params.limit));
@@ -63,11 +66,12 @@ export function useStudents(params: Omit<UsersParams, "role"> = {}) {
 }
 
 export async function fetchStudentsExport(
-  params: Pick<UsersParams, "search" | "status" | "sortOrder">,
+  params: Pick<UsersParams, "search" | "status" | "sortBy" | "sortOrder">,
 ): Promise<AdminUser[]> {
   const qs = new URLSearchParams({ role: "student" });
   if (params.search) qs.set("search", params.search);
   if (params.status) qs.set("status", params.status);
+  if (params.sortBy) qs.set("sortBy", params.sortBy);
   if (params.sortOrder) qs.set("sortOrder", params.sortOrder);
   const res = await apiFetch<AdminUser[]>(`/admin/users/export?${qs}`);
   if (!res.success || !res.data) throw new Error(res.message);

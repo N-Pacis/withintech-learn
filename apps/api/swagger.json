@@ -4204,6 +4204,18 @@
             }
           },
           {
+            "name": "sortBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "score"
+              ]
+            },
+            "description": "Field to sort by (default: createdAt)"
+          },
+          {
             "name": "sortOrder",
             "in": "query",
             "schema": {
@@ -4268,6 +4280,18 @@
             }
           },
           {
+            "name": "sortBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "score"
+              ]
+            },
+            "description": "Field to sort by (default: createdAt)"
+          },
+          {
             "name": "sortOrder",
             "in": "query",
             "schema": {
@@ -4277,7 +4301,7 @@
                 "desc"
               ]
             },
-            "description": "Sort by joined date"
+            "description": "Sort direction"
           }
         ],
         "responses": {

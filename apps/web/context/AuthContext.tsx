@@ -7,6 +7,7 @@ import type { User } from "@/lib/auth";
 interface AuthContextValue {
   user: User | null;
   isLoading: boolean;
+  isFetching: boolean;
   login: (email: string, password: string) => Promise<{ error?: string }>;
   logout: () => void;
 }
@@ -14,7 +15,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { data: user = null, isLoading } = useProfile();
+  const { data: user = null, isLoading, isFetching } = useProfile();
   const loginMutation = useLogin();
   const logout = useLogout();
 
@@ -31,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, isFetching, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

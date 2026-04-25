@@ -7,6 +7,7 @@ import {
   getCachedModule,
   buildAndCacheCourse,
 } from "../../services/course-cache.service";
+import { recalculateUserScore } from "../../utils/scoring";
 
 const withThumbnailUrl = async <T extends { thumbnailKey: string | null }>(
   course: T,
@@ -226,6 +227,7 @@ export const completeCourse = async (slug: string, userId: string) => {
     upsertCertificate(userId, course.id),
   ]);
 
+  await recalculateUserScore(userId);
   return updated;
 };
 
@@ -422,6 +424,7 @@ export const completeModule = async (
     }
   }
 
+  await recalculateUserScore(userId);
   return progress;
 };
 
@@ -649,6 +652,7 @@ export const completeLesson = async (
     }
   }
 
+  await recalculateUserScore(userId);
   return progress;
 };
 
@@ -684,7 +688,9 @@ export const enrollInCourse = async (userId: string, courseId: string) => {
   });
   if (existing) throw badRequest("Already enrolled in this course");
 
-  return prisma.studentCourse.create({
+  const enrollment = await prisma.studentCourse.create({
     data: { studentId: userId, courseId, status: "ENROLLED" },
   });
+  await recalculateUserScore(userId);
+  return enrollment;
 };

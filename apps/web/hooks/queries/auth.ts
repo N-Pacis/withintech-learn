@@ -45,6 +45,8 @@ export function useProfile() {
     },
     // Seed immediately from localStorage — no loading spinner on first render
     initialData: () => getCachedProfile() ?? undefined,
+    initialDataUpdatedAt: 0,
+    refetchOnMount: "always",
     retry: false,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000, // trust cached profile for 5 min before re-validating

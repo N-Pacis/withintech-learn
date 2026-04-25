@@ -1,6 +1,7 @@
 import { SubmissionStatus } from '@prisma/client';
 import { prisma } from '../../db/prisma';
 import { notFound } from '../../utils/errors';
+import { recalculateUserScore } from '../../utils/scoring';
 import { type FunctionParam } from '../challenges.constants';
 import {
   getCachedStudentChallenge,
@@ -188,6 +189,8 @@ export const submitChallenge = async (slug: string, userId: string, data: {
 
   // Return results — hide hidden test case I/O on failure
   const results = formatChallengeResults(executorResult, challenge.testCases);
+
+  await recalculateUserScore(userId);
 
   return {
     submissionId:  submission.id,
