@@ -103,7 +103,10 @@ export const postResetPassword = asyncHandler(
 );
 
 export const getProfile = asyncHandler(async (req: Request, res: Response) => {
-  const result = await authService.getProfile({ userId: req.user!.userId });
+  const result = await authService.getProfile({
+    userId: req.user!.userId,
+    role: req.user!.role,
+  });
   sendSuccess(res, result);
 });
 

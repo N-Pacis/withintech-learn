@@ -36,7 +36,7 @@ export function useProfile() {
           const next = encodeURIComponent(
             window.location.pathname + window.location.search,
           );
-          window.location.href = `/sign-in?next=${next}`;
+          window.location.replace(`/sign-in?next=${next}`);
         }
         throw new Error(res.message);
       }
@@ -230,7 +230,7 @@ export function useLogout() {
     clearCachedProfile();
     apiFetch("/auth/logout", { method: "POST" }).finally(() => {
       queryClient.clear();
-      window.location.href = "/sign-in";
+      window.location.replace("/sign-in");
     });
   };
 }

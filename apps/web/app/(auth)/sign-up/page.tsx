@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 // import { GoogleLogin } from '@react-oauth/google';
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui";
 import { useSignUp, useProfile } from "@/hooks/queries/auth";
 import { isAllowedEmail } from "@withintech-learn/shared";
+import { getCachedProfile } from "@/lib/profile-cache";
 
 function Req({ met, label }: { met: boolean; label: string }) {
   return (
@@ -60,6 +61,7 @@ export default function SignUpPage() {
   const router = useRouter();
   const { mutateAsync: signUp } = useSignUp();
   // const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
+  const cachedProfile = getCachedProfile();
   const { data: profile, isFetching } = useProfile();
   const [form, setForm] = useState({
     firstName: "",
@@ -73,12 +75,19 @@ export default function SignUpPage() {
   const [serverError, setServerError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useLayoutEffect(() => {
+    if (!profile && cachedProfile) {
+      router.replace(cachedProfile.role === "admin" ? "/admin" : "/learn");
+    }
+  }, [cachedProfile, profile, router]);
+
   useEffect(() => {
     if (!profile || isFetching) return;
     router.replace(profile.role === "admin" ? "/admin" : "/learn");
   }, [profile, isFetching, router]);
 
   // Already logged in — show loader immediately; useEffect above will redirect
+  if (cachedProfile) return <AuthLoader />;
   if (profile && !isFetching) return <AuthLoader />;
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
