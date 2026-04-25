@@ -1,4 +1,5 @@
 import { OAuth2Client } from "google-auth-library";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "../../db/prisma";
 import redis from "../../db/redis";
 import { sendEmail } from "../../services/email.service";
@@ -42,7 +43,7 @@ const authUserSelect = {
       name: true,
     },
   },
-} as const;
+} satisfies Prisma.UserSelect;
 
 const authSessionUserSelect = {
   id: true,
@@ -53,15 +54,11 @@ const authSessionUserSelect = {
       name: true,
     },
   },
-} as const;
+} satisfies Prisma.UserSelect;
 
-const safeUser = (u: {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: { name: string };
-}) => ({
+type AuthUserRecord = Prisma.UserGetPayload<{ select: typeof authUserSelect }>;
+
+const safeUser = (u: AuthUserRecord) => ({
   id: u.id,
   email: u.email,
   firstName: u.firstName,
@@ -92,6 +89,7 @@ async function sendOtp(
   await prisma.user.update({
     where: { id: user.id },
     data: { otpCode: code, otpPurpose: purpose, otpExpiresAt: otpExpiresAt() },
+    select: { id: true },
   });
 
   await sendEmail({
@@ -136,6 +134,7 @@ export const login = async ({
   await prisma.user.update({
     where: { id: user.id },
     data: { lastLoggedIn: new Date() },
+    select: { id: true },
   });
   const payload = { userId: user.id, role: user.role.name };
   return {
@@ -195,6 +194,7 @@ export const adminSeed = async () => {
       isActive: true,
       emailVerified: true,
     },
+    select: { id: true },
   });
 
   return {
@@ -284,6 +284,7 @@ export const verifyEmailOtp = async ({
       otpExpiresAt: null,
       lastLoggedIn: new Date(),
     },
+    select: { id: true },
   });
 
   const payload = { userId: user.id, role: user.role.name };
@@ -343,6 +344,7 @@ export const verifyResetOtp = async ({
   await prisma.user.update({
     where: { id: user.id },
     data: { otpCode: null, otpPurpose: null, otpExpiresAt: null },
+    select: { id: true },
   });
 
   return { resetToken: signResetToken(user.id) };
@@ -382,6 +384,7 @@ export const resetPassword = async ({
       emailVerified: true,
       lastLoggedIn: new Date(),
     },
+    select: { id: true },
   });
 
   const payload = { userId: user.id, role: user.role.name };
@@ -430,6 +433,7 @@ export const changePassword = async ({
   await prisma.user.update({
     where: { id: userId },
     data: { passwordHash: await hashPassword(newPassword) },
+    select: { id: true },
   });
   return true;
 };
@@ -487,6 +491,7 @@ export const googleAuth = async ({ idToken }: { idToken: string }) => {
   await prisma.user.update({
     where: { id: user.id },
     data: { lastLoggedIn: new Date(), emailVerified: true },
+    select: { id: true },
   });
 
   const tokenPayload = { userId: user.id, role: user.role.name };
