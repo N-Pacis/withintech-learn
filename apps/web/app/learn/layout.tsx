@@ -7,19 +7,19 @@ import StudentNavbar from "@/components/layout/StudentNavbar";
 import { AuthLoader } from "@/components/ui";
 
 function StudentGuard({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isFetching } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || isFetching) return;
     if (!user) {
       router.replace("/sign-in");
     } else if (user.role === "admin") {
       router.replace("/admin");
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading, isFetching, router]);
 
-  if (isLoading) return <AuthLoader />;
+  if (isLoading || isFetching) return <AuthLoader />;
 
   if (!user || user.role === "admin") return null;
 

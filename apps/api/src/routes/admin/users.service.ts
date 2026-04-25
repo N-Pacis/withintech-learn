@@ -17,6 +17,7 @@ export interface ListUsersParams {
   search?: string;
   role?: "admin" | "student";
   status?: "active" | "inactive";
+  sortBy?: "createdAt" | "score";
   sortOrder?: "asc" | "desc";
   page?: number;
   limit?: number;
@@ -62,6 +63,7 @@ function formatUser(u: {
   createdAt: Date;
   lastLoggedIn: Date | null;
   createdById: string | null;
+  score: number;
 }) {
   return {
     id: u.id,
@@ -74,6 +76,7 @@ function formatUser(u: {
     createdAt: u.createdAt,
     lastLoggedIn: u.lastLoggedIn,
     createdById: u.createdById,
+    score: u.score,
   };
 }
 
@@ -81,6 +84,7 @@ export const listUsers = async ({
   search,
   role,
   status,
+  sortBy = "createdAt",
   sortOrder = "desc",
   page = 1,
   limit = 50,
@@ -92,12 +96,13 @@ export const listUsers = async ({
       status !== undefined ? { isActive: status === "active" } : {},
     ],
   };
+  const orderBy = sortBy === "score" ? { score: sortOrder } : { createdAt: sortOrder };
   const [total, users] = await Promise.all([
     prisma.user.count({ where }),
     prisma.user.findMany({
       where,
       include: { role: true },
-      orderBy: { createdAt: sortOrder },
+      orderBy,
       skip: (page - 1) * limit,
       take: limit,
     }),
@@ -109,6 +114,7 @@ export const exportUsers = async ({
   search,
   role,
   status,
+  sortBy = "createdAt",
   sortOrder = "desc",
 }: Omit<ListUsersParams, "page" | "limit"> = {}) => {
   const where = {
@@ -118,10 +124,11 @@ export const exportUsers = async ({
       status !== undefined ? { isActive: status === "active" } : {},
     ],
   };
+  const orderBy = sortBy === "score" ? { score: sortOrder } : { createdAt: sortOrder };
   const users = await prisma.user.findMany({
     where,
     include: { role: true },
-    orderBy: { createdAt: sortOrder },
+    orderBy,
   });
   return users.map(formatUser);
 };

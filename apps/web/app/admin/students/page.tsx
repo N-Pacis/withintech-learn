@@ -15,7 +15,8 @@ import {
   // SkipForward,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Badge, PageLoader, Table, Select, Button } from "@/components/ui";
+import { Badge, PageLoader, Table, Select, Button, SortDropdown } from "@/components/ui";
+import type { SortOption } from "@/components/ui";
 import type { Column, CellValue } from "@/components/ui";
 import {
   useStudents,
@@ -55,6 +56,22 @@ function fmtDate(d: string | null) {
   });
 }
 
+// ─── Sort options ─────────────────────────────────────────────────────────────
+
+type StudentSortValue = "score_desc" | "score_asc" | "joined_desc" | "joined_asc";
+
+const STUDENT_SORT_OPTIONS: SortOption<StudentSortValue>[] = [
+  { value: "score_desc", label: "Score: Highest first" },
+  { value: "score_asc",  label: "Score: Lowest first" },
+  { value: "joined_desc", label: "Joined: Newest first" },
+  { value: "joined_asc",  label: "Joined: Oldest first" },
+];
+
+function parseSortOption(s: StudentSortValue): { sortBy: "createdAt" | "score"; sortOrder: "asc" | "desc" } {
+  const [field, dir] = s.split("_") as ["score" | "joined", "asc" | "desc"];
+  return { sortBy: field === "score" ? "score" : "createdAt", sortOrder: dir };
+}
+
 // ─── Export column definitions ────────────────────────────────────────────────
 
 const EXPORT_COLS = [
@@ -69,6 +86,11 @@ const EXPORT_COLS = [
     getValue: (u: AdminUser) => u.lastName,
   },
   { key: "email", label: "Email", getValue: (u: AdminUser) => u.email },
+  {
+    key: "score",
+    label: "Points",
+    getValue: (u: AdminUser) => `${Math.round(u.score)} pts`,
+  },
   {
     key: "isActive",
     label: "Status",
@@ -95,6 +117,7 @@ const EXPORT_COLS = [
 
 const columns: Column[] = [
   { key: "user", header: "Student" },
+  { key: "score", header: "Points" },
   { key: "status", header: "Status" },
   { key: "emailVerified", header: "Email" },
   { key: "lastLoggedIn", header: "Last login" },
@@ -560,13 +583,13 @@ function ExportModal({
 export default function StudentsPage() {
   const [rawSearch, setRawSearch] = useState("");
   const [status, setStatus] = useState<UsersParams["status"]>("");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [sort, setSort] = useState<StudentSortValue>("score_desc");
   const [page, setPage] = useState(1);
   const debouncedSearch = useDebounce(rawSearch.trim(), 350);
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, status, sortOrder]);
+  }, [debouncedSearch, status, sort]);
 
   const [exportOpen, setExportOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -574,9 +597,11 @@ export default function StudentsPage() {
 
   const PAGE_SIZE = 10;
 
+  const { sortBy, sortOrder } = parseSortOption(sort);
   const params: UsersParams = {
     search: debouncedSearch || undefined,
     status: status || undefined,
+    sortBy,
     sortOrder,
     page,
     limit: PAGE_SIZE,
@@ -593,6 +618,7 @@ export default function StudentsPage() {
       const users = await fetchStudentsExport({
         search: debouncedSearch || undefined,
         status: status || undefined,
+        sortBy,
         sortOrder,
       });
 
@@ -881,6 +907,12 @@ export default function StudentsPage() {
           </div>
         </div>
       ),
+      score: (
+        <span className="font-heading font-bold text-sm text-foreground tabular-nums">
+          {Math.round(u.score)}
+          <span className="font-body font-normal text-xs text-muted-contrast"> pts</span>
+        </span>
+      ),
       status: (
         <Badge variant={u.isActive ? "success" : "warning"}>
           {u.isActive ? "Active" : "Inactive"}
@@ -1001,40 +1033,11 @@ export default function StudentsPage() {
             placeholder="All Statuses"
             isClearable
           />
-          <button
-            onClick={() => setSortOrder((s) => (s === "desc" ? "asc" : "desc"))}
-            className={cn(
-              "font-body text-sm text-foreground-soft bg-surface-card border border-border rounded-lg",
-              "px-3 py-2 outline-none cursor-pointer transition-colors flex items-center gap-1.5",
-              "hover:border-primary/40",
-            )}
-          >
-            Joined
-            <span className="flex flex-col gap-px">
-              <svg
-                width="8"
-                height="8"
-                viewBox="0 0 8 8"
-                fill="currentColor"
-                className={
-                  sortOrder === "asc" ? "text-primary" : "text-border-strong"
-                }
-              >
-                <path d="M4 0L8 8H0L4 0Z" />
-              </svg>
-              <svg
-                width="8"
-                height="8"
-                viewBox="0 0 8 8"
-                fill="currentColor"
-                className={
-                  sortOrder === "desc" ? "text-primary" : "text-border-strong"
-                }
-              >
-                <path d="M4 8L0 0H8L4 8Z" />
-              </svg>
-            </span>
-          </button>
+          <SortDropdown
+            options={STUDENT_SORT_OPTIONS}
+            value={sort}
+            onChange={setSort}
+          />
         </div>
 
         {isLoading && <PageLoader type="list" />}

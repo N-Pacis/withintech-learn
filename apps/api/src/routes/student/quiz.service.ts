@@ -1,6 +1,7 @@
 import { prisma } from "../../db/prisma";
 import { badRequest, notFound, forbidden } from "../../utils/errors";
 import { upsertCertificate } from "./certificates.service";
+import { recalculateUserScore } from "../../utils/scoring";
 
 export interface SubmittedAnswer {
   questionId: string;
@@ -154,6 +155,8 @@ export const submitQuiz = async (
       upsertCertificate(userId, quiz.courseId),
     ]);
   }
+
+  await recalculateUserScore(userId);
 
   return {
     attempt: {

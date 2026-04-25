@@ -31,19 +31,19 @@ function SignInForm() {
   const { mutateAsync: login } = useLogin();
   // const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
   // initialData seeds from localStorage — data is available synchronously if cached
-  const { data: profile } = useProfile();
+  const { data: profile, isFetching } = useProfile();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!profile) return;
+    if (!profile || isFetching) return;
     router.replace(resolveDestination(next, profile.role));
-  }, [profile, router, next]);
+  }, [profile, isFetching, router, next]);
 
   // Already logged in — show loader immediately; useEffect above will redirect
-  if (profile) return <AuthLoader />;
+  if (profile && !isFetching) return <AuthLoader />;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();

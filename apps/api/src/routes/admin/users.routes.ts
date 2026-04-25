@@ -12,6 +12,7 @@ const listUsersQuerySchema = z.object({
   search: z.string().optional(),
   role: z.enum(["admin", "student"]).optional(),
   status: z.enum(["active", "inactive"]).optional(),
+  sortBy: z.enum(["createdAt", "score"]).optional(),
   sortOrder: z.enum(["asc", "desc"]).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(50),
@@ -21,6 +22,7 @@ const exportUsersQuerySchema = z.object({
   search: z.string().optional(),
   role: z.enum(["admin", "student"]).optional(),
   status: z.enum(["active", "inactive"]).optional(),
+  sortBy: z.enum(["createdAt", "score"]).optional(),
   sortOrder: z.enum(["asc", "desc"]).optional(),
 });
 
