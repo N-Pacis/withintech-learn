@@ -1,12 +1,19 @@
 "use client";
 
-import { FormEvent, useState, useEffect, Suspense } from "react";
+import {
+  FormEvent,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  Suspense,
+} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 // import { GoogleLogin } from '@react-oauth/google';
 import { Logo, AuthLoader } from "@/components/ui";
 import { useLogin, useProfile } from "@/hooks/queries/auth";
 import { Button, Input, FormField, PasswordInput } from "@/components/ui";
+import { getCachedProfile } from "@/lib/profile-cache";
 
 // Redirect to `next` only if the user's role permits it; otherwise fall back to their home.
 function resolveDestination(next: string | null, role: string): string {
@@ -28,6 +35,7 @@ function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
+  const cachedProfile = getCachedProfile();
   const { mutateAsync: login } = useLogin();
   // const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
   // initialData seeds from localStorage — data is available synchronously if cached
@@ -37,12 +45,19 @@ function SignInForm() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useLayoutEffect(() => {
+    if (!profile && cachedProfile) {
+      router.replace(resolveDestination(next, cachedProfile.role));
+    }
+  }, [cachedProfile, profile, router, next]);
+
   useEffect(() => {
     if (!profile || isFetching) return;
     router.replace(resolveDestination(next, profile.role));
   }, [profile, isFetching, router, next]);
 
   // Already logged in — show loader immediately; useEffect above will redirect
+  if (cachedProfile) return <AuthLoader />;
   if (profile && !isFetching) return <AuthLoader />;
 
   async function handleSubmit(e: FormEvent) {

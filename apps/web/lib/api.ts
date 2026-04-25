@@ -61,7 +61,7 @@ export async function apiFetch<T = unknown>(
         typeof window !== "undefined" &&
         !window.location.pathname.startsWith("/sign-in")
       ) {
-        window.location.href = "/sign-in";
+        window.location.replace("/sign-in");
       }
       return { success: false, message: "Session expired" };
     }
