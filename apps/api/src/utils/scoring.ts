@@ -27,11 +27,11 @@ import { prisma } from "../db/prisma";
  * recalculation. Score floor is 0 (never goes negative).
  */
 
-const ATTEMPT_PTS    = { easy: 1, medium: 2,  hard: 3  } as const;
+const ATTEMPT_PTS = { easy: 1, medium: 2, hard: 3 } as const;
 const COMPLETION_PTS = { easy: 8, medium: 12, hard: 20 } as const;
 
 const NEVER_PASSED_QUIZ_PENALTY = 4;
-const GHOST_ENROLLMENT_PENALTY  = 1;
+const GHOST_ENROLLMENT_PENALTY = 1;
 const STAGNANT_CHALLENGE_PENALTY = 2;
 const STAGNANT_SUBMISSION_THRESHOLD = 5;
 const GHOST_ENROLLMENT_DAYS = 7;
@@ -39,7 +39,9 @@ const GHOST_ENROLLMENT_DAYS = 7;
 type Difficulty = keyof typeof ATTEMPT_PTS;
 
 export async function recalculateUserScore(userId: string): Promise<void> {
-  const ghostCutoff = new Date(Date.now() - GHOST_ENROLLMENT_DAYS * 24 * 60 * 60 * 1000);
+  const ghostCutoff = new Date(
+    Date.now() - GHOST_ENROLLMENT_DAYS * 24 * 60 * 60 * 1000,
+  );
 
   // ── Stage 1: parallel queries ────────────────────────────────────────────────
   const [
@@ -71,7 +73,9 @@ export async function recalculateUserScore(userId: string): Promise<void> {
       distinct: ["quizId"],
     }),
 
-    prisma.studentCourse.count({ where: { studentId: userId, status: "PASSED" } }),
+    prisma.studentCourse.count({
+      where: { studentId: userId, status: "PASSED" },
+    }),
     prisma.certificate.count({ where: { userId } }),
 
     // All submissions — challenge scoring + stagnant detection
@@ -87,7 +91,11 @@ export async function recalculateUserScore(userId: string): Promise<void> {
 
     // Courses enrolled > N days ago that are still ENROLLED (not completed)
     prisma.studentCourse.findMany({
-      where: { studentId: userId, status: "ENROLLED", enrolledAt: { lt: ghostCutoff } },
+      where: {
+        studentId: userId,
+        status: "ENROLLED",
+        enrolledAt: { lt: ghostCutoff },
+      },
       select: {
         courseId: true,
         course: {
@@ -113,7 +121,10 @@ export async function recalculateUserScore(userId: string): Promise<void> {
 
   // ── Challenge scoring ────────────────────────────────────────────────────────
   const submissionsPerChallenge = new Map<string, number>();
-  const bestPerChallenge = new Map<string, { difficulty: Difficulty; bestRate: number }>();
+  const bestPerChallenge = new Map<
+    string,
+    { difficulty: Difficulty; bestRate: number }
+  >();
 
   for (const sub of challengeSubmissions) {
     submissionsPerChallenge.set(
@@ -141,7 +152,8 @@ export async function recalculateUserScore(userId: string): Promise<void> {
 
     if (
       c.bestRate === 0 &&
-      (submissionsPerChallenge.get(challengeId) ?? 0) >= STAGNANT_SUBMISSION_THRESHOLD
+      (submissionsPerChallenge.get(challengeId) ?? 0) >=
+        STAGNANT_SUBMISSION_THRESHOLD
     ) {
       stagnantChallenges++;
     }
@@ -181,7 +193,9 @@ export async function recalculateUserScore(userId: string): Promise<void> {
 
     for (const enrollment of ghostCandidates) {
       const modIds = enrollment.course.modules.map((m) => m.id);
-      const lesIds = enrollment.course.modules.flatMap((m) => m.lessons.map((l) => l.id));
+      const lesIds = enrollment.course.modules.flatMap((m) =>
+        m.lessons.map((l) => l.id),
+      );
 
       // Skip courses with no content yet — nothing to penalise
       if (modIds.length === 0 && lesIds.length === 0) continue;
@@ -211,5 +225,9 @@ export async function recalculateUserScore(userId: string): Promise<void> {
 
   const score = parseFloat(Math.max(0, positive - deductions).toFixed(2));
 
-  await prisma.user.update({ where: { id: userId }, data: { score } });
+  await prisma.user.update({
+    where: { id: userId },
+    data: { score },
+    select: { id: true },
+  });
 }

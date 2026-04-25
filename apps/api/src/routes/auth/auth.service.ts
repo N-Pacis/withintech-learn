@@ -183,6 +183,7 @@ export const adminSeed = async () => {
 
   const existing = await prisma.user.findFirst({
     where: { role: { name: "admin" } },
+    select: { email: true },
   });
   if (existing) return { skipped: true as const, email: existing.email };
 
@@ -230,7 +231,10 @@ export const signUp = async ({
     throw badRequest(
       "Registration is currently unavailable. Please try again later.",
     );
-  const taken = await prisma.user.findUnique({ where: { email } });
+  const taken = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
   if (taken) throw conflict("Email already in use");
 
   const passwordHash = await hashPassword(password);
@@ -304,7 +308,15 @@ export const verifyEmailOtp = async ({
 };
 
 export const resendEmailVerification = async ({ email }: { email: string }) => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      emailVerified: true,
+    },
+  });
   if (!user || user.emailVerified) return true; // no enumeration
 
   await sendOtp(
@@ -317,7 +329,14 @@ export const resendEmailVerification = async ({ email }: { email: string }) => {
 };
 
 export const requestPasswordReset = async ({ email }: { email: string }) => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+    },
+  });
   if (!user) return true; // no enumeration
 
   await sendOtp(
@@ -336,7 +355,15 @@ export const verifyResetOtp = async ({
   email: string;
   otp: string;
 }) => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      otpCode: true,
+      otpPurpose: true,
+      otpExpiresAt: true,
+    },
+  });
   if (!user) throw badRequest("Invalid or expired OTP");
 
   if (
@@ -432,7 +459,14 @@ export const changePassword = async ({
   currentPassword: string;
   newPassword: string;
 }) => {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      provider: true,
+      passwordHash: true,
+    },
+  });
   if (!user) throw unauthorized();
   if (user.provider === "google")
     throw forbidden("Google accounts cannot change password here.");

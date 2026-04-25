@@ -191,7 +191,10 @@ export const createAdmin = async ({
   email: string;
   createdById: string;
 }) => {
-  const taken = await prisma.user.findUnique({ where: { email } });
+  const taken = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
   if (taken) throw conflict("Email already in use");
 
   const adminRole = await prisma.role.findUniqueOrThrow({
@@ -291,6 +294,7 @@ export const createStudentsFromImport = async (
 
     const existing = await prisma.user.findUnique({
       where: { email: normalizedEmail },
+      select: { id: true },
     });
     if (existing) {
       result.skipped++;
@@ -328,7 +332,7 @@ export const createStudentsFromImport = async (
         new Date("2026-03-12"),
         new Date("2026-04-08"),
       );
-      const user = await prisma.user.create({
+      await prisma.user.create({
         data: {
           firstName: firstName.trim(),
           lastName: lastName.trim(),
@@ -340,9 +344,8 @@ export const createStudentsFromImport = async (
           createdById,
           createdAt: joinedAt,
         },
+        select: { id: true },
       });
-
-      void user;
 
       result.created++;
       result.rows.push({

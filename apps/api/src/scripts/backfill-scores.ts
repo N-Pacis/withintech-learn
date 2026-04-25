@@ -1,7 +1,7 @@
 import { prisma } from "../db/prisma";
 import { recalculateUserScore } from "../utils/scoring";
 
-async function main() {
+export async function backfillScores() {
   const students = await prisma.user.findMany({
     where: { role: { name: "student" } },
     select: { id: true, firstName: true, lastName: true },
@@ -15,6 +15,10 @@ async function main() {
   }
 
   console.log("Done.");
+}
+
+async function main() {
+  await backfillScores();
   await prisma.$disconnect();
 }
 
