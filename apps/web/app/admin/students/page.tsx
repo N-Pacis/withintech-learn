@@ -15,7 +15,14 @@ import {
   // SkipForward,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Badge, PageLoader, Table, Select, Button, SortDropdown } from "@/components/ui";
+import {
+  Badge,
+  PageLoader,
+  Table,
+  Select,
+  Button,
+  SortDropdown,
+} from "@/components/ui";
 import type { SortOption } from "@/components/ui";
 import type { Column, CellValue } from "@/components/ui";
 import {
@@ -58,16 +65,23 @@ function fmtDate(d: string | null) {
 
 // ─── Sort options ─────────────────────────────────────────────────────────────
 
-type StudentSortValue = "score_desc" | "score_asc" | "joined_desc" | "joined_asc";
+type StudentSortValue =
+  | "score_desc"
+  | "score_asc"
+  | "joined_desc"
+  | "joined_asc";
 
 const STUDENT_SORT_OPTIONS: SortOption<StudentSortValue>[] = [
   { value: "score_desc", label: "Score: Highest first" },
-  { value: "score_asc",  label: "Score: Lowest first" },
+  { value: "score_asc", label: "Score: Lowest first" },
   { value: "joined_desc", label: "Joined: Newest first" },
-  { value: "joined_asc",  label: "Joined: Oldest first" },
+  { value: "joined_asc", label: "Joined: Oldest first" },
 ];
 
-function parseSortOption(s: StudentSortValue): { sortBy: "createdAt" | "score"; sortOrder: "asc" | "desc" } {
+function parseSortOption(s: StudentSortValue): {
+  sortBy: "createdAt" | "score";
+  sortOrder: "asc" | "desc";
+} {
   const [field, dir] = s.split("_") as ["score" | "joined", "asc" | "desc"];
   return { sortBy: field === "score" ? "score" : "createdAt", sortOrder: dir };
 }
@@ -106,11 +120,6 @@ const EXPORT_COLS = [
     label: "Joined",
     getValue: (u: AdminUser) => fmtDate(u.createdAt),
   },
-  {
-    key: "lastLoggedIn",
-    label: "Last Login",
-    getValue: (u: AdminUser) => fmtDate(u.lastLoggedIn),
-  },
 ];
 
 // ─── Table columns ────────────────────────────────────────────────────────────
@@ -120,7 +129,6 @@ const columns: Column[] = [
   { key: "score", header: "Points" },
   { key: "status", header: "Status" },
   { key: "emailVerified", header: "Email" },
-  { key: "lastLoggedIn", header: "Last login" },
   { key: "joined", header: "Joined" },
   { key: "actions", header: "" },
 ];
@@ -908,9 +916,12 @@ export default function StudentsPage() {
         </div>
       ),
       score: (
-        <span className="font-heading font-bold text-sm text-foreground tabular-nums">
+        <span className="font-body text-sm font-medium text-foreground tabular-nums">
           {Math.round(u.score)}
-          <span className="font-body font-normal text-xs text-muted-contrast"> pts</span>
+          <span className="font-body font-normal text-xs text-muted-contrast">
+            {" "}
+            pts
+          </span>
         </span>
       ),
       status: (
@@ -923,7 +934,6 @@ export default function StudentsPage() {
           {u.emailVerified ? "Verified" : "Unverified"}
         </Badge>
       ),
-      lastLoggedIn: formatDate(u.lastLoggedIn),
       joined: formatDate(u.createdAt),
       actions: (
         <div className="flex items-center gap-2">
