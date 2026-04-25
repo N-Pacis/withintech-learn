@@ -25,6 +25,36 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const EMAIL_OTP_MAX = 5;
 const EMAIL_OTP_WINDOW = 3600; // 1 hour in seconds
 
+const authUserSelect = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  provider: true,
+  passwordHash: true,
+  isActive: true,
+  emailVerified: true,
+  otpCode: true,
+  otpPurpose: true,
+  otpExpiresAt: true,
+  role: {
+    select: {
+      name: true,
+    },
+  },
+} as const;
+
+const authSessionUserSelect = {
+  id: true,
+  isActive: true,
+  emailVerified: true,
+  role: {
+    select: {
+      name: true,
+    },
+  },
+} as const;
+
 const safeUser = (u: {
   id: string;
   email: string;
@@ -80,7 +110,7 @@ export const login = async ({
 }) => {
   const user = await prisma.user.findUnique({
     where: { email },
-    include: { role: true },
+    select: authUserSelect,
   });
   if (user?.provider === "google")
     throw unauthorized(
@@ -123,7 +153,7 @@ export const refreshToken = async ({
   const payload = verifyToken(token, process.env.JWT_REFRESH_SECRET as string);
   const user = await prisma.user.findUnique({
     where: { id: payload.userId },
-    include: { role: true },
+    select: authSessionUserSelect,
   });
   if (!user || !user.isActive) throw unauthorized("Invalid or expired token");
   if (!user.emailVerified) throw unauthorized("Email verification required");
@@ -206,7 +236,11 @@ export const signUp = async ({
       isActive: true,
       emailVerified: false,
     },
-    include: { role: true },
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+    },
   });
 
   await sendOtp(
@@ -227,7 +261,7 @@ export const verifyEmailOtp = async ({
 }) => {
   const user = await prisma.user.findUnique({
     where: { email },
-    include: { role: true },
+    select: authUserSelect,
   });
   if (!user) throw badRequest("Invalid or expired OTP");
 
@@ -324,7 +358,17 @@ export const resetPassword = async ({
   const { userId } = verifyResetToken(resetToken);
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { role: true },
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      role: {
+        select: {
+          name: true,
+        },
+      },
+    },
   });
   if (!user) throw unauthorized();
 
@@ -403,7 +447,7 @@ export const googleAuth = async ({ idToken }: { idToken: string }) => {
 
   let user = await prisma.user.findUnique({
     where: { email },
-    include: { role: true },
+    select: authUserSelect,
   });
 
   if (user && user.provider === "email") {
@@ -431,7 +475,7 @@ export const googleAuth = async ({ idToken }: { idToken: string }) => {
         isActive: true,
         emailVerified: true,
       },
-      include: { role: true },
+      select: authUserSelect,
     });
   }
 
