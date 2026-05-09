@@ -177,19 +177,20 @@ body,
 }
 
 .wt-docs-logo {
-  width: 28px;
-  height: 28px;
-  object-fit: cover;
+  width: 112px;
+  height: 42px;
+  object-fit: contain;
   object-position: center;
-  border-radius: 6px;
+  border-radius: 0;
+  flex: 0 0 auto;
 }
 
 .wt-header-logo {
-  width: 30px;
-  height: 30px;
-  object-fit: cover;
+  width: 104px;
+  height: 34px;
+  object-fit: contain;
   object-position: center;
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 :root[data-theme="dark"] .wt-docs-logo-light,
