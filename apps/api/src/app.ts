@@ -33,7 +33,11 @@ const allowedOrigins = [
 ].filter(Boolean) as string[];
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({
+  verify: (req: Request, _res, buf) => {
+    req.rawBody = buf.toString("utf8");
+  },
+}));
 app.use(compression());
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 

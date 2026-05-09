@@ -335,9 +335,10 @@ export const requestPasswordReset = async ({ email }: { email: string }) => {
       id: true,
       email: true,
       firstName: true,
+      provider: true,
     },
   });
-  if (!user) return true; // no enumeration
+  if (!user || user.provider === "google") return true; // no enumeration
 
   await sendOtp(
     user,
@@ -481,13 +482,17 @@ export const changePassword = async ({
 };
 
 export const googleAuth = async ({ idToken }: { idToken: string }) => {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  if (!clientId) throw badRequest("Google sign-in is not configured");
+
   const ticket = await googleClient.verifyIdToken({
     idToken,
-    audience: process.env.GOOGLE_CLIENT_ID,
+    audience: clientId,
   });
 
   const payload = ticket.getPayload();
-  if (!payload?.email) throw unauthorized("Invalid Google token");
+  if (!payload?.email || !payload.email_verified)
+    throw unauthorized("Invalid Google token");
 
   const { email, given_name, family_name } = payload;
 
@@ -496,11 +501,7 @@ export const googleAuth = async ({ idToken }: { idToken: string }) => {
     select: authUserSelect,
   });
 
-  if (user && user.provider === "email") {
-    throw conflict(
-      "An account with this email already exists. Please sign in with your email and password.",
-    );
-  }
+  // Email/password users can also sign in with Google — just authenticate them
 
   if (!user) {
     const studentRole = await prisma.role.findUnique({

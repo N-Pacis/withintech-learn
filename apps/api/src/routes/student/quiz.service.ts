@@ -21,6 +21,7 @@ export const submitQuiz = async (
         orderBy: { orderIndex: "asc" },
         include: { options: { orderBy: { orderIndex: "asc" } } },
       },
+      course: { select: { accessType: true } },
     },
   });
   if (!quiz) throw notFound("Quiz not found");
@@ -143,17 +144,22 @@ export const submitQuiz = async (
     },
   });
 
-  // Auto-complete course when a course quiz is passed
+  // Auto-complete course when a course quiz is passed.
+  // For PAID_CERTIFICATE courses: mark PASSED (content done) but skip certificate —
+  // the certificate is created by the payment flow after the student pays.
   if (quiz.courseId && status === "pass") {
-    await Promise.all([
+    const ops: Promise<unknown>[] = [
       prisma.studentCourse.update({
         where: {
           studentId_courseId: { studentId: userId, courseId: quiz.courseId },
         },
         data: { status: "PASSED" },
       }),
-      upsertCertificate(userId, quiz.courseId),
-    ]);
+    ];
+    if (quiz.course?.accessType !== "PAID_CERTIFICATE") {
+      ops.push(upsertCertificate(userId, quiz.courseId));
+    }
+    await Promise.all(ops);
   }
 
   await recalculateUserScore(userId);

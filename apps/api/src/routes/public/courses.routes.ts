@@ -4,6 +4,7 @@ import { getSignedUrl } from '../../services/storage.service';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { sendSuccess } from '../../utils/response';
 import { notFound } from '../../utils/errors';
+import { getCoursePreview } from '../student/courses.service';
 
 const router = Router();
 
@@ -93,6 +94,11 @@ router.get('/public/courses/all', asyncHandler(async (_req: Request, res: Respon
   );
 
   sendSuccess(res, coursesWithUrls);
+}));
+
+router.get('/public/courses/:slug/preview', asyncHandler(async (req: Request, res: Response) => {
+  const result = await getCoursePreview(req.params.slug);
+  sendSuccess(res, result);
 }));
 
 router.get('/public/courses/:slug', asyncHandler(async (req: Request, res: Response) => {

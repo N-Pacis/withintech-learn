@@ -16,6 +16,9 @@ export interface CachedCourse {
   thumbnailKey: string | null;
   moduleIds: string[]; // ordered list — used for cache-busting on archive
   quiz: CachedQuiz | null;
+  accessType: 'FREE' | 'PAID_COURSE' | 'PAID_CERTIFICATE';
+  price: number | null;
+  certificatePrice: number | null;
 }
 
 interface CachedBlock {
@@ -68,6 +71,9 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
       slug: true,
       description: true,
       thumbnailKey: true,
+      accessType: true,
+      price: true,
+      certificatePrice: true,
       modules: {
         orderBy: { orderIndex: "asc" },
         select: {
@@ -199,6 +205,9 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
     thumbnailKey: course.thumbnailKey,
     moduleIds: course.modules.map((m) => m.id),
     quiz: course.quiz ?? null,
+    accessType: course.accessType as 'FREE' | 'PAID_COURSE' | 'PAID_CERTIFICATE',
+    price: course.price,
+    certificatePrice: course.certificatePrice,
   };
   pipeline.set(courseKey(course.slug), JSON.stringify(cachedCourse));
 

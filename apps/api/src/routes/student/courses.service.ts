@@ -85,6 +85,9 @@ export const listPublishedCourses = async ({
         description: true,
         thumbnailKey: true,
         status: true,
+        accessType: true,
+        price: true,
+        certificatePrice: true,
         _count: { select: { modules: true } },
         enrollments: {
           where: { studentId: userId },
@@ -93,6 +96,16 @@ export const listPublishedCourses = async ({
       },
     }),
   ]);
+
+  // Batch-fetch all course IDs where this user has a certificate row
+  const certCourseIds = new Set(
+    (
+      await prisma.certificate.findMany({
+        where: { userId },
+        select: { courseId: true },
+      })
+    ).map((c) => c.courseId),
+  );
 
   const coursesWithUrls = await Promise.all(
     courses.map(async (c) => {
@@ -104,6 +117,7 @@ export const listPublishedCourses = async ({
         module_count: _count.modules,
         enrollment_status: enrollment?.status ?? null,
         enrolled_at: enrollment?.enrolledAt ?? null,
+        has_certificate: certCourseIds.has(c.id),
       };
     }),
   );
@@ -112,6 +126,31 @@ export const listPublishedCourses = async ({
 };
 
 // Returns course info + module list with completion status
+export const getCoursePreview = async (slug: string) => {
+  let cached = await getCachedCourse(slug);
+  if (!cached) {
+    const dbCourse = await prisma.course.findFirst({
+      where: { slug, status: "published" },
+      select: { id: true },
+    });
+    if (!dbCourse) throw notFound("Course not found");
+    await buildAndCacheCourse(dbCourse.id);
+    cached = await getCachedCourse(slug);
+  }
+  if (!cached) throw notFound("Course not found");
+
+  return {
+    id: cached.id,
+    title: cached.title,
+    slug: cached.slug,
+    description: cached.description,
+    accessType: cached.accessType,
+    price: cached.price,
+    certificatePrice: cached.certificatePrice,
+    ...(await withThumbnailUrl({ thumbnailKey: cached.thumbnailKey })),
+  };
+};
+
 export const getPublishedCourseBySlug = async (
   slug: string,
   userId: string,
@@ -136,7 +175,7 @@ export const getPublishedCourseBySlug = async (
   if (!enrollment)
     throw forbidden("You must be enrolled to access this course");
 
-  const [completedSet, lastCourseQuizAttempt] = await Promise.all([
+  const [completedSet, lastCourseQuizAttempt, certRow] = await Promise.all([
     prisma.moduleProgress
       .findMany({
         where: { userId, moduleId: { in: cached.moduleIds } },
@@ -150,6 +189,10 @@ export const getPublishedCourseBySlug = async (
           select: { id: true, score: true, status: true, createdAt: true },
         })
       : null,
+    prisma.certificate.findUnique({
+      where: { userId_courseId: { userId, courseId: cached.id } },
+      select: { id: true },
+    }),
   ]);
 
   // Modules in cache are ordered; fetch titles from cache via module keys
@@ -182,9 +225,13 @@ export const getPublishedCourseBySlug = async (
     slug: cached.slug,
     description: cached.description,
     status: "published",
+    accessType: cached.accessType,
+    price: cached.price,
+    certificatePrice: cached.certificatePrice,
     ...(await withThumbnailUrl({ thumbnailKey: cached.thumbnailKey })),
     enrollment_status: enrollment.status,
     enrolled_at: enrollment.enrolledAt,
+    has_certificate: !!certRow,
     modules,
     quiz: cached.quiz ?? null,
     lastCourseQuizAttempt: lastCourseQuizAttempt ?? null,
@@ -218,15 +265,32 @@ export const completeCourse = async (slug: string, userId: string) => {
     }
   }
 
-  const [updated] = await Promise.all([
+  // For PAID_CERTIFICATE courses, certificate is issued only after certificate payment
+  // completeCourse marks the enrollment as PASSED but skips certificate creation
+  const shouldIssueCertificate = course.accessType !== "PAID_CERTIFICATE";
+
+  if (!shouldIssueCertificate) {
+    // Verify a paid certificate payment exists before marking PASSED
+    const certPayment = await prisma.payment.findFirst({
+      where: { userId, courseId: course.id, type: "CERTIFICATE", status: "PAID" },
+    });
+    if (!certPayment) {
+      throw forbidden(
+        "A certificate payment is required. Please complete the certificate payment to receive your certificate.",
+      );
+    }
+  }
+
+  const ops: Promise<unknown>[] = [
     prisma.studentCourse.update({
       where: { studentId_courseId: { studentId: userId, courseId: course.id } },
       data: { status: "PASSED" },
       select: { id: true, status: true },
     }),
-    upsertCertificate(userId, course.id),
-  ]);
+  ];
+  if (shouldIssueCertificate) ops.push(upsertCertificate(userId, course.id));
 
+  const [updated] = await Promise.all(ops);
   await recalculateUserScore(userId);
   return updated;
 };
@@ -404,23 +468,29 @@ export const completeModule = async (
   // Auto-complete course if this was the last module and the course has no final quiz
   const courseWithQuiz = await prisma.course.findUnique({
     where: { id: course.id },
-    select: { quiz: { select: { id: true } } },
+    select: { accessType: true, quiz: { select: { id: true } } },
   });
 
+  // Auto-complete course when all modules are done and there is no final quiz.
+  // For PAID_CERTIFICATE: mark PASSED (content done) but skip certificate —
+  // the certificate is created by the payment flow after the student pays.
   if (!courseWithQuiz?.quiz) {
     const completedCount = await prisma.moduleProgress.count({
       where: { userId, moduleId: { in: courseModules.map((m) => m.id) } },
     });
     if (completedCount === courseModules.length) {
-      await Promise.all([
+      const ops: Promise<unknown>[] = [
         prisma.studentCourse.update({
           where: {
             studentId_courseId: { studentId: userId, courseId: course.id },
           },
           data: { status: "PASSED" },
         }),
-        upsertCertificate(userId, course.id),
-      ]);
+      ];
+      if (courseWithQuiz?.accessType !== "PAID_CERTIFICATE") {
+        ops.push(upsertCertificate(userId, course.id));
+      }
+      await Promise.all(ops);
     }
   }
 
@@ -631,22 +701,28 @@ export const completeLesson = async (
       });
       const courseWithQuiz = await prisma.course.findUnique({
         where: { id: course.id },
-        select: { quiz: { select: { id: true } } },
+        select: { accessType: true, quiz: { select: { id: true } } },
       });
+      // Auto-complete course when all modules are done and there is no final quiz.
+      // For PAID_CERTIFICATE: mark PASSED (content done) but skip certificate —
+      // the certificate is created by the payment flow after the student pays.
       if (!courseWithQuiz?.quiz) {
         const completedModuleCount = await prisma.moduleProgress.count({
           where: { userId, moduleId: { in: courseModules.map((m) => m.id) } },
         });
         if (completedModuleCount === courseModules.length) {
-          await Promise.all([
+          const ops: Promise<unknown>[] = [
             prisma.studentCourse.update({
               where: {
                 studentId_courseId: { studentId: userId, courseId: course.id },
               },
               data: { status: "PASSED" },
             }),
-            upsertCertificate(userId, course.id),
-          ]);
+          ];
+          if (courseWithQuiz?.accessType !== "PAID_CERTIFICATE") {
+            ops.push(upsertCertificate(userId, course.id));
+          }
+          await Promise.all(ops);
         }
       }
     }
@@ -682,6 +758,14 @@ export const enrollInCourse = async (userId: string, courseId: string) => {
   if (!course) throw notFound("Course not found");
   if (course.status !== "published")
     throw badRequest("Course is not available for enrollment");
+
+  // Paid courses are enrolled automatically via the payment webhook
+  if (course.accessType === "PAID_COURSE") {
+    const paid = await prisma.payment.findFirst({
+      where: { userId, courseId, type: "COURSE_ACCESS", status: "PAID" },
+    });
+    if (!paid) throw forbidden("Payment required to enroll in this course");
+  }
 
   const existing = await prisma.studentCourse.findUnique({
     where: { studentId_courseId: { studentId: userId, courseId } },

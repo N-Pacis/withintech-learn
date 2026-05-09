@@ -24,6 +24,7 @@ import certificatesRouter from "./student/certificates.routes";
 import publicCoursesRouter from "./public/courses.routes";
 import publicChallengesRouter from "./public/challenges.routes";
 import publicStatsRouter from "./public/stats.routes";
+import paymentsRouter from "./payments/payments.routes";
 
 const router = Router();
 
@@ -60,6 +61,9 @@ router.use("/student", authenticate);
 router.use(studentCoursesRouter);
 router.use(studentQuizRouter);
 router.use(studentChallengesRouter);
+
+// ── Payment routes ────────────────────────────────────────────────────────────
+router.use(paymentsRouter);
 
 // ── Certificate routes ────────────────────────────────────────────────────────
 router.use(certificatesRouter);
