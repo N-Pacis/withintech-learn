@@ -8,7 +8,9 @@ import {
   useUpdateCourse,
   useArchiveCourse,
   useUploadThumbnail,
+  type CourseAccessType,
 } from "@/hooks/queries/courses";
+import { cn } from "@/lib/utils";
 import {
   Button,
   Badge,
@@ -22,6 +24,12 @@ import {
   FileUpload,
 } from "@/components/ui";
 
+const ACCESS_OPTIONS: { value: CourseAccessType; label: string; description: string }[] = [
+  { value: "FREE", label: "Free", description: "Anyone can enroll at no cost" },
+  { value: "PAID_COURSE", label: "Paid Course", description: "Students pay to access content" },
+  { value: "PAID_CERTIFICATE", label: "Paid Certificate", description: "Content is free; certificate requires payment" },
+];
+
 export default function EditCoursePage() {
   const { courseId } = useParams<{ courseId: string }>();
   const { data: course, isLoading } = useCourse(courseId);
@@ -33,6 +41,9 @@ export default function EditCoursePage() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [accessType, setAccessType] = useState<CourseAccessType>("FREE");
+  const [price, setPrice] = useState("");
+  const [certificatePrice, setCertificatePrice] = useState("");
   const [dirty, setDirty] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [publishError, setPublishError] = useState("");
@@ -44,6 +55,9 @@ export default function EditCoursePage() {
     setPrevCourse(course);
     setTitle(course.title);
     setDescription(course.description ?? "");
+    setAccessType(course.accessType ?? "FREE");
+    setPrice(course.price != null ? String(course.price) : "");
+    setCertificatePrice(course.certificatePrice != null ? String(course.certificatePrice) : "");
   }
 
   function handleFieldChange(field: "title" | "description", value: string) {
@@ -58,12 +72,23 @@ export default function EditCoursePage() {
       setSaveError("Title cannot be empty.");
       return;
     }
+    if (accessType === "PAID_COURSE" && (!price || Number(price) < 100)) {
+      setSaveError("Course price must be at least RWF 100.");
+      return;
+    }
+    if (accessType === "PAID_CERTIFICATE" && (!certificatePrice || Number(certificatePrice) < 100)) {
+      setSaveError("Certificate price must be at least RWF 100.");
+      return;
+    }
     setSaveError("");
     setSaved(false);
     try {
       await updateCourse({
         title: title.trim(),
         description: description.trim() || undefined,
+        accessType,
+        price: accessType === "PAID_COURSE" ? Number(price) : undefined,
+        certificatePrice: accessType === "PAID_CERTIFICATE" ? Number(certificatePrice) : undefined,
       });
       setDirty(false);
       setSaved(true);
@@ -280,8 +305,46 @@ export default function EditCoursePage() {
                 </p>
               )}
             </FormField>
+            <div>
+              <p className="font-body text-xs font-medium text-foreground mb-2">Access type</p>
+              <div className="flex flex-col gap-2">
+                {ACCESS_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => { setAccessType(opt.value); setDirty(true); setSaveError(""); }}
+                    className={cn(
+                      "text-left p-3 rounded-xl border-2 transition-all",
+                      accessType === opt.value ? "border-primary bg-primary/5" : "border-border hover:border-primary/40",
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn("w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0", accessType === opt.value ? "border-primary" : "border-border")}>
+                        {accessType === opt.value && <div className="w-2 h-2 rounded-full bg-primary" />}
+                      </div>
+                      <div>
+                        <p className="font-body font-semibold text-sm text-foreground">{opt.label}</p>
+                        <p className="font-body text-xs text-muted">{opt.description}</p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {accessType === "PAID_COURSE" && (
+              <FormField label="Course Price (RWF)" htmlFor="edit-price" required>
+                <Input id="edit-price" type="number" min="100" step="1" placeholder="e.g. 5000" value={price} onChange={(e) => { setPrice(e.target.value); setDirty(true); }} />
+              </FormField>
+            )}
+            {accessType === "PAID_CERTIFICATE" && (
+              <FormField label="Certificate Price (RWF)" htmlFor="edit-cert-price" required>
+                <Input id="edit-cert-price" type="number" min="100" step="1" placeholder="e.g. 2000" value={certificatePrice} onChange={(e) => { setCertificatePrice(e.target.value); setDirty(true); }} />
+              </FormField>
+            )}
+
             {saveError && (
-              <p className="font-body text-sm text-red-500 bg-red-50 px-4 py-2.5 rounded-lg">
+              <p className="font-body text-sm text-red-500 bg-red-50 dark:bg-red-950/30 px-4 py-2.5 rounded-lg">
                 {saveError}
               </p>
             )}

@@ -3,7 +3,7 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-// import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from "@react-oauth/google";
 import {
   Logo,
   Button,
@@ -12,7 +12,7 @@ import {
   PasswordInput,
   AuthLoader,
 } from "@/components/ui";
-import { useSignUp, useProfile } from "@/hooks/queries/auth";
+import { useSignUp, useProfile, useGoogleAuth } from "@/hooks/queries/auth";
 import { isAllowedEmail } from "@withintech-learn/shared";
 import { getCachedProfile } from "@/lib/profile-cache";
 
@@ -60,7 +60,7 @@ function Req({ met, label }: { met: boolean; label: string }) {
 export default function SignUpPage() {
   const router = useRouter();
   const { mutateAsync: signUp } = useSignUp();
-  // const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
+  const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
   const cachedProfile = getCachedProfile();
   const { data: profile, isFetching } = useProfile();
   const [form, setForm] = useState({
@@ -137,15 +137,17 @@ export default function SignUpPage() {
     }
   }
 
-  // async function handleGoogle(credential: string) {
-  //   setServerError('');
-  //   try {
-  //     const data = await googleAuth(credential);
-  //     router.push(data.user.role === 'admin' ? '/admin' : '/learn');
-  //   } catch (err) {
-  //     setServerError(err instanceof Error ? err.message : 'Google sign-in failed');
-  //   }
-  // }
+  async function handleGoogle(credential: string) {
+    setServerError("");
+    try {
+      const data = await googleAuth(credential);
+      router.push(data.user.role === "admin" ? "/admin" : "/learn");
+    } catch (err) {
+      setServerError(
+        err instanceof Error ? err.message : "Google sign-in failed",
+      );
+    }
+  }
 
   const hasMinLength = form.password.length >= 6;
   const hasNumber = /\d/.test(form.password);
@@ -225,14 +227,20 @@ export default function SignUpPage() {
             Create your account to start learning.
           </p>
 
-          {/* Google — hidden until enabled */}
-          {/* <div
+          <div
             className="flex justify-center mb-5"
-            style={{ opacity: googlePending ? 0.6 : 1, pointerEvents: googlePending ? 'none' : 'auto' }}
+            style={{
+              opacity: googlePending ? 0.6 : 1,
+              pointerEvents: googlePending ? "none" : "auto",
+            }}
           >
             <GoogleLogin
-              onSuccess={(res) => { if (res.credential) handleGoogle(res.credential); }}
-              onError={() => setServerError('Google sign-in failed. Please try again.')}
+              onSuccess={(res) => {
+                if (res.credential) handleGoogle(res.credential);
+              }}
+              onError={() =>
+                setServerError("Google sign-in failed. Please try again.")
+              }
               width="448"
               theme="outline"
               size="large"
@@ -244,7 +252,7 @@ export default function SignUpPage() {
             <div className="flex-1 h-px bg-surface-muted" />
             <span className="font-body text-xs text-border-strong">or</span>
             <div className="flex-1 h-px bg-surface-muted" />
-          </div> */}
+          </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-3">

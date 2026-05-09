@@ -20,7 +20,8 @@ export default function CourseLayout({
   }>();
   const pathname = usePathname();
   const router = useRouter();
-  const { data: course, isLoading, isError } = usePublishedCourse(slug);
+  const isCheckout = pathname.endsWith("/checkout");
+  const { data: course, isLoading, isError } = usePublishedCourse(isCheckout ? "" : slug);
 
   const [readProgress, setReadProgress] = useState(0);
 
@@ -57,6 +58,8 @@ export default function CourseLayout({
       : "",
   );
   const activeLessons = activeModuleDetail?.lessons ?? [];
+
+  if (isCheckout) return <>{children}</>;
 
   if (isLoading) return <PageLoader type="content" />;
   if (isError || !course) {

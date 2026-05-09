@@ -59,7 +59,7 @@ function FilterPills({
   );
 }
 
-function EnrollButton({ course }: { course: PublishedCourse }) {
+function FreeEnrollButton({ course }: { course: PublishedCourse }) {
   const { mutate: enroll, isPending } = useEnrollInCourse();
   return (
     <Button
@@ -82,6 +82,22 @@ function CourseFooter({
   userId?: string;
 }) {
   if (course.enrollment_status === "PASSED") {
+    // PAID_CERTIFICATE course completed but certificate not yet paid for
+    if (course.accessType === "PAID_CERTIFICATE" && !course.has_certificate) {
+      return (
+        <Button
+          size="sm"
+          variant="primary"
+          asChild
+          className="w-full justify-between"
+        >
+          <Link href={`/learn/courses/${course.slug}/checkout?type=certificate`}>
+            Pay RWF {course.certificatePrice?.toLocaleString()} for Certificate <ArrowRight size={14} />
+          </Link>
+        </Button>
+      );
+    }
+
     return (
       <Button
         size="sm"
@@ -115,7 +131,34 @@ function CourseFooter({
       </Button>
     );
   }
-  return <EnrollButton course={course} />;
+
+  if (course.accessType === "PAID_COURSE") {
+    return (
+      <Button
+        size="sm"
+        variant="primary"
+        asChild
+        className="w-full justify-between"
+      >
+        <Link href={`/learn/courses/${course.slug}/checkout?type=course`}>
+          Buy Access · RWF {course.price?.toLocaleString()} <ArrowRight size={14} />
+        </Link>
+      </Button>
+    );
+  }
+
+  if (course.accessType === "PAID_CERTIFICATE") {
+    return (
+      <div className="flex flex-col gap-2">
+        <FreeEnrollButton course={course} />
+        <p className="font-body text-xs text-muted text-center">
+          Certificate: RWF {course.certificatePrice?.toLocaleString()}
+        </p>
+      </div>
+    );
+  }
+
+  return <FreeEnrollButton course={course} />;
 }
 
 function EmptyState({
@@ -358,17 +401,40 @@ export default function LearnPage() {
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {data.courses.map((course) => (
-                  <CourseCard
-                    key={course.id}
-                    course={course}
-                    href={`/learn/courses/${course.slug}`}
-                    footer={
-                      <CourseFooter course={course} userId={profile?.id} />
-                    }
-                    locked={!course.enrollment_status}
-                  />
-                ))}
+                {data.courses.map((course) => {
+                  const enrolled = !!course.enrollment_status;
+                  const isPaidCourse = course.accessType === "PAID_COURSE";
+                  const isPaidCert = course.accessType === "PAID_CERTIFICATE";
+
+                  const href = enrolled
+                    ? `/learn/courses/${course.slug}`
+                    : isPaidCourse
+                      ? `/learn/courses/${course.slug}/checkout?type=course`
+                      : `/learn/courses/${course.slug}`;
+
+                  const locked = !enrolled && !isPaidCourse;
+
+                  const badge = enrolled
+                    ? undefined
+                    : isPaidCourse
+                      ? { variant: "orange" as const, label: `RWF ${course.price?.toLocaleString()}` }
+                      : isPaidCert
+                        ? { variant: "purple" as const, label: `Cert · RWF ${course.certificatePrice?.toLocaleString()}` }
+                        : { variant: "success" as const, label: "Free" };
+
+                  return (
+                    <CourseCard
+                      key={course.id}
+                      course={course}
+                      href={href}
+                      badge={badge}
+                      footer={
+                        <CourseFooter course={course} userId={profile?.id} />
+                      }
+                      locked={locked}
+                    />
+                  );
+                })}
               </div>
 
               <Pagination

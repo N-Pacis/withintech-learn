@@ -96,7 +96,7 @@ export function Table({
                   className="border-b border-border-subtle hover:bg-surface transition-colors last:border-0"
                 >
                   {columns.map((col) => (
-                    <td key={col.key} className="px-6 py-4">
+                    <td key={col.key} className="px-6 py-4 font-body text-sm text-foreground">
                       {row[col.key] ?? null}
                     </td>
                   ))}

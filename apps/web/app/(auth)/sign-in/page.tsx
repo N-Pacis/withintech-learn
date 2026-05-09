@@ -9,9 +9,9 @@ import {
 } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-// import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from "@react-oauth/google";
 import { Logo, AuthLoader } from "@/components/ui";
-import { useLogin, useProfile } from "@/hooks/queries/auth";
+import { useLogin, useProfile, useGoogleAuth } from "@/hooks/queries/auth";
 import { Button, Input, FormField, PasswordInput } from "@/components/ui";
 import { getCachedProfile } from "@/lib/profile-cache";
 
@@ -37,7 +37,7 @@ function SignInForm() {
   const next = searchParams.get("next");
   const cachedProfile = getCachedProfile();
   const { mutateAsync: login } = useLogin();
-  // const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
+  const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
   // initialData seeds from localStorage — data is available synchronously if cached
   const { data: profile, isFetching } = useProfile();
   const [email, setEmail] = useState("");
@@ -79,15 +79,15 @@ function SignInForm() {
     }
   }
 
-  // async function handleGoogle(credential: string) {
-  //   setError('');
-  //   try {
-  //     const data = await googleAuth(credential);
-  //     router.push(data.user.role === 'admin' ? '/admin' : '/learn');
-  //   } catch (err) {
-  //     setError(err instanceof Error ? err.message : 'Google sign-in failed');
-  //   }
-  // }
+  async function handleGoogle(credential: string) {
+    setError("");
+    try {
+      const data = await googleAuth(credential);
+      router.push(resolveDestination(next, data.user.role));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Google sign-in failed");
+    }
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -186,14 +186,18 @@ function SignInForm() {
             Sign in to continue learning.
           </p>
 
-          {/* Google — hidden until enabled */}
-          {/* <div
+          <div
             className="flex justify-center mb-5"
-            style={{ opacity: googlePending ? 0.6 : 1, pointerEvents: googlePending ? 'none' : 'auto' }}
+            style={{
+              opacity: googlePending ? 0.6 : 1,
+              pointerEvents: googlePending ? "none" : "auto",
+            }}
           >
             <GoogleLogin
-              onSuccess={(res) => { if (res.credential) handleGoogle(res.credential); }}
-              onError={() => setError('Google sign-in failed. Please try again.')}
+              onSuccess={(res) => {
+                if (res.credential) handleGoogle(res.credential);
+              }}
+              onError={() => setError("Google sign-in failed. Please try again.")}
               width="384"
               theme="outline"
               size="large"
@@ -205,7 +209,7 @@ function SignInForm() {
             <div className="flex-1 h-px bg-surface-muted" />
             <span className="font-body text-xs text-border-strong">or</span>
             <div className="flex-1 h-px bg-surface-muted" />
-          </div> */}
+          </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <FormField label="Email" htmlFor="email" required>
