@@ -1,0 +1,9 @@
+{
+  "title": "WithinTech Learn Docs",
+  "description": "Team guide for the WithinTech Learn platform",
+  "root": ".",
+  "plugins": ["withintech-docs-ui"],
+  "styles": {
+    "website": "styles/withintech-docs.css"
+  }
+}

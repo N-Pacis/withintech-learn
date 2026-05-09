@@ -91,6 +91,15 @@ services:
       api:
         condition: service_healthy
 
+  docs:
+    build:
+      context: docs
+      dockerfile: Dockerfile
+    container_name: withintech-learn-docs
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+
   nginx:
     image: nginx:alpine
     container_name: withintech-learn_nginx
