@@ -7,6 +7,45 @@ import { Logo, ThemeToggle } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/queries/auth";
 
+function LanguageToggle() {
+  const [lang, setLang] = useState<"en" | "fr">("en");
+
+  return (
+    <div
+      className="flex items-center rounded-md border border-border bg-surface-subtle p-0.5"
+      role="group"
+      aria-label="Language selection"
+    >
+      <button
+        onClick={() => setLang("en")}
+        className={cn(
+          "px-2 py-1 text-xs font-medium rounded transition-colors",
+          lang === "en"
+            ? "bg-primary text-white"
+            : "text-foreground hover:text-primary",
+        )}
+        aria-pressed={lang === "en"}
+        aria-label="Switch to English"
+      >
+        EN
+      </button>
+      <button
+        onClick={() => setLang("fr")}
+        className={cn(
+          "px-2 py-1 text-xs font-medium rounded transition-colors",
+          lang === "fr"
+            ? "bg-primary text-white"
+            : "text-foreground hover:text-primary",
+        )}
+        aria-pressed={lang === "fr"}
+        aria-label="Switch to French"
+      >
+        FR
+      </button>
+    </div>
+  );
+}
+
 const links = [
   { label: "Courses", href: "/courses" },
   { label: "Challenges", href: "/challenges" },
@@ -43,6 +82,7 @@ export default function Navbar() {
             </Link>
           ))}
           <ThemeToggle />
+          <LanguageToggle />
           <Link
             href={ctaHref}
             className="inline-flex items-center gap-2 font-body text-sm font-medium bg-primary text-white px-5 py-2 rounded-md hover:bg-primary-dark transition-colors"
