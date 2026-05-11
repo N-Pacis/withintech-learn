@@ -10,7 +10,8 @@ const isProd = process.env.NODE_ENV === "production";
 const COOKIE_BASE = {
   httpOnly: true,
   secure: isProd,
-  sameSite: "strict" as const,
+  sameSite: "lax" as const,
+  domain: isProd ? ".withintech.org" : undefined,
   path: "/",
 };
 
