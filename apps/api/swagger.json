@@ -4125,6 +4125,31 @@
         }
       }
     },
+    "/auth/admin-check": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Admin auth check (nginx internal)",
+        "description": "Used by nginx auth_request to gate docs.learn.withintech.org. Returns 200 if the caller is an authenticated admin, 401/403 otherwise.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Caller is an authenticated admin."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
     "/admin/admins": {
       "post": {
         "tags": [

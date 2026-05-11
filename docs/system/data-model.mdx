@@ -1,0 +1,53 @@
+---
+title: "Data Model"
+description: "The main records behind learning, progress, payments, and certificates."
+---
+
+# Data Model
+
+## Main Concepts
+
+| Concept | Meaning |
+| --- | --- |
+| User | A learner or administrator account. |
+| Role | Permission grouping for user access. |
+| Course | Learning product with content, enrollment, assessment, pricing, and certificate rules. |
+| Module | Ordered course section. |
+| Lesson | Ordered learning unit inside a module. |
+| Quiz | Assessment attached to a course, module, or lesson. |
+| Question | A prompt inside a quiz. |
+| Enrollment | The relationship between a learner and a course. |
+| Certificate | Proof of completion for a learner and course. |
+| Payment | Payment record used to unlock course or certificate access. |
+| Challenge | Coding exercise with starter material and tests. |
+| Submission | A learner's challenge attempt and result. |
+| Progress | Completion marker for lessons, modules, courses, and challenges. |
+
+## Product Rules
+
+- Course, challenge, certificate, and account records use unique identifiers.
+- Course content keeps a stable order for modules, lessons, blocks, and questions.
+- Certificates are unique per learner and course.
+- Challenge completion is unique per learner and challenge.
+- Payment status controls paid access unlocks.
+
+## Progress Records
+
+| Record | Created when |
+| --- | --- |
+| Lesson progress | A learner completes a lesson. |
+| Module progress | A learner completes a module. |
+| Course pass status | A learner satisfies course completion rules. |
+| Certificate | A learner earns course proof of completion. |
+| Challenge progress | A learner gets an accepted challenge submission. |
+
+## Statuses
+
+| Area | Examples |
+| --- | --- |
+| Course | Draft, published, archived. |
+| Access | Free, paid course, paid certificate. |
+| Enrollment | Pending, enrolled, passed. |
+| Payment | Pending, paid, failed, expired. |
+| Challenge | Draft, published. |
+| Submission | Accepted, incorrect answer, timeout, runtime error, compile error. |

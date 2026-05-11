@@ -1,0 +1,36 @@
+---
+title: "Scaling"
+description: "Current scale posture and the practical path to grow."
+---
+
+# Scaling
+
+## Current Shape
+
+The platform is designed to start simple and scale by separating web, API, data, cache, storage, and code execution responsibilities.
+
+## Bottlenecks To Watch
+
+| Area | Risk | Response |
+| --- | --- | --- |
+| API | Request latency or CPU pressure | Add API capacity and tune expensive operations. |
+| Web | Page rendering pressure | Scale the web layer independently. |
+| Data store | Slow queries or locks | Add indexes, tune queries, and review managed options. |
+| Cache | Memory pressure or low hit rate | Review TTLs, invalidation, and cache size. |
+| Execution layer | Coding submission bursts | Add execution capacity and queue work if needed. |
+| Storage | Media growth | Keep files in object storage, not app containers. |
+| Email | Delivery limits | Use provider quotas, retries, and failure monitoring. |
+
+## Keep Simple Until Needed
+
+Do not add orchestration, queues, or extra services unless traffic or reliability data asks for them.
+
+## Scaling Order
+
+1. Fix slow queries and missing indexes.
+2. Cache public course and challenge reads.
+3. Scale web and API capacity separately.
+4. Scale execution capacity for challenge bursts.
+5. Move data and cache services to managed infrastructure when operational load justifies it.
+6. Add queues for email, payments, certificates, and scoring when synchronous work becomes a bottleneck.
+7. Consider orchestration only when the current deployment model becomes the bottleneck.
