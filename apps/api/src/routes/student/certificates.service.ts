@@ -133,8 +133,10 @@ export const getCertificate = async (userId: string, courseSlug: string) => {
         user: { select: { firstName: true, lastName: true } },
         course: {
           select: {
+            id: true,
             title: true,
             slug: true,
+            accessType: true,
             modules: { orderBy: { orderIndex: 'asc' }, select: { title: true } },
           },
         },
