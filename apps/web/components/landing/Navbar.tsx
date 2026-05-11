@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { useProfile } from "@/hooks/queries/auth";
 
 function LanguageToggle() {
-  const [lang, setLang] = useState<"en" | "fr">("en");
+  const [lang, setLang] = useState<"en" | "fr" | "rw">("en");
 
   return (
     <div
@@ -41,6 +41,19 @@ function LanguageToggle() {
         aria-label="Switch to French"
       >
         FR
+      </button>
+      <button
+        onClick={() => setLang("rw")}
+        className={cn(
+          "px-2 py-1 text-xs font-medium rounded transition-colors",
+          lang === "rw"
+            ? "bg-primary text-white"
+            : "text-foreground hover:text-primary",
+        )}
+        aria-pressed={lang === "rw"}
+        aria-label="Switch to Kinyarwanda"
+      >
+        RW
       </button>
     </div>
   );
