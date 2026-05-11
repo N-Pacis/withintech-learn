@@ -73,6 +73,8 @@ jobs:
             NEXT_PUBLIC_SUPPORT_WEBSITE=${{ secrets.NEXT_PUBLIC_SUPPORT_WEBSITE }}
             NEXT_PUBLIC_SOCIAL_HANDLE=${{ secrets.NEXT_PUBLIC_SOCIAL_HANDLE }}
             NEXT_PUBLIC_SOCIAL_PLATFORMS=${{ secrets.NEXT_PUBLIC_SOCIAL_PLATFORMS }}
+            XENTRIPAY_API_KEY=${{ secrets.XENTRIPAY_API_KEY }}
+            XENTRIPAY_BASE_URL=${{ secrets.XENTRIPAY_BASE_URL }}
 
       # ── 3. Install docker-rollout (idempotent) ───────────────────────────────
       - name: Install docker-rollout
