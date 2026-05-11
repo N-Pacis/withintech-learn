@@ -19,10 +19,30 @@ import { getCachedProfile } from "@/lib/profile-cache";
 function resolveDestination(next: string | null, role: string): string {
   const home = role === "admin" ? "/admin" : "/learn";
   if (!next) return home;
-  // Prevent students from being bounced into /admin and admins into /learn via a stale next param
+  // Relative paths only — reject anything without a leading slash
+  if (!next.startsWith("/")) return home;
   if (next.startsWith("/admin") && role !== "admin") return home;
   if (next.startsWith("/learn") && role === "admin") return home;
   return next;
+}
+
+// Validates and returns the docs URL an admin should land on after login.
+// path comes from nginx via ?path= and is always a relative URI from the docs server.
+function resolveDocsReturn(path: string | null): string {
+  const fallback = "https://docs.learn.withintech.org";
+  if (!path) return fallback;
+  // Allow only safe relative paths — no protocol, no host, no CRLF
+  if (!/^\/[A-Za-z0-9\-._~/?#[\]@!$&'()*+,;=%]*$/.test(path)) return fallback;
+  return `https://docs.learn.withintech.org${path}`;
+}
+
+// Use window.location for external URLs, router for internal ones
+function navigateTo(destination: string, router: ReturnType<typeof useRouter>): void {
+  if (destination.startsWith("http")) {
+    window.location.href = destination;
+  } else {
+    router.replace(destination);
+  }
 }
 
 const features = [
@@ -35,6 +55,8 @@ function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
+  const returnTo = searchParams.get("returnTo");
+  const docsPath = searchParams.get("path");
   const cachedProfile = getCachedProfile();
   const { mutateAsync: login } = useLogin();
   const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
@@ -45,16 +67,21 @@ function SignInForm() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  function destination(role: string): string {
+    if (returnTo === "docs" && role === "admin") return resolveDocsReturn(docsPath);
+    return resolveDestination(next, role);
+  }
+
   useLayoutEffect(() => {
     if (!profile && cachedProfile) {
-      router.replace(resolveDestination(next, cachedProfile.role));
+      navigateTo(destination(cachedProfile.role), router);
     }
-  }, [cachedProfile, profile, router, next]);
+  }, [cachedProfile, profile, router, next, returnTo, docsPath]);
 
   useEffect(() => {
     if (!profile || isFetching) return;
-    router.replace(resolveDestination(next, profile.role));
-  }, [profile, isFetching, router, next]);
+    navigateTo(destination(profile.role), router);
+  }, [profile, isFetching, router, next, returnTo, docsPath]);
 
   // Already logged in — show loader immediately; useEffect above will redirect
   if (cachedProfile) return <AuthLoader />;
@@ -70,7 +97,7 @@ function SignInForm() {
         router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
         return;
       }
-      router.push(resolveDestination(next, data.user.role));
+      navigateTo(destination(data.user.role), router);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Invalid email or password",
@@ -83,7 +110,7 @@ function SignInForm() {
     setError("");
     try {
       const data = await googleAuth(credential);
-      router.push(resolveDestination(next, data.user.role));
+      navigateTo(destination(data.user.role), router);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google sign-in failed");
     }

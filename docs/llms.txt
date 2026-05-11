@@ -1,0 +1,30 @@
+# WithinTech Learn Docs
+
+Compact product and engineering documentation for WithinTech Learn.
+
+## Start here
+
+- Overview: ./
+- Product: ./product
+- Features: ./features
+- Workflows: ./workflows
+
+## System
+
+- Architecture: ./architecture
+- Data model: ./data-model
+- API reference: ./api-reference
+- Routes: ./routes
+
+## Platform
+
+- Security: ./security
+- Infrastructure: ./infrastructure
+- Configuration: ./configuration
+- Scaling: ./scaling
+- Operations: ./operations
+
+## Standards
+
+- Code style: ./code-style
+- Design system: ./design-system

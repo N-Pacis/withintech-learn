@@ -70,4 +70,9 @@ router.post(
 router.post("/auth/google", validate(googleAuthSchema), postGoogleAuth);
 router.get("/auth/magic-login", getMagicLogin);
 
+// Used by nginx auth_request to gate docs.learn.withintech.org
+router.get("/auth/admin-check", authenticate, isAdmin, (_req, res) => {
+  res.sendStatus(200);
+});
+
 export default router;
