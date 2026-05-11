@@ -2,14 +2,13 @@
   "name": "withintech-learn-docs",
   "private": true,
   "scripts": {
-    "dev": "honkit serve . --port 4000",
-    "build": "honkit build . _book",
-    "start": "honkit build . _book && http-server _book -p 4000 -a 127.0.0.1 -c-1",
-    "start:docker": "honkit build . _book && http-server _book -p 4000 -a 0.0.0.0 -c-1"
+    "dev": "mint dev --port 4000",
+    "build": "mint broken-links",
+    "start": "mint dev --port 4000",
+    "start:docker": "mint dev --port 4000 --host 0.0.0.0"
   },
   "devDependencies": {
-    "honkit": "^6.0.2",
-    "honkit-plugin-withintech-docs-ui": "file:plugins/withintech-docs-ui",
-    "http-server": "^14.1.1"
+    "mint": "^4.2.80",
+    "node": "24.14.0"
   }
 }

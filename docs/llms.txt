@@ -5,26 +5,26 @@ Compact product and engineering documentation for WithinTech Learn.
 ## Start here
 
 - Overview: ./
-- Product: ./product.html
-- Features: ./features.html
-- Workflows: ./workflows.html
+- Product: ./product
+- Features: ./features
+- Workflows: ./workflows
 
 ## System
 
-- Architecture: ./architecture.html
-- Data model: ./data-model.html
-- API: ./api.html
-- Routes: ./routes.html
+- Architecture: ./architecture
+- Data model: ./data-model
+- API reference: ./api-reference
+- Routes: ./routes
 
-## Runbook
+## Platform
 
-- Security: ./security.html
-- Infrastructure: ./infrastructure.html
-- Environment: ./environment.html
-- Scaling: ./scaling.html
-- Operations: ./operations.html
+- Security: ./security
+- Infrastructure: ./infrastructure
+- Configuration: ./configuration
+- Scaling: ./scaling
+- Operations: ./operations
 
 ## Standards
 
-- Code style: ./code-style.html
-- Design system: ./design-system.html
+- Code style: ./code-style
+- Design system: ./design-system

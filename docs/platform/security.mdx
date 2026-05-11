@@ -1,0 +1,44 @@
+---
+title: "Security"
+description: "Access control, data handling, validation, and sharing rules."
+---
+
+# Security
+
+## Access Control
+
+| Area | Control |
+| --- | --- |
+| Public pages | Available without signing in. |
+| Student pages | Require an authenticated student account. |
+| Admin pages | Require elevated permissions. |
+| Student API actions | Require an authenticated session. |
+| Admin API actions | Require elevated permissions. |
+
+## Request Safety
+
+- Request bodies and important query strings are validated.
+- Account and assessment actions use rate limits.
+- Uploads are constrained by file type and size.
+- Imports are capped to keep bulk actions controlled.
+- Public responses do not expose hidden challenge tests.
+- Sensitive provider details stay server-side.
+
+## Sensitive Areas
+
+| Area | External-safe note |
+| --- | --- |
+| Session signing | Uses environment-specific secrets. Exact names and values are private. |
+| Verification codes | Stored with purpose and expiry. |
+| Payments | Stores provider references and platform status, not secrets in source. |
+| Challenge tests | Hidden tests are not returned to users. |
+| Code execution | Isolated from product data. |
+| Storage | Stores file references in product data; credentials stay private. |
+
+## Sharing Rules
+
+- Do not share real environment values.
+- Do not share private URLs, logs, dashboards, provider keys, or production commands.
+- Do not expose hidden challenge test cases.
+- Do not bypass API permission checks from the web.
+- Rotate secrets if logs, screenshots, or docs reveal them.

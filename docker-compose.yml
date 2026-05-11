@@ -97,8 +97,6 @@ services:
       dockerfile: Dockerfile
     container_name: withintech-learn-docs
     restart: unless-stopped
-    ports:
-      - "4000:4000"
 
   nginx:
     image: nginx:alpine
@@ -115,6 +113,8 @@ services:
         condition: service_healthy
       api:
         condition: service_healthy
+      docs:
+        condition: service_started
 
 volumes:
   postgres_data:

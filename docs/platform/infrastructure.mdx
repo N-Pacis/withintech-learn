@@ -1,0 +1,32 @@
+---
+title: "Infrastructure"
+description: "How the app is deployed and connected at a platform level."
+---
+
+# Infrastructure
+
+## Platform Shape
+
+WithinTech Learn runs as a web app, API, data layer, cache, object storage, payment integration, email integration, code execution layer, and documentation site.
+
+| Area | Role |
+| --- | --- |
+| Web | Serves the learner, public, and admin interfaces. |
+| API | Owns product rules, data access, integrations, and protected operations. |
+| Data store | Persists users, content, progress, payments, and certificates. |
+| Cache | Supports fast repeated reads and lightweight shared state. |
+| Object storage | Stores uploaded learning media. |
+| Execution layer | Runs coding challenge submissions separately from normal app traffic. |
+| Docs | Hosts this documentation. |
+
+## Runtime Principles
+
+- Keep web, API, execution, and data responsibilities separated.
+- Keep uploaded files outside application containers.
+- Isolate code execution from product data.
+- Use health checks and monitoring for production operations.
+- Keep secrets and provider credentials out of source control and public docs.
+
+## External Sharing Note
+
+Exact hosts, ports, reverse proxy rules, certificate paths, container names, and volume names are intentionally omitted from this external copy.

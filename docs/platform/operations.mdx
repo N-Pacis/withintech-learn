@@ -1,0 +1,35 @@
+---
+title: "Operations"
+description: "Runbook-level guidance for keeping the platform healthy."
+---
+
+# Operations
+
+## External Summary
+
+Operational details are intentionally summarized in this copy. Exact commands, deployment steps, environment names, provider dashboards, and troubleshooting checks should stay in private runbooks.
+
+## Release Readiness
+
+- Build the web app and API.
+- Run linting and automated checks.
+- Apply approved database changes.
+- Verify sign up, sign in, enrollment, quiz, challenge, payment, and certificate flows.
+- Confirm monitoring and alerting are active.
+- Check that public content renders correctly.
+
+## Support Workflow
+
+| Area | First check |
+| --- | --- |
+| Public content | Confirm the item is published and visible to the intended audience. |
+| Account access | Confirm the user has the right account state and role. |
+| Course progress | Confirm the learner completed the required lessons, modules, or quiz. |
+| Uploads | Confirm file type, size, and storage availability. |
+| Challenges | Confirm the challenge is published and the execution layer is healthy. |
+| Payments | Confirm provider status and platform access status align. |
+| Certificates | Confirm completion, pass status, and certificate uniqueness. |
+
+## Sharing Rule
+
+Do not share production commands, private URLs, logs, credentials, provider keys, internal dashboards, or deployment topology in external documentation.
