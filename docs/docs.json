@@ -1,0 +1,88 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Product & Engineer Docs",
+  "colors": {
+    "primary": "#3d006b",
+    "light": "#c084fc",
+    "dark": "#3d006b"
+  },
+  "logo": {
+    "light": "/assets/brand/logo.png",
+    "dark": "/assets/brand/logo-dark-mode.png",
+    "href": "https://learn.withintech.org"
+  },
+  "favicon": "/assets/brand/logo.png",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Product",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": ["index", "product/overview"]
+          },
+          {
+            "group": "Features & Workflows",
+            "pages": ["product/features", "product/workflows"]
+          }
+        ]
+      },
+      {
+        "tab": "System",
+        "groups": [
+          {
+            "group": "Architecture",
+            "pages": ["system/architecture", "system/data-model"]
+          },
+          {
+            "group": "API",
+            "pages": ["system/api-reference", "system/routes"]
+          }
+        ]
+      },
+      {
+        "tab": "Platform",
+        "groups": [
+          {
+            "group": "Infrastructure",
+            "pages": ["platform/infrastructure", "platform/scaling", "platform/operations"]
+          },
+          {
+            "group": "Security & Config",
+            "pages": ["platform/security", "platform/configuration"]
+          }
+        ]
+      },
+      {
+        "tab": "Standards",
+        "groups": [
+          {
+            "group": "Engineering",
+            "pages": ["standards/code-style", "standards/design-system"]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Open in AI",
+          "href": "/llms.txt",
+          "icon": "robot"
+        }
+      ]
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Open in AI",
+        "href": "/llms.txt"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {}
+  }
+}

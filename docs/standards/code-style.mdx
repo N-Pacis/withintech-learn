@@ -1,0 +1,37 @@
+---
+title: "Code Style"
+description: "Conventions that keep the codebase consistent and readable."
+---
+
+# Code Style
+
+## General
+
+- Keep product language domain-first: course, module, lesson, quiz, challenge, enrollment, certificate.
+- Keep route handlers thin and move business rules into services.
+- Validate inputs before running product logic.
+- Reuse shared types when both web and API need the same shape.
+- Prefer focused changes over broad rewrites.
+- Keep user-facing copy clear, direct, and action-oriented.
+
+## Web
+
+- Keep screens, components, hooks, and API clients separated by responsibility.
+- Use shared UI primitives before adding one-off controls.
+- Keep server state fetching predictable and cache-aware.
+- Design for scanning, repeated use, and clear feedback states.
+
+## API
+
+- Group behavior by audience and product area.
+- Validate request payloads before service calls.
+- Return consistent success and failure objects.
+- Keep expected product failures explicit.
+- Capture unexpected failures through the approved monitoring path.
+
+## Data
+
+- Add schema changes intentionally.
+- Preserve relationship behavior intentionally.
+- Index fields used for filtering, lookup, and dashboards.
+- Keep uniqueness rules aligned with product rules.

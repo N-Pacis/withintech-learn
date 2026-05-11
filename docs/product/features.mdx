@@ -1,3 +1,8 @@
+---
+title: "Features"
+description: "Public, student, admin, and assessment capabilities."
+---
+
 # Features
 
 ## Public
@@ -7,13 +12,13 @@
 - Public course and challenge detail pages.
 - Certificate verification page.
 
-## Auth
+## Account
 
 - Sign up and sign in.
-- Email verification with OTP.
-- Password reset.
-- Google auth support.
-- Admin invitations and invitation acceptance.
+- Email verification.
+- Password recovery.
+- Optional third-party sign-in.
+- Invitation acceptance for invited users.
 
 ## Student
 
@@ -22,24 +27,23 @@
 - Text, image, and code content blocks.
 - Course, module, and lesson quizzes.
 - Quiz attempts, pass/fail status, and progress.
-- Coding challenge workspace with CodeMirror.
+- Coding challenge workspace.
 - Submission history and test results.
 - Certificates and downloadable certificate view.
-- Payments for course access or certificates.
+- Payments for course or certificate access.
 
 ## Admin
 
 - Dashboard analytics.
-- Course, module, lesson, quiz, and block management.
-- Challenge creation with starter code, parameters, return type, and test cases.
-- User, admin, student, enrollment, invitation, and payment management.
+- Course, module, lesson, quiz, and content block management.
+- Challenge creation and publishing.
+- User, enrollment, invitation, and payment management.
 - Leaderboards and challenge stats.
 
 ## Platform
 
-- S3-compatible file storage.
-- SMTP email templates.
-- Redis-backed cache helpers.
-- Sentry instrumentation.
-- Swagger API docs at `/docs`.
-- Health checks at `/health` and `/health/full`.
+- External media storage.
+- Email templates.
+- Cached public reads.
+- Error monitoring.
+- API documentation available through approved access.

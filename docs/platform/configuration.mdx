@@ -1,0 +1,35 @@
+---
+title: "Configuration"
+description: "Configuration categories and handling rules without exposing sensitive values."
+---
+
+# Configuration
+
+This external copy describes configuration categories only. Exact variable names, secret names, and runtime values are intentionally excluded.
+
+## Required Categories
+
+| Category | Purpose |
+| --- | --- |
+| Database | Stores users, courses, content, progress, payments, and certificates. |
+| Cache | Speeds up repeated reads and lightweight shared state. |
+| Authentication | Signs sessions, supports account verification, and protects account recovery. |
+| App URLs | Connects the web app, API, emails, and public links. |
+| Email | Sends verification, invitation, receipt, and notification messages. |
+| Storage | Stores uploaded course and lesson media outside the app runtime. |
+| Payments | Connects the platform to the approved payment provider. |
+| Code execution | Connects challenge submissions to the isolated execution layer. |
+| Monitoring | Captures application errors and production health signals. |
+| Public branding | Controls public-facing brand, support, and social metadata. |
+
+## Handling Rules
+
+- Keep real configuration values outside source control.
+- Use separate values for development, staging, and production.
+- Rotate exposed or shared secrets immediately.
+- Share exact keys and values only through approved private channels.
+- Avoid screenshots or recordings that reveal environment values.
+
+## External Sharing Note
+
+If a partner needs integration details, provide a scoped integration document instead of the full application configuration.
