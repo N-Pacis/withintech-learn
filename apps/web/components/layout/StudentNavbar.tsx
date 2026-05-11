@@ -3,14 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Badge, Logo, ThemeToggle } from "@/components/ui";
+import { Logo, ThemeToggle } from "@/components/ui";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { label: "My Courses", href: "/learn", beta: false },
-  { label: "Challenges", href: "/learn/challenges", beta: true },
-  { label: "Certificates", href: "/learn/certificates", beta: false },
+  { label: "My Courses", href: "/learn" },
+  { label: "Challenges", href: "/learn/challenges" },
+  { label: "Certificates", href: "/learn/certificates" },
 ];
 
 export default function StudentNavbar() {
@@ -28,7 +28,7 @@ export default function StudentNavbar() {
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
-          {navItems.map(({ label, href, beta }) => (
+          {navItems.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
@@ -41,11 +41,6 @@ export default function StudentNavbar() {
               )}
             >
               {label}
-              {beta && (
-                <Badge variant="default" size="sm">
-                  Beta
-                </Badge>
-              )}
             </Link>
           ))}
         </nav>
@@ -111,7 +106,7 @@ export default function StudentNavbar() {
       {/* Mobile nav dropdown */}
       {menuOpen && (
         <nav className="md:hidden border-t border-border bg-surface-shell px-4 py-3 flex flex-col gap-1">
-          {navItems.map(({ label, href, beta }) => (
+          {navItems.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
@@ -125,11 +120,6 @@ export default function StudentNavbar() {
               )}
             >
               {label}
-              {beta && (
-                <Badge variant="default" size="sm">
-                  Beta
-                </Badge>
-              )}
             </Link>
           ))}
         </nav>

@@ -66,6 +66,13 @@ jobs:
             EXECUTOR_URL=${{ secrets.EXECUTOR_URL }}
             EXECUTOR_SECRET=${{ secrets.EXECUTOR_SECRET }}
             JUDGE0_SECRET_KEY_BASE=${{ secrets.JUDGE0_SECRET_KEY_BASE }}
+            API_BASE_URL=${{ secrets.API_BASE_URL }}
+            NEXT_PUBLIC_BRAND_NAME=${{ secrets.NEXT_PUBLIC_BRAND_NAME }}
+            NEXT_PUBLIC_SUPPORT_PHONE=${{ secrets.NEXT_PUBLIC_SUPPORT_PHONE }}
+            NEXT_PUBLIC_SUPPORT_EMAIL=${{ secrets.NEXT_PUBLIC_SUPPORT_EMAIL }}
+            NEXT_PUBLIC_SUPPORT_WEBSITE=${{ secrets.NEXT_PUBLIC_SUPPORT_WEBSITE }}
+            NEXT_PUBLIC_SOCIAL_HANDLE=${{ secrets.NEXT_PUBLIC_SOCIAL_HANDLE }}
+            NEXT_PUBLIC_SOCIAL_PLATFORMS=${{ secrets.NEXT_PUBLIC_SOCIAL_PLATFORMS }}
 
       # ── 3. Install docker-rollout (idempotent) ───────────────────────────────
       - name: Install docker-rollout

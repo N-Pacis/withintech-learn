@@ -13,6 +13,7 @@ withintech-learn/
 │   └── web/          # Next.js frontend
 ├── packages/
 │   └── shared/       # Shared types across apps
+├── docs/             # GitBook docs served by the docs container
 ├── infra/
 │   ├── nginx/        # Reverse-proxy config
 │   └── postgres/     # DB init SQL
@@ -45,6 +46,13 @@ pnpm dev
 
 API → `http://localhost:3001` · Web → `http://localhost:3000`
 
+```bash
+# Serve GitBook docs
+pnpm run docs
+```
+
+Docs → `http://localhost:4000`
+
 ---
 
 ## 3. Tools Used
@@ -61,21 +69,31 @@ API → `http://localhost:3001` · Web → `http://localhost:3000`
 
 ---
 
-## 4. API Keys Needed
+## 4. Environment Variables
 
 | Variable | Purpose |
 |---|---|
 | `DATABASE_URL` | PostgreSQL connection string |
+| `POSTGRES_USER` / `POSTGRES_PASSWORD` | Docker Compose PostgreSQL credentials |
+| `REDIS_URL` | Redis connection string |
 | `JWT_ACCESS_SECRET` | Signing access tokens |
 | `JWT_REFRESH_SECRET` | Signing refresh tokens |
+| `GOOGLE_CLIENT_ID` / `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Google OAuth |
 | `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | S3-compatible file storage |
-| `S3_BUCKET_NAME` / `AWS_REGION` | Storage bucket |
+| `S3_BUCKET_NAME` / `AWS_REGION` / `STORAGE_PROVIDER` | Storage bucket and provider |
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` | Email delivery |
 | `EMAIL_FROM` | Sender address |
+| `XENTRIPAY_API_KEY` / `XENTRIPAY_BASE_URL` | Xentripay payments |
 | `ADMIN_SEED_EMAIL` | Email for the initial admin account |
 | `SENTRY_DSN` | Error tracking |
 | `APP_URL` / `NEXT_PUBLIC_APP_URL` | App origin (used in certificates and CORS) |
 | `NEXT_PUBLIC_API_URL` | API base URL consumed by the frontend |
+| `EXECUTOR_URL` / `EXECUTOR_SECRET` | API-to-executor connection |
+| `JUDGE0_URL` / `JUDGE0_SECRET_KEY_BASE` | Judge0 execution engine |
+| `NODE_ENV` / `PORT` / `BCRYPT_ROUNDS` | Runtime settings |
+| `NEXT_PUBLIC_BRAND_NAME` / `NEXT_PUBLIC_SUPPORT_*` / `NEXT_PUBLIC_SOCIAL_*` | Public branding and support metadata |
+
+Full details are in `docs/environment.md`.
 
 ---
 

@@ -1,0 +1,53 @@
+---
+title: "API Reference"
+description: "A safe overview of the application API shape and service areas."
+---
+
+# API Reference
+
+## Shape
+
+The API supports public browsing, account flows, student learning, administration, payments, certificates, uploads, and challenge submissions.
+
+| Area | Purpose |
+| --- | --- |
+| Public | Course, challenge, certificate, and platform discovery. |
+| Account | Sign up, sign in, verification, profile, and account recovery. |
+| Student | Enrollment, learning progress, quizzes, challenges, and certificates. |
+| Administration | Content, people, enrollment, payment, and analytics workflows. |
+| Payments | Payment creation, status tracking, and access unlocks. |
+
+## Request Handling
+
+- Requests are validated before business logic runs.
+- Sensitive actions require an authenticated session.
+- Administrative actions require elevated permissions.
+- Rate limits protect high-risk account and assessment actions.
+- Uploads are limited by type and size.
+- Expected failures return a consistent error shape.
+
+## Service Areas
+
+| Service area | Responsibility |
+| --- | --- |
+| Course and challenge reads | Fast public and student-facing reads. |
+| Storage | Media upload and secure access to uploaded files. |
+| Email | Account, invitation, receipt, and notification messages. |
+| Payments | Provider-agnostic payment orchestration. |
+| Scoring | Progress, completion, score, and certificate calculations. |
+
+## Response Contract
+
+API responses use a predictable structure so the web app can handle success and failure consistently.
+
+```json
+{
+  "success": true,
+  "message": "Done",
+  "data": {}
+}
+```
+
+## Public API Posture
+
+Detailed endpoint paths, auth internals, and operational health URLs are intentionally omitted from this external copy. Share endpoint-level documentation only through approved channels.
