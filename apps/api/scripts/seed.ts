@@ -4,7 +4,6 @@ import path from "path";
 dotenv.config({ path: path.resolve(process.cwd(), "../../.env") });
 
 import { adminSeed } from "../src/routes/auth/auth.service";
-import { backfillScores } from "../src/scripts/backfill-scores";
 import { prisma } from "../src/db/prisma";
 import redis from "../src/db/redis";
 
@@ -16,7 +15,6 @@ async function main() {
     console.log(`Seeded admin account for ${result.email}.`);
   }
 
-  await backfillScores();
 }
 
 main()
