@@ -8,6 +8,9 @@
     "backend": "pnpm --filter @withintech-learn/api exec prisma generate && pnpm --filter @withintech-learn/api dev",
     "frontend": "pnpm --filter @withintech-learn/web dev",
     "executor": "cd apps/executor && set -a && source ../../.env && set +a && go run main.go",
+    "docs": "pnpm --filter withintech-learn-docs start",
+    "docs:build": "pnpm --filter withintech-learn-docs build",
+    "docs:docker": "docker compose up docs",
     "judge0:up": "docker compose -f docker-compose.judge0.yml up -d",
     "judge0:down": "docker compose -f docker-compose.judge0.yml down"
   },

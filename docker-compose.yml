@@ -91,6 +91,13 @@ services:
       api:
         condition: service_healthy
 
+  docs:
+    build:
+      context: docs
+      dockerfile: Dockerfile
+    container_name: withintech-learn-docs
+    restart: unless-stopped
+
   nginx:
     image: nginx:alpine
     container_name: withintech-learn_nginx
@@ -106,6 +113,8 @@ services:
         condition: service_healthy
       api:
         condition: service_healthy
+      docs:
+        condition: service_started
 
 volumes:
   postgres_data:

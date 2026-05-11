@@ -1,0 +1,42 @@
+---
+title: "Architecture"
+description: "The major system layers and how requests move across them."
+---
+
+# Architecture
+
+## System Layers
+
+| Layer | Responsibility |
+| --- | --- |
+| Web app | User interface, routing, forms, dashboards, and learning workspace. |
+| API | Product rules, authorization, persistence, payments, uploads, scoring, and certificates. |
+| Execution service | Code challenge execution bridge. |
+| Shared package | Shared types, schemas, and domain constants used across the app. |
+| Documentation | Product and engineering docs. |
+
+## Runtime Boundaries
+
+- The web app talks to the API through a configured API base URL.
+- The API owns data writes, permission checks, payments, uploads, scoring, and certificates.
+- Code execution is isolated from normal product requests.
+- Uploaded media is stored outside application containers.
+- External services are accessed through server-side integrations.
+
+## Main Flows
+
+| Flow | Path |
+| --- | --- |
+| Public browse | Browser -> Web app -> API -> data store/cache |
+| Student course | Browser -> protected learning area -> API -> progress records |
+| Payment | Browser -> API -> payment provider -> access update |
+| Upload | Browser -> API upload flow -> object storage -> stored file reference |
+| Challenge run | Browser -> API -> execution service -> result stored for the student |
+| Admin edit | Browser -> admin area -> API -> validated content update |
+
+## Access Shape
+
+- Public pages are available without signing in.
+- Student pages require an authenticated account.
+- Admin pages require elevated role permissions.
+- Protected requests fail closed and redirect users back to the right entry point.
