@@ -1,6 +1,6 @@
 import { prisma } from '../../db/prisma';
 import { getSignedUrl } from '../../services/storage.service';
-import { notFound } from '../../utils/errors';
+import { forbidden, notFound } from '../../utils/errors';
 
 export const listStudentCertificates = async (userId: string) => {
   const [user, certs] = await Promise.all([
@@ -45,13 +45,24 @@ export const getCertificate = async (userId: string, courseSlug: string) => {
       user: { select: { firstName: true, lastName: true } },
       course: {
         select: {
+          id: true,
           title: true,
           slug: true,
+          accessType: true,
           modules: { orderBy: { orderIndex: 'asc' }, select: { title: true } },
         },
       },
     },
   });
+
+  // Belt-and-suspenders: even if a cert row exists, verify payment for PAID_CERTIFICATE.
+  // Guards against certs created by older code paths that skipped the payment check.
+  if (cert && cert.course.accessType === 'PAID_CERTIFICATE') {
+    const certPayment = await prisma.payment.findFirst({
+      where: { userId, courseId: cert.course.id, type: 'CERTIFICATE', status: 'PAID' },
+    });
+    if (!certPayment) throw forbidden('Certificate payment required');
+  }
 
   if (!cert) {
     // Resolve completion: final quiz pass OR all modules done (if no quiz)
@@ -59,12 +70,24 @@ export const getCertificate = async (userId: string, courseSlug: string) => {
       where: { slug: courseSlug },
       select: {
         id: true,
+        accessType: true,
         quiz: { select: { id: true } },
         modules: { select: { id: true }, orderBy: { orderIndex: 'desc' }, take: 1 },
       },
     });
 
     if (!course) throw notFound('Certificate not found');
+
+    // PAID_CERTIFICATE courses require a confirmed certificate payment before
+    // a certificate can be issued. Check this before any completion logic so
+    // that a student who has completed the course but not paid cannot bypass
+    // the gate by hitting this public endpoint directly.
+    if (course.accessType === 'PAID_CERTIFICATE') {
+      const certPayment = await prisma.payment.findFirst({
+        where: { userId, courseId: course.id, type: 'CERTIFICATE', status: 'PAID' },
+      });
+      if (!certPayment) throw forbidden('Certificate payment required');
+    }
 
     const enrollment = await prisma.studentCourse.findUnique({
       where: { studentId_courseId: { studentId: userId, courseId: course.id } },
@@ -92,7 +115,9 @@ export const getCertificate = async (userId: string, courseSlug: string) => {
 
     await Promise.all([
       upsertCertificate(userId, course.id),
-      enrollment.status !== 'PASSED'
+      // Only mark PASSED here for free/paid-course types.
+      // PAID_CERTIFICATE courses are marked PASSED by the payment flow.
+      enrollment.status !== 'PASSED' && course.accessType !== 'PAID_CERTIFICATE'
         ? prisma.studentCourse.update({
             where: { studentId_courseId: { studentId: userId, courseId: course.id } },
             data: { status: 'PASSED' },

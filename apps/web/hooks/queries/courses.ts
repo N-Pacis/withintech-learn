@@ -4,6 +4,7 @@ import { apiFetch } from "@/lib/api";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type CourseStatus = "draft" | "published" | "archived";
+export type CourseAccessType = "FREE" | "PAID_COURSE" | "PAID_CERTIFICATE";
 
 export interface Course {
   id: string;
@@ -13,6 +14,9 @@ export interface Course {
   thumbnailKey: string | null;
   thumbnailUrl: string | null;
   status: CourseStatus;
+  accessType: CourseAccessType;
+  price: number | null;
+  certificatePrice: number | null;
   createdById: string;
   createdBy: { id: string; firstName: string; lastName: string };
   createdAt: string;
@@ -38,9 +42,13 @@ export interface PublishedCourse {
   thumbnailKey: string | null;
   thumbnailUrl: string | null;
   status: "published";
+  accessType: CourseAccessType;
+  price: number | null;
+  certificatePrice: number | null;
   module_count: number;
   enrollment_status: EnrollmentStatus | null;
   enrolled_at: string | null;
+  has_certificate: boolean;
 }
 
 export interface StudentCourseModule {
@@ -60,9 +68,13 @@ export interface StudentCourse {
   description: string | null;
   thumbnailUrl: string | null;
   status: "published";
+  accessType: CourseAccessType;
+  price: number | null;
+  certificatePrice: number | null;
   modules: StudentCourseModule[];
   enrollment_status: EnrollmentStatus;
   enrolled_at: string;
+  has_certificate: boolean;
   quiz: StudentModuleQuiz | null;
   lastCourseQuizAttempt: QuizAttemptSummary | null;
 }
@@ -239,6 +251,29 @@ export function usePublishedCourse(slug: string) {
     queryKey: [...courseKeys.student.lists(), slug] as const,
     queryFn: async () => {
       const res = await apiFetch<StudentCourse>(`/student/courses/${slug}`);
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    enabled: !!slug,
+  });
+}
+
+export interface CoursePreview {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  accessType: CourseAccessType;
+  price: number | null;
+  certificatePrice: number | null;
+  thumbnailUrl: string | null;
+}
+
+export function useCoursePreview(slug: string) {
+  return useQuery({
+    queryKey: ["course-preview", slug] as const,
+    queryFn: async () => {
+      const res = await apiFetch<CoursePreview>(`/public/courses/${slug}/preview`);
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
@@ -545,6 +580,9 @@ export function useCreateCourse() {
     mutationFn: async (data: {
       title: string;
       description?: string;
+      accessType?: CourseAccessType;
+      price?: number;
+      certificatePrice?: number;
     }): Promise<Course> => {
       const res = await apiFetch<Course>("/admin/courses", {
         method: "POST",
@@ -565,6 +603,9 @@ export function useUpdateCourse(id: string) {
     mutationFn: async (data: {
       title?: string;
       description?: string;
+      accessType?: CourseAccessType;
+      price?: number;
+      certificatePrice?: number;
     }): Promise<Course> => {
       const res = await apiFetch<Course>(`/admin/courses/${id}`, {
         method: "PATCH",

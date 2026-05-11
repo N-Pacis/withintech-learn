@@ -4125,6 +4125,31 @@
         }
       }
     },
+    "/auth/admin-check": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Admin auth check (nginx internal)",
+        "description": "Used by nginx auth_request to gate docs.learn.withintech.org. Returns 200 if the caller is an authenticated admin, 401/403 otherwise.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Caller is an authenticated admin."
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
     "/admin/admins": {
       "post": {
         "tags": [
@@ -5070,6 +5095,19 @@
               }
             }
           }
+        }
+      }
+    },
+    "/public/courses/{slug}/preview": {
+      "get": {
+        "tags": ["Public"],
+        "summary": "Get course preview for checkout (no auth required)",
+        "parameters": [
+          { "in": "path", "name": "slug", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Course preview (id, title, price, accessType, certificatePrice)" },
+          "404": { "description": "Course not found" }
         }
       }
     },
@@ -6416,6 +6454,178 @@
         "responses": {
           "200": {
             "description": "List of past submissions"
+          }
+        }
+      }
+    },
+    "/payments/initiate": {
+      "post": {
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Initiate a MoMo payment for course access or certificate",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "courseId",
+                  "type",
+                  "phone",
+                  "provider"
+                ],
+                "properties": {
+                  "courseId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "COURSE_ACCESS",
+                      "CERTIFICATE"
+                    ]
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "0788000000",
+                    "description": "Rwanda phone number (07XXXXXXXX)"
+                  },
+                  "provider": {
+                    "type": "string",
+                    "enum": [
+                      "MTN",
+                      "AIRTEL"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Payment initiated \u2014 student will receive MoMo push on their phone"
+          },
+          "400": {
+            "description": "Validation error or course is free"
+          },
+          "409": {
+            "description": "Already paid or pending payment exists"
+          }
+        }
+      }
+    },
+    "/payments/status/{txId}": {
+      "get": {
+        "tags": [
+          "Payments"
+        ],
+        "summary": "Poll payment status by transaction ID",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "txId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment status and details"
+          },
+          "404": {
+            "description": "Payment not found"
+          }
+        }
+      }
+    },
+    "/admin/payments": {
+      "get": {
+        "tags": [
+          "Admin - Payments"
+        ],
+        "summary": "List all payment records (admin)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "PAID",
+                "FAILED",
+                "EXPIRED"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "COURSE_ACCESS",
+                "CERTIFICATE"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "courseId",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "userId",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of payment records with user and course info"
           }
         }
       }

@@ -29,6 +29,9 @@ export const createCourse = async (data: {
   title: string;
   description?: string;
   userId: string;
+  accessType?: 'FREE' | 'PAID_COURSE' | 'PAID_CERTIFICATE';
+  price?: number;
+  certificatePrice?: number;
 }) => {
   const slug = uniqueSlug(data.title);
   return prisma.course.create({
@@ -37,6 +40,9 @@ export const createCourse = async (data: {
       slug,
       description: data.description,
       createdById: data.userId,
+      accessType: data.accessType ?? 'FREE',
+      price: data.accessType === 'PAID_COURSE' ? data.price : null,
+      certificatePrice: data.accessType === 'PAID_CERTIFICATE' ? data.certificatePrice : null,
     },
   });
 };
@@ -94,14 +100,34 @@ export const getCourse = async (id: string) => {
 
 export const updateCourse = async (
   id: string,
-  data: { title?: string; description?: string },
+  data: {
+    title?: string;
+    description?: string;
+    accessType?: 'FREE' | 'PAID_COURSE' | 'PAID_CERTIFICATE';
+    price?: number;
+    certificatePrice?: number;
+  },
 ) => {
   const course = await prisma.course.findUnique({ where: { id } });
   if (!course) throw notFound("Course not found");
   if (course.status !== "draft")
     throw badRequest("Only draft courses can be edited");
-  const update: Record<string, unknown> = { ...data };
+  const update: Record<string, unknown> = {
+    title: data.title,
+    description: data.description,
+    accessType: data.accessType,
+  };
   if (data.title) update.slug = uniqueSlug(data.title);
+  if (data.accessType === 'PAID_COURSE') {
+    update.price = data.price ?? null;
+    update.certificatePrice = null;
+  } else if (data.accessType === 'PAID_CERTIFICATE') {
+    update.certificatePrice = data.certificatePrice ?? null;
+    update.price = null;
+  } else if (data.accessType === 'FREE') {
+    update.price = null;
+    update.certificatePrice = null;
+  }
   return prisma.course.update({ where: { id }, data: update });
 };
 

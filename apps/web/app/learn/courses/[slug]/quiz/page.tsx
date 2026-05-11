@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ChevronLeft, Trophy, Award } from "lucide-react";
+import { ArrowRight, ChevronLeft, Trophy, Award } from "lucide-react";
 import { usePublishedCourse } from "@/hooks/queries/courses";
 import { useProfile } from "@/hooks/queries/auth";
 import { Button, PageLoader } from "@/components/ui";
@@ -15,13 +15,10 @@ export default function CourseQuizPage() {
   const { data: course, isLoading } = usePublishedCourse(slug);
   const { data: profile } = useProfile();
 
-  // Guard: redirect away if not all modules complete
   useEffect(() => {
     if (!course) return;
     const allDone = course.modules.every((m) => m.isCompleted);
-    if (!allDone) {
-      router.replace(`/learn/courses/${slug}`);
-    }
+    if (!allDone) router.replace(`/learn/courses/${slug}`);
   }, [course, slug, router]);
 
   if (isLoading || !course) return <PageLoader type="content" />;
@@ -30,8 +27,19 @@ export default function CourseQuizPage() {
     return null;
   }
 
-  const isCoursePassed = course.enrollment_status === "PASSED";
+  const [quizJustPassed, setQuizJustPassed] = useState(false);
+
+  const quizPassed = course.lastCourseQuizAttempt?.status === "pass" || quizJustPassed;
+  const hasCertificate = course.has_certificate;
+  const isPaidCert = course.accessType === "PAID_CERTIFICATE";
+
+  // After quiz pass on a paid-cert course: only show pay button until they've paid
+  const needsCertPayment = isPaidCert && quizPassed && !hasCertificate;
+  // Show cert link only when they actually have the certificate
+  const showCertLink = hasCertificate && quizPassed;
+
   const certHref = `/certificates/${profile?.id}/${course.slug}`;
+  const checkoutHref = `/learn/courses/${slug}/checkout?type=certificate`;
   const lastModuleId = course.modules[course.modules.length - 1]?.id;
 
   return (
@@ -42,6 +50,29 @@ export default function CourseQuizPage() {
           <Trophy size={11} /> Final Quiz
         </span>
       </div>
+
+      {/* Pay-for-certificate callout */}
+      {needsCertPayment && (
+        <div className="flex items-start gap-3 px-5 py-4 rounded-xl bg-primary-soft border border-primary-pale mb-5">
+          <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center shrink-0 mt-0.5">
+            <Award size={16} className="text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-heading font-bold text-sm text-foreground">
+              You passed! Get your certificate
+            </p>
+            <p className="font-body text-xs text-muted mt-0.5">
+              Pay RWF {course.certificatePrice?.toLocaleString()} to receive your official certificate for this course.
+            </p>
+            <Link
+              href={checkoutHref}
+              className="inline-flex items-center gap-1.5 mt-2 font-body text-xs font-semibold text-primary hover:underline"
+            >
+              Pay for Certificate <ArrowRight size={12} />
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Quiz card */}
       <div className="bg-surface-card rounded-2xl border border-border shadow-sm p-6 sm:p-8">
@@ -63,10 +94,11 @@ export default function CourseQuizPage() {
           moduleId="course-quiz"
           quiz={course.quiz}
           lastAttempt={course.lastCourseQuizAttempt}
+          quizType="course"
+          payForCertHref={needsCertPayment ? checkoutHref : undefined}
           onPass={() => {
-            if (isCoursePassed) {
-              window.open(certHref, "_blank");
-            }
+            setQuizJustPassed(true);
+            if (showCertLink) window.open(certHref, "_blank");
           }}
         />
       </div>
@@ -85,14 +117,17 @@ export default function CourseQuizPage() {
           <ChevronLeft size={16} /> Previous
         </Button>
 
-        {isCoursePassed && (
-          <Button
-            size="md"
-            asChild
-            className="flex items-center gap-2 bg-success text-surface-inverse hover:opacity-90 border-0"
-          >
+        {needsCertPayment && (
+          <Button size="md" asChild className="flex items-center gap-2" variant="primary">
+            <Link href={checkoutHref}>
+              Pay for Certificate <Award size={16} />
+            </Link>
+          </Button>
+        )}
+        {showCertLink && (
+          <Button size="md" variant="secondary" asChild className="flex items-center gap-2">
             <Link href={certHref} target="_blank" rel="noopener noreferrer">
-              Certificate <Award size={16} />
+              View Certificate <Award size={16} />
             </Link>
           </Button>
         )}
@@ -114,12 +149,15 @@ export default function CourseQuizPage() {
         <p className="font-body text-xs text-muted-contrast truncate flex-1 text-center">
           Final Quiz
         </p>
-        {isCoursePassed && (
-          <Button
-            size="md"
-            asChild
-            className="px-3 bg-success text-surface-inverse hover:opacity-90 border-0"
-          >
+        {needsCertPayment && (
+          <Button size="md" asChild variant="primary" className="px-3">
+            <Link href={checkoutHref}>
+              <Award size={16} />
+            </Link>
+          </Button>
+        )}
+        {showCertLink && (
+          <Button size="md" variant="secondary" asChild className="px-3">
             <Link href={certHref} target="_blank">
               <Award size={16} />
             </Link>

@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle, XCircle, RotateCcw, Trophy } from "lucide-react";
+import { ArrowRight, XCircle, CheckCircle, RotateCcw, Trophy, Medal, Sparkles } from "lucide-react";
 import { GridLoader } from "react-spinners";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { Button, WarningToast } from "@/components/ui";
+import Link from "next/link";
 import {
   useSubmitQuiz,
   type StudentModuleQuiz,
@@ -21,6 +22,7 @@ interface QuizSectionProps {
   lastAttempt: QuizAttemptSummary | null;
   onPass: () => void;
   quizType?: "module" | "lesson" | "course";
+  payForCertHref?: string;
 }
 
 export function QuizSection({
@@ -30,6 +32,7 @@ export function QuizSection({
   lastAttempt: initialLastAttempt,
   onPass,
   quizType,
+  payForCertHref,
 }: QuizSectionProps) {
   const queryClient = useQueryClient();
   const [started, setStarted] = useState(false);
@@ -136,11 +139,23 @@ export function QuizSection({
             createdAt: data.attempt.createdAt,
           };
           setLastAttempt(summary);
-          // Invalidate so revisiting this module shows fresh lastAttempt
+          // Invalidate module query so revisiting shows fresh lastAttempt
           queryClient.invalidateQueries({
             queryKey: ["student", "module", slug, moduleId],
           });
-          if (data.attempt.status === "pass") onPass();
+          if (data.attempt.status === "pass") {
+            // On course quiz pass, also refresh the course detail + courses list
+            // so has_certificate and lastCourseQuizAttempt are fresh everywhere
+            if (moduleId === "course-quiz") {
+              queryClient.invalidateQueries({
+                queryKey: ["courses", "student", "list", slug],
+              });
+              queryClient.invalidateQueries({
+                queryKey: ["courses", "student", "list"],
+              });
+            }
+            onPass();
+          }
         },
       },
     );
@@ -187,7 +202,7 @@ export function QuizSection({
           </div>
           {alreadyPassed && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 text-green-700 border border-green-200 dark:bg-green-950/30 dark:text-green-300 dark:border-green-900 shrink-0">
-              <Trophy size={13} />
+              <Medal size={13} />
               <span className="font-body text-xs font-semibold">Passed</span>
             </div>
           )}
@@ -196,18 +211,27 @@ export function QuizSection({
         {/* ── Already passed (locked) ── */}
         {alreadyPassed ? (
           <div className="flex items-center gap-3 px-5 py-4 rounded-xl bg-green-50 border border-green-200 dark:bg-green-950/30 dark:border-green-900">
-            <CheckCircle
-              size={20}
+            <Sparkles
+              size={18}
               className="text-green-600 dark:text-green-300 shrink-0"
             />
-            <div>
+            <div className="flex-1 min-w-0">
               <p className="font-body text-sm font-medium text-green-800 dark:text-green-200">
                 You passed this quiz with a score of {lastAttempt!.score}%
               </p>
-              <p className="font-body text-xs text-green-600 dark:text-green-300 mt-0.5">
-                You can continue to the next module.
-              </p>
+              {!isCourseQuiz && (
+                <p className="font-body text-xs text-green-600 dark:text-green-300 mt-0.5">
+                  You can continue to the next module.
+                </p>
+              )}
             </div>
+            {payForCertHref && (
+              <Button size="sm" variant="primary" asChild className="shrink-0">
+                <Link href={payForCertHref}>
+                  Pay for Certificate <ArrowRight size={14} />
+                </Link>
+              </Button>
+            )}
           </div>
         ) : !started && !result ? (
           /* ── Lobby / gate screen ── */
@@ -283,11 +307,20 @@ export function QuizSection({
               ) : (
                 <XCircle size={16} />
               )}
-              You scored <strong>{result.attempt.score}%</strong>
-              &nbsp;
-              {result.attempt.status === "pass"
-                ? "Passed! You can continue."
-                : "Failed. Review and try again."}
+              <span className="flex-1">
+                You scored <strong>{result.attempt.score}%</strong>
+                &nbsp;
+                {result.attempt.status === "pass"
+                  ? "Passed! You can continue."
+                  : "Failed. Review and try again."}
+              </span>
+              {result.attempt.status === "pass" && payForCertHref && (
+                <Button size="sm" variant="primary" asChild className="shrink-0 ml-2">
+                  <Link href={payForCertHref}>
+                    Pay for Certificate <ArrowRight size={14} />
+                  </Link>
+                </Button>
+              )}
             </div>
 
             <div className="flex flex-col gap-8">

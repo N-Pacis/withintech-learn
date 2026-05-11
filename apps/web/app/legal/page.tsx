@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/ui";
 
-const LAST_UPDATED = "April 4, 2026";
+const LAST_UPDATED = "April 30, 2026";
 const CONTACT_EMAIL = "learn@withintech.org";
 
 function Section({
@@ -83,6 +83,8 @@ export default function LegalPage() {
               ["#acceptable-use", "Acceptable Use"],
               ["#account-suspension", "Account Suspension & Termination"],
               ["#intellectual-property", "Intellectual Property"],
+              ["#payments", "Payments & Pricing"],
+              ["#refunds", "No-Refund Policy"],
               ["#challenges", "Coding Challenges & Code Execution"],
               ["#third-party-content", "Third-Party Content & Thumbnails"],
               ["#disclaimer", "Disclaimer of Warranties"],
@@ -227,8 +229,46 @@ export default function LegalPage() {
           </P>
         </Section>
 
-        {/* ── 5. Challenges & Code Execution ──────────────────────────────────── */}
-        <Section id="challenges" title="5. Coding Challenges & Code Execution">
+        {/* ── 5. Payments & Pricing ───────────────────────────────────────────── */}
+        <Section id="payments" title="5. Payments & Pricing">
+          <P>
+            WithinTech Learn offers three types of course access:
+          </P>
+          <Ul
+            items={[
+              "Free — open enrollment at no cost. Any registered student may enroll immediately.",
+              "Paid Course — a one-time payment grants full access to all course content and progress tracking. Enrollment is activated automatically upon confirmed payment.",
+              "Paid Certificate — course content is accessible for free, but a certificate of completion is issued only after a separate certificate payment is confirmed.",
+            ]}
+          />
+          <P>
+            All prices are displayed and charged in <strong>Rwandan Francs (RWF)</strong>. Payments are processed securely through{" "}
+            <strong>XentriPay</strong>, a licensed Rwandan payment service provider, via MTN Mobile Money or Airtel Money.
+          </P>
+          <P>
+            Your payment is processed at the time of enrollment or certificate request. A push notification is sent to your registered mobile money number, which you must approve to complete the transaction. WithinTech Learn does not store or have access to your mobile money PIN or sensitive financial credentials.
+          </P>
+          <P>
+            Upon successful payment, you will gain immediate access to the purchased content or receive your certificate. All payments are final and non-refundable. A transaction record is retained for compliance and dispute resolution purposes.
+          </P>
+        </Section>
+
+        {/* ── 6. Refund Policy ────────────────────────────────────────────────── */}
+        <Section id="refunds" title="6. No-Refund Policy">
+          <P>
+            <strong>All payments on WithinTech Learn are non-refundable.</strong> By completing a payment for course access or a certificate, you acknowledge and agree that no refunds will be issued under any circumstances, including but not limited to change of mind, failure to complete the course, dissatisfaction with content quality, or accidental purchase.
+          </P>
+          <P>
+            Please review the course details and pricing carefully before proceeding with payment. If you have questions about a course before purchasing, contact us at{" "}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-primary dark:text-foreground hover:underline">{CONTACT_EMAIL}</a>.
+          </P>
+          <P>
+            These terms are governed by the laws of Rwanda. Disputes arising from payment transactions shall be resolved in the courts of Kigali, Rwanda.
+          </P>
+        </Section>
+
+        {/* ── 7. Challenges & Code Execution ──────────────────────────────────── */}
+        <Section id="challenges" title="7. Coding Challenges & Code Execution">
           <P>
             WithinTech Learn offers a <strong>Coding Challenges</strong> feature
             that allows users to write and submit code solutions in multiple
@@ -264,7 +304,7 @@ export default function LegalPage() {
         {/* ── 6. Thumbnails ───────────────────────────────────────────────────── */}
         <Section
           id="third-party-content"
-          title="6. Third-Party Content & Thumbnails"
+          title="8. Third-Party Content & Thumbnails"
         >
           <P>
             WithinTech Learn may display course thumbnail images sourced from
@@ -294,7 +334,7 @@ export default function LegalPage() {
         </Section>
 
         {/* ── 7. Disclaimer ───────────────────────────────────────────────────── */}
-        <Section id="disclaimer" title="7. Disclaimer of Warranties">
+        <Section id="disclaimer" title="9. Disclaimer of Warranties">
           <P>
             WithinTech Learn provides its courses and content for{" "}
             <strong>educational purposes only</strong>. While we strive for
@@ -322,7 +362,7 @@ export default function LegalPage() {
         </Section>
 
         {/* ── 8. Limitation of Liability ──────────────────────────────────────── */}
-        <Section id="limitation" title="8. Limitation of Liability">
+        <Section id="limitation" title="10. Limitation of Liability">
           <P>
             To the fullest extent permitted by applicable law, WithinTech, its
             directors, employees, partners, and agents shall not be liable for
@@ -338,7 +378,7 @@ export default function LegalPage() {
         </Section>
 
         {/* ── 9. Privacy ──────────────────────────────────────────────────────── */}
-        <Section id="privacy" title="9. Privacy & Data Collection">
+        <Section id="privacy" title="11. Privacy & Data Collection">
           <P>
             By using WithinTech Learn, you consent to the collection and use of
             your personal data as described in this section. We collect the
@@ -388,7 +428,7 @@ export default function LegalPage() {
         </Section>
 
         {/* ── 10. Communications ───────────────────────────────────────────────── */}
-        <Section id="communications" title="10. Communications & Marketing">
+        <Section id="communications" title="12. Communications & Marketing">
           <P>
             By creating an account, you agree to receive the following types of
             emails:
@@ -419,7 +459,7 @@ export default function LegalPage() {
         </Section>
 
         {/* ── 11. Security ────────────────────────────────────────────────────── */}
-        <Section id="security" title="11. Security & Prohibited Activities">
+        <Section id="security" title="13. Security & Prohibited Activities">
           <P>
             <strong>
               Any attempt to hack, exploit, tamper with, or gain unauthorized
@@ -449,7 +489,7 @@ export default function LegalPage() {
         </Section>
 
         {/* ── 12. Changes ─────────────────────────────────────────────────────── */}
-        <Section id="changes" title="12. Changes to These Terms">
+        <Section id="changes" title="14. Changes to These Terms">
           <P>
             WithinTech reserves the right to update these Terms of Service at
             any time. We will notify registered users of material changes via
@@ -471,7 +511,7 @@ export default function LegalPage() {
         </Section>
 
         {/* ── 13. Contact ─────────────────────────────────────────────────────── */}
-        <Section id="contact" title="13. Contact Us">
+        <Section id="contact" title="15. Contact Us">
           <P>
             If you have questions about these Terms, wish to make a data
             request, or need to report a concern, please contact us at:

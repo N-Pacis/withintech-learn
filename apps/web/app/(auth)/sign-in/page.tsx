@@ -9,9 +9,9 @@ import {
 } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-// import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from "@react-oauth/google";
 import { Logo, AuthLoader } from "@/components/ui";
-import { useLogin, useProfile } from "@/hooks/queries/auth";
+import { useLogin, useProfile, useGoogleAuth } from "@/hooks/queries/auth";
 import { Button, Input, FormField, PasswordInput } from "@/components/ui";
 import { getCachedProfile } from "@/lib/profile-cache";
 
@@ -19,10 +19,30 @@ import { getCachedProfile } from "@/lib/profile-cache";
 function resolveDestination(next: string | null, role: string): string {
   const home = role === "admin" ? "/admin" : "/learn";
   if (!next) return home;
-  // Prevent students from being bounced into /admin and admins into /learn via a stale next param
+  // Relative paths only — reject anything without a leading slash
+  if (!next.startsWith("/")) return home;
   if (next.startsWith("/admin") && role !== "admin") return home;
   if (next.startsWith("/learn") && role === "admin") return home;
   return next;
+}
+
+// Validates and returns the docs URL an admin should land on after login.
+// path comes from nginx via ?path= and is always a relative URI from the docs server.
+function resolveDocsReturn(path: string | null): string {
+  const fallback = "https://docs.learn.withintech.org";
+  if (!path) return fallback;
+  // Allow only safe relative paths — no protocol, no host, no CRLF
+  if (!/^\/[A-Za-z0-9\-._~/?#[\]@!$&'()*+,;=%]*$/.test(path)) return fallback;
+  return `https://docs.learn.withintech.org${path}`;
+}
+
+// Use window.location for external URLs, router for internal ones
+function navigateTo(destination: string, router: ReturnType<typeof useRouter>): void {
+  if (destination.startsWith("http")) {
+    window.location.href = destination;
+  } else {
+    router.replace(destination);
+  }
 }
 
 const features = [
@@ -35,9 +55,11 @@ function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
+  const returnTo = searchParams.get("returnTo");
+  const docsPath = searchParams.get("path");
   const cachedProfile = getCachedProfile();
   const { mutateAsync: login } = useLogin();
-  // const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
+  const { mutateAsync: googleAuth, isPending: googlePending } = useGoogleAuth();
   // initialData seeds from localStorage — data is available synchronously if cached
   const { data: profile, isFetching } = useProfile();
   const [email, setEmail] = useState("");
@@ -45,16 +67,21 @@ function SignInForm() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  function destination(role: string): string {
+    if (returnTo === "docs" && role === "admin") return resolveDocsReturn(docsPath);
+    return resolveDestination(next, role);
+  }
+
   useLayoutEffect(() => {
     if (!profile && cachedProfile) {
-      router.replace(resolveDestination(next, cachedProfile.role));
+      navigateTo(destination(cachedProfile.role), router);
     }
-  }, [cachedProfile, profile, router, next]);
+  }, [cachedProfile, profile, router, next, returnTo, docsPath]);
 
   useEffect(() => {
     if (!profile || isFetching) return;
-    router.replace(resolveDestination(next, profile.role));
-  }, [profile, isFetching, router, next]);
+    navigateTo(destination(profile.role), router);
+  }, [profile, isFetching, router, next, returnTo, docsPath]);
 
   // Already logged in — show loader immediately; useEffect above will redirect
   if (cachedProfile) return <AuthLoader />;
@@ -70,7 +97,7 @@ function SignInForm() {
         router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
         return;
       }
-      router.push(resolveDestination(next, data.user.role));
+      navigateTo(destination(data.user.role), router);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Invalid email or password",
@@ -79,15 +106,15 @@ function SignInForm() {
     }
   }
 
-  // async function handleGoogle(credential: string) {
-  //   setError('');
-  //   try {
-  //     const data = await googleAuth(credential);
-  //     router.push(data.user.role === 'admin' ? '/admin' : '/learn');
-  //   } catch (err) {
-  //     setError(err instanceof Error ? err.message : 'Google sign-in failed');
-  //   }
-  // }
+  async function handleGoogle(credential: string) {
+    setError("");
+    try {
+      const data = await googleAuth(credential);
+      navigateTo(destination(data.user.role), router);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Google sign-in failed");
+    }
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -186,14 +213,18 @@ function SignInForm() {
             Sign in to continue learning.
           </p>
 
-          {/* Google — hidden until enabled */}
-          {/* <div
+          <div
             className="flex justify-center mb-5"
-            style={{ opacity: googlePending ? 0.6 : 1, pointerEvents: googlePending ? 'none' : 'auto' }}
+            style={{
+              opacity: googlePending ? 0.6 : 1,
+              pointerEvents: googlePending ? "none" : "auto",
+            }}
           >
             <GoogleLogin
-              onSuccess={(res) => { if (res.credential) handleGoogle(res.credential); }}
-              onError={() => setError('Google sign-in failed. Please try again.')}
+              onSuccess={(res) => {
+                if (res.credential) handleGoogle(res.credential);
+              }}
+              onError={() => setError("Google sign-in failed. Please try again.")}
               width="384"
               theme="outline"
               size="large"
@@ -205,7 +236,7 @@ function SignInForm() {
             <div className="flex-1 h-px bg-surface-muted" />
             <span className="font-body text-xs text-border-strong">or</span>
             <div className="flex-1 h-px bg-surface-muted" />
-          </div> */}
+          </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <FormField label="Email" htmlFor="email" required>
