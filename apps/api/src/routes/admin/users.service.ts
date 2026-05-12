@@ -6,7 +6,7 @@ import { notFound, conflict } from "../../utils/errors";
 import { sendEmail } from "../../services/email.service";
 import { adminInviteEmailTemplate } from "../../templates/admin-invite-email";
 import { studentWelcomeEmailTemplate } from "../../templates/student-welcome-email";
-import { signMagicLoginToken } from "../../utils/jwt";
+import { signSetPasswordToken } from "../../utils/jwt";
 
 const adminUserSelect = {
   id: true,
@@ -19,6 +19,7 @@ const adminUserSelect = {
   lastLoggedIn: true,
   createdById: true,
   score: true,
+  institution: true,
   role: {
     select: {
       name: true,
@@ -88,6 +89,7 @@ function formatUser(u: AdminUserRecord) {
     lastLoggedIn: u.lastLoggedIn,
     createdById: u.createdById,
     score: u.score,
+    institution: u.institution,
   };
 }
 
@@ -313,26 +315,13 @@ export const createStudentsFromImport = async (
       const password = crypto.randomBytes(12).toString("base64").slice(0, 16);
       const passwordHash = await hashPassword(password);
 
-      const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL ?? "https://api.learn.withintech.org";
-      const magicToken = signMagicLoginToken(normalizedEmail, password);
-      const magicLoginUrl = `${apiUrl}/auth/magic-login?token=${magicToken}`;
-
-      await sendEmail({
-        to: normalizedEmail,
-        subject: "You're invited to WithinTech Learn — Weekly Challenges Beta",
-        html: studentWelcomeEmailTemplate({
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          magicLoginUrl,
-        }),
-      });
-
       const joinedAt = randomDateBetween(
         new Date("2026-03-12"),
         new Date("2026-04-08"),
       );
-      await prisma.user.create({
+
+      // Create user first to get the ID for the set-password token
+      const user = await prisma.user.create({
         data: {
           firstName: firstName.trim(),
           lastName: lastName.trim(),
@@ -345,6 +334,21 @@ export const createStudentsFromImport = async (
           createdAt: joinedAt,
         },
         select: { id: true },
+      });
+
+      // Generate set-password token and URL
+      const appUrl = process.env.APP_URL ?? "https://learn.withintech.org";
+      const setPasswordToken = signSetPasswordToken(user.id, normalizedEmail);
+      const setPasswordUrl = `${appUrl}/set-password?token=${setPasswordToken}`;
+
+      await sendEmail({
+        to: normalizedEmail,
+        subject: "You're invited to WithinTech Learn — Weekly Challenges Beta",
+        html: studentWelcomeEmailTemplate({
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          setPasswordUrl,
+        }),
       });
 
       result.created++;

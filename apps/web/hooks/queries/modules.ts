@@ -28,12 +28,14 @@ export interface AdminLesson {
 export interface LessonBlock {
   id: string;
   lessonId: string;
-  type: "text" | "image" | "code";
+  type: "text" | "image" | "code" | "playground";
   content: string | null;
   storageKey: string | null;
   url: string | null;
   caption: string | null;
   language: string | null;
+  linkedGroupId: string | null; // NEW
+  playgroundData: { html?: string; css?: string; js?: string } | null;
   orderIndex: number;
   createdAt: string;
   updatedAt: string;
@@ -46,12 +48,14 @@ export interface AdminLessonWithBlocks extends AdminLesson {
 export interface Block {
   id: string;
   moduleId: string;
-  type: "text" | "image" | "code";
+  type: "text" | "image" | "code" | "playground";
   content: string | null;
   storageKey: string | null;
   url: string | null;
   caption: string | null;
   language: string | null;
+  linkedGroupId: string | null; // NEW
+  playgroundData: { html?: string; css?: string; js?: string } | null;
   orderIndex: number;
   createdAt: string;
   updatedAt: string;
@@ -461,6 +465,13 @@ export function useAddLessonBlock(lessonId: string) {
             content: string;
             language: string;
             orderIndex: number;
+          }
+        | {
+            type: "playground";
+            html?: string;
+            css?: string;
+            js?: string;
+            orderIndex: number;
           },
     ): Promise<LessonBlock> => {
       const res = await apiFetch<LessonBlock>(
@@ -494,17 +505,27 @@ export function useUpdateLessonBlock(lessonId: string) {
       content,
       caption,
       language,
+      linkedGroupId, // NEW
+      playgroundData,
     }: {
       id: string;
       content?: string;
       caption?: string;
       language?: string;
+      linkedGroupId?: string | null; // NEW
+      playgroundData?: { html?: string; css?: string; js?: string };
     }): Promise<LessonBlock> => {
       const res = await apiFetch<LessonBlock>(
         `/admin/lessons/${lessonId}/blocks/${id}`,
         {
           method: "PATCH",
-          body: JSON.stringify({ content, caption, language }),
+          body: JSON.stringify({
+            content,
+            caption,
+            language,
+            linkedGroupId,
+            playgroundData,
+          }),
         },
       );
       if (!res.success || !res.data) throw new Error(res.message);
