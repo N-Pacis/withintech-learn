@@ -90,11 +90,13 @@ export interface CertificateData {
 
 export interface StudentBlock {
   id: string;
-  type: "text" | "image" | "code";
+  type: "text" | "image" | "code" | "playground";
   content: string | null;
   url: string | null;
   caption: string | null;
   language: string | null;
+  linkedGroupId: string | null; // NEW
+  playgroundData: { html?: string; css?: string; js?: string } | null;
   orderIndex: number;
 }
 
@@ -273,7 +275,9 @@ export function useCoursePreview(slug: string) {
   return useQuery({
     queryKey: ["course-preview", slug] as const,
     queryFn: async () => {
-      const res = await apiFetch<CoursePreview>(`/public/courses/${slug}/preview`);
+      const res = await apiFetch<CoursePreview>(
+        `/public/courses/${slug}/preview`,
+      );
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },

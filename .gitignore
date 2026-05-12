@@ -40,3 +40,5 @@ backups/
 config.bat
 **/.env
 **/.env.*
+
+context

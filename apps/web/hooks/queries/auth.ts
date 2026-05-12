@@ -238,3 +238,57 @@ export function useLogout() {
     );
   };
 }
+
+// ─── Set Password (for imported students) ────────────────────────────────────
+
+interface SetPasswordTokenValidation {
+  valid: true;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
+export function useValidateSetPasswordToken(token: string | null) {
+  return useQuery({
+    queryKey: ["auth", "set-password", "validate", token],
+    queryFn: async (): Promise<SetPasswordTokenValidation> => {
+      if (!token) throw new Error("No token provided");
+      const res = await apiFetch<SetPasswordTokenValidation>(
+        `/auth/set-password/validate?token=${encodeURIComponent(token)}`,
+        {},
+        { skipRefresh: true },
+      );
+      if (!res.success || !res.data)
+        throw new Error(res.message ?? "Invalid or expired link");
+      return res.data;
+    },
+    enabled: !!token,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useSetPassword() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      token,
+      password,
+    }: {
+      token: string;
+      password: string;
+    }): Promise<{ user: User }> => {
+      const res = await apiFetch<{ user: User }>("/auth/set-password", {
+        method: "POST",
+        body: JSON.stringify({ token, password }),
+      });
+      if (!res.success || !res.data)
+        throw new Error(res.message ?? "Failed to set password");
+      return res.data;
+    },
+    onSuccess: (data) => {
+      setCachedProfile(data.user);
+      queryClient.setQueryData(authKeys.profile, data.user);
+    },
+  });
+}

@@ -1,18 +1,14 @@
 "use client";
 
-import {
-  useState,
-  useEffect,
-  // useRef
-} from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Download,
   FileText,
   Sheet,
-  // Upload,
-  // CheckCircle2,
-  // XCircle,
-  // SkipForward,
+  Upload,
+  CheckCircle2,
+  XCircle,
+  SkipForward,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -30,10 +26,10 @@ import {
   useSetUserActive,
   useVerifyUserEmail,
   fetchStudentsExport,
-  // useImportStudents,
+  useImportStudents,
   AdminUser,
   UsersParams,
-  // ImportStudentsResult,
+  ImportStudentsResult,
 } from "@/hooks/queries/users";
 import { cn } from "@/lib/utils";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -101,6 +97,11 @@ const EXPORT_COLS = [
   },
   { key: "email", label: "Email", getValue: (u: AdminUser) => u.email },
   {
+    key: "institution",
+    label: "Institution",
+    getValue: (u: AdminUser) => u.institution || "—",
+  },
+  {
     key: "score",
     label: "Points",
     getValue: (u: AdminUser) => `${Math.round(u.score)} pts`,
@@ -126,6 +127,7 @@ const EXPORT_COLS = [
 
 const columns: Column[] = [
   { key: "user", header: "Student" },
+  { key: "institution", header: "Institution" },
   { key: "score", header: "Points" },
   { key: "status", header: "Status" },
   { key: "emailVerified", header: "Email" },
@@ -135,289 +137,289 @@ const columns: Column[] = [
 
 // ─── Import modal ─────────────────────────────────────────────────────────────
 
-// interface ImportModalProps {
-//   onClose: () => void;
-// }
+interface ImportModalProps {
+  onClose: () => void;
+}
 
-// function ImportModal({ onClose }: ImportModalProps) {
-//   const fileInputRef = useRef<HTMLInputElement>(null);
-//   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-//   const [dragOver, setDragOver] = useState(false);
-//   const [result, setResult] = useState<ImportStudentsResult | null>(null);
-//   const { mutate: importStudents, isPending } = useImportStudents();
+function ImportModal({ onClose }: ImportModalProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [result, setResult] = useState<ImportStudentsResult | null>(null);
+  const { mutate: importStudents, isPending } = useImportStudents();
 
-//   function handleFile(file: File) {
-//     const allowed = [
-//       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-//       "application/vnd.ms-excel",
-//       "text/csv",
-//     ];
-//     if (
-//       !allowed.includes(file.type) &&
-//       !file.name.match(/\.(xlsx|xls|csv)$/i)
-//     ) {
-//       toast.error("Only .xlsx, .xls, or .csv files are allowed");
-//       return;
-//     }
-//     setSelectedFile(file);
-//     setResult(null);
-//   }
+  function handleFile(file: File) {
+    const allowed = [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/vnd.ms-excel",
+      "text/csv",
+    ];
+    if (
+      !allowed.includes(file.type) &&
+      !file.name.match(/\.(xlsx|xls|csv)$/i)
+    ) {
+      toast.error("Only .xlsx, .xls, or .csv files are allowed");
+      return;
+    }
+    setSelectedFile(file);
+    setResult(null);
+  }
 
-//   function handleDrop(e: React.DragEvent) {
-//     e.preventDefault();
-//     setDragOver(false);
-//     const file = e.dataTransfer.files?.[0];
-//     if (file) handleFile(file);
-//   }
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFile(file);
+  }
 
-//   function handleImport() {
-//     if (!selectedFile) return;
-//     importStudents(selectedFile, {
-//       onSuccess: (data) => {
-//         setResult(data);
-//         if (data.created > 0)
-//           toast.success(
-//             `${data.created} student${data.created !== 1 ? "s" : ""} imported successfully`,
-//           );
-//         if (data.failed > 0)
-//           toast.error(
-//             `${data.failed} row${data.failed !== 1 ? "s" : ""} failed to import`,
-//           );
-//       },
-//       onError: (err: Error) => toast.error(err.message),
-//     });
-//   }
+  function handleImport() {
+    if (!selectedFile) return;
+    importStudents(selectedFile, {
+      onSuccess: (data) => {
+        setResult(data);
+        if (data.created > 0)
+          toast.success(
+            `${data.created} student${data.created !== 1 ? "s" : ""} imported successfully`,
+          );
+        if (data.failed > 0)
+          toast.error(
+            `${data.failed} row${data.failed !== 1 ? "s" : ""} failed to import`,
+          );
+      },
+      onError: (err: Error) => toast.error(err.message),
+    });
+  }
 
-//   const statusIcon = (s: ImportStudentsResult["rows"][0]["status"]) => {
-//     if (s === "created")
-//       return <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />;
-//     if (s === "skipped")
-//       return <SkipForward size={14} className="text-amber-500 shrink-0" />;
-//     return <XCircle size={14} className="text-red-500 shrink-0" />;
-//   };
+  const statusIcon = (s: ImportStudentsResult["rows"][0]["status"]) => {
+    if (s === "created")
+      return <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />;
+    if (s === "skipped")
+      return <SkipForward size={14} className="text-amber-500 shrink-0" />;
+    return <XCircle size={14} className="text-red-500 shrink-0" />;
+  };
 
-//   return (
-//     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-//       <div
-//         className="absolute inset-0 bg-black/40"
-//         onClick={!isPending ? onClose : undefined}
-//       />
-//       <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
-//         {/* Header */}
-//         <div className="flex items-center justify-between">
-//           <h2 className="font-heading font-bold text-lg text-foreground">
-//             Import Students
-//           </h2>
-//           <button
-//             onClick={onClose}
-//             disabled={isPending}
-//             className="p-1.5 rounded-lg text-muted-contrast hover:text-foreground hover:bg-surface-muted transition-colors disabled:opacity-40"
-//           >
-//             <svg
-//               width="16"
-//               height="16"
-//               viewBox="0 0 24 24"
-//               fill="none"
-//               stroke="currentColor"
-//               strokeWidth="2"
-//               strokeLinecap="round"
-//               strokeLinejoin="round"
-//             >
-//               <line x1="18" y1="6" x2="6" y2="18" />
-//               <line x1="6" y1="6" x2="18" y2="18" />
-//             </svg>
-//           </button>
-//         </div>
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div
+        className="absolute inset-0 bg-black/40"
+        onClick={!isPending ? onClose : undefined}
+      />
+      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h2 className="font-heading font-bold text-lg text-foreground">
+            Import Students
+          </h2>
+          <button
+            onClick={onClose}
+            disabled={isPending}
+            className="p-1.5 rounded-lg text-muted-contrast hover:text-foreground hover:bg-surface-muted transition-colors disabled:opacity-40"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
 
-//         {/* Instructions */}
-//         <div className="bg-surface-panel border border-border rounded-xl px-4 py-3">
-//           <p className="font-body text-xs font-semibold text-foreground-soft uppercase tracking-wide mb-1.5">
-//             File format
-//           </p>
-//           <p className="font-body text-xs text-muted leading-relaxed">
-//             Upload an <strong className="text-foreground">.xlsx</strong>,{" "}
-//             <strong className="text-foreground">.xls</strong>, or{" "}
-//             <strong className="text-foreground">.csv</strong> file. The first row
-//             must be column headers. Required columns:{" "}
-//             <strong className="text-foreground">First Name</strong>,{" "}
-//             <strong className="text-foreground">Last Name</strong>,{" "}
-//             <strong className="text-foreground">Email</strong>. Max 500 rows per
-//             import.
-//           </p>
-//         </div>
+        {/* Instructions */}
+        <div className="bg-surface-panel border border-border rounded-xl px-4 py-3">
+          <p className="font-body text-xs font-semibold text-foreground-soft uppercase tracking-wide mb-1.5">
+            File format
+          </p>
+          <p className="font-body text-xs text-muted leading-relaxed">
+            Upload an <strong className="text-foreground">.xlsx</strong>,{" "}
+            <strong className="text-foreground">.xls</strong>, or{" "}
+            <strong className="text-foreground">.csv</strong> file. The first
+            row must be column headers. Required columns:{" "}
+            <strong className="text-foreground">First Name</strong>,{" "}
+            <strong className="text-foreground">Last Name</strong>,{" "}
+            <strong className="text-foreground">Email</strong>. Max 500 rows per
+            import.
+          </p>
+        </div>
 
-//         {/* Drop zone */}
-//         {!result && (
-//           <button
-//             type="button"
-//             onClick={() => fileInputRef.current?.click()}
-//             onDragOver={(e) => {
-//               e.preventDefault();
-//               setDragOver(true);
-//             }}
-//             onDragLeave={() => setDragOver(false)}
-//             onDrop={handleDrop}
-//             disabled={isPending}
-//             className={cn(
-//               "w-full rounded-xl border-2 border-dashed transition-colors px-4 py-8 flex flex-col items-center gap-2 text-center",
-//               dragOver
-//                 ? "border-primary bg-primary-soft/50"
-//                 : "border-border hover:border-primary/40 hover:bg-surface",
-//               isPending && "opacity-60 cursor-not-allowed",
-//             )}
-//           >
-//             <div className="w-10 h-10 rounded-full bg-primary-soft flex items-center justify-center">
-//               <Upload size={18} className="text-primary" />
-//             </div>
-//             {selectedFile ? (
-//               <>
-//                 <p className="font-body text-sm font-medium text-foreground">
-//                   {selectedFile.name}
-//                 </p>
-//                 <p className="font-body text-xs text-muted-contrast">
-//                   {(selectedFile.size / 1024).toFixed(1)} KB · Click to change
-//                 </p>
-//               </>
-//             ) : (
-//               <>
-//                 <p className="font-body text-sm font-medium text-primary">
-//                   {dragOver ? "Drop here" : "Click or drag to upload"}
-//                 </p>
-//                 <p className="font-body text-xs text-muted-contrast">
-//                   .xlsx · .xls · .csv · max 10 MB
-//                 </p>
-//               </>
-//             )}
-//           </button>
-//         )}
+        {/* Drop zone */}
+        {!result && (
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            disabled={isPending}
+            className={cn(
+              "w-full rounded-xl border-2 border-dashed transition-colors px-4 py-8 flex flex-col items-center gap-2 text-center",
+              dragOver
+                ? "border-primary bg-primary-soft/50"
+                : "border-border hover:border-primary/40 hover:bg-surface",
+              isPending && "opacity-60 cursor-not-allowed",
+            )}
+          >
+            <div className="w-10 h-10 rounded-full bg-primary-soft flex items-center justify-center">
+              <Upload size={18} className="text-primary" />
+            </div>
+            {selectedFile ? (
+              <>
+                <p className="font-body text-sm font-medium text-foreground">
+                  {selectedFile.name}
+                </p>
+                <p className="font-body text-xs text-muted-contrast">
+                  {(selectedFile.size / 1024).toFixed(1)} KB · Click to change
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-body text-sm font-medium text-primary">
+                  {dragOver ? "Drop here" : "Click or drag to upload"}
+                </p>
+                <p className="font-body text-xs text-muted-contrast">
+                  .xlsx · .xls · .csv · max 10 MB
+                </p>
+              </>
+            )}
+          </button>
+        )}
 
-//         <input
-//           ref={fileInputRef}
-//           type="file"
-//           accept=".xlsx,.xls,.csv"
-//           onChange={(e) => {
-//             const f = e.target.files?.[0];
-//             if (f) handleFile(f);
-//             e.target.value = "";
-//           }}
-//           className="hidden"
-//         />
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".xlsx,.xls,.csv"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) handleFile(f);
+            e.target.value = "";
+          }}
+          className="hidden"
+        />
 
-//         {/* Result summary */}
-//         {result && (
-//           <div className="flex flex-col gap-4">
-//             <div className="grid grid-cols-3 gap-3">
-//               <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3 text-center">
-//                 <p className="font-heading font-black text-xl text-emerald-700">
-//                   {result.created}
-//                 </p>
-//                 <p className="font-body text-xs text-emerald-600 mt-0.5">
-//                   Created
-//                 </p>
-//               </div>
-//               <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-center">
-//                 <p className="font-heading font-black text-xl text-amber-600">
-//                   {result.skipped}
-//                 </p>
-//                 <p className="font-body text-xs text-amber-500 mt-0.5">
-//                   Skipped
-//                 </p>
-//               </div>
-//               <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-center">
-//                 <p className="font-heading font-black text-xl text-red-600">
-//                   {result.failed}
-//                 </p>
-//                 <p className="font-body text-xs text-red-500 mt-0.5">Failed</p>
-//               </div>
-//             </div>
+        {/* Result summary */}
+        {result && (
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-3 gap-3">
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3 text-center">
+                <p className="font-heading font-black text-xl text-emerald-700">
+                  {result.created}
+                </p>
+                <p className="font-body text-xs text-emerald-600 mt-0.5">
+                  Created
+                </p>
+              </div>
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-center">
+                <p className="font-heading font-black text-xl text-amber-600">
+                  {result.skipped}
+                </p>
+                <p className="font-body text-xs text-amber-500 mt-0.5">
+                  Skipped
+                </p>
+              </div>
+              <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-center">
+                <p className="font-heading font-black text-xl text-red-600">
+                  {result.failed}
+                </p>
+                <p className="font-body text-xs text-red-500 mt-0.5">Failed</p>
+              </div>
+            </div>
 
-//             {(result.skipped > 0 || result.failed > 0) && (
-//               <div className="border border-border rounded-xl overflow-hidden">
-//                 <div className="bg-surface-panel px-4 py-2.5 border-b border-border">
-//                   <p className="font-body text-xs font-semibold text-foreground-soft uppercase tracking-wide">
-//                     Row details
-//                   </p>
-//                 </div>
-//                 <div className="divide-y divide-border-subtle max-h-52 overflow-y-auto">
-//                   {result.rows
-//                     .filter((r) => r.status !== "created")
-//                     .map((r) => (
-//                       <div
-//                         key={r.rowIndex}
-//                         className="flex items-start gap-2.5 px-4 py-2.5"
-//                       >
-//                         {statusIcon(r.status)}
-//                         <div className="min-w-0 flex-1">
-//                           <p className="font-body text-xs font-medium text-foreground truncate">
-//                             {r.firstName} {r.lastName}{" "}
-//                             <span className="text-muted-contrast font-normal">
-//                               · {r.email}
-//                             </span>
-//                           </p>
-//                           {r.reason && (
-//                             <p className="font-body text-xs text-muted-contrast mt-0.5">
-//                               {r.reason}
-//                             </p>
-//                           )}
-//                         </div>
-//                         <span
-//                           className={cn(
-//                             "font-body text-xs font-medium shrink-0 capitalize",
-//                             r.status === "skipped"
-//                               ? "text-amber-500"
-//                               : "text-red-500",
-//                           )}
-//                         >
-//                           {r.status}
-//                         </span>
-//                       </div>
-//                     ))}
-//                 </div>
-//               </div>
-//             )}
+            {(result.skipped > 0 || result.failed > 0) && (
+              <div className="border border-border rounded-xl overflow-hidden">
+                <div className="bg-surface-panel px-4 py-2.5 border-b border-border">
+                  <p className="font-body text-xs font-semibold text-foreground-soft uppercase tracking-wide">
+                    Row details
+                  </p>
+                </div>
+                <div className="divide-y divide-border-subtle max-h-52 overflow-y-auto">
+                  {result.rows
+                    .filter((r) => r.status !== "created")
+                    .map((r) => (
+                      <div
+                        key={r.rowIndex}
+                        className="flex items-start gap-2.5 px-4 py-2.5"
+                      >
+                        {statusIcon(r.status)}
+                        <div className="min-w-0 flex-1">
+                          <p className="font-body text-xs font-medium text-foreground truncate">
+                            {r.firstName} {r.lastName}{" "}
+                            <span className="text-muted-contrast font-normal">
+                              · {r.email}
+                            </span>
+                          </p>
+                          {r.reason && (
+                            <p className="font-body text-xs text-muted-contrast mt-0.5">
+                              {r.reason}
+                            </p>
+                          )}
+                        </div>
+                        <span
+                          className={cn(
+                            "font-body text-xs font-medium shrink-0 capitalize",
+                            r.status === "skipped"
+                              ? "text-amber-500"
+                              : "text-red-500",
+                          )}
+                        >
+                          {r.status}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
 
-//             <Button
-//               variant="secondary"
-//               size="md"
-//               onClick={() => {
-//                 setResult(null);
-//                 setSelectedFile(null);
-//               }}
-//             >
-//               Import Another File
-//             </Button>
-//           </div>
-//         )}
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={() => {
+                setResult(null);
+                setSelectedFile(null);
+              }}
+            >
+              Import Another File
+            </Button>
+          </div>
+        )}
 
-//         {/* Actions */}
-//         {!result && (
-//           <div className="flex gap-3">
-//             <Button
-//               variant="secondary"
-//               size="md"
-//               className="flex-1"
-//               onClick={onClose}
-//               disabled={isPending}
-//             >
-//               Cancel
-//             </Button>
-//             <Button
-//               variant="primary"
-//               size="md"
-//               className="flex-1"
-//               onClick={handleImport}
-//               disabled={!selectedFile || isPending}
-//               loading={isPending}
-//             >
-//               <Upload size={14} className="mr-1.5" />
-//               Import
-//             </Button>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
+        {/* Actions */}
+        {!result && (
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              size="md"
+              className="flex-1"
+              onClick={onClose}
+              disabled={isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              size="md"
+              className="flex-1"
+              onClick={handleImport}
+              disabled={!selectedFile || isPending}
+              loading={isPending}
+            >
+              <Upload size={14} className="mr-1.5" />
+              Import
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 // ─── Export modal ─────────────────────────────────────────────────────────────
 
@@ -463,7 +465,7 @@ function ExportModal({
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-muted-contrast hover:text-foreground hover:text-foreground hover:bg-surface-muted hover:bg-surface-subtle transition-colors"
+            className="p-1.5 rounded-lg text-muted-contrast hover:text-foreground hover:bg-surface-muted transition-colors"
           >
             <svg
               width="16"
@@ -601,7 +603,7 @@ export default function StudentsPage() {
 
   const [exportOpen, setExportOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
-  // const [importOpen, setImportOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
 
   const PAGE_SIZE = 10;
 
@@ -915,6 +917,11 @@ export default function StudentsPage() {
           </div>
         </div>
       ),
+      institution: (
+        <span className="font-body text-sm text-muted">
+          {u.institution || "Not Specified"}
+        </span>
+      ),
       score: (
         <span className="font-body text-sm font-medium text-foreground tabular-nums">
           {Math.round(u.score)}
@@ -970,7 +977,7 @@ export default function StudentsPage() {
         />
       )}
 
-      {/* {importOpen && <ImportModal onClose={() => setImportOpen(false)} />} */}
+      {importOpen && <ImportModal onClose={() => setImportOpen(false)} />}
 
       <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
         {/* Header */}
@@ -984,14 +991,14 @@ export default function StudentsPage() {
             </p>
           </div>
           <div className="flex gap-2">
-            {/* <Button
+            <Button
               variant="secondary"
               size="md"
               onClick={() => setImportOpen(true)}
             >
               <Upload size={14} className="mr-1.5" />
               Import
-            </Button> */}
+            </Button>
             <Button
               variant="secondary"
               size="md"

@@ -15,6 +15,8 @@ import { Button, PageLoader } from "@/components/ui";
 import { CodeEditor, type CodeLanguage } from "@/components/ui/CodeEditor";
 import { TiptapViewer } from "@/components/ui/TiptapEditor";
 import { QuizSection } from "../../../../components/QuizSection";
+import CodePlayground from "@/components/playground/CodePlayground";
+import { CodeBlockPreviewButton } from "@/components/CodeBlockPreviewButton";
 
 function TextBlock({ block }: { block: StudentBlock }) {
   return <TiptapViewer content={block.content ?? ""} />;
@@ -45,22 +47,124 @@ function ImageBlock({ block }: { block: StudentBlock }) {
   );
 }
 
-function CodeBlock({ block }: { block: StudentBlock }) {
+interface CodeBlockProps {
+  block: StudentBlock;
+  linkedBlocks?: StudentBlock[];
+}
+
+function CodeBlock({ block, linkedBlocks = [] }: CodeBlockProps) {
+  const isPreviewable = ["html", "css", "javascript"].includes(
+    block.language || "",
+  );
+
   return (
-    <CodeEditor
-      value={block.content ?? ""}
-      language={(block.language ?? "javascript") as CodeLanguage}
-      onValueChange={() => {}}
-      onLanguageChange={() => {}}
-      readOnly
-    />
+    <div className="my-4 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+      <div className="bg-gray-800 dark:bg-gray-900 text-white text-xs px-3 py-1.5 font-mono">
+        {block.language?.toUpperCase() || "CODE"}
+      </div>
+      <div className="p-0">
+        <CodeEditor
+          value={block.content ?? ""}
+          language={(block.language ?? "javascript") as CodeLanguage}
+          onValueChange={() => {}}
+          onLanguageChange={() => {}}
+          readOnly
+        />
+      </div>
+      {isPreviewable && (
+        <div className="bg-gray-50 dark:bg-gray-800 px-3 py-2 border-t border-gray-200 dark:border-gray-700">
+          <CodeBlockPreviewButton
+            blockId={block.id}
+            language={block.language || "html"}
+            content={block.content || ""}
+            linkedBlocks={linkedBlocks
+              .filter((b) => b.id !== block.id)
+              .map((b) => ({
+                language: b.language || "",
+                content: b.content || "",
+                blockId: b.id,
+              }))}
+          />
+        </div>
+      )}
+    </div>
   );
 }
 
-function BlockRenderer({ block }: { block: StudentBlock }) {
+// Helper function to group code blocks by linkedGroupId
+function groupCodeBlocks(blocks: StudentBlock[]): Map<string, StudentBlock[]> {
+  const groups = new Map<string, StudentBlock[]>();
+  let currentTempGroup: StudentBlock[] = [];
+  let tempGroupId = 0;
+
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
+
+    if (block.type !== "code") {
+      // Non-code block breaks the group
+      if (currentTempGroup.length > 0) {
+        const groupId = `temp-${tempGroupId++}`;
+        groups.set(groupId, [...currentTempGroup]);
+        currentTempGroup = [];
+      }
+      continue;
+    }
+
+    if (block.linkedGroupId) {
+      // Explicitly linked group
+      if (!groups.has(block.linkedGroupId)) {
+        groups.set(block.linkedGroupId, []);
+      }
+      groups.get(block.linkedGroupId)!.push(block);
+    } else {
+      // Auto-group consecutive code blocks
+      currentTempGroup.push(block);
+    }
+  }
+
+  // Handle last temp group
+  if (currentTempGroup.length > 0) {
+    const groupId = `temp-${tempGroupId++}`;
+    groups.set(groupId, [...currentTempGroup]);
+  }
+
+  return groups;
+}
+
+function BlockRenderer({
+  block,
+  allBlocks,
+}: {
+  block: StudentBlock;
+  allBlocks: StudentBlock[];
+}) {
   if (block.type === "text") return <TextBlock block={block} />;
   if (block.type === "image") return <ImageBlock block={block} />;
-  return <CodeBlock block={block} />;
+  if (block.type === "playground") {
+    return (
+      <CodePlayground
+        initialHTML={block.playgroundData?.html}
+        initialCSS={block.playgroundData?.css}
+        initialJS={block.playgroundData?.js}
+      />
+    );
+  }
+  if (block.type === "code") {
+    // Find the group this block belongs to
+    const codeGroups = groupCodeBlocks(allBlocks);
+    const group =
+      Array.from(codeGroups.values()).find((g) =>
+        g.some((b) => b.id === block.id),
+      ) || [];
+
+    return (
+      <CodeBlock
+        block={block}
+        linkedBlocks={group.filter((b) => b.id !== block.id)}
+      />
+    );
+  }
+  return null;
 }
 
 export default function LessonPage() {
@@ -197,7 +301,11 @@ export default function LessonPage() {
         </h2>
         <div className="flex flex-col gap-6">
           {lesson.blocks.map((block) => (
-            <BlockRenderer key={block.id} block={block} />
+            <BlockRenderer
+              key={block.id}
+              block={block}
+              allBlocks={lesson.blocks}
+            />
           ))}
         </div>
 
