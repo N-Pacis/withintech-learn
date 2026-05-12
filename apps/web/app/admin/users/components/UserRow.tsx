@@ -31,7 +31,7 @@ export default function UserRow({
     <tr className="border-b border-border-subtle hover:bg-surface transition-colors">
       <td className="px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
             <span className="font-heading font-bold text-xs text-primary">
               {user.firstName[0]?.toUpperCase()}
             </span>
