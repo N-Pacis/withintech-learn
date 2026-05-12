@@ -36,6 +36,7 @@ model User {
   otpPurpose           String?
   otpExpiresAt         DateTime?
   score                Float                 @default(0)
+  institution          String?
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
   courses              Course[]
@@ -49,6 +50,7 @@ model User {
   challengeSubmissions ChallengeSubmission[]
   challengeProgress    ChallengeProgress[]
 
+  @@index([institution])
   @@index([score])
 }
 
@@ -80,6 +82,7 @@ enum BlockType {
   text
   image
   code
+  playground
 }
 
 model Course {
@@ -153,17 +156,19 @@ model Module {
 }
 
 model ModuleBlock {
-  id         String    @id @default(uuid())
-  moduleId   String
-  module     Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  type       BlockType
-  content    String?
-  storageKey String?
-  caption    String?
-  language   String?
-  orderIndex Int
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id             String    @id @default(uuid())
+  moduleId       String
+  module         Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  type           BlockType
+  content        String?
+  storageKey     String?
+  caption        String?
+  language       String?
+  linkedGroupId  String?   // NEW: UUID for grouping related code blocks
+  playgroundData Json?
+  orderIndex     Int
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@unique([moduleId, orderIndex])
 }
@@ -256,17 +261,19 @@ model Lesson {
 }
 
 model LessonBlock {
-  id         String    @id @default(uuid())
-  lessonId   String
-  lesson     Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  type       BlockType
-  content    String?
-  storageKey String?
-  caption    String?
-  language   String?
-  orderIndex Int
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id             String    @id @default(uuid())
+  lessonId       String
+  lesson         Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  type           BlockType
+  content        String?
+  storageKey     String?
+  caption        String?
+  language       String?
+  linkedGroupId  String?   // NEW: UUID for grouping related code blocks
+  playgroundData Json?
+  orderIndex     Int
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@unique([lessonId, orderIndex])
 }

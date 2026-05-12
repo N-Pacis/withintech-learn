@@ -17,6 +17,12 @@ export interface MagicLoginTokenPayload {
   purpose: "magic_login";
 }
 
+export interface SetPasswordTokenPayload {
+  userId: string;
+  email: string;
+  purpose: "set_password";
+}
+
 export const signAccessToken = (payload: TokenPayload): string =>
   jwt.sign(payload, process.env.JWT_ACCESS_SECRET as string, {
     expiresIn: "15m",
@@ -82,5 +88,27 @@ export const verifyMagicLoginToken = (
     return payload;
   } catch {
     throw unauthorized("Invalid or expired magic login link");
+  }
+};
+
+export const signSetPasswordToken = (userId: string, email: string): string =>
+  jwt.sign(
+    { userId, email, purpose: "set_password" },
+    process.env.JWT_ACCESS_SECRET as string,
+    { expiresIn: "20d" },
+  );
+
+export const verifySetPasswordToken = (
+  token: string,
+): SetPasswordTokenPayload => {
+  try {
+    const payload = jwt.verify(
+      token,
+      process.env.JWT_ACCESS_SECRET as string,
+    ) as SetPasswordTokenPayload;
+    if (payload.purpose !== "set_password") throw new Error();
+    return payload;
+  } catch {
+    throw unauthorized("Invalid or expired set password link");
   }
 };
