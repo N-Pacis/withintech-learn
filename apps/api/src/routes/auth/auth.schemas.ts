@@ -1,17 +1,16 @@
-import { z } from 'zod';
-import { isAllowedEmail } from '@withintech-learn/shared';
+import { z } from "zod";
+import { isAllowedEmail } from "@withintech-learn/shared";
 
 const emailField = z.string().email();
-const trustedEmailField = emailField.refine(
-  (v) => isAllowedEmail(v),
-  { message: 'Please use a personal or school email address.' },
-);
+const trustedEmailField = emailField.refine((v) => isAllowedEmail(v), {
+  message: "Please use a personal or school email address.",
+});
 const passwordField = (min: number) => z.string().min(min);
 
 const signupPasswordField = z
   .string()
-  .min(6, 'Password must be at least 6 characters')
-  .regex(/\d/, 'Password must contain at least one number');
+  .min(6, "Password must be at least 6 characters")
+  .regex(/\d/, "Password must contain at least one number");
 
 export const loginSchema = z.object({
   email: emailField,
@@ -55,4 +54,9 @@ export const resendEmailVerificationSchema = z.object({
 
 export const googleAuthSchema = z.object({
   idToken: z.string().min(1),
+});
+
+export const setPasswordSchema = z.object({
+  token: z.string().min(1),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });

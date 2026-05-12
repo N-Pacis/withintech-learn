@@ -6,6 +6,8 @@ import { prisma } from "../db/prisma";
 const courseKey = (slug: string) => `published_course:${slug}`;
 const moduleKey = (moduleId: string) => `published_module:${moduleId}`;
 
+type PlaygroundData = { html?: string; css?: string; js?: string };
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface CachedCourse {
@@ -16,7 +18,7 @@ export interface CachedCourse {
   thumbnailKey: string | null;
   moduleIds: string[]; // ordered list — used for cache-busting on archive
   quiz: CachedQuiz | null;
-  accessType: 'FREE' | 'PAID_COURSE' | 'PAID_CERTIFICATE';
+  accessType: "FREE" | "PAID_COURSE" | "PAID_CERTIFICATE";
   price: number | null;
   certificatePrice: number | null;
 }
@@ -28,6 +30,8 @@ interface CachedBlock {
   storageKey: string | null;
   caption: string | null;
   language: string | null;
+  linkedGroupId: string | null; // NEW
+  playgroundData: PlaygroundData | null;
   orderIndex: number;
 }
 
@@ -60,6 +64,32 @@ export interface CachedModule {
   quiz: CachedQuiz | null;
 }
 
+const normalizePlaygroundData = (value: unknown): PlaygroundData | null => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+
+  const data = value as Record<string, unknown>;
+  return {
+    ...(typeof data.html === "string" ? { html: data.html } : {}),
+    ...(typeof data.css === "string" ? { css: data.css } : {}),
+    ...(typeof data.js === "string" ? { js: data.js } : {}),
+  };
+};
+
+const toCachedBlock = (block: {
+  id: string;
+  type: string;
+  content: string | null;
+  storageKey: string | null;
+  caption: string | null;
+  language: string | null;
+  linkedGroupId: string | null; // NEW
+  playgroundData: unknown;
+  orderIndex: number;
+}): CachedBlock => ({
+  ...block,
+  playgroundData: normalizePlaygroundData(block.playgroundData),
+});
+
 // ─── Build & store ────────────────────────────────────────────────────────────
 
 export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
@@ -89,6 +119,8 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
               storageKey: true,
               caption: true,
               language: true,
+              linkedGroupId: true, // NEW
+              playgroundData: true,
               orderIndex: true,
             },
           },
@@ -107,6 +139,8 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
                   storageKey: true,
                   caption: true,
                   language: true,
+                  linkedGroupId: true, // NEW
+                  playgroundData: true,
                   orderIndex: true,
                 },
               },
@@ -183,13 +217,13 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
     const cachedLessons: CachedLesson[] = lessons.map(
       ({ blocks: lb, quiz: lq, ...lMeta }) => ({
         ...lMeta,
-        blocks: lb,
+        blocks: lb.map(toCachedBlock),
         quiz: lq ?? null,
       }),
     );
     const cached: CachedModule = {
       ...modMeta,
-      blocks,
+      blocks: blocks.map(toCachedBlock),
       lessons: cachedLessons,
       quiz: quiz ?? null,
     };
@@ -205,7 +239,10 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
     thumbnailKey: course.thumbnailKey,
     moduleIds: course.modules.map((m) => m.id),
     quiz: course.quiz ?? null,
-    accessType: course.accessType as 'FREE' | 'PAID_COURSE' | 'PAID_CERTIFICATE',
+    accessType: course.accessType as
+      | "FREE"
+      | "PAID_COURSE"
+      | "PAID_CERTIFICATE",
     price: course.price,
     certificatePrice: course.certificatePrice,
   };

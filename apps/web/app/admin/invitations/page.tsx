@@ -99,12 +99,13 @@ export default function InvitationsPage() {
           <p className="font-body text-xs text-muted leading-relaxed">
             Upload an <strong className="text-foreground">.xlsx</strong>,{" "}
             <strong className="text-foreground">.xls</strong>, or{" "}
-            <strong className="text-foreground">.csv</strong> file. The first
-            row must be column headers. Required columns:{" "}
+            <strong className="text-foreground">.csv</strong> file. <br />
+            The first row must be column headers. <br />
+            Required columns:{" "}
             <strong className="text-foreground">First Name</strong>,{" "}
             <strong className="text-foreground">Last Name</strong>,{" "}
-            <strong className="text-foreground">Email</strong>. Max 500 rows per
-            upload. Already registered emails will be skipped.
+            <strong className="text-foreground">Email</strong>. <br /> Max 500
+            rows per upload.
           </p>
         </div>
 
@@ -138,8 +139,7 @@ export default function InvitationsPage() {
                     {selectedFile.name}
                   </p>
                   <p className="font-body text-xs text-muted-soft">
-                    {(selectedFile.size / 1024).toFixed(1)} KB · Click to
-                    change
+                    {(selectedFile.size / 1024).toFixed(1)} KB · Click to change
                   </p>
                 </>
               ) : (
@@ -199,9 +199,7 @@ export default function InvitationsPage() {
                 <p className="font-heading font-black text-xl text-warning-dark">
                   {result.skipped}
                 </p>
-                <p className="font-body text-xs text-warning mt-0.5">
-                  Skipped
-                </p>
+                <p className="font-body text-xs text-warning mt-0.5">Skipped</p>
               </div>
               <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-center">
                 <p className="font-heading font-black text-xl text-red-600">

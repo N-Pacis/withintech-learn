@@ -18,6 +18,7 @@ import {
   verifyResetToken,
   verifyToken,
   decodeTokenUnsafe,
+  verifySetPasswordToken,
 } from "../../utils/jwt";
 import { hashPassword, comparePassword } from "../../utils/password";
 import { generateOtp, hashOtp, verifyOtp, otpExpiresAt } from "../../utils/otp";
@@ -32,6 +33,7 @@ const authUserSelect = {
   email: true,
   firstName: true,
   lastName: true,
+  institution: true,
   provider: true,
   passwordHash: true,
   isActive: true,
@@ -62,6 +64,7 @@ type SafeUserRecord = {
   email: string;
   firstName: string;
   lastName: string;
+  institution: string | null;
   role: {
     name: string;
   };
@@ -72,6 +75,7 @@ const safeUser = (u: SafeUserRecord) => ({
   email: u.email,
   firstName: u.firstName,
   lastName: u.lastName,
+  institution: u.institution,
   role: u.role.name,
 });
 
@@ -411,6 +415,7 @@ export const resetPassword = async ({
       email: true,
       firstName: true,
       lastName: true,
+      institution: true,
       role: {
         select: {
           name: true,
@@ -455,6 +460,7 @@ export const getProfile = async ({
       email: true,
       firstName: true,
       lastName: true,
+      institution: true,
     },
   });
   if (!user) throw unauthorized();
@@ -551,6 +557,87 @@ export const googleAuth = async ({ idToken }: { idToken: string }) => {
   return {
     accessToken: signAccessToken(tokenPayload),
     refreshToken: signRefreshToken(tokenPayload),
+    user: safeUser(user),
+  };
+};
+
+export const validateSetPasswordToken = async (token: string) => {
+  const { userId, email } = verifySetPasswordToken(token);
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      isActive: true,
+    },
+  });
+
+  if (!user) throw unauthorized("Invalid or expired link");
+  if (user.email !== email) throw unauthorized("Invalid or expired link");
+  if (!user.isActive)
+    throw forbidden(
+      "Your account has been deactivated. Please contact an administrator.",
+    );
+
+  return {
+    valid: true as const,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+  };
+};
+
+export const setPasswordFromToken = async ({
+  token,
+  password,
+}: {
+  token: string;
+  password: string;
+}) => {
+  const { userId } = verifySetPasswordToken(token);
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      institution: true,
+      isActive: true,
+      role: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  if (!user) throw unauthorized("Invalid or expired link");
+  if (!user.isActive)
+    throw forbidden(
+      "Your account has been deactivated. Please contact an administrator.",
+    );
+
+  const passwordHash = await hashPassword(password);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      passwordHash,
+      emailVerified: true,
+      lastLoggedIn: new Date(),
+    },
+    select: { id: true },
+  });
+
+  const payload = { userId: user.id, role: user.role.name };
+  return {
+    accessToken: signAccessToken(payload),
+    refreshToken: signRefreshToken(payload),
     user: safeUser(user),
   };
 };
