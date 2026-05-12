@@ -3,7 +3,8 @@ import * as authService from "../routes/auth/auth.service";
 import { sendSuccess } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
 import { unauthorized, badRequest } from "../utils/errors";
-import { verifyMagicLoginToken } from "../utils/jwt";
+import { verifyMagicLoginToken, decodeTokenUnsafe } from "../utils/jwt";
+import redis from "../db/redis";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -33,6 +34,11 @@ function setAuthCookies(
 function clearAuthCookies(res: Response) {
   res.clearCookie("wt_access", COOKIE_BASE);
   res.clearCookie("wt_refresh", COOKIE_BASE);
+  // Also clear without domain to cover sessions created before domain was added to cookie config
+  if (isProd) {
+    res.clearCookie("wt_access", { ...COOKIE_BASE, domain: undefined });
+    res.clearCookie("wt_refresh", { ...COOKIE_BASE, domain: undefined });
+  }
 }
 
 export const postLogin = asyncHandler(async (req: Request, res: Response) => {
@@ -62,7 +68,19 @@ export const postRefreshToken = asyncHandler(
   },
 );
 
-export const postLogout = asyncHandler(async (_req: Request, res: Response) => {
+export const postLogout = asyncHandler(async (req: Request, res: Response) => {
+  const refreshToken = req.cookies?.wt_refresh as string | undefined;
+  if (refreshToken) {
+    const decoded = decodeTokenUnsafe(refreshToken);
+    if (decoded?.userId) {
+      const REFRESH_TTL_SECONDS = 7 * 24 * 60 * 60;
+      await redis.setex(
+        `logout_at:${decoded.userId}`,
+        REFRESH_TTL_SECONDS,
+        Math.floor(Date.now() / 1000).toString(),
+      );
+    }
+  }
   clearAuthCookies(res);
   sendSuccess(res, undefined, "Logged out");
 });

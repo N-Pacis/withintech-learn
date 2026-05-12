@@ -17,6 +17,7 @@ import {
   signResetToken,
   verifyResetToken,
   verifyToken,
+  decodeTokenUnsafe,
 } from "../../utils/jwt";
 import { hashPassword, comparePassword } from "../../utils/password";
 import { generateOtp, hashOtp, verifyOtp, otpExpiresAt } from "../../utils/otp";
@@ -158,6 +159,15 @@ export const refreshToken = async ({
   refreshToken: string;
 }) => {
   const payload = verifyToken(token, process.env.JWT_REFRESH_SECRET as string);
+
+  const logoutAt = await redis.get(`logout_at:${payload.userId}`);
+  if (logoutAt) {
+    const decoded = decodeTokenUnsafe(token);
+    if (decoded?.iat && decoded.iat <= parseInt(logoutAt)) {
+      throw unauthorized("Session has been revoked");
+    }
+  }
+
   const user = await prisma.user.findUnique({
     where: { id: payload.userId },
     select: authSessionUserSelect,
