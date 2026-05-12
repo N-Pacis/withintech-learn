@@ -42,6 +42,14 @@ export const verifyToken = (token: string, secret: string): TokenPayload => {
   }
 };
 
+export const decodeTokenUnsafe = (token: string): (TokenPayload & { iat?: number }) | null => {
+  try {
+    return jwt.decode(token) as (TokenPayload & { iat?: number }) | null;
+  } catch {
+    return null;
+  }
+};
+
 export const verifyResetToken = (token: string): ResetTokenPayload => {
   try {
     const payload = jwt.verify(

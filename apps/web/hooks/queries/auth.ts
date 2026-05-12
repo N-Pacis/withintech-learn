@@ -230,9 +230,11 @@ export function useLogout() {
   return () => {
     beginLogout();
     clearCachedProfile();
-    apiFetch("/auth/logout", { method: "POST" }).finally(() => {
-      queryClient.clear();
-      window.location.replace("/sign-in");
-    });
+    apiFetch("/auth/logout", { method: "POST" }, { skipRefresh: true }).finally(
+      () => {
+        queryClient.clear();
+        window.location.replace("/sign-in");
+      },
+    );
   };
 }
