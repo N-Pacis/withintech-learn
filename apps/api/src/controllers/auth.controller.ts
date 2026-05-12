@@ -6,6 +6,7 @@ import { unauthorized, badRequest } from "../utils/errors";
 import { verifyMagicLoginToken, decodeTokenUnsafe } from "../utils/jwt";
 import redis from "../db/redis";
 
+
 const isProd = process.env.NODE_ENV === "production";
 
 const COOKIE_BASE = {
@@ -176,5 +177,23 @@ export const getMagicLogin = asyncHandler(
     const appUrl = process.env.APP_URL ?? "https://learn.withintech.org";
     setAuthCookies(res, result.accessToken, result.refreshToken);
     res.redirect(`${appUrl}/learn/challenges`);
+  },
+);
+
+export const getValidateSetPasswordToken = asyncHandler(
+  async (req: Request, res: Response) => {
+    const token = req.query.token as string | undefined;
+    if (!token) throw badRequest("Missing set password token");
+
+    const result = await authService.validateSetPasswordToken(token);
+    sendSuccess(res, result);
+  },
+);
+
+export const postSetPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const result = await authService.setPasswordFromToken(req.body);
+    setAuthCookies(res, result.accessToken, result.refreshToken);
+    sendSuccess(res, { user: result.user }, "Password set successfully");
   },
 );

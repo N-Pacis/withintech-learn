@@ -12,6 +12,7 @@ import {
   verifyEmailOtpSchema,
   resendEmailVerificationSchema,
   googleAuthSchema,
+  setPasswordSchema,
 } from "./auth.schemas";
 import {
   postLogin,
@@ -27,6 +28,8 @@ import {
   postResendEmailVerification,
   postGoogleAuth,
   getMagicLogin,
+  getValidateSetPasswordToken,
+  postSetPassword,
 } from "../../controllers/auth.controller";
 
 const router = Router();
@@ -69,6 +72,8 @@ router.post(
 );
 router.post("/auth/google", validate(googleAuthSchema), postGoogleAuth);
 router.get("/auth/magic-login", getMagicLogin);
+router.get("/auth/set-password/validate", getValidateSetPasswordToken);
+router.post("/auth/set-password", validate(setPasswordSchema), postSetPassword);
 
 // Used by nginx auth_request to gate docs.learn.withintech.org
 router.get("/auth/admin-check", authenticate, isAdmin, (_req, res) => {

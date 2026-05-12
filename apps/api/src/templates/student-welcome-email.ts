@@ -1,13 +1,13 @@
 interface StudentWelcomeEmailOptions {
   firstName: string;
   lastName: string;
-  magicLoginUrl: string;
+  setPasswordUrl: string;
 }
 
 export const studentWelcomeEmailTemplate = ({
   firstName,
   lastName,
-  magicLoginUrl,
+  setPasswordUrl,
 }: StudentWelcomeEmailOptions): string => `
 <!DOCTYPE html>
 <html lang="en">
@@ -50,7 +50,7 @@ export const studentWelcomeEmailTemplate = ({
               </p>
 
               <p style="margin:0 0 8px;font-size:14px;color:#6B7280;line-height:1.7;">
-                Click the button below to get started and activate your account.
+                Click the button below to set your password and activate your account.
               </p>
 
               <p style="margin:0 0 28px;font-size:14px;color:#6B7280;line-height:1.7;">
@@ -63,9 +63,9 @@ export const studentWelcomeEmailTemplate = ({
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
                 <tr>
                   <td align="center">
-                    <a href="${magicLoginUrl}"
+                    <a href="${setPasswordUrl}"
                        style="display:inline-block;background:#3D006B;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;padding:16px 40px;border-radius:8px;letter-spacing:0.2px;">
-                      Let's Get Started
+                      Set Your Password & Get Started
                     </a>
                   </td>
                 </tr>

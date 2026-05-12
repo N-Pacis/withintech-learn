@@ -13,6 +13,7 @@ export interface AdminUser {
   lastLoggedIn: string | null;
   createdById: string | null;
   score: number;
+  institution: string | null;
 }
 
 export interface UsersParams {

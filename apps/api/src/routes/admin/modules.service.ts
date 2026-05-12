@@ -111,17 +111,53 @@ export const reorderModules = async (
 export const addBlock = async (
   moduleId: string,
   data: {
-    type: "text" | "image" | "code";
+    type: "text" | "image" | "code" | "playground";
     content?: string;
     caption?: string;
     language?: string;
+    html?: string;
+    css?: string;
+    js?: string;
     orderIndex: number;
   },
 ) => {
   const mod = await prisma.module.findUnique({ where: { id: moduleId } });
   if (!mod) throw notFound("Module not found");
+  const { html, css, js, ...rest } = data;
+  const playgroundData =
+    data.type === "playground" ? { html, css, js } : undefined;
+
+  // NEW: Auto-link consecutive code blocks
+  let linkedGroupId: string | undefined;
+  if (data.type === "code" && data.language) {
+    const prevBlock = await prisma.moduleBlock.findFirst({
+      where: { moduleId, orderIndex: data.orderIndex - 1 },
+    });
+
+    // Auto-link if previous block is a code block
+    if (prevBlock && prevBlock.type === "code") {
+      // Use previous block's group if exists, otherwise create new one
+      linkedGroupId = prevBlock.linkedGroupId ?? crypto.randomUUID();
+
+      // If previous block has no group, update it with the new group
+      if (!prevBlock.linkedGroupId) {
+        await prisma.moduleBlock.update({
+          where: { id: prevBlock.id },
+          data: { linkedGroupId },
+        });
+      }
+    }
+  }
+
   try {
-    return await prisma.moduleBlock.create({ data: { moduleId, ...data } });
+    return await prisma.moduleBlock.create({
+      data: {
+        moduleId,
+        ...rest,
+        ...(playgroundData !== undefined ? { playgroundData } : {}),
+        ...(linkedGroupId ? { linkedGroupId } : {}),
+      },
+    });
   } catch (e: any) {
     if (e?.code === "P2002")
       throw conflict("A block with this orderIndex already exists");
@@ -149,7 +185,13 @@ export const listBlocks = async (moduleId: string) => {
 
 export const updateBlock = async (
   id: string,
-  data: { content?: string; caption?: string; language?: string },
+  data: {
+    content?: string;
+    caption?: string;
+    language?: string;
+    linkedGroupId?: string | null; // NEW: Allow linking/unlinking
+    playgroundData?: { html?: string; css?: string; js?: string };
+  },
 ) => {
   const block = await prisma.moduleBlock.findUnique({ where: { id } });
   if (!block) throw notFound("Block not found");
