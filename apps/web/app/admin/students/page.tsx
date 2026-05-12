@@ -991,6 +991,7 @@ export default function StudentsPage() {
             </p>
           </div>
           <div className="flex gap-2">
+            {/* Import button hidden - importing users is internal only
             <Button
               variant="secondary"
               size="md"
@@ -999,6 +1000,7 @@ export default function StudentsPage() {
               <Upload size={14} className="mr-1.5" />
               Import
             </Button>
+            */}
             <Button
               variant="secondary"
               size="md"
