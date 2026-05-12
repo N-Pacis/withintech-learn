@@ -2,6 +2,12 @@ import type { User } from "./auth";
 
 const KEY = "wt_profile";
 
+let loggingOut = false;
+
+export function beginLogout(): void {
+  loggingOut = true;
+}
+
 export function getCachedProfile(): User | null {
   if (typeof window === "undefined") return null;
   try {
@@ -13,7 +19,7 @@ export function getCachedProfile(): User | null {
 }
 
 export function setCachedProfile(user: User): void {
-  if (typeof window === "undefined") return;
+  if (loggingOut || typeof window === "undefined") return;
   try {
     localStorage.setItem(KEY, JSON.stringify(user));
   } catch {}

@@ -5,6 +5,7 @@ import {
   getCachedProfile,
   setCachedProfile,
   clearCachedProfile,
+  beginLogout,
 } from "@/lib/profile-cache";
 
 // ─── Query keys ──────────────────────────────────────────────────────────────
@@ -227,6 +228,7 @@ export function useResetPassword() {
 export function useLogout() {
   const queryClient = useQueryClient();
   return () => {
+    beginLogout();
     clearCachedProfile();
     apiFetch("/auth/logout", { method: "POST" }).finally(() => {
       queryClient.clear();
