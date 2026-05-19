@@ -446,13 +446,7 @@ export const resetPassword = async ({
   };
 };
 
-export const getProfile = async ({
-  userId,
-  role,
-}: {
-  userId: string;
-  role: string;
-}) => {
+export const getProfile = async ({ userId }: { userId: string }) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
@@ -461,10 +455,18 @@ export const getProfile = async ({
       firstName: true,
       lastName: true,
       institution: true,
+      role: { select: { name: true } },
     },
   });
   if (!user) throw unauthorized();
-  return { ...user, role };
+  return {
+    id: user.id,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    institution: user.institution,
+    role: user.role.name,
+  };
 };
 
 export const changePassword = async ({
