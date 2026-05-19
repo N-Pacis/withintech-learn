@@ -9,7 +9,7 @@ import { AuthLoader } from "@/components/ui";
 function StudentGuard({ children }: { children: React.ReactNode }) {
   const { user, isLoading, isFetching } = useAuth();
   const router = useRouter();
-  const isCheckingAuth = isLoading || isFetching;
+  const isCheckingAuth = !user && (isLoading || isFetching);
 
   useEffect(() => {
     if (isCheckingAuth) return;
