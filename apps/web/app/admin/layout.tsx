@@ -10,7 +10,7 @@ function AdminGuard({ children }: { children: React.ReactNode }) {
   const { user, isLoading, isFetching } = useAuth();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isCheckingAuth = !user && (isLoading || isFetching);
+  const isCheckingAuth = isLoading || isFetching;
 
   useEffect(() => {
     if (isCheckingAuth) return;
