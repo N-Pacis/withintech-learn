@@ -8,6 +8,12 @@ const headers = () => ({
 });
 
 const parseJsonResponse = async <T>(res: Response, action: string): Promise<T> => {
+  if (res.status === 401 || res.status === 403) {
+    throw new Error(
+      `XentriPay ${action} was rejected as unauthorized (status ${res.status}) — check that XENTRIPAY_API_KEY is a valid key for ${BASE_URL}`,
+    );
+  }
+
   const text = await res.text();
   try {
     return JSON.parse(text) as T;
