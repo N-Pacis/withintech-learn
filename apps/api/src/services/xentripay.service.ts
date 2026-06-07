@@ -7,6 +7,17 @@ const headers = () => ({
   "X-XENTRIPAY-KEY": API_KEY!,
 });
 
+const parseJsonResponse = async <T>(res: Response, action: string): Promise<T> => {
+  const text = await res.text();
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(
+      `XentriPay ${action} returned a non-JSON response (status ${res.status}): ${text.slice(0, 200) || "<empty body>"}`,
+    );
+  }
+};
+
 export interface InitiateCollectionParams {
   amount: number;
   phone: string; // 07XXXXXXXX
@@ -34,13 +45,13 @@ export const initiateCollection = async (
     }),
   });
 
-  const json = (await res.json()) as {
+  const json = await parseJsonResponse<{
     success?: number;
     refid?: string;
     reply?: string;
     message?: string;
     retcode?: number;
-  };
+  }>(res, "collection initiation");
 
   if (!res.ok || json.success !== 1 || !json.refid) {
     throw new Error(json.reply ?? json.message ?? `XentriPay collection failed: ${res.status}`);
@@ -59,7 +70,7 @@ export const checkCollectionStatus = async (refid: string): Promise<XentriPaySta
 
   if (!res.ok) throw new Error(`XentriPay status check failed: ${res.status}`);
 
-  const json = (await res.json()) as { status?: string };
+  const json = await parseJsonResponse<{ status?: string }>(res, "status check");
   const s = json.status?.toUpperCase();
   if (s === "SUCCESS") return "SUCCESS";
   if (s === "FAILED") return "FAILED";
