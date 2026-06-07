@@ -20,7 +20,7 @@ const parseJsonResponse = async <T>(res: Response, action: string): Promise<T> =
 
 export interface InitiateCollectionParams {
   amount: number;
-  phone: string; // 07XXXXXXXX
+  phone: string;
   email: string;
   name: string;
 }
