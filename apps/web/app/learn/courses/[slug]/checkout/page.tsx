@@ -11,6 +11,7 @@ import { useProfile } from "@/hooks/queries/auth";
 import {
   useInitiatePayment,
   usePaymentStatus,
+  pendingPaymentKey,
   type PaymentType,
   type PaymentProvider,
 } from "@/hooks/queries/payments";
@@ -44,12 +45,26 @@ export default function CheckoutPage() {
   const { mutate: initiatePayment, isPending: initiating } = useInitiatePayment();
   const { data: statusData } = usePaymentStatus(transactionId, step === "waiting");
 
-  // Transition out of waiting when status resolves
+  // Resume a pending payment session if the user closed the tab mid-flow
+  useEffect(() => {
+    const saved = localStorage.getItem(pendingPaymentKey(slug, paymentType));
+    if (saved) {
+      setTransactionId(saved);
+      setStep("waiting");
+    }
+  }, [slug, paymentType]);
+
+  // Transition out of waiting when status resolves; clear persisted session on terminal states
   useEffect(() => {
     if (!statusData) return;
-    if (statusData.status === "PAID") setStep("success");
-    else if (statusData.status === "FAILED" || statusData.status === "EXPIRED") setStep("failed");
-  }, [statusData]);
+    if (statusData.status === "PAID") {
+      localStorage.removeItem(pendingPaymentKey(slug, paymentType));
+      setStep("success");
+    } else if (statusData.status === "FAILED" || statusData.status === "EXPIRED") {
+      localStorage.removeItem(pendingPaymentKey(slug, paymentType));
+      setStep("failed");
+    }
+  }, [statusData, slug, paymentType]);
 
   if (isLoading) return <PageLoader type="detail" className="p-8 lg:p-12" />;
   if (!course) {
@@ -75,6 +90,7 @@ export default function CheckoutPage() {
       { courseId: course!.id, type: paymentType, phone, provider },
       {
         onSuccess: (data) => {
+          localStorage.setItem(pendingPaymentKey(slug, paymentType), data.transactionId);
           setTransactionId(data.transactionId);
           setStep("waiting");
         },

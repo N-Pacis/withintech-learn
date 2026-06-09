@@ -36,10 +36,23 @@ export interface AdminPaymentsPage {
   payments: AdminPayment[];
 }
 
+export interface SyncedPayment {
+  transactionId: string;
+  status: "PAID" | "FAILED" | "PENDING";
+  type: PaymentType;
+  courseSlug: string;
+  courseTitle: string;
+}
+
+// Stable localStorage key for persisting a checkout session across tab closes
+export const pendingPaymentKey = (slug: string, type: PaymentType) =>
+  `wt_pending_${slug}_${type}`;
+
 // ─── Query keys ───────────────────────────────────────────────────────────────
 
 export const paymentKeys = {
   status: (txId: string) => ["payment", "status", txId] as const,
+  syncPending: (userId: string) => ["payment", "sync-pending", userId] as const,
   adminList: (p: object) => ["admin", "payments", p] as const,
 };
 
@@ -78,6 +91,21 @@ export function usePaymentStatus(transactionId: string | null, enabled = true) {
       return false;
     },
     refetchIntervalInBackground: false,
+  });
+}
+
+export function useSyncPendingPayments(userId: string | undefined) {
+  return useQuery({
+    queryKey: paymentKeys.syncPending(userId ?? ""),
+    queryFn: async (): Promise<SyncedPayment[]> => {
+      const res = await apiFetch<SyncedPayment[]>("/payments/sync-pending");
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    enabled: !!userId,
+    // Re-sync at most once every 10 minutes per session; always runs on first mount
+    staleTime: 10 * 60 * 1000,
+    gcTime: 0,
   });
 }
 

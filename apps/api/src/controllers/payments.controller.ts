@@ -18,6 +18,11 @@ export const getPaymentStatus = asyncHandler(async (req: Request, res: Response)
   sendSuccess(res, result);
 });
 
+export const getSyncPendingPayments = asyncHandler(async (req: Request, res: Response) => {
+  const result = await service.syncPendingPayments(req.user!.userId);
+  sendSuccess(res, result);
+});
+
 export const getListPayments = asyncHandler(async (req: Request, res: Response) => {
   const parsed = listPaymentsSchema.safeParse(req.query);
   if (!parsed.success) throw badRequest(parsed.error.errors[0]?.message ?? "Validation error");

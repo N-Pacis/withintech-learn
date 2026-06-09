@@ -694,6 +694,15 @@ export function useArchiveCourse() {
     onSuccess: (updated) => {
       queryClient.setQueryData(courseKeys.detail(updated.id), updated);
       queryClient.invalidateQueries({ queryKey: courseKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: courseKeys.student.lists() });
+      queryClient.invalidateQueries({ queryKey: courseKeys.public.top });
+      queryClient.invalidateQueries({ queryKey: courseKeys.public.all });
+      queryClient.invalidateQueries({
+        queryKey: ["courses", "public", "detail", updated.slug],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["course-preview", updated.slug],
+      });
     },
   });
 }

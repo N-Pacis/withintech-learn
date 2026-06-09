@@ -9,6 +9,7 @@ const router = Router();
 
 router.post("/payments/initiate", authenticate, validate(initiatePaymentSchema), ctrl.postInitiatePayment);
 router.get("/payments/status/:txId", authenticate, ctrl.getPaymentStatus);
+router.get("/payments/sync-pending", authenticate, ctrl.getSyncPendingPayments);
 router.get("/admin/payments", authenticate, isAdmin, ctrl.getListPayments);
 
 export default router;
