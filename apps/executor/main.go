@@ -17,10 +17,11 @@ func main() {
 	}
 
 	judge0URL := getEnv("JUDGE0_URL", "http://localhost:2358")
+	judge0Token := getEnv("JUDGE0_AUTH_TOKEN", "")
 	port := getEnv("PORT", "4001")
 
 	secret := getEnv("EXECUTOR_SECRET", "")
-	judge0Client := judge0.NewClient(judge0URL)
+	judge0Client := judge0.NewClient(judge0URL, judge0Token)
 	executeHandler := handlers.NewExecuteHandler(judge0Client, secret)
 
 	mux := http.NewServeMux()

@@ -66,6 +66,7 @@ jobs:
             EXECUTOR_URL=${{ secrets.EXECUTOR_URL }}
             EXECUTOR_SECRET=${{ secrets.EXECUTOR_SECRET }}
             JUDGE0_SECRET_KEY_BASE=${{ secrets.JUDGE0_SECRET_KEY_BASE }}
+            JUDGE0_AUTH_TOKEN=${{ secrets.JUDGE0_AUTH_TOKEN }}
             API_BASE_URL=${{ secrets.API_BASE_URL }}
             NEXT_PUBLIC_BRAND_NAME=${{ secrets.NEXT_PUBLIC_BRAND_NAME }}
             NEXT_PUBLIC_SUPPORT_PHONE=${{ secrets.NEXT_PUBLIC_SUPPORT_PHONE }}
@@ -135,11 +136,12 @@ jobs:
           script: |
             cd $HOME/withintech-learn
 
+            # Bring up the Judge0 execution stack first — it owns the shared
+            # `withintech_judge0_net` network the executor attaches to.
+            docker compose -f docker-compose.judge0.yml up -d --remove-orphans
+
             # Recreate postgres/redis/nginx if their image or config changed
             docker compose up -d --no-build --remove-orphans postgres redis nginx
-
-            # Bring up the Judge0 execution stack used by coding challenges.
-            docker compose -f docker-compose.judge0.yml up -d --remove-orphans
 
             # Bring up the executor (code runner bridge).
             docker compose up -d --no-build executor

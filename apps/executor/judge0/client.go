@@ -13,13 +13,12 @@ import (
 // Client is a thin HTTP client for the Judge0 REST API.
 type Client struct {
 	baseURL    string
+	authToken  string
 	httpClient *http.Client
 }
 
 // NewClient creates a Judge0 client pointing at baseURL (e.g. "http://localhost:2358").
-// The underlying transport is tuned for high-concurrency: up to 50 idle connections,
-// 30 s idle timeout, and disabled compression (Judge0 responses are small JSON).
-func NewClient(baseURL string) *Client {
+func NewClient(baseURL, authToken string) *Client {
 	transport := &http.Transport{
 		MaxIdleConns:        50,
 		MaxIdleConnsPerHost: 50,
@@ -27,7 +26,8 @@ func NewClient(baseURL string) *Client {
 		DisableCompression:  true,
 	}
 	return &Client{
-		baseURL: strings.TrimRight(baseURL, "/"),
+		baseURL:   strings.TrimRight(baseURL, "/"),
+		authToken: authToken,
 		httpClient: &http.Client{
 			Transport: transport,
 			Timeout:   10 * time.Minute, // batch mode can compile once and run many cases in one submission
@@ -49,6 +49,9 @@ func (c *Client) Submit(req SubmissionRequest) (*SubmissionResponse, error) {
 		return nil, fmt.Errorf("new request: %w", err)
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
+	if c.authToken != "" {
+		httpReq.Header.Set("X-Auth-Token", c.authToken)
+	}
 
 	resp, err := c.httpClient.Do(httpReq)
 	if err != nil {
