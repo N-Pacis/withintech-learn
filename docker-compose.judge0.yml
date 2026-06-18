@@ -11,8 +11,8 @@ services:
     image: judge0/judge0:1.13.1
     volumes:
       - ./judge0.conf:/judge0.conf:ro
-    ports:
-      - '2358:2358'
+    expose:
+      - '2358'
     privileged: true
     restart: always
     depends_on:
@@ -27,6 +27,7 @@ services:
       REDIS_PORT: 6379
       REDIS_PASSWORD: judge0redis
       POSTGRES_HOST: judge0-db
+      AUTHN_TOKEN: ${JUDGE0_AUTH_TOKEN}
     deploy:
       resources:
         limits:
@@ -53,6 +54,7 @@ services:
       REDIS_PORT: 6379
       REDIS_PASSWORD: judge0redis
       POSTGRES_HOST: judge0-db
+      AUTHN_TOKEN: ${JUDGE0_AUTH_TOKEN}
     deploy:
       resources:
         limits:
@@ -81,3 +83,9 @@ services:
 volumes:
   judge0-db-data:
   judge0-redis-data:
+
+# Owns the shared network. The main stack's `executor` joins this as an
+# external network so it can reach judge0-server without any public port.
+networks:
+  default:
+    name: withintech_judge0_net
