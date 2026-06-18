@@ -119,6 +119,7 @@ jobs:
           script_stop: true
           script: |
             cd $HOME/withintech-learn
+            docker network create withintech_judge0_net 2>/dev/null || true
             docker compose run --rm --no-deps api sh -c "
               npx prisma migrate deploy &&
               node --max-old-space-size=512 dist/scripts/seed.js
@@ -136,8 +137,9 @@ jobs:
           script: |
             cd $HOME/withintech-learn
 
-            # Bring up the Judge0 execution stack first — it owns the shared
-            # `withintech_judge0_net` network the executor attaches to.
+            # Ensure the shared executor<->judge0 network exists (idempotent;
+            # also created in the migration step), then bring up Judge0.
+            docker network create withintech_judge0_net 2>/dev/null || true
             docker compose -f docker-compose.judge0.yml up -d --remove-orphans
 
             # Recreate postgres/redis/nginx if their image or config changed

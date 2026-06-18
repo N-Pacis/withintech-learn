@@ -28,6 +28,9 @@ services:
       REDIS_PASSWORD: judge0redis
       POSTGRES_HOST: judge0-db
       AUTHN_TOKEN: ${JUDGE0_AUTH_TOKEN}
+    networks:
+      - default
+      - judge0
     deploy:
       resources:
         limits:
@@ -84,8 +87,11 @@ volumes:
   judge0-db-data:
   judge0-redis-data:
 
-# Owns the shared network. The main stack's `executor` joins this as an
-# external network so it can reach judge0-server without any public port.
+# Shared, externally-created network so the main stack's `executor` can reach
+# judge0-server without any public port. Created once in the deploy workflow
+# (`docker network create withintech_judge0_net`). `default` (this stack's own
+# network for db/redis) is still created automatically by compose.
 networks:
-  default:
+  judge0:
     name: withintech_judge0_net
+    external: true
