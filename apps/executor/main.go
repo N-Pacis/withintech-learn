@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"time"
 
 	"github.com/withintech-learn/executor/handlers"
 	"github.com/withintech-learn/executor/judge0"
@@ -35,8 +36,16 @@ func main() {
 
 	addr := ":" + port
 	log.Printf("[executor] listening on %s — judge0 at %s", addr, judge0URL)
+
+	server := &http.Server{
+		Addr:         addr,
+		Handler:      mux,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 90 * time.Second, // generous for code execution round-trips
+		IdleTimeout:  120 * time.Second,
+	}
 	// nosemgrep: go.lang.security.audit.net.use-tls.use-tls -- internal Docker-network service; TLS terminated at nginx
-	if err := http.ListenAndServe(addr, mux); err != nil {
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("[executor] fatal: %v", err)
 	}
 }
