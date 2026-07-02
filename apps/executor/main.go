@@ -35,7 +35,8 @@ func main() {
 
 	addr := ":" + port
 	log.Printf("[executor] listening on %s — judge0 at %s", addr, judge0URL)
-	if err := http.ListenAndServe(addr, mux); err != nil { //nolint:gosec // internal Docker-network service; TLS terminated at nginx
+	// nosemgrep: go.lang.security.audit.net.use-tls.use-tls -- internal Docker-network service; TLS terminated at nginx
+	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatalf("[executor] fatal: %v", err)
 	}
 }
