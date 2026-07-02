@@ -23,6 +23,9 @@ RUN cd apps/api && pnpm build
 # Copy non-TS assets that tsc doesn't emit
 RUN cp apps/api/swagger.json apps/api/dist/swagger.json
 
+RUN addgroup -S app && adduser -S app -G app && chown -R app:app /app
+
 EXPOSE 3001
 WORKDIR /app/apps/api
+USER app
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/index.js"]

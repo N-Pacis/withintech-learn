@@ -31,6 +31,9 @@ RUN cd packages/shared && pnpm build
 
 RUN cd apps/web && pnpm build
 
+RUN addgroup -S app && adduser -S app -G app && chown -R app:app /app
+
 EXPOSE 3000
 WORKDIR /app/apps/web
+USER app
 CMD ["pnpm", "start"]

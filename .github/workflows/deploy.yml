@@ -12,7 +12,7 @@ jobs:
     name: SAST (JS)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Install Semgrep
         run: pip install semgrep
@@ -24,17 +24,18 @@ jobs:
             --config p/nodejs \
             --config p/react \
             --config p/owasp-top-ten \
+            --error \
             .
 
   gosec:
     name: SAST (GO)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
-          go-version-file: apps/executor/go.mod
+          go-version: '1.24'
 
       - name: Install gosec
         run: go install github.com/securego/gosec/v2/cmd/gosec@v2.27.1
@@ -50,7 +51,7 @@ jobs:
 
       # ── 1. Pull latest code ──────────────────────────────────────────────────
       - name: Pull latest code
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262 # v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
@@ -64,7 +65,7 @@ jobs:
       # ── 2. Write .env from secrets ───────────────────────────────────────────
       # To add a new secret: add it once below in env: and to the ENV_FILE block.
       - name: Write .env
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262 # v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
@@ -118,7 +119,7 @@ jobs:
 
       # ── 3. Install docker-rollout (idempotent) ───────────────────────────────
       - name: Install docker-rollout
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262 # v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
@@ -135,7 +136,7 @@ jobs:
 
       # ── 4. Build new images (old containers keep serving traffic) ────────────
       - name: Build new images
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262 # v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
@@ -148,7 +149,7 @@ jobs:
 
       # ── 5. Run migrations (throwaway container, old api still live) ──────────
       - name: Run migrations
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262 # v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
@@ -166,7 +167,7 @@ jobs:
 
       # ── 6. Zero-downtime cutover via docker-rollout ──────────────────────────
       - name: Zero-downtime cutover
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262 # v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
@@ -197,7 +198,7 @@ jobs:
 
       # ── 7. Clean up old images ───────────────────────────────────────────────
       - name: Clean up
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262 # v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
