@@ -2,3 +2,8 @@ packages:
   - "apps/*"
   - "packages/*"
   - "docs"
+
+settings:
+  blockExoticSubdeps: true
+  minimumReleaseAge: 10080
+  trustPolicy: no-downgrade
