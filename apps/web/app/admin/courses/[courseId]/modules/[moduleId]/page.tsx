@@ -14,14 +14,12 @@ import {
   Tabs,
   type Tab,
 } from "@/components/ui";
-import { ModuleBlocksEditor } from "@/components/admin/ModuleBlocksEditor";
 import { QuizBuilder } from "@/components/admin/QuizBuilder";
 import { LessonEditor } from "@/components/admin/LessonEditor";
 
-type TabValue = "content" | "lessons" | "quiz";
+type TabValue = "lessons" | "quiz";
 
 const TABS: Tab<TabValue>[] = [
-  { label: "Content", value: "content" },
   { label: "Lessons", value: "lessons" },
   { label: "Quiz", value: "quiz" },
 ];
@@ -37,7 +35,7 @@ export default function ModuleDetailPage() {
     useUpdateModule(courseId);
   const isDraft = !course || course.status === "draft";
 
-  const [activeTab, setActiveTab] = useState<TabValue>("content");
+  const [activeTab, setActiveTab] = useState<TabValue>("lessons");
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState("");
   const [titleError, setTitleError] = useState("");
@@ -187,9 +185,6 @@ export default function ModuleDetailPage() {
       />
 
       {/* Tab content */}
-      {activeTab === "content" && (
-        <ModuleBlocksEditor moduleId={moduleId} isDraft={isDraft} />
-      )}
       {activeTab === "lessons" && (
         <LessonEditor
           moduleId={moduleId}

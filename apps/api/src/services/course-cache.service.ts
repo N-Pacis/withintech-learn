@@ -59,7 +59,6 @@ export interface CachedModule {
   id: string;
   title: string;
   orderIndex: number;
-  blocks: CachedBlock[];
   lessons: CachedLesson[];
   quiz: CachedQuiz | null;
 }
@@ -110,20 +109,6 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
           id: true,
           title: true,
           orderIndex: true,
-          blocks: {
-            orderBy: { orderIndex: "asc" },
-            select: {
-              id: true,
-              type: true,
-              content: true,
-              storageKey: true,
-              caption: true,
-              language: true,
-              linkedGroupId: true, // NEW
-              playgroundData: true,
-              orderIndex: true,
-            },
-          },
           lessons: {
             orderBy: { orderIndex: "asc" },
             select: {
@@ -213,7 +198,7 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
 
   // Cache each module individually
   for (const mod of course.modules) {
-    const { blocks, lessons, quiz, ...modMeta } = mod;
+    const { lessons, quiz, ...modMeta } = mod;
     const cachedLessons: CachedLesson[] = lessons.map(
       ({ blocks: lb, quiz: lq, ...lMeta }) => ({
         ...lMeta,
@@ -223,7 +208,6 @@ export const buildAndCacheCourse = async (courseId: string): Promise<void> => {
     );
     const cached: CachedModule = {
       ...modMeta,
-      blocks: blocks.map(toCachedBlock),
       lessons: cachedLessons,
       quiz: quiz ?? null,
     };

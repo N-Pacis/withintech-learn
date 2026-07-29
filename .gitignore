@@ -78,12 +78,9 @@ backups/
 
 config.bat
 
-**/.env
 
-**/.env.*
 
 
 
 context
-.env
 node_modules
