@@ -172,7 +172,6 @@ export interface StudentModuleDetail {
   id: string;
   title: string;
   orderIndex: number;
-  blocks: StudentBlock[];
   lessons: StudentLesson[];
   quiz: StudentModuleQuiz | null;
   lastAttempt: QuizAttemptSummary | null;
