@@ -1,10 +1,5 @@
 import { prisma } from "../../db/prisma";
 import { badRequest, conflict, notFound } from "../../utils/errors";
-import {
-  uploadToS3,
-  deleteFromS3,
-  getSignedUrl,
-} from "../../services/storage.service";
 
 const validateReorder = (items: { id: string; orderIndex: number }[]) => {
   const indices = items.map((i) => i.orderIndex).sort((a, b) => a - b);
@@ -52,7 +47,6 @@ export const getModule = async (id: string) => {
   const mod = await prisma.module.findUnique({
     where: { id },
     include: {
-      blocks: { orderBy: { orderIndex: "asc" } },
       lessons: {
         orderBy: { orderIndex: "asc" },
         include: { quiz: { select: { id: true } } },
@@ -60,20 +54,11 @@ export const getModule = async (id: string) => {
     },
   });
   if (!mod) throw notFound("Module not found");
-  const blocks = await Promise.all(
-    mod.blocks.map(async (b) => ({
-      ...b,
-      url:
-        b.type === "image" && b.storageKey
-          ? await getSignedUrl(b.storageKey)
-          : null,
-    })),
-  );
   const lessons = mod.lessons.map(({ quiz, ...lesson }) => ({
     ...lesson,
     hasQuiz: !!quiz,
   }));
-  return { ...mod, blocks, lessons };
+  return { ...mod, lessons };
 };
 
 export const updateModule = async (id: string, title: string) => {
@@ -106,141 +91,4 @@ export const reorderModules = async (
       await tx.module.update({ where: { id, courseId }, data: { orderIndex } });
     }
   });
-};
-
-export const addBlock = async (
-  moduleId: string,
-  data: {
-    type: "text" | "image" | "code" | "playground";
-    content?: string;
-    caption?: string;
-    language?: string;
-    html?: string;
-    css?: string;
-    js?: string;
-    orderIndex: number;
-  },
-) => {
-  const mod = await prisma.module.findUnique({ where: { id: moduleId } });
-  if (!mod) throw notFound("Module not found");
-  const { html, css, js, ...rest } = data;
-  const playgroundData =
-    data.type === "playground" ? { html, css, js } : undefined;
-
-  // NEW: Auto-link consecutive code blocks
-  let linkedGroupId: string | undefined;
-  if (data.type === "code" && data.language) {
-    const prevBlock = await prisma.moduleBlock.findFirst({
-      where: { moduleId, orderIndex: data.orderIndex - 1 },
-    });
-
-    // Auto-link if previous block is a code block
-    if (prevBlock && prevBlock.type === "code") {
-      // Use previous block's group if exists, otherwise create new one
-      linkedGroupId = prevBlock.linkedGroupId ?? crypto.randomUUID();
-
-      // If previous block has no group, update it with the new group
-      if (!prevBlock.linkedGroupId) {
-        await prisma.moduleBlock.update({
-          where: { id: prevBlock.id },
-          data: { linkedGroupId },
-        });
-      }
-    }
-  }
-
-  try {
-    return await prisma.moduleBlock.create({
-      data: {
-        moduleId,
-        ...rest,
-        ...(playgroundData !== undefined ? { playgroundData } : {}),
-        ...(linkedGroupId ? { linkedGroupId } : {}),
-      },
-    });
-  } catch (e: any) {
-    if (e?.code === "P2002")
-      throw conflict("A block with this orderIndex already exists");
-    throw e;
-  }
-};
-
-export const listBlocks = async (moduleId: string) => {
-  const mod = await prisma.module.findUnique({ where: { id: moduleId } });
-  if (!mod) throw notFound("Module not found");
-  const blocks = await prisma.moduleBlock.findMany({
-    where: { moduleId },
-    orderBy: { orderIndex: "asc" },
-  });
-  return Promise.all(
-    blocks.map(async (b) => ({
-      ...b,
-      url:
-        b.type === "image" && b.storageKey
-          ? await getSignedUrl(b.storageKey)
-          : undefined,
-    })),
-  );
-};
-
-export const updateBlock = async (
-  id: string,
-  data: {
-    content?: string;
-    caption?: string;
-    language?: string;
-    linkedGroupId?: string | null; // NEW: Allow linking/unlinking
-    playgroundData?: { html?: string; css?: string; js?: string };
-  },
-) => {
-  const block = await prisma.moduleBlock.findUnique({ where: { id } });
-  if (!block) throw notFound("Block not found");
-  return prisma.moduleBlock.update({ where: { id }, data });
-};
-
-export const deleteBlock = async (id: string) => {
-  const block = await prisma.moduleBlock.findUnique({ where: { id } });
-  if (!block) throw notFound("Block not found");
-  await prisma.moduleBlock.delete({ where: { id } });
-};
-
-export const reorderBlocks = async (
-  moduleId: string,
-  items: { id: string; orderIndex: number }[],
-) => {
-  validateReorder(items);
-  await prisma.$transaction(async (tx) => {
-    // Phase 1: move to temp negative indices so positive values never collide mid-swap
-    for (let i = 0; i < items.length; i++) {
-      await tx.moduleBlock.update({
-        where: { id: items[i].id, moduleId },
-        data: { orderIndex: -(i + 1) },
-      });
-    }
-    // Phase 2: set final indices
-    for (const { id, orderIndex } of items) {
-      await tx.moduleBlock.update({
-        where: { id, moduleId },
-        data: { orderIndex },
-      });
-    }
-  });
-};
-
-export const uploadBlockImage = async (
-  moduleId: string,
-  blockId: string,
-  file: Express.Multer.File,
-) => {
-  const block = await prisma.moduleBlock.findUnique({ where: { id: blockId } });
-  if (!block || block.moduleId !== moduleId) throw notFound("Block not found");
-  if (block.type !== "image") throw badRequest("Block is not an image block");
-  if (block.storageKey) await deleteFromS3(block.storageKey);
-  const storageKey = await uploadToS3(file, "blocks");
-  await prisma.moduleBlock.update({
-    where: { id: blockId },
-    data: { storageKey },
-  });
-  const url = await getSignedUrl(storageKey);
-  return { storageKey, url };
 };

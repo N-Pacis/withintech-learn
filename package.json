@@ -2,8 +2,8 @@
   "name": "withintech-learn",
   "private": true,
   "scripts": {
-    "dev": "pnpm --parallel -r dev",
-    "build": "pnpm --parallel -r build",
+    "dev": "node init && pnpm --parallel -r dev",
+    "build": "node init && pnpm --parallel -r build",
     "lint": "pnpm --parallel -r lint",
     "backend": "pnpm --filter @withintech-learn/api exec prisma generate && pnpm --filter @withintech-learn/api dev",
     "frontend": "pnpm --filter @withintech-learn/web dev",

@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc && shx cp swagger.json dist/swagger.json",
-    "start": "node dist/src/index.js",
+    "dev": "node init && ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "node init && tsc && shx cp swagger.json dist/swagger.json",
+    "start": "node init && node dist/src/index.js",
     "lint": "eslint src",
     "seed": "node dist/scripts/seed.js",
-    "migrate": "ts-node-dev --transpile-only scripts/migrate.ts"
+    "migrate": "ts-node-dev --transpile-only scripts/migrate.ts",
+    "backfill:module-blocks": "ts-node-dev --transpile-only scripts/backfill-module-blocks-to-lessons.ts"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.4",
