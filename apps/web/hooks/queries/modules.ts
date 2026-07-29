@@ -45,24 +45,7 @@ export interface AdminLessonWithBlocks extends AdminLesson {
   blocks: LessonBlock[];
 }
 
-export interface Block {
-  id: string;
-  moduleId: string;
-  type: "text" | "image" | "code" | "playground";
-  content: string | null;
-  storageKey: string | null;
-  url: string | null;
-  caption: string | null;
-  language: string | null;
-  linkedGroupId: string | null; // NEW
-  playgroundData: { html?: string; css?: string; js?: string } | null;
-  orderIndex: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ModuleWithBlocks extends Module {
-  blocks: Block[];
+export interface ModuleDetail extends Module {
   lessons: AdminLesson[];
 }
 
@@ -72,11 +55,6 @@ export const moduleKeys = {
   all: ["modules"] as const,
   list: (courseId: string) => ["modules", "list", courseId] as const,
   detail: (id: string) => ["modules", id] as const,
-};
-
-export const blockKeys = {
-  list: (moduleId: string) => ["blocks", "list", moduleId] as const,
-  detail: (id: string) => ["blocks", id] as const,
 };
 
 export const lessonKeys = {
@@ -108,26 +86,12 @@ export function useModules(courseId: string) {
 export function useModule(id: string) {
   return useQuery({
     queryKey: moduleKeys.detail(id),
-    queryFn: async (): Promise<ModuleWithBlocks> => {
-      const res = await apiFetch<ModuleWithBlocks>(`/admin/modules/${id}`);
+    queryFn: async (): Promise<ModuleDetail> => {
+      const res = await apiFetch<ModuleDetail>(`/admin/modules/${id}`);
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
     },
     enabled: !!id,
-  });
-}
-
-// ─── Block Queries ─────────────────────────────────────────────────────────────
-
-export function useBlocks(moduleId: string) {
-  return useQuery({
-    queryKey: blockKeys.list(moduleId),
-    queryFn: async (): Promise<Block[]> => {
-      const res = await apiFetch<Block[]>(`/admin/modules/${moduleId}/blocks`);
-      if (!res.success || !res.data) throw new Error(res.message);
-      return res.data;
-    },
-    enabled: !!moduleId,
   });
 }
 
@@ -174,7 +138,7 @@ export function useUpdateModule(courseId: string) {
     onSuccess: (updated) => {
       queryClient.setQueryData(
         moduleKeys.detail(updated.id),
-        (old: ModuleWithBlocks | undefined) =>
+        (old: ModuleDetail | undefined) =>
           old ? { ...old, title: updated.title } : old,
       );
       queryClient.invalidateQueries({ queryKey: moduleKeys.list(courseId) });
@@ -208,119 +172,6 @@ export function useReorderModules(courseId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: moduleKeys.list(courseId) });
-    },
-  });
-}
-
-// ─── Block Mutations ───────────────────────────────────────────────────────────
-
-export function useAddBlock(moduleId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (
-      data:
-        | { type: "text"; content: string; orderIndex: number }
-        | { type: "image"; caption?: string; orderIndex: number }
-        | {
-            type: "code";
-            content: string;
-            language: string;
-            orderIndex: number;
-          },
-    ): Promise<Block> => {
-      const res = await apiFetch<Block>(`/admin/modules/${moduleId}/blocks`, {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      if (!res.success || !res.data) throw new Error(res.message);
-      return res.data;
-    },
-    onSuccess: () => {
-      return Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: moduleKeys.detail(moduleId),
-        }),
-        queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) }),
-      ]);
-    },
-  });
-}
-
-export function useUpdateBlock(moduleId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async ({
-      id,
-      content,
-      caption,
-      language,
-    }: {
-      id: string;
-      content?: string;
-      caption?: string;
-      language?: string;
-    }): Promise<Block> => {
-      const res = await apiFetch<Block>(
-        `/admin/modules/${moduleId}/blocks/${id}`,
-        {
-          method: "PATCH",
-          body: JSON.stringify({ content, caption, language }),
-        },
-      );
-      if (!res.success || !res.data) throw new Error(res.message);
-      return res.data;
-    },
-    onSuccess: () => {
-      return Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: moduleKeys.detail(moduleId),
-        }),
-        queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) }),
-      ]);
-    },
-  });
-}
-
-export function useDeleteBlock(moduleId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (blockId: string) => {
-      const res = await apiFetch(
-        `/admin/modules/${moduleId}/blocks/${blockId}`,
-        {
-          method: "DELETE",
-        },
-      );
-      if (!res.success) throw new Error(res.message);
-    },
-    onSuccess: () => {
-      return Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: moduleKeys.detail(moduleId),
-        }),
-        queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) }),
-      ]);
-    },
-  });
-}
-
-export function useReorderBlocks(moduleId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (items: { id: string; orderIndex: number }[]) => {
-      const res = await apiFetch(`/admin/modules/${moduleId}/blocks/reorder`, {
-        method: "POST",
-        body: JSON.stringify({ items }),
-      });
-      if (!res.success) throw new Error(res.message);
-    },
-    onSuccess: () => {
-      return Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: moduleKeys.detail(moduleId),
-        }),
-        queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) }),
-      ]);
     },
   });
 }
@@ -624,32 +475,3 @@ export function useUploadLessonBlockImage(lessonId: string) {
   });
 }
 
-export function useUploadBlockImage(moduleId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async ({
-      blockId,
-      file,
-    }: {
-      blockId: string;
-      file: File;
-    }): Promise<{ storageKey: string; url: string }> => {
-      const formData = new FormData();
-      formData.append("image", file);
-      const res = await apiFetch<{ storageKey: string; url: string }>(
-        `/admin/modules/${moduleId}/blocks/${blockId}/upload-image`,
-        { method: "POST", body: formData },
-      );
-      if (!res.success || !res.data) throw new Error(res.message);
-      return res.data;
-    },
-    onSuccess: () => {
-      return Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: moduleKeys.detail(moduleId),
-        }),
-        queryClient.invalidateQueries({ queryKey: blockKeys.list(moduleId) }),
-      ]);
-    },
-  });
-}

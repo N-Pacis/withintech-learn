@@ -80,10 +80,6 @@ export const getCourse = async (id: string) => {
     where: { id },
     include: {
       createdBy: { select: { id: true, firstName: true, lastName: true } },
-      modules: {
-        orderBy: { orderIndex: "asc" },
-        include: { blocks: { orderBy: { orderIndex: "asc" } } },
-      },
       quiz: {
         include: {
           questions: {
@@ -141,9 +137,7 @@ export const publishCourse = async (id: string) => {
   const course = await prisma.course.findUnique({
     where: { id },
     include: {
-      modules: {
-        include: { blocks: true, lessons: { include: { blocks: true } } },
-      },
+      modules: { include: { lessons: true } },
     },
   });
   if (!course) throw notFound("Course not found");
@@ -151,12 +145,9 @@ export const publishCourse = async (id: string) => {
     throw badRequest("Only draft courses can be published");
   if (course.modules.length === 0)
     throw badRequest("Cannot publish a course with no modules");
-  const emptyModule = course.modules.find(
-    (m) =>
-      m.blocks.length === 0 && m.lessons.every((l) => l.blocks.length === 0),
-  );
+  const emptyModule = course.modules.find((m) => m.lessons.length === 0);
   if (emptyModule)
-    throw badRequest(`Module "${emptyModule.title}" has no content blocks`);
+    throw badRequest(`Module "${emptyModule.title}" has no lessons`);
   const updated = await prisma.course.update({
     where: { id },
     data: { status: "published" },
