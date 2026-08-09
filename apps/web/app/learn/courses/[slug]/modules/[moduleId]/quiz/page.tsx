@@ -35,21 +35,37 @@ export default function ModuleQuizPage() {
   const isCoursePassed = course.enrollment_status === "PASSED";
   const certHref = `/certificates/${profile?.id}/${course.slug}`;
 
-  function handlePass() {
+  // Records progress only. Never navigates.
+  function handleQuizPassed() {
     if (courseModule?.isCompleted) return;
-    completeModule(moduleId, {
-      onSuccess: () => {
-        if (isLast && course!.quiz) {
-          router.push(`/learn/courses/${slug}/quiz`);
-        } else if (isLast) {
-          router.push(certHref);
-        } else {
-          router.push(
-            `/learn/courses/${slug}/modules/${modules[moduleIndex + 1].id}`,
-          );
-        }
-      },
-    });
+    completeModule(moduleId);
+  }
+
+  function goNext() {
+    if (!isLast) {
+      router.push(
+        `/learn/courses/${slug}/modules/${modules[moduleIndex + 1].id}`,
+      );
+      return;
+    }
+    if (course!.quiz) {
+      router.push(`/learn/courses/${slug}/quiz`);
+      return;
+    }
+    router.push(certHref);
+  }
+
+  // "Back" means the lesson the student was reading before the quiz, which is
+  // the last one. Going to the module URL would not work: that page redirects
+  // to the first *incomplete* lesson, and every lesson is complete by the time
+  // the module quiz is reachable, so it would land on lesson 1.
+  function goBackToContent() {
+    const lastLesson = mod!.lessons[mod!.lessons.length - 1];
+    router.push(
+      lastLesson
+        ? `/learn/courses/${slug}/modules/${moduleId}/lessons/${lastLesson.id}`
+        : `/learn/courses/${slug}/modules/${moduleId}`,
+    );
   }
 
   return (
@@ -64,11 +80,18 @@ export default function ModuleQuizPage() {
       {/* Quiz card */}
       <div className="bg-surface-card rounded-2xl border border-border shadow-sm p-6 sm:p-8">
         <QuizSection
-          slug={slug}
-          moduleId={moduleId}
           quiz={mod.quiz}
-          lastAttempt={mod.lastAttempt}
-          onPass={handlePass}
+          quizType="module"
+          onPassed={handleQuizPassed}
+          onContinue={goNext}
+          continueBusy={completing}
+          continueLabel={
+            !isLast
+              ? "Next module"
+              : course.quiz
+                ? "Final quiz"
+                : "Finish course"
+          }
         />
       </div>
 
@@ -77,20 +100,23 @@ export default function ModuleQuizPage() {
         <Button
           variant="secondary"
           size="md"
-          onClick={() =>
-            router.push(`/learn/courses/${slug}/modules/${moduleId}`)
-          }
+          onClick={goBackToContent}
           className="flex items-center gap-2"
         >
           <ChevronLeft size={16} /> Back to content
         </Button>
 
+        {/* A second way to move on. Progress is already being recorded by
+            onPassed, so these only navigate — but stay disabled until that
+            request lands, or the student can reach a still-locked page. */}
         {quizPassed &&
           (isLast ? (
             course.quiz ? (
               <Button
                 size="md"
-                onClick={() => router.push(`/learn/courses/${slug}/quiz`)}
+                onClick={goNext}
+                loading={completing}
+                disabled={completing}
                 className="flex items-center gap-2"
               >
                 Final Quiz <Trophy size={15} />
@@ -108,8 +134,9 @@ export default function ModuleQuizPage() {
             ) : (
               <Button
                 size="md"
-                onClick={handlePass}
+                onClick={goNext}
                 loading={completing}
+                disabled={completing}
                 className="flex items-center gap-2"
               >
                 Complete course <Trophy size={16} />
@@ -118,8 +145,9 @@ export default function ModuleQuizPage() {
           ) : (
             <Button
               size="md"
-              onClick={handlePass}
+              onClick={goNext}
               loading={completing}
+              disabled={completing}
               className="flex items-center gap-2"
             >
               Next module <Trophy size={15} />
@@ -132,9 +160,7 @@ export default function ModuleQuizPage() {
         <Button
           variant="secondary"
           size="md"
-          onClick={() =>
-            router.push(`/learn/courses/${slug}/modules/${moduleId}`)
-          }
+          onClick={goBackToContent}
           className="px-3"
         >
           <ChevronLeft size={16} />
@@ -145,8 +171,9 @@ export default function ModuleQuizPage() {
         {quizPassed && (
           <Button
             size="md"
-            onClick={handlePass}
+            onClick={goNext}
             loading={completing}
+            disabled={completing}
             className="px-3"
           >
             <Trophy size={16} />
