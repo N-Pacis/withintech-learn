@@ -111,6 +111,36 @@ export async function getEnrollmentProgress(enrollmentId: string) {
     };
   }
 
+  // ── Attempts worth a second look ──
+  // The browser reports how often the student left the tab, lost focus, or
+  // tried to leave the quiz page mid-attempt, and how often the clock ran out
+  // with nothing submitted. Neither proves anything on its own. Both are worth
+  // showing to whoever is marking this student.
+  const flaggedAttempts = await prisma.quizAttempt.findMany({
+    where: {
+      userId: enrollment.studentId,
+      OR: [{ warningCount: { gt: 0 } }, { timedOut: true }],
+      quiz: {
+        OR: [
+          { courseId: enrollment.courseId },
+          { module: { courseId: enrollment.courseId } },
+          { lesson: { module: { courseId: enrollment.courseId } } },
+        ],
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 50,
+    select: {
+      id: true,
+      score: true,
+      status: true,
+      warningCount: true,
+      timedOut: true,
+      createdAt: true,
+      quiz: { select: { id: true, title: true } },
+    },
+  });
+
   return {
     enrollmentId,
     studentName: `${enrollment.student.firstName} ${enrollment.student.lastName}`,
@@ -119,5 +149,15 @@ export async function getEnrollmentProgress(enrollmentId: string) {
     completedModules: modules.filter((m) => m.completed).length,
     modules,
     finalQuiz,
+    flaggedAttempts: flaggedAttempts.map((a) => ({
+      id: a.id,
+      quizId: a.quiz.id,
+      quizTitle: a.quiz.title,
+      score: a.score,
+      status: a.status,
+      warningCount: a.warningCount,
+      timedOut: a.timedOut,
+      createdAt: a.createdAt,
+    })),
   };
 }

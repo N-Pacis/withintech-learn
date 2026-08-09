@@ -59,6 +59,7 @@ export interface StudentCourseModule {
   isLocked: boolean;
   lessonCount: number;
   hasLessons: boolean;
+  hasQuiz: boolean;
 }
 
 export interface StudentCourse {
@@ -125,6 +126,17 @@ export interface QuizAttemptSummary {
   score: number;
   status: "pass" | "fail";
   createdAt: string;
+  /** the clock ran out; the student never submitted this one */
+  timedOut?: boolean;
+}
+
+/** One sitting of a quiz. The deadline is the server's, not the browser's. */
+export interface QuizSession {
+  sessionId: string;
+  startedAt: string;
+  expiresAt: string;
+  timeLimitSeconds: number;
+  secondsRemaining: number;
 }
 
 export interface MarkedOption {
@@ -178,6 +190,10 @@ export interface QuizAttemptState {
   passed: boolean;
   /** true when the quiz was edited after the stored attempt */
   contentChanged: boolean;
+  /** how long one sitting lasts: two minutes per question */
+  timeLimitSeconds: number;
+  /** a sitting already in progress — resume it on its own clock, never a fresh one */
+  activeSession: QuizSession | null;
   lastAttempt: QuizAttemptSummary | null;
   /** null for attempts made before answers were stored */
   lastResult: Pick<QuizAttemptResult, "attempt" | "questions"> | null;
@@ -189,6 +205,11 @@ export interface StudentLesson {
   orderIndex: number;
   isCompleted: boolean;
   isLocked: boolean;
+  hasQuiz: boolean;
+  quizId: string | null;
+  /** A pass is recorded before the lesson is marked complete, so this is not
+   *  the same thing as isCompleted. */
+  quizPassed: boolean;
 }
 
 export interface StudentLessonDetail {
@@ -478,21 +499,47 @@ export function useQuizAttemptState(quizId: string | undefined) {
   });
 }
 
+/**
+ * Opens a sitting and starts the server's clock. Calling it again while a
+ * sitting is open returns that same sitting, so a refresh never buys more time
+ * and never costs another attempt.
+ */
+export function useStartQuiz() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (quizId: string): Promise<QuizSession> => {
+      const res = await apiFetch<QuizSession>(
+        `/student/quizzes/${quizId}/start`,
+        { method: "POST" },
+      );
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    onSuccess: (_data, quizId) => {
+      queryClient.invalidateQueries({
+        queryKey: quizAttemptKeys.state(quizId),
+      });
+    },
+  });
+}
+
 export function useSubmitQuiz() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       quizId,
       answers,
+      warningCount,
     }: {
       quizId: string;
       answers: { questionId: string; chosenOptionIds: string[] }[];
+      warningCount: number;
     }): Promise<QuizAttemptResult> => {
       const res = await apiFetch<QuizAttemptResult>(
         `/student/quizzes/${quizId}/attempt`,
         {
           method: "POST",
-          body: JSON.stringify({ answers }),
+          body: JSON.stringify({ answers, warningCount }),
         },
       );
       if (!res.success || !res.data) throw new Error(res.message);
