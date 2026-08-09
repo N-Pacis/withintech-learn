@@ -9,7 +9,8 @@
     "lint": "eslint src",
     "seed": "node dist/scripts/seed.js",
     "migrate": "ts-node-dev --transpile-only scripts/migrate.ts",
-    "backfill:module-blocks": "ts-node-dev --transpile-only scripts/backfill-module-blocks-to-lessons.ts"
+    "backfill:module-blocks": "ts-node-dev --transpile-only scripts/backfill-module-blocks-to-lessons.ts",
+    "seed:python": "ts-node-dev --transpile-only scripts/seed-python-course/index.ts"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.4",
