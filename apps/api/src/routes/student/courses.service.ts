@@ -295,7 +295,7 @@ export const completeCourse = async (slug: string, userId: string) => {
   return updated;
 };
 
-// Returns a single module with blocks + quiz (no isCorrect) + last attempt
+// Returns a single module with its lesson list + quiz (no isCorrect) + last attempt
 export const getStudentModule = async (
   slug: string,
   moduleId: string,
@@ -345,25 +345,13 @@ export const getStudentModule = async (
     }
   }
 
-  // Signed URLs for image blocks are generated fresh (presigned URLs expire in 1h)
-  const [blocks, lastAttempt] = await Promise.all([
-    Promise.all(
-      cachedMod.blocks.map(async (b) => ({
-        ...b,
-        url:
-          b.type === "image" && b.storageKey
-            ? await getSignedUrl(b.storageKey)
-            : null,
-      })),
-    ),
-    cachedMod.quiz
-      ? prisma.quizAttempt.findFirst({
-          where: { userId, quizId: cachedMod.quiz!.id },
-          orderBy: { createdAt: "desc" },
-          select: { id: true, score: true, status: true, createdAt: true },
-        })
-      : null,
-  ]);
+  const lastAttempt = cachedMod.quiz
+    ? await prisma.quizAttempt.findFirst({
+        where: { userId, quizId: cachedMod.quiz!.id },
+        orderBy: { createdAt: "desc" },
+        select: { id: true, score: true, status: true, createdAt: true },
+      })
+    : null;
 
   // Build lesson list with completion / lock state (empty for legacy modules)
   // Guard: modules cached before the lessons feature was deployed won't have the field
@@ -404,7 +392,7 @@ export const getStudentModule = async (
     }));
   }
 
-  return { ...cachedMod, blocks, lessons, lastAttempt: lastAttempt ?? null };
+  return { ...cachedMod, lessons, lastAttempt: lastAttempt ?? null };
 };
 
 export const completeModule = async (
