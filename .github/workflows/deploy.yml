@@ -148,6 +148,11 @@ jobs:
             docker compose build
 
       # ── 5. Run migrations (throwaway container, old api still live) ──────────
+      # The cache rebuild runs here too, before the new API takes traffic, so
+      # the first student through does not pay for a cold cache. It is
+      # idempotent: it only rewrites Redis from Postgres, never the other way.
+      # If the catalogue ever grows enough to make it slow, raise
+      # command_timeout rather than dropping the step.
       - name: Run migrations
         uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262 # v1.0.3
         with:
@@ -162,7 +167,8 @@ jobs:
             docker network create withintech_judge0_net 2>/dev/null || true
             docker compose run --rm --no-deps api sh -c "
               npx prisma migrate deploy &&
-              node --max-old-space-size=512 dist/scripts/seed.js
+              node --max-old-space-size=512 dist/scripts/seed.js &&
+              node --max-old-space-size=512 dist/scripts/rebuild-course-cache.js
             "
 
       # ── 6. Zero-downtime cutover via docker-rollout ──────────────────────────
