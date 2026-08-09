@@ -145,7 +145,6 @@ model Module {
   course     Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
   title      String
   orderIndex Int
-  blocks     ModuleBlock[]
   lessons    Lesson[]
   quiz       Quiz?
   progress   ModuleProgress[]
@@ -153,24 +152,6 @@ model Module {
   updatedAt  DateTime         @updatedAt
 
   @@unique([courseId, orderIndex])
-}
-
-model ModuleBlock {
-  id             String    @id @default(uuid())
-  moduleId       String
-  module         Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  type           BlockType
-  content        String?
-  storageKey     String?
-  caption        String?
-  language       String?
-  linkedGroupId  String?   // NEW: UUID for grouping related code blocks
-  playgroundData Json?
-  orderIndex     Int
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  @@unique([moduleId, orderIndex])
 }
 
 model Quiz {

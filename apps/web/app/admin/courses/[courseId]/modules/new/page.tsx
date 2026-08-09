@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, FormEvent } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useModules, useAddModule } from "@/hooks/queries/modules";
+import { useModules, useAddModule, useLessons } from "@/hooks/queries/modules";
 import {
   Stepper,
   Button,
@@ -13,18 +13,16 @@ import {
   CardFooter,
   PageLoader,
 } from "@/components/ui";
-import { ModuleBlocksEditor } from "@/components/admin/ModuleBlocksEditor";
 import { LessonEditor } from "@/components/admin/LessonEditor";
 import { QuizBuilder } from "@/components/admin/QuizBuilder";
 
 const STEPS = [
   { id: "info", label: "Module Info" },
-  { id: "blocks", label: "Content Blocks" },
   { id: "lessons", label: "Lessons" },
   { id: "quiz", label: "Quiz" },
 ];
 
-type StepIndex = 0 | 1 | 2 | 3;
+type StepIndex = 0 | 1 | 2;
 
 // ─── Step 1: Module Information ───────────────────────────────────────────────
 
@@ -124,7 +122,7 @@ function StepInfo({
             loading={isPending}
             disabled={!title.trim()}
           >
-            Next: Add Content
+            Next: Add Lessons
             <svg
               width="15"
               height="15"
@@ -145,24 +143,28 @@ function StepInfo({
   );
 }
 
-// ─── Step 2: Content Blocks ───────────────────────────────────────────────────
+// ─── Step 2: Lessons ──────────────────────────────────────────────────────────
 
-function StepBlocks({
+function StepLessons({
   moduleId,
+  courseId,
   onBack,
   onNext,
 }: {
   moduleId: string;
+  courseId: string;
   onBack: () => void;
   onNext: () => void;
 }) {
+  const { data: lessons = [] } = useLessons(moduleId);
+  const hasLessons = lessons.length > 0;
+
   return (
     <div className="flex flex-col gap-4">
-      <Card shadow="sm">
-        <CardBody>
-          <ModuleBlocksEditor moduleId={moduleId} />
-        </CardBody>
-        <CardFooter className="flex items-center justify-between">
+      <LessonEditor moduleId={moduleId} courseId={courseId} isDraft />
+
+      <div className="flex flex-col items-end gap-2 pt-2">
+        <div className="flex items-center justify-between w-full">
           <Button variant="ghost" size="md" onClick={onBack}>
             <svg
               width="15"
@@ -179,7 +181,7 @@ function StepBlocks({
             </svg>
             Back
           </Button>
-          <Button size="md" onClick={onNext}>
+          <Button size="md" onClick={onNext} disabled={!hasLessons}>
             Next: Quiz
             <svg
               width="15"
@@ -195,68 +197,18 @@ function StepBlocks({
               <path d="M12 5l7 7-7 7" />
             </svg>
           </Button>
-        </CardFooter>
-      </Card>
-    </div>
-  );
-}
-
-// ─── Step 3: Lessons ──────────────────────────────────────────────────────────
-
-function StepLessons({
-  moduleId,
-  courseId,
-  onBack,
-  onNext,
-}: {
-  moduleId: string;
-  courseId: string;
-  onBack: () => void;
-  onNext: () => void;
-}) {
-  return (
-    <div className="flex flex-col gap-4">
-      <LessonEditor moduleId={moduleId} courseId={courseId} isDraft />
-
-      <div className="flex items-center justify-between pt-2">
-        <Button variant="ghost" size="md" onClick={onBack}>
-          <svg
-            width="15"
-            height="15"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M19 12H5" />
-            <path d="M12 19l-7-7 7-7" />
-          </svg>
-          Back
-        </Button>
-        <Button size="md" onClick={onNext}>
-          Next: Quiz
-          <svg
-            width="15"
-            height="15"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M5 12h14" />
-            <path d="M12 5l7 7-7 7" />
-          </svg>
-        </Button>
+        </div>
+        {!hasLessons && (
+          <p className="font-body text-xs text-muted-contrast">
+            Add at least one lesson to continue.
+          </p>
+        )}
       </div>
     </div>
   );
 }
 
-// ─── Step 4: Quiz ─────────────────────────────────────────────────────────────
+// ─── Step 3: Quiz ─────────────────────────────────────────────────────────────
 
 function StepQuiz({
   moduleId,
@@ -370,15 +322,11 @@ const STEP_DESCRIPTIONS: Record<
     subtitle: "Give your module a title and set its position in the course.",
   },
   1: {
-    title: "Content Blocks",
-    subtitle: "Add text, images, and code blocks that make up this module.",
-  },
-  2: {
     title: "Lessons",
     subtitle:
       "Break this module into lessons. Each lesson can have its own content blocks and quiz.",
   },
-  3: {
+  2: {
     title: "Quiz",
     subtitle: "Optionally add a quiz to assess student understanding.",
   },
@@ -398,24 +346,16 @@ export default function NewModulePage() {
     setStep(1);
   }
 
-  function handleBlocksBack() {
+  function handleLessonsBack() {
     setStep(0);
   }
 
-  function handleBlocksNext() {
-    setStep(2);
-  }
-
-  function handleLessonsBack() {
-    setStep(1);
-  }
-
   function handleLessonsNext() {
-    setStep(3);
+    setStep(2);
   }
 
   function handleQuizBack() {
-    setStep(2);
+    setStep(1);
   }
 
   function handleFinish() {
@@ -440,13 +380,6 @@ export default function NewModulePage() {
       {/* Step content */}
       {step === 0 && <StepInfo courseId={courseId} onNext={handleInfoNext} />}
       {step === 1 && moduleId && (
-        <StepBlocks
-          moduleId={moduleId}
-          onBack={handleBlocksBack}
-          onNext={handleBlocksNext}
-        />
-      )}
-      {step === 2 && moduleId && (
         <StepLessons
           moduleId={moduleId}
           courseId={courseId}
@@ -454,7 +387,7 @@ export default function NewModulePage() {
           onNext={handleLessonsNext}
         />
       )}
-      {step === 3 && moduleId && (
+      {step === 2 && moduleId && (
         <StepQuiz
           moduleId={moduleId}
           onBack={handleQuizBack}
