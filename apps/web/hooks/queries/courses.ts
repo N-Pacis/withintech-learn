@@ -149,6 +149,38 @@ export interface QuizAttemptResult {
     courseId: string | null;
   };
   questions: MarkedQuestion[];
+  maxAttempts: number;
+  windowHours: number;
+  attemptsUsed: number;
+  attemptsLeft: number;
+  /** ISO date when the next attempt unlocks; null when one is free now */
+  retryAvailableAt: string | null;
+}
+
+/**
+ * maxAttempts is a rolling limit: the student gets `maxAttempts` attempts per
+ * `windowHours`, and slots come back on their own. A student is never blocked
+ * permanently, so nobody has to reset anything for them.
+ */
+export interface QuizAttemptState {
+  quizId: string;
+  maxAttempts: number;
+  windowHours: number;
+  /** attempts inside the current window — this is what the limit counts */
+  attemptsUsed: number;
+  attemptsLeft: number;
+  /** every attempt ever, for display only */
+  attemptsTotal: number;
+  /** true when the student may start another attempt right now */
+  canAttempt: boolean;
+  /** ISO date when the next attempt unlocks; null when one is free or passed */
+  retryAvailableAt: string | null;
+  passed: boolean;
+  /** true when the quiz was edited after the stored attempt */
+  contentChanged: boolean;
+  lastAttempt: QuizAttemptSummary | null;
+  /** null for attempts made before answers were stored */
+  lastResult: Pick<QuizAttemptResult, "attempt" | "questions"> | null;
 }
 
 export interface StudentLesson {
@@ -208,6 +240,12 @@ export const courseKeys = {
     top: ["courses", "public", "top"] as const,
     all: ["courses", "public", "all"] as const,
   },
+};
+
+// Per-user attempt state. Kept apart from courseKeys on purpose: the course
+// payload is shared and content-shaped, this is personal and changes on submit.
+export const quizAttemptKeys = {
+  state: (quizId: string) => ["student", "quiz", quizId, "state"] as const,
 };
 
 // ─── Admin queries ────────────────────────────────────────────────────────────
@@ -417,7 +455,31 @@ export function useCompleteCourse(slug: string) {
   });
 }
 
+export function useQuizAttemptState(quizId: string | undefined) {
+  return useQuery({
+    queryKey: quizAttemptKeys.state(quizId ?? ""),
+    queryFn: async (): Promise<QuizAttemptState> => {
+      const res = await apiFetch<QuizAttemptState>(
+        `/student/quizzes/${quizId}/state`,
+      );
+      if (!res.success || !res.data) throw new Error(res.message);
+      return res.data;
+    },
+    enabled: !!quizId,
+    // Attempt state is personal and changes on submit — never serve it stale.
+    staleTime: 0,
+    // While the student is waiting out a cooldown, poll slowly so the Retake
+    // button comes back on its own instead of needing a refresh.
+    refetchInterval: (query) => {
+      const d = query.state.data;
+      if (!d || d.passed || d.canAttempt || !d.retryAvailableAt) return false;
+      return 60_000;
+    },
+  });
+}
+
 export function useSubmitQuiz() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       quizId,
@@ -435,6 +497,11 @@ export function useSubmitQuiz() {
       );
       if (!res.success || !res.data) throw new Error(res.message);
       return res.data;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: quizAttemptKeys.state(variables.quizId),
+      });
     },
   });
 }
