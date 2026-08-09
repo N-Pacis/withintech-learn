@@ -2,10 +2,10 @@
   "name": "withintech-learn-docs",
   "private": true,
   "scripts": {
-    "dev": "mint dev --port 4000",
-    "build": "mint broken-links",
-    "start": "mint dev --port 4000",
-    "start:docker": "mint dev --port 4000 --host 0.0.0.0"
+    "dev": "node init && mint dev --port 4000",
+    "build": "node init && mint broken-links",
+    "start": "node init && mint dev --port 4000",
+    "start:docker": "node init && mint dev --port 4000 --host 0.0.0.0"
   },
   "devDependencies": {
     "mint": "^4.2.80",
