@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { sendSuccess } from '../../utils/response';
 import { badRequest } from '../../utils/errors';
-import { submitQuiz } from './quiz.service';
+import { submitQuiz, getQuizAttemptState } from './quiz.service';
 
 const router = Router();
 
@@ -17,6 +17,11 @@ const submitSchema = z.object({
     )
     .min(1),
 });
+
+router.get('/student/quizzes/:quizId/state', asyncHandler(async (req: Request, res: Response) => {
+  const result = await getQuizAttemptState(req.user!.userId, req.params.quizId);
+  sendSuccess(res, result);
+}));
 
 router.post('/student/quizzes/:quizId/attempt', asyncHandler(async (req: Request, res: Response) => {
   const parsed = submitSchema.safeParse(req.body);
