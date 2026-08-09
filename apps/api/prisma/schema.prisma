@@ -177,16 +177,32 @@ enum AttemptStatus {
 }
 
 model QuizAttempt {
-  id        String        @id @default(uuid())
+  id        String              @id @default(uuid())
   userId    String
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   quizId    String
-  quiz      Quiz          @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  quiz      Quiz                @relation(fields: [quizId], references: [id], onDelete: Cascade)
   score     Int
   status    AttemptStatus
-  createdAt DateTime      @default(now())
+  answers   QuizAttemptAnswer[]
+  createdAt DateTime            @default(now())
 
   @@index([userId, quizId])
+}
+
+// One row per option the student ticked.
+// questionId and optionId are deliberately NOT relations: quiz content cascades on
+// delete, and we do not want an admin editing a quiz to erase past attempts.
+model QuizAttemptAnswer {
+  id         String      @id @default(uuid())
+  attemptId  String
+  attempt    QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId String
+  optionId   String
+  createdAt  DateTime    @default(now())
+
+  @@unique([attemptId, questionId, optionId])
+  @@index([attemptId])
 }
 
 model Question {
