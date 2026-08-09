@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { AlertTriangle } from "lucide-react";
 import {
   useEnrollments,
   useEnrollmentProgress,
@@ -217,6 +218,62 @@ function ProgressPopup({
                   </>
                 )}
               </div>
+
+              {/* ── Attempts worth a second look ──
+                  The counts come from the student's browser, so they are a
+                  reason to look, never proof. Shown only when there is
+                  something to show. */}
+              {data.flaggedAttempts.length > 0 && (
+                <div className="mt-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle
+                      size={14}
+                      className="text-amber-600 dark:text-amber-400 shrink-0"
+                    />
+                    <h3 className="font-heading font-bold text-sm text-foreground">
+                      Attempts worth a second look
+                    </h3>
+                  </div>
+                  <p className="font-body text-xs text-muted-contrast mb-3">
+                    Reported by the student&apos;s browser. Treat it as a reason
+                    to check, not as proof.
+                  </p>
+                  <div className="flex flex-col gap-1">
+                    {data.flaggedAttempts.map((a) => (
+                      <div
+                        key={a.id}
+                        className="flex flex-wrap items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-surface-panel"
+                      >
+                        <span className="font-body text-sm text-foreground-soft flex-1 min-w-0 truncate">
+                          {a.quizTitle}
+                        </span>
+                        <span className="font-body text-xs text-muted-contrast">
+                          {new Date(a.createdAt).toLocaleString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                        <span className="font-body text-xs font-medium px-2 py-0.5 rounded-full bg-surface-muted text-muted-contrast">
+                          {a.score}%
+                        </span>
+                        {a.timedOut && (
+                          <span className="font-body text-xs font-medium px-2 py-0.5 rounded-full bg-surface-muted text-muted-contrast">
+                            Ran out of time
+                          </span>
+                        )}
+                        {a.warningCount > 0 && (
+                          <span className="font-body text-xs font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
+                            {a.warningCount} warning
+                            {a.warningCount === 1 ? "" : "s"}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>

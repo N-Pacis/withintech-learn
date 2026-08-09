@@ -8,11 +8,13 @@ import { usePublishedCourse, courseKeys } from "@/hooks/queries/courses";
 import { useProfile } from "@/hooks/queries/auth";
 import { Button, PageLoader } from "@/components/ui";
 import { QuizSection } from "../components/QuizSection";
+import { useAttemptGuard } from "../components/AttemptGuard";
 import Link from "next/link";
 
 export default function CourseQuizPage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
+  const { guardedNavigate } = useAttemptGuard();
   const { data: course, isLoading } = usePublishedCourse(slug);
   const { data: profile } = useProfile();
   // Every hook must run before the early returns below, or React breaks when
@@ -45,6 +47,15 @@ export default function CourseQuizPage() {
   const certHref = `/certificates/${profile?.id}/${course.slug}`;
   const checkoutHref = `/learn/courses/${slug}/checkout?type=certificate`;
   const lastModuleId = course.modules[course.modules.length - 1]?.id;
+
+  // Guarded: the final quiz covers the whole course, so this is the trip back
+  // to the material it is testing.
+  function goBackToContent() {
+    if (!lastModuleId) return;
+    guardedNavigate(() =>
+      router.push(`/learn/courses/${slug}/modules/${lastModuleId}`),
+    );
+  }
 
   // Records progress only. The student stays on the results view; the
   // certificate opens from the Continue button, never on its own — a popup
@@ -123,10 +134,7 @@ export default function CourseQuizPage() {
         <Button
           variant="secondary"
           size="md"
-          onClick={() =>
-            lastModuleId &&
-            router.push(`/learn/courses/${slug}/modules/${lastModuleId}`)
-          }
+          onClick={goBackToContent}
           className="flex items-center gap-2"
         >
           <ChevronLeft size={16} /> Previous
@@ -153,10 +161,7 @@ export default function CourseQuizPage() {
         <Button
           variant="secondary"
           size="md"
-          onClick={() =>
-            lastModuleId &&
-            router.push(`/learn/courses/${slug}/modules/${lastModuleId}`)
-          }
+          onClick={goBackToContent}
           className="px-3"
         >
           <ChevronLeft size={16} />

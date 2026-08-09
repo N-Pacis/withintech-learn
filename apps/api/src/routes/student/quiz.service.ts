@@ -2,6 +2,10 @@ import { prisma } from "../../db/prisma";
 import { badRequest, notFound, forbidden } from "../../utils/errors";
 import { upsertCertificate } from "./certificates.service";
 import { recalculateUserScore } from "../../utils/scoring";
+import {
+  assertModuleLessonsCompleted,
+  assertCourseModulesCompleted,
+} from "../../utils/progress-gates";
 
 export interface SubmittedAnswer {
   questionId: string;
@@ -160,14 +164,190 @@ const markAnswers = (quiz: LoadedQuiz, answerMap: Map<string, string[]>) => {
   return { questions, score };
 };
 
+// ─── Timed sittings ───────────────────────────────────────────────────────────
+
+/**
+ * Two minutes per question. These are mostly multiple choice, so the limit is
+ * comfortable for someone who studied the lesson and far too short for someone
+ * reading it for the first time during the quiz.
+ *
+ * This is the point of the whole timing feature: we cannot stop a student from
+ * opening the lesson in another tab — they are allowed to read it — but we can
+ * make it cost more time than they have.
+ */
+const SECONDS_PER_QUESTION = 120;
+
+/**
+ * How late a submission may arrive and still be graded. Covers a slow network
+ * on the last request, not a student who kept working past the deadline.
+ */
+const LATE_SUBMIT_GRACE_MS = 15_000;
+
+const timeLimitSecondsFor = (questionCount: number) =>
+  questionCount * SECONDS_PER_QUESTION;
+
+interface SessionRow {
+  id: string;
+  startedAt: Date;
+  expiresAt: Date;
+}
+
+const describeSession = (session: SessionRow, questionCount: number) => ({
+  sessionId: session.id,
+  startedAt: session.startedAt,
+  expiresAt: session.expiresAt,
+  timeLimitSeconds: timeLimitSecondsFor(questionCount),
+  secondsRemaining: Math.max(
+    0,
+    Math.ceil((session.expiresAt.getTime() - Date.now()) / 1000),
+  ),
+});
+
+/** The one sitting still open, if any. */
+const findOpenSession = (userId: string, quizId: string) =>
+  prisma.quizAttemptSession.findFirst({
+    where: { userId, quizId, closedAt: null },
+    orderBy: { startedAt: "desc" },
+  });
+
+/**
+ * Turns one abandoned sitting into a zero.
+ *
+ * Claim the session first with a conditional update. Two requests can arrive at
+ * the same moment — whoever wins writes the attempt, the loser does nothing, so
+ * a sitting can never produce two attempts.
+ */
+const closeSessionAsTimedOut = async (
+  sessionId: string,
+  userId: string,
+  quizId: string,
+): Promise<boolean> => {
+  const claimed = await prisma.quizAttemptSession.updateMany({
+    where: { id: sessionId, closedAt: null },
+    data: { closedAt: new Date() },
+  });
+  if (claimed.count === 0) return false;
+
+  const attempt = await prisma.quizAttempt.create({
+    data: { userId, quizId, score: 0, status: "fail", timedOut: true },
+    select: { id: true },
+  });
+  await prisma.quizAttemptSession.update({
+    where: { id: sessionId },
+    data: { attemptId: attempt.id },
+  });
+  return true;
+};
+
+/**
+ * Closes every sitting whose clock ran out without a submission.
+ *
+ * Without this the time limit would buy nothing: a student could start, read
+ * the lesson, abandon the tab, and start again on a fresh clock. Walking away
+ * has to cost exactly what failing costs.
+ *
+ * It runs lazily, on every read and write of this quiz, so there is no cron job
+ * to keep alive. The grace period is subtracted here too, so a submission that
+ * is merely slow is never reaped out from under itself.
+ */
+const closeExpiredSessions = async (userId: string, quizId: string) => {
+  const expired = await prisma.quizAttemptSession.findMany({
+    where: {
+      userId,
+      quizId,
+      closedAt: null,
+      expiresAt: { lt: new Date(Date.now() - LATE_SUBMIT_GRACE_MS) },
+    },
+    select: { id: true },
+  });
+  if (expired.length === 0) return;
+
+  let closedAny = false;
+  for (const session of expired) {
+    const closed = await closeSessionAsTimedOut(session.id, userId, quizId);
+    closedAny = closedAny || closed;
+  }
+  // A zero on a quiz the student has not passed carries the same "attempted but
+  // never passed" penalty as any other fail, so the score has to be redone.
+  if (closedAny) await recalculateUserScore(userId);
+};
+
+/**
+ * Starts a sitting, or hands back the one already open.
+ *
+ * Resuming matters: a refresh, a flat battery or a dropped connection must not
+ * restart the clock and must not cost another attempt. Only a genuinely new
+ * sitting does.
+ */
+export const startQuizAttempt = async (userId: string, quizId: string) => {
+  const quiz = await loadQuizForStudent(userId, quizId);
+
+  if (quiz.moduleId) await assertModuleLessonsCompleted(userId, quiz.moduleId);
+  if (quiz.courseId) await assertCourseModulesCompleted(userId, quiz.courseId);
+
+  await closeExpiredSessions(userId, quizId);
+
+  const passedBefore = await prisma.quizAttempt.findFirst({
+    where: { userId, quizId, status: "pass" },
+    select: { id: true },
+  });
+  if (passedBefore) throw badRequest("You have already passed this quiz");
+
+  const open = await findOpenSession(userId, quizId);
+  if (open) return describeSession(open, quiz.questions.length);
+
+  const recent = await prisma.quizAttempt.findMany({
+    where: { userId, quizId, createdAt: { gte: windowStart() } },
+    orderBy: { createdAt: "desc" },
+    select: { createdAt: true },
+  });
+  const blockedUntil = nextAttemptAt(recent, quiz.maxAttempts);
+  if (blockedUntil)
+    throw badRequest(
+      `You have used your ${quiz.maxAttempts} attempts for now. You can try again in ${describeWait(blockedUntil)}.`,
+    );
+
+  const limitSeconds = timeLimitSecondsFor(quiz.questions.length);
+  const session = await prisma.quizAttemptSession.create({
+    data: {
+      userId,
+      quizId,
+      expiresAt: new Date(Date.now() + limitSeconds * 1000),
+    },
+  });
+
+  return describeSession(session, quiz.questions.length);
+};
+
 // ─── Submit ───────────────────────────────────────────────────────────────────
 
 export const submitQuiz = async (
   userId: string,
   quizId: string,
   answers: SubmittedAnswer[],
+  warningCount = 0,
 ) => {
   const quiz = await loadQuizForStudent(userId, quizId);
+
+  // The content under the quiz must be finished first. The UI locks these
+  // links, but the URL is reachable by hand.
+  if (quiz.moduleId) await assertModuleLessonsCompleted(userId, quiz.moduleId);
+  if (quiz.courseId) await assertCourseModulesCompleted(userId, quiz.courseId);
+
+  // ── The sitting has to be open ──
+  // Look before reaping: a submission inside the grace window must not be
+  // closed as a timeout by its own request.
+  const session = await findOpenSession(userId, quizId);
+  if (!session)
+    throw badRequest(
+      "Your quiz sitting has ended. Start the quiz again to answer.",
+    );
+
+  if (Date.now() > session.expiresAt.getTime() + LATE_SUBMIT_GRACE_MS) {
+    await closeSessionAsTimedOut(session.id, userId, quizId);
+    await recalculateUserScore(userId);
+    throw badRequest("Your time ran out. This attempt was scored 0.");
+  }
 
   // A pass closes the quiz for good. Failed attempts are limited per window.
   const [passedBefore, recent] = await Promise.all([
@@ -230,6 +410,10 @@ export const submitQuiz = async (
       quizId,
       score,
       status,
+      // Reported by the browser, so it is a signal for an admin to look at a
+      // student, never proof on its own. Stored because a warning nobody keeps
+      // is a warning nobody can act on.
+      warningCount,
       answers: {
         create: answers.flatMap((a) =>
           a.chosenOptionIds.map((optionId) => ({
@@ -246,6 +430,12 @@ export const submitQuiz = async (
       quizId: true,
       createdAt: true,
     },
+  });
+
+  // This sitting is done, whatever the result.
+  await prisma.quizAttemptSession.update({
+    where: { id: session.id },
+    data: { closedAt: new Date(), attemptId: attempt.id },
   });
 
   // Auto-complete the course when a course quiz is passed.
@@ -298,6 +488,12 @@ export const submitQuiz = async (
 export const getQuizAttemptState = async (userId: string, quizId: string) => {
   const quiz = await loadQuizForStudent(userId, quizId);
 
+  // Lazy expiry: a sitting the student walked away from becomes a zero the
+  // next time anyone asks about this quiz. This is a read that writes, on
+  // purpose — the alternative is a scheduled job for something that only ever
+  // matters when a student comes back.
+  await closeExpiredSessions(userId, quizId);
+
   const [attemptsTotal, recent, latest] = await Promise.all([
     prisma.quizAttempt.count({ where: { userId, quizId } }),
     prisma.quizAttempt.findMany({
@@ -314,6 +510,7 @@ export const getQuizAttemptState = async (userId: string, quizId: string) => {
         status: true,
         quizId: true,
         createdAt: true,
+        timedOut: true,
         answers: { select: { questionId: true, optionId: true } },
       },
     }),
@@ -373,6 +570,10 @@ export const getQuizAttemptState = async (userId: string, quizId: string) => {
 
   const attemptsUsed = recent.length;
 
+  // Anything still open here is inside its clock — closeExpiredSessions ran at
+  // the top. The student is mid-sitting and should be put straight back into it.
+  const openSession = passed ? null : await findOpenSession(userId, quizId);
+
   return {
     quizId: quiz.id,
     maxAttempts: quiz.maxAttempts,
@@ -387,12 +588,20 @@ export const getQuizAttemptState = async (userId: string, quizId: string) => {
     retryAvailableAt: passed ? null : nextAttemptAt(recent, quiz.maxAttempts),
     passed,
     contentChanged,
+    /** how long a sitting lasts: two minutes per question */
+    timeLimitSeconds: timeLimitSecondsFor(quiz.questions.length),
+    /** a sitting the student is in the middle of, to be resumed on its own clock */
+    activeSession: openSession
+      ? describeSession(openSession, quiz.questions.length)
+      : null,
     lastAttempt: latest
       ? {
           id: latest.id,
           score: latest.score,
           status: latest.status,
           createdAt: latest.createdAt,
+          /** the clock ran out; this was never submitted by the student */
+          timedOut: latest.timedOut,
         }
       : null,
     lastResult,

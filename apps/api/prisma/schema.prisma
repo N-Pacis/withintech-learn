@@ -43,6 +43,7 @@ model User {
   enrollments          StudentCourse[]
   payments             Payment[]
   quizAttempts         QuizAttempt[]
+  quizSessions         QuizAttemptSession[]
   moduleProgress       ModuleProgress[]
   lessonProgress       LessonProgress[]
   certificates         Certificate[]
@@ -167,6 +168,7 @@ model Quiz {
   maxAttempts  Int           @default(3)
   questions    Question[]
   attempts     QuizAttempt[]
+  sessions     QuizAttemptSession[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -185,9 +187,44 @@ model QuizAttempt {
   score     Int
   status    AttemptStatus
   answers   QuizAttemptAnswer[]
+  session   QuizAttemptSession?
+  /// How many times the student left the tab, lost focus, or tried to leave the
+  /// quiz page while this attempt was open. Reported by the browser, so treat it
+  /// as a signal to look at a student, never as proof on its own.
+  warningCount Int              @default(0)
+  /// True when the clock ran out and the attempt was closed with a zero rather
+  /// than submitted by the student.
+  timedOut  Boolean             @default(false)
   createdAt DateTime            @default(now())
 
   @@index([userId, quizId])
+}
+
+// One sitting of a quiz. Created when the student presses Start, closed when the
+// attempt is graded — either by the student submitting, or by the reaper after
+// the clock ran out.
+//
+// The clock lives here, on the server, because a countdown in the browser is
+// worth nothing: the student can edit it. Resuming an open session returns the
+// SAME deadline, so a refresh or a crash costs no time, but starting over does
+// cost an attempt.
+model QuizAttemptSession {
+  id        String       @id @default(uuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId    String
+  quiz      Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  startedAt DateTime     @default(now())
+  expiresAt DateTime
+  /// Set once this session has produced a QuizAttempt. A session with no
+  /// closedAt and a future expiresAt is the one active sitting.
+  closedAt  DateTime?
+  attemptId String?      @unique
+  attempt   QuizAttempt? @relation(fields: [attemptId], references: [id], onDelete: SetNull)
+  createdAt DateTime     @default(now())
+
+  @@index([userId, quizId])
+  @@index([expiresAt])
 }
 
 // One row per option the student ticked.

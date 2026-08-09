@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { ArrowRight, ChevronLeft, CheckCircle2 } from "lucide-react";
+import { ArrowRight, ChevronLeft, CheckCircle2, ClipboardCheck } from "lucide-react";
 import {
   usePublishedCourse,
   useStudentModule,
@@ -14,7 +14,10 @@ import {
 import { Button, PageLoader } from "@/components/ui";
 import { CodeEditor, type CodeLanguage } from "@/components/ui/CodeEditor";
 import { TiptapViewer } from "@/components/ui/TiptapEditor";
-import { QuizSection } from "../../../../components/QuizSection";
+import {
+  nextAfterLesson,
+  lessonQuizHref,
+} from "../../../../lib/lesson-navigation";
 import CodePlayground from "@/components/playground/CodePlayground";
 import { CodeBlockPreviewButton } from "@/components/CodeBlockPreviewButton";
 
@@ -187,14 +190,10 @@ export default function LessonPage() {
   );
 
   const lessons = mod?.lessons ?? [];
-  const modules = course?.modules ?? [];
   const lessonIndex = lessons.findIndex((l) => l.id === lessonId);
   const currentLesson = lessons[lessonIndex];
   const isLastLesson = lessonIndex === lessons.length - 1;
   const isCompleted = currentLesson?.isCompleted ?? false;
-
-  const moduleIndex = modules.findIndex((m) => m.id === moduleId);
-  const isLastModule = moduleIndex === modules.length - 1;
 
   // Redirect if lesson is locked
   useEffect(() => {
@@ -208,44 +207,26 @@ export default function LessonPage() {
 
   const hasQuiz = !!lesson.quiz;
   const quizPassed = lesson.lastAttempt?.status === "pass";
-  const needsQuiz = hasQuiz && !quizPassed;
+  const quizHref = lessonQuizHref(slug, moduleId, lessonId);
 
-  // Records progress only. Never navigates — the student stays on the results
-  // view until they choose to move on.
-  function handleQuizPassed() {
-    if (isCompleted) return;
-    completeLesson(lessonId);
-  }
-
-  // The single "where do I go next" rule for this page.
   function goNext() {
-    if (!isLastLesson) {
-      const nextLesson = lessons[lessonIndex + 1];
-      router.push(
-        `/learn/courses/${slug}/modules/${moduleId}/lessons/${nextLesson.id}`,
-      );
-      return;
-    }
-    if (mod!.quiz) {
-      router.push(`/learn/courses/${slug}/modules/${moduleId}/quiz`);
-      return;
-    }
-    if (!isLastModule) {
-      router.push(
-        `/learn/courses/${slug}/modules/${modules[moduleIndex + 1].id}`,
-      );
-      return;
-    }
-    if (course!.quiz) {
-      router.push(`/learn/courses/${slug}/quiz`);
-      return;
-    }
-    router.push(`/learn/courses/${slug}`);
+    router.push(nextAfterLesson({ slug, course: course!, mod: mod!, lessonId }));
   }
 
   // No quiz on this lesson: the button click is the explicit intent, so
   // completing and navigating together is correct here.
   function handleCompleteWithoutQuiz() {
+    completeLesson(lessonId, { onSuccess: goNext });
+  }
+
+  // Passing the quiz and recording the completion are two requests. If the
+  // second one never landed, the lesson is passed but not complete, and the
+  // next lesson is still locked. Record it before moving on.
+  function handleContinueAfterQuiz() {
+    if (isCompleted) {
+      goNext();
+      return;
+    }
     completeLesson(lessonId, { onSuccess: goNext });
   }
 
@@ -294,34 +275,47 @@ export default function LessonPage() {
           ))}
         </div>
 
-        {/* Lesson quiz inline */}
-        {hasQuiz && (
-          <div className="mt-8 pt-6 border-t border-border">
-            <QuizSection
-              quiz={lesson.quiz!}
-              quizType="lesson"
-              onPassed={handleQuizPassed}
-              onContinue={goNext}
-              continueBusy={completing}
-              continueLabel={isLastLesson ? "Continue" : "Next lesson"}
-            />
-          </div>
-        )}
-
-        {/* Complete button when no quiz or quiz already passed */}
-        {!needsQuiz && !isCompleted && (
-          <div className="mt-8 pt-6 border-t border-border">
+        {/* The quiz lives on its own page. Sending the student there is the
+            only thing this page does about it. */}
+        {hasQuiz ? (
+          <div className="mt-8 pt-6 border-t border-border flex flex-wrap items-center gap-3">
             <Button
               size="md"
-              onClick={handleCompleteWithoutQuiz}
-              disabled={completing}
-              loading={completing}
+              variant={quizPassed ? "secondary" : "primary"}
+              onClick={() => router.push(quizHref)}
               className="flex items-center gap-2"
             >
-              {isLastLesson ? "Complete & continue" : "Next lesson"}{" "}
-              <ArrowRight size={16} />
+              {quizPassed ? "Review quiz" : "Take quiz"}{" "}
+              <ClipboardCheck size={16} />
             </Button>
+            {quizPassed && (
+              <Button
+                size="md"
+                onClick={handleContinueAfterQuiz}
+                loading={completing}
+                disabled={completing}
+                className="flex items-center gap-2"
+              >
+                {isLastLesson ? "Continue" : "Next lesson"}{" "}
+                <ArrowRight size={16} />
+              </Button>
+            )}
           </div>
+        ) : (
+          !isCompleted && (
+            <div className="mt-8 pt-6 border-t border-border">
+              <Button
+                size="md"
+                onClick={handleCompleteWithoutQuiz}
+                disabled={completing}
+                loading={completing}
+                className="flex items-center gap-2"
+              >
+                {isLastLesson ? "Complete & continue" : "Next lesson"}{" "}
+                <ArrowRight size={16} />
+              </Button>
+            </div>
+          )
         )}
       </div>
 

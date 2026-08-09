@@ -10,11 +10,13 @@ import {
 import { useProfile } from "@/hooks/queries/auth";
 import { Button, PageLoader } from "@/components/ui";
 import { QuizSection } from "../../../components/QuizSection";
+import { useAttemptGuard } from "../../../components/AttemptGuard";
 import Link from "next/link";
 
 export default function ModuleQuizPage() {
   const { slug, moduleId } = useParams<{ slug: string; moduleId: string }>();
   const router = useRouter();
+  const { guardedNavigate } = useAttemptGuard();
   const { data: mod, isLoading } = useStudentModule(slug, moduleId);
   const { data: course } = usePublishedCourse(slug);
   const { data: profile } = useProfile();
@@ -61,10 +63,13 @@ export default function ModuleQuizPage() {
   // the module quiz is reachable, so it would land on lesson 1.
   function goBackToContent() {
     const lastLesson = mod!.lessons[mod!.lessons.length - 1];
-    router.push(
-      lastLesson
-        ? `/learn/courses/${slug}/modules/${moduleId}/lessons/${lastLesson.id}`
-        : `/learn/courses/${slug}/modules/${moduleId}`,
+    // Guarded: this is the trip back to the material the quiz is about.
+    guardedNavigate(() =>
+      router.push(
+        lastLesson
+          ? `/learn/courses/${slug}/modules/${moduleId}/lessons/${lastLesson.id}`
+          : `/learn/courses/${slug}/modules/${moduleId}`,
+      ),
     );
   }
 
