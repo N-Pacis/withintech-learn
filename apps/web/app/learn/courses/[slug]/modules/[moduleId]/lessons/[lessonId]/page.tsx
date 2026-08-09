@@ -210,58 +210,43 @@ export default function LessonPage() {
   const quizPassed = lesson.lastAttempt?.status === "pass";
   const needsQuiz = hasQuiz && !quizPassed;
 
-  function handleQuizPass() {
+  // Records progress only. Never navigates — the student stays on the results
+  // view until they choose to move on.
+  function handleQuizPassed() {
     if (isCompleted) return;
-    // After passing the lesson quiz, complete the lesson
-    completeLesson(lessonId, {
-      onSuccess: () => {
-        if (isLastLesson) {
-          // Go to module quiz or next module
-          if (mod!.quiz) {
-            router.push(`/learn/courses/${slug}/modules/${moduleId}/quiz`);
-          } else if (!isLastModule) {
-            router.push(
-              `/learn/courses/${slug}/modules/${modules[moduleIndex + 1].id}`,
-            );
-          } else if (course!.quiz) {
-            router.push(`/learn/courses/${slug}/quiz`);
-          } else {
-            router.push(`/learn/courses/${slug}`);
-          }
-        } else {
-          // Go to next lesson
-          const nextLesson = lessons[lessonIndex + 1];
-          router.push(
-            `/learn/courses/${slug}/modules/${moduleId}/lessons/${nextLesson.id}`,
-          );
-        }
-      },
-    });
+    completeLesson(lessonId);
   }
 
+  // The single "where do I go next" rule for this page.
+  function goNext() {
+    if (!isLastLesson) {
+      const nextLesson = lessons[lessonIndex + 1];
+      router.push(
+        `/learn/courses/${slug}/modules/${moduleId}/lessons/${nextLesson.id}`,
+      );
+      return;
+    }
+    if (mod!.quiz) {
+      router.push(`/learn/courses/${slug}/modules/${moduleId}/quiz`);
+      return;
+    }
+    if (!isLastModule) {
+      router.push(
+        `/learn/courses/${slug}/modules/${modules[moduleIndex + 1].id}`,
+      );
+      return;
+    }
+    if (course!.quiz) {
+      router.push(`/learn/courses/${slug}/quiz`);
+      return;
+    }
+    router.push(`/learn/courses/${slug}`);
+  }
+
+  // No quiz on this lesson: the button click is the explicit intent, so
+  // completing and navigating together is correct here.
   function handleCompleteWithoutQuiz() {
-    completeLesson(lessonId, {
-      onSuccess: () => {
-        if (isLastLesson) {
-          if (mod!.quiz) {
-            router.push(`/learn/courses/${slug}/modules/${moduleId}/quiz`);
-          } else if (!isLastModule) {
-            router.push(
-              `/learn/courses/${slug}/modules/${modules[moduleIndex + 1].id}`,
-            );
-          } else if (course!.quiz) {
-            router.push(`/learn/courses/${slug}/quiz`);
-          } else {
-            router.push(`/learn/courses/${slug}`);
-          }
-        } else {
-          const nextLesson = lessons[lessonIndex + 1];
-          router.push(
-            `/learn/courses/${slug}/modules/${moduleId}/lessons/${nextLesson.id}`,
-          );
-        }
-      },
-    });
+    completeLesson(lessonId, { onSuccess: goNext });
   }
 
   function handlePrev() {
@@ -313,12 +298,12 @@ export default function LessonPage() {
         {hasQuiz && (
           <div className="mt-8 pt-6 border-t border-border">
             <QuizSection
-              slug={slug}
-              moduleId={moduleId}
               quiz={lesson.quiz!}
-              lastAttempt={lesson.lastAttempt}
-              onPass={handleQuizPass}
               quizType="lesson"
+              onPassed={handleQuizPassed}
+              onContinue={goNext}
+              continueBusy={completing}
+              continueLabel={isLastLesson ? "Continue" : "Next lesson"}
             />
           </div>
         )}
@@ -361,21 +346,7 @@ export default function LessonPage() {
             Next lesson <ArrowRight size={16} />
           </Button>
         ) : isCompleted && isLastLesson ? (
-          <Button
-            size="md"
-            onClick={() => {
-              if (mod.quiz) {
-                router.push(`/learn/courses/${slug}/modules/${moduleId}/quiz`);
-              } else if (!isLastModule) {
-                router.push(
-                  `/learn/courses/${slug}/modules/${modules[moduleIndex + 1].id}`,
-                );
-              } else {
-                router.push(`/learn/courses/${slug}`);
-              }
-            }}
-            className="flex items-center gap-2"
-          >
+          <Button size="md" onClick={goNext} className="flex items-center gap-2">
             Continue <ArrowRight size={16} />
           </Button>
         ) : null}
@@ -400,21 +371,7 @@ export default function LessonPage() {
             <ArrowRight size={16} />
           </Button>
         ) : isCompleted && isLastLesson ? (
-          <Button
-            size="md"
-            onClick={() => {
-              if (mod.quiz) {
-                router.push(`/learn/courses/${slug}/modules/${moduleId}/quiz`);
-              } else if (!isLastModule) {
-                router.push(
-                  `/learn/courses/${slug}/modules/${modules[moduleIndex + 1].id}`,
-                );
-              } else {
-                router.push(`/learn/courses/${slug}`);
-              }
-            }}
-            className="px-3"
-          >
+          <Button size="md" onClick={goNext} className="px-3">
             <ArrowRight size={16} />
           </Button>
         ) : null}
