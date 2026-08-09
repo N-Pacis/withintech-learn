@@ -5082,12 +5082,94 @@
         }
       }
     },
+    "/student/quizzes/{quizId}/start": {
+      "post": {
+        "tags": [
+          "Student - Quizzes"
+        ],
+        "summary": "Open a quiz sitting and start the server-side clock",
+        "description": "Returns the sitting already in progress if there is one, so a refresh resumes the same deadline and does not cost another attempt. The time limit is two minutes per question.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "quizId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Sitting opened or resumed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "sessionId": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "startedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "expiresAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "timeLimitSeconds": {
+                              "type": "integer"
+                            },
+                            "secondsRemaining": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
     "/student/quizzes/{quizId}/attempt": {
       "post": {
         "tags": [
           "Student - Quizzes"
         ],
         "summary": "Submit and mark a quiz attempt",
+        "description": "Requires an open sitting from POST /student/quizzes/{quizId}/start. Rejected once the clock has run out.",
         "security": [
           {
             "bearerAuth": []
@@ -5128,16 +5210,22 @@
                           "format": "uuid"
                         },
                         "chosenOptionIds": {
+                          "description": "May be empty. A blank question is marked wrong, so a timed-out submission keeps the answers the student did give.",
                           "type": "array",
                           "items": {
                             "type": "string",
                             "format": "uuid"
-                          },
-                          "minItems": 1
+                          }
                         }
                       }
                     },
                     "minItems": 1
+                  },
+                  "warningCount": {
+                    "description": "Times the student left the tab, lost focus, or left the quiz page during this attempt. Reported by the browser, so it is capped and treated as a signal, not proof.",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 200
                   }
                 }
               }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   ArrowRight,
   XCircle,
@@ -11,6 +11,7 @@ import {
   Sparkles,
   AlertTriangle,
   Clock,
+  TimerIcon,
 } from "lucide-react";
 import { GridLoader } from "react-spinners";
 import { cn } from "@/lib/utils";
@@ -18,13 +19,18 @@ import { Button, WarningToast } from "@/components/ui";
 import Link from "next/link";
 import {
   useSubmitQuiz,
+  useStartQuiz,
   useQuizAttemptState,
   type StudentModuleQuiz,
   type QuizAttemptResult,
   type MarkedQuestion,
 } from "@/hooks/queries/courses";
+import { useAttemptGuard } from "./AttemptGuard";
 
 type QuizType = "lesson" | "module" | "course";
+
+/** Under a minute left. The countdown turns red and the toast gets louder. */
+const HURRY_SECONDS = 60;
 
 /** "3 hours 12 minutes" / "12 minutes" / "less than a minute" */
 function formatWait(iso: string) {
@@ -35,6 +41,20 @@ function formatWait(iso: string) {
   const rest = minutes % 60;
   const h = `${hours} hour${hours === 1 ? "" : "s"}`;
   return rest === 0 ? h : `${h} ${rest} minute${rest === 1 ? "" : "s"}`;
+}
+
+/** "9:05" — the countdown on the clock. */
+function formatClock(totalSeconds: number) {
+  const s = Math.max(0, totalSeconds);
+  const minutes = Math.floor(s / 60);
+  const seconds = s % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+/** "8 minutes" — the limit, described in the lobby. */
+function formatLimit(totalSeconds: number) {
+  const minutes = Math.round(totalSeconds / 60);
+  return `${minutes} minute${minutes === 1 ? "" : "s"}`;
 }
 
 interface QuizSectionProps {
@@ -65,15 +85,56 @@ export function QuizSection({
 }: QuizSectionProps) {
   const { data: state, isLoading } = useQuizAttemptState(quiz.id);
   const { mutate: submit, isPending, error } = useSubmitQuiz();
+  const {
+    mutate: startQuiz,
+    isPending: starting,
+    error: startError,
+  } = useStartQuiz();
+  const { setAttemptOpen, onLeaveConfirmed } = useAttemptGuard();
 
-  const [taking, setTaking] = useState(false);
   const [answers, setAnswers] = useState<Record<string, Set<string>>>({});
   const [justGraded, setJustGraded] = useState<QuizAttemptResult | null>(null);
   const [warningCount, setWarningCount] = useState(0);
   const [warningVisible, setWarningVisible] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
 
   const isCourseQuiz = quizType === "course";
+
+  // Whether a sitting is open is the server's answer, not a local flag. That is
+  // what makes a refresh resume the same sitting on the same clock instead of
+  // dropping the student back to the lobby with a fresh one.
+  const session = justGraded ? null : (state?.activeSession ?? null);
+  const taking = !!session;
   const quizActive = taking && !isPending;
+
+  const deadline = session ? new Date(session.expiresAt).getTime() : 0;
+  const secondsLeft = session
+    ? Math.max(0, Math.round((deadline - now) / 1000))
+    : 0;
+  const hurrying = taking && secondsLeft <= HURRY_SECONDS;
+
+  // ── The countdown ──
+  // Only the display ticks here. The deadline itself came from the server and
+  // is checked there again on submit, so editing this clock buys nothing.
+  useEffect(() => {
+    if (!quizActive) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [quizActive]);
+
+  // ── Tell the guard an attempt is open ──
+  useEffect(() => {
+    setAttemptOpen(quizActive);
+    return () => setAttemptOpen(false);
+  }, [quizActive, setAttemptOpen]);
+
+  // ── Leaving the quiz page counts as a warning ──
+  // Same weight as a tab switch: it is reported with the attempt, so an admin
+  // can see it later.
+  useEffect(() => {
+    if (!quizActive) return;
+    return onLeaveConfirmed(() => setWarningCount((n) => n + 1));
+  }, [quizActive, onLeaveConfirmed]);
 
   // ── Anti-cheat listeners ──
   useEffect(() => {
@@ -153,29 +214,55 @@ export function QuizSection({
     (q) => (answers[q.id]?.size ?? 0) > 0,
   );
 
-  function handleSubmit() {
+  // Unanswered questions are sent as an empty choice, which marks as wrong.
+  // Needed because the clock can run out with questions still blank, and losing
+  // the answers the student did give would be unfair.
+  const submitAnswers = useCallback(() => {
     const payload = quiz.questions.map((q) => ({
       questionId: q.id,
       chosenOptionIds: [...(answers[q.id] ?? [])],
     }));
     submit(
-      { quizId: quiz.id, answers: payload },
+      { quizId: quiz.id, answers: payload, warningCount },
       {
         onSuccess: (data) => {
           setJustGraded(data);
-          setTaking(false);
           if (data.attempt.status === "pass") onPassed?.(data);
         },
       },
     );
+    // onPassed is a fresh closure on every parent render; depending on it would
+    // restart the auto-submit effect every second.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answers, quiz.id, quiz.questions, submit, warningCount]);
+
+  // ── Auto-submit when the clock hits zero ──
+  // Whatever is ticked gets marked. Doing nothing would be worse: the server
+  // would close the sitting as a zero anyway, and the student would lose the
+  // answers they had.
+  const autoSubmitted = useRef(false);
+  useEffect(() => {
+    if (!quizActive || autoSubmitted.current) return;
+    if (secondsLeft > 0) return;
+    autoSubmitted.current = true;
+    submitAnswers();
+  }, [quizActive, secondsLeft, submitAnswers]);
+
+  function handleSubmit() {
+    submitAnswers();
   }
 
   function handleStart() {
-    setJustGraded(null);
-    setAnswers({});
-    setWarningCount(0);
-    setWarningVisible(false);
-    setTaking(true);
+    startQuiz(quiz.id, {
+      onSuccess: () => {
+        autoSubmitted.current = false;
+        setJustGraded(null);
+        setAnswers({});
+        setWarningCount(0);
+        setWarningVisible(false);
+        setNow(Date.now());
+      },
+    });
   }
 
   const shownResult = justGraded ?? state?.lastResult ?? null;
@@ -195,6 +282,11 @@ export function QuizSection({
   // which would look like the student had never sat the quiz.
   const scoreOnly =
     !shownResult && state?.lastAttempt ? state.lastAttempt : null;
+
+  // The clock ran out and the server closed the sitting with a zero. Say that,
+  // rather than showing a bare 0 that looks like the student answered
+  // everything wrong.
+  const lastTimedOut = !justGraded && state?.lastAttempt?.timedOut === true;
 
   // "You cannot attempt" has two very different reasons. Never tell a student
   // who passed that they ran out of attempts.
@@ -218,6 +310,8 @@ export function QuizSection({
           variant="secondary"
           size="md"
           onClick={handleStart}
+          loading={starting}
+          disabled={starting}
           className="flex items-center gap-2"
         >
           <RotateCcw size={15} /> Retake quiz
@@ -262,7 +356,9 @@ export function QuizSection({
         onClose={() => setWarningVisible(false)}
       />
 
-      <div className="mt-10 pt-8 border-t border-border">
+      {/* Every quiz is its own page now, so this no longer needs a divider
+          separating it from content above it. */}
+      <div>
         {/* Header */}
         <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
           <div>
@@ -282,11 +378,28 @@ export function QuizSection({
                 : ""}
             </p>
           </div>
-          {passed && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 text-green-700 border border-green-200 dark:bg-green-950/30 dark:text-green-300 dark:border-green-900 shrink-0">
-              <Medal size={13} />
-              <span className="font-body text-xs font-semibold">Passed</span>
+          {taking ? (
+            <div
+              aria-live="polite"
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-full border shrink-0 tabular-nums",
+                hurrying
+                  ? "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-300 dark:border-red-900"
+                  : "bg-surface-panel text-foreground border-border",
+              )}
+            >
+              <TimerIcon size={13} />
+              <span className="font-body text-xs font-semibold">
+                {formatClock(secondsLeft)}
+              </span>
             </div>
+          ) : (
+            passed && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 text-green-700 border border-green-200 dark:bg-green-950/30 dark:text-green-300 dark:border-green-900 shrink-0">
+                <Medal size={13} />
+                <span className="font-body text-xs font-semibold">Passed</span>
+              </div>
+            )
           )}
         </div>
 
@@ -345,17 +458,18 @@ export function QuizSection({
               </p>
             )}
 
-            <div className="mt-8 flex items-center gap-3">
+            {/* No Cancel button any more. The clock does not stop, so backing
+                out would only hide the fact that the attempt is running. */}
+            <div className="mt-8 flex flex-wrap items-center gap-3">
               <Button size="md" onClick={handleSubmit} disabled={!allAnswered}>
                 Submit quiz
               </Button>
-              <Button
-                size="md"
-                variant="secondary"
-                onClick={() => setTaking(false)}
-              >
-                Cancel
-              </Button>
+              <p className="font-body text-xs text-muted">
+                {!allAnswered &&
+                  `${quiz.questions.filter((q) => (answers[q.id]?.size ?? 0) > 0).length} of ${quiz.questions.length} answered. `}
+                Whatever you have ticked is submitted for you when the time runs
+                out.
+              </p>
             </div>
           </>
         ) : isPending ? (
@@ -392,9 +506,11 @@ export function QuizSection({
               <span className="flex-1">
                 You scored <strong>{shownResult.attempt.score}%</strong>
                 &nbsp;
-                {shownResult.attempt.status === "pass"
-                  ? "Passed. Review your answers below, then continue when you are ready."
-                  : "Not a pass. Review your answers below."}
+                {lastTimedOut
+                  ? "Your time ran out before you submitted. Review your answers below."
+                  : shownResult.attempt.status === "pass"
+                    ? "Passed. Review your answers below, then continue when you are ready."
+                    : "Not a pass. Review your answers below."}
               </span>
             </div>
 
@@ -445,14 +561,21 @@ export function QuizSection({
               <span className="flex-1">
                 You scored <strong>{scoreOnly.score}%</strong>
                 &nbsp;
-                {scoreOnly.status === "pass" ? "Passed." : "Not a pass."}
+                {lastTimedOut
+                  ? "Your time ran out."
+                  : scoreOnly.status === "pass"
+                    ? "Passed."
+                    : "Not a pass."}
               </span>
             </div>
 
-            <div className="flex items-center gap-2 px-4 py-3 rounded-xl font-body text-sm bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300">
-              <AlertTriangle size={16} />
-              This attempt was taken before we started saving answers, so the
-              per-question breakdown is not available for it.
+            <div className="flex items-start gap-2 px-4 py-3 rounded-xl font-body text-sm bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300">
+              <AlertTriangle size={16} className="shrink-0 mt-0.5" />
+              <span>
+                {lastTimedOut
+                  ? "The clock ran out with nothing submitted, so this sitting was scored 0. There is nothing to review."
+                  : "This attempt was taken before we started saving answers, so the per-question breakdown is not available for it."}
+              </span>
             </div>
 
             {actions}
@@ -473,6 +596,15 @@ export function QuizSection({
                 </span>
                 <span className="font-body text-sm font-semibold text-foreground">
                   {quiz.passingScore}%
+                </span>
+              </div>
+              <div className="flex items-center justify-between px-5 py-4">
+                <span className="font-body text-sm text-muted">Time limit</span>
+                <span className="font-body text-sm font-semibold text-foreground text-right">
+                  {state ? formatLimit(state.timeLimitSeconds) : "—"}
+                  <span className="block font-normal text-xs text-muted-contrast mt-0.5">
+                    2 minutes per question
+                  </span>
                 </span>
               </div>
               <div className="flex items-center justify-between px-5 py-4">
@@ -500,10 +632,31 @@ export function QuizSection({
               )}
             </div>
 
+            {/* Said plainly before they commit, because starting is the point
+                of no return: the clock runs from here whatever they do. */}
+            {canAttempt && (
+              <div className="flex items-start gap-2 px-4 py-3 rounded-xl font-body text-sm bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300">
+                <TimerIcon size={15} className="shrink-0 mt-0.5" />
+                <span>
+                  The clock starts as soon as you press Start and does not stop
+                  if you leave. When it runs out, your answers are submitted as
+                  they are.
+                </span>
+              </div>
+            )}
+
+            {startError && (
+              <p className="font-body text-sm text-red-500">
+                {(startError as Error).message}
+              </p>
+            )}
+
             {canAttempt ? (
               <Button
                 size="md"
                 onClick={handleStart}
+                loading={starting}
+                disabled={starting}
                 className="flex items-center gap-2 self-start"
               >
                 Start Quiz <Trophy size={15} />
