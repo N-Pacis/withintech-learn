@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { useTopCourses, type TopCourse } from "@/hooks/queries/courses";
-import { Badge, Button } from "@/components/ui";
+import { Badge } from "@/components/ui";
 
 // ─── Gradient covers ──────────────────────────────────────────────────────────
 
@@ -148,13 +148,6 @@ export default function CoursesSection() {
           >
             View all courses <ArrowRight size={14} />
           </Link>
-          <Button
-            asChild
-            variant="primary"
-            className="hidden md:inline-flex ml-auto"
-          >
-            <Link href="/sign-in">Start Learning</Link>
-          </Button>
         </div>
       </div>
     </section>

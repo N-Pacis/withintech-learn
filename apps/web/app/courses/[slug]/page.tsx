@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { MoveRight } from "lucide-react";
 import Navbar from "@/components/landing/Navbar";
 import { usePublicCourseDetail } from "@/hooks/queries/courses";
 
@@ -131,14 +130,6 @@ function CourseDetailContent() {
               </div>
             )}
 
-            {/* CTA */}
-            <Link
-              href="/sign-in"
-              className="inline-flex items-center gap-3 bg-primary text-white font-body font-medium text-base px-8 py-4 rounded-xl hover:bg-primary-dark transition-colors shadow-sm"
-            >
-              Start Learning Now
-              <MoveRight size={20} />
-            </Link>
           </>
         )}
       </main>

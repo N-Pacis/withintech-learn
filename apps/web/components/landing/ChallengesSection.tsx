@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Code2, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import {
   usePublicChallenges,
   type PublicChallengeListItem,
   type Difficulty,
 } from "@/hooks/queries/challenges";
-import { Badge, Button } from "@/components/ui";
+import { Badge } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 // ─── Difficulty config ────────────────────────────────────────────────────────
@@ -130,12 +130,6 @@ export default function ChallengesSection() {
         )}
 
         <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <Button asChild variant="primary">
-            <Link href="/sign-in">
-              <Code2 size={15} />
-              Start solving
-            </Link>
-          </Button>
           <Link
             href="/challenges"
             className="inline-flex items-center gap-1.5 font-body text-sm text-muted hover:text-primary transition-colors"

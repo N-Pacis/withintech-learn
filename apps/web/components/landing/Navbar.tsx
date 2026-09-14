@@ -2,10 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { Logo, ThemeToggle } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { useProfile } from "@/hooks/queries/auth";
 
 function LanguageToggle() {
   const [lang, setLang] = useState<"en" | "fr" | "rw">("en");
@@ -68,14 +66,6 @@ const links = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const { data: profile } = useProfile();
-
-  const ctaHref = profile
-    ? profile.role === "admin"
-      ? "/admin"
-      : "/learn"
-    : "/sign-in";
-  const ctaLabel = profile ? "Continue" : "Start Learning";
 
   return (
     <nav className="sticky top-0 z-50 bg-surface-shell border-b border-border">
@@ -96,12 +86,6 @@ export default function Navbar() {
           ))}
           <ThemeToggle />
           <LanguageToggle />
-          <Link
-            href={ctaHref}
-            className="inline-flex items-center gap-2 font-body text-sm font-medium bg-primary text-white px-5 py-2 rounded-md hover:bg-primary-dark transition-colors"
-          >
-            {ctaLabel} <ArrowRight size={14} />
-          </Link>
         </div>
 
         {/* Mobile: theme toggle (always visible) */}
@@ -166,13 +150,6 @@ export default function Navbar() {
               {label}
             </Link>
           ))}
-          <Link
-            href={ctaHref}
-            onClick={() => setOpen(false)}
-            className="mt-3 inline-flex items-center justify-center gap-2 font-body text-sm font-medium bg-primary text-white px-5 py-3 rounded-md hover:bg-primary-dark transition-colors"
-          >
-            {ctaLabel} <ArrowRight size={14} />
-          </Link>
         </div>
       </div>
     </nav>

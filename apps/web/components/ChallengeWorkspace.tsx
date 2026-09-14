@@ -214,18 +214,15 @@ function EmptyResultsState({
 // ─── Locked workspace (unauthenticated) ──────────────────────────────────────
 
 function LockedWorkspace({
-  slug,
   challenge,
   backHref,
   isInsideLayout,
 }: {
-  slug: string;
   challenge: PublicChallenge | StudentChallenge;
   backHref: string;
   isInsideLayout?: boolean;
 }) {
   const badge = DIFFICULTY_BADGE[challenge.difficulty];
-  const signInHref = `/sign-in?next=/challenges/${slug}`;
   const h = isInsideLayout ? "h-[calc(100vh-64px)]" : "h-[100dvh]";
   const previewCode = useMemo(
     () =>
@@ -258,17 +255,6 @@ function LockedWorkspace({
         >
           {badge.label}
         </Badge>
-        <Button
-          asChild
-          variant="primary"
-          size="sm"
-          className="shrink-0 hidden md:inline-flex"
-        >
-          <Link href={signInHref}>
-            <Lock size={13} className="mr-1" />
-            Sign in to solve
-          </Link>
-        </Button>
       </div>
 
       {/* Desktop: split layout */}
@@ -314,16 +300,13 @@ function LockedWorkspace({
               </div>
               <div>
                 <p className="font-heading font-bold text-base text-foreground mb-1">
-                  Sign in to start coding
+                  Coding unavailable
                 </p>
                 <p className="font-body text-sm text-muted">
-                  Create a free account to submit solutions and track your
-                  progress.
+                  Submitting solutions and tracking progress is currently
+                  unavailable. Check back soon.
                 </p>
               </div>
-              <Button asChild variant="primary" fullWidth>
-                <Link href={signInHref}>Sign In / Sign Up</Link>
-              </Button>
               <Link
                 href={backHref}
                 className="font-body text-xs text-muted-contrast hover:text-primary transition-colors"
@@ -346,16 +329,10 @@ function LockedWorkspace({
             functionParams={challenge.functionParams}
           />
         </div>
-        <div className="shrink-0 border-t border-border bg-surface-card px-4 py-4 flex flex-col gap-2">
-          <Button asChild variant="primary" fullWidth>
-            <Link href={signInHref}>
-              <Lock size={14} />
-              Sign In to Start Coding
-            </Link>
-          </Button>
-          <Button asChild variant="secondary" size="sm" fullWidth>
-            <Link href="/sign-up">Create Free Account</Link>
-          </Button>
+        <div className="shrink-0 border-t border-border bg-surface-card px-4 py-4">
+          <p className="font-body text-xs text-muted-contrast text-center">
+            Coding is currently unavailable. Check back soon.
+          </p>
         </div>
       </div>
     </div>
@@ -708,7 +685,6 @@ export function ChallengeWorkspace({
   if (!isAuthed) {
     return (
       <LockedWorkspace
-        slug={slug}
         challenge={challenge}
         backHref={backHref}
         isInsideLayout={isInsideLayout}

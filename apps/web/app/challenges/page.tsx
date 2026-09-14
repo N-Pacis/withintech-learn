@@ -14,7 +14,6 @@ import {
 import { useProfile } from "@/hooks/queries/auth";
 import {
   Badge,
-  Button,
   Logo,
   Pagination,
   FilterPills,
@@ -26,7 +25,7 @@ import {
   CHALLENGE_SORT_OPTIONS,
 } from "@/lib/challenges";
 import { cn } from "@/lib/utils";
-import { ArrowRight, CheckCircle2, Code2, Lock, Zap } from "lucide-react";
+import { ArrowRight, CheckCircle2, Code2, Lock } from "lucide-react";
 
 // ─── Skeletons ────────────────────────────────────────────────────────────────
 
@@ -194,12 +193,6 @@ function Footer() {
           >
             Courses
           </Link>
-          <Link
-            href="/sign-in"
-            className="font-body text-xs text-muted hover:text-primary transition-colors"
-          >
-            Sign In
-          </Link>
         </div>
       </div>
     </footer>
@@ -293,14 +286,7 @@ function PublicList() {
         ) : (
           <>
             <p className="font-body text-sm text-muted-contrast mb-6">
-              Showing {challenges.length} of many challenges —{" "}
-              <Link
-                href="/sign-in"
-                className="text-primary hover:underline font-medium"
-              >
-                sign in
-              </Link>{" "}
-              to see and solve all of them.
+              Showing {challenges.length} of many challenges.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -334,22 +320,12 @@ function PublicList() {
                   </div>
                   <div>
                     <p className="font-heading font-bold text-base text-foreground">
-                      More challenges await
+                      More challenges coming soon
                     </p>
                     <p className="font-body text-sm text-muted mt-0.5">
-                      Sign in to unlock all challenges and submit your
-                      solutions.
+                      Submitting solutions and tracking progress are
+                      currently unavailable. Check back soon.
                     </p>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2 w-full">
-                    <Button asChild variant="primary" size="sm" fullWidth>
-                      <Link href="/sign-in">
-                        <Zap size={14} /> Sign In
-                      </Link>
-                    </Button>
-                    <Button asChild variant="secondary" size="sm" fullWidth>
-                      <Link href="/sign-up">Sign Up Free</Link>
-                    </Button>
                   </div>
                 </div>
               </div>

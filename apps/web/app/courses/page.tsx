@@ -7,8 +7,8 @@ import {
   usePublicAllCourses,
   type PublicCourse,
 } from "@/hooks/queries/courses";
-import { Button, Logo } from "@/components/ui";
-import { ArrowRight, BookOpen, Lock, Zap } from "lucide-react";
+import { Logo } from "@/components/ui";
+import { ArrowRight, BookOpen, Lock } from "lucide-react";
 
 import {
   COURSE_GRADIENTS,
@@ -143,12 +143,6 @@ function Footer() {
           >
             Challenges
           </Link>
-          <Link
-            href="/sign-in"
-            className="font-body text-xs text-muted hover:text-primary transition-colors"
-          >
-            Sign In
-          </Link>
         </div>
       </div>
     </footer>
@@ -204,15 +198,7 @@ export default function PublicCoursesPage() {
         ) : (
           <>
             <p className="font-body text-sm text-muted-contrast mb-6">
-              {courses.length} course{courses.length !== 1 ? "s" : ""} available
-              —{" "}
-              <Link
-                href="/sign-in"
-                className="text-primary hover:underline font-medium font-body"
-              >
-                sign in
-              </Link>{" "}
-              to enroll and track your progress.
+              {courses.length} course{courses.length !== 1 ? "s" : ""} available.
             </p>
 
             {/* Real cards */}
@@ -251,22 +237,12 @@ export default function PublicCoursesPage() {
                   </div>
                   <div>
                     <p className="font-heading font-bold text-base text-foreground">
-                      Unlock full access
+                      More courses coming soon
                     </p>
                     <p className="font-body text-sm text-muted mt-0.5">
-                      Sign in to enroll in courses, track your modules, and earn
-                      certificates.
+                      Enrollment, progress tracking, and certificates are
+                      currently unavailable. Check back soon.
                     </p>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2 w-full">
-                    <Button asChild variant="primary" size="sm" fullWidth>
-                      <Link href="/sign-in">
-                        <Zap size={14} /> Sign In
-                      </Link>
-                    </Button>
-                    <Button asChild variant="secondary" size="sm" fullWidth>
-                      <Link href="/sign-up">Sign Up Free</Link>
-                    </Button>
                   </div>
                 </div>
               </div>

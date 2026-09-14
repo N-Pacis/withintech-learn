@@ -41,13 +41,6 @@ export default function Home() {
                 certificates.
               </p>
 
-              <Link
-                href="/sign-in"
-                className="font-body font-medium inline-flex items-center gap-2 bg-primary text-white px-7 py-3.5 rounded-md hover:bg-primary-dark transition-colors text-base"
-              >
-                Start Learning →
-              </Link>
-
               <p className="font-body text-xs text-muted-contrast mt-4">
                 Certificates recognized by WithinTech Rwanda
               </p>
@@ -325,12 +318,6 @@ export default function Home() {
 
               <div className="flex flex-wrap gap-4">
                 <Link
-                  href="/sign-in"
-                  className="font-body font-medium bg-primary text-white px-7 py-3.5 rounded-md hover:bg-primary-dark transition-colors text-base"
-                >
-                  Start Learning
-                </Link>
-                <Link
                   href="/#how-it-works"
                   className="font-body font-medium text-primary border border-primary px-7 py-3.5 rounded-md hover:bg-primary-soft transition-colors text-base"
                 >
@@ -385,7 +372,6 @@ export default function Home() {
                   { label: "Home", href: "/" },
                   { label: "Courses", href: "/courses" },
                   { label: "Challenges", href: "/challenges" },
-                  { label: "Start Learning", href: "/sign-in" },
                   { label: "How It Works", href: "/#how-it-works" },
                   { label: "FAQ", href: "/#faq" },
                 ].map(({ label, href }) => (
