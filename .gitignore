@@ -37,8 +37,5 @@
 # Database backups
 backups/
 /video
-config.bat
 **/.env
 **/.env.*
-
-context
