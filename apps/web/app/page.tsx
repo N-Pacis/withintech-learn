@@ -121,7 +121,7 @@ export default function Home() {
             How it works
           </p>
           <h2 className="font-heading font-black text-3xl lg:text-4xl text-foreground tracking-tight mb-16">
-            Three steps. That is all.
+            Three steps. That is all
           </h2>
 
           {/* Desktop: horizontal with connectors */}
