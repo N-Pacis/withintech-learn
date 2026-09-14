@@ -8,6 +8,7 @@ import {
   buildAndCacheCourse,
 } from "../../services/course-cache.service";
 import { recalculateUserScore } from "../../utils/scoring";
+import { assertModuleLessonsCompleted } from "../../utils/progress-gates";
 
 const withThumbnailUrl = async <T extends { thumbnailKey: string | null }>(
   course: T,
@@ -215,6 +216,9 @@ export const getPublishedCourseBySlug = async (
         isLocked: i > reachableUpTo,
         lessonCount: mod?.lessons?.length ?? 0,
         hasLessons: (mod?.lessons?.length ?? 0) > 0,
+        // The sidebar needs to know a module holds a quiz without loading the
+        // module itself. Free — the cached module is already in hand.
+        hasQuiz: !!mod?.quiz,
       };
     }),
   );
@@ -295,7 +299,7 @@ export const completeCourse = async (slug: string, userId: string) => {
   return updated;
 };
 
-// Returns a single module with blocks + quiz (no isCorrect) + last attempt
+// Returns a single module with its lesson list + quiz (no isCorrect) + last attempt
 export const getStudentModule = async (
   slug: string,
   moduleId: string,
@@ -345,25 +349,13 @@ export const getStudentModule = async (
     }
   }
 
-  // Signed URLs for image blocks are generated fresh (presigned URLs expire in 1h)
-  const [blocks, lastAttempt] = await Promise.all([
-    Promise.all(
-      cachedMod.blocks.map(async (b) => ({
-        ...b,
-        url:
-          b.type === "image" && b.storageKey
-            ? await getSignedUrl(b.storageKey)
-            : null,
-      })),
-    ),
-    cachedMod.quiz
-      ? prisma.quizAttempt.findFirst({
-          where: { userId, quizId: cachedMod.quiz!.id },
-          orderBy: { createdAt: "desc" },
-          select: { id: true, score: true, status: true, createdAt: true },
-        })
-      : null,
-  ]);
+  const lastAttempt = cachedMod.quiz
+    ? await prisma.quizAttempt.findFirst({
+        where: { userId, quizId: cachedMod.quiz!.id },
+        orderBy: { createdAt: "desc" },
+        select: { id: true, score: true, status: true, createdAt: true },
+      })
+    : null;
 
   // Build lesson list with completion / lock state (empty for legacy modules)
   // Guard: modules cached before the lessons feature was deployed won't have the field
@@ -375,18 +367,37 @@ export const getStudentModule = async (
     orderIndex: number;
     isCompleted: boolean;
     isLocked: boolean;
+    hasQuiz: boolean;
+    quizId: string | null;
+    quizPassed: boolean;
   }[] = [];
 
   if (cachedLessons.length > 0) {
     const lessonIds = cachedLessons.map((l) => l.id);
-    const completedLessonSet = new Set(
-      (
-        await prisma.lessonProgress.findMany({
+    const lessonQuizIds = cachedLessons
+      .map((l) => l.quiz?.id)
+      .filter((id): id is string => !!id);
+
+    // A lesson quiz pass is not the same thing as a completed lesson: the pass
+    // is recorded first, and the completion request that follows it can fail.
+    // The sidebar shows the quiz row's own state, so ask for it directly.
+    const [completedLessonSet, passedQuizIds] = await Promise.all([
+      prisma.lessonProgress
+        .findMany({
           where: { userId, lessonId: { in: lessonIds } },
           select: { lessonId: true },
         })
-      ).map((r) => r.lessonId),
-    );
+        .then((rows) => new Set(rows.map((r) => r.lessonId))),
+      lessonQuizIds.length > 0
+        ? prisma.quizAttempt
+            .findMany({
+              where: { userId, quizId: { in: lessonQuizIds }, status: "pass" },
+              select: { quizId: true },
+            })
+            .then((rows) => new Set(rows.map((r) => r.quizId)))
+        : new Set<string>(),
+    ]);
+
     const firstIncompleteLessonIdx = cachedLessons.findIndex(
       (l) => !completedLessonSet.has(l.id),
     );
@@ -401,10 +412,13 @@ export const getStudentModule = async (
       orderIndex: l.orderIndex,
       isCompleted: completedLessonSet.has(l.id),
       isLocked: i > lessonReachableUpTo,
+      hasQuiz: !!l.quiz,
+      quizId: l.quiz?.id ?? null,
+      quizPassed: l.quiz ? passedQuizIds.has(l.quiz.id) : false,
     }));
   }
 
-  return { ...cachedMod, blocks, lessons, lastAttempt: lastAttempt ?? null };
+  return { ...cachedMod, lessons, lastAttempt: lastAttempt ?? null };
 };
 
 export const completeModule = async (
@@ -446,6 +460,11 @@ export const completeModule = async (
     include: { quiz: { select: { id: true } } },
   });
   if (!mod) throw notFound("Module not found");
+
+  // A module is its lessons plus its quiz. Passing the quiz alone must not
+  // complete the module — without this check a student could jump straight to
+  // the module quiz URL and skip every lesson under it.
+  await assertModuleLessonsCompleted(userId, moduleId);
 
   if (mod.quiz) {
     const lastAttempt = await prisma.quizAttempt.findFirst({

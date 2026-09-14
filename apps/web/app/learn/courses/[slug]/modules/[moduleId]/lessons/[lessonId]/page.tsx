@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { ArrowRight, ChevronLeft, CheckCircle2 } from "lucide-react";
+import { ArrowRight, ChevronLeft, CheckCircle2, ClipboardCheck } from "lucide-react";
 import {
   usePublishedCourse,
   useStudentModule,
@@ -14,7 +14,10 @@ import {
 import { Button, PageLoader } from "@/components/ui";
 import { CodeEditor, type CodeLanguage } from "@/components/ui/CodeEditor";
 import { TiptapViewer } from "@/components/ui/TiptapEditor";
-import { QuizSection } from "../../../../components/QuizSection";
+import {
+  nextAfterLesson,
+  lessonQuizHref,
+} from "../../../../lib/lesson-navigation";
 import CodePlayground from "@/components/playground/CodePlayground";
 import { CodeBlockPreviewButton } from "@/components/CodeBlockPreviewButton";
 
@@ -187,14 +190,10 @@ export default function LessonPage() {
   );
 
   const lessons = mod?.lessons ?? [];
-  const modules = course?.modules ?? [];
   const lessonIndex = lessons.findIndex((l) => l.id === lessonId);
   const currentLesson = lessons[lessonIndex];
   const isLastLesson = lessonIndex === lessons.length - 1;
   const isCompleted = currentLesson?.isCompleted ?? false;
-
-  const moduleIndex = modules.findIndex((m) => m.id === moduleId);
-  const isLastModule = moduleIndex === modules.length - 1;
 
   // Redirect if lesson is locked
   useEffect(() => {
@@ -208,60 +207,27 @@ export default function LessonPage() {
 
   const hasQuiz = !!lesson.quiz;
   const quizPassed = lesson.lastAttempt?.status === "pass";
-  const needsQuiz = hasQuiz && !quizPassed;
+  const quizHref = lessonQuizHref(slug, moduleId, lessonId);
 
-  function handleQuizPass() {
-    if (isCompleted) return;
-    // After passing the lesson quiz, complete the lesson
-    completeLesson(lessonId, {
-      onSuccess: () => {
-        if (isLastLesson) {
-          // Go to module quiz or next module
-          if (mod!.quiz) {
-            router.push(`/learn/courses/${slug}/modules/${moduleId}/quiz`);
-          } else if (!isLastModule) {
-            router.push(
-              `/learn/courses/${slug}/modules/${modules[moduleIndex + 1].id}`,
-            );
-          } else if (course!.quiz) {
-            router.push(`/learn/courses/${slug}/quiz`);
-          } else {
-            router.push(`/learn/courses/${slug}`);
-          }
-        } else {
-          // Go to next lesson
-          const nextLesson = lessons[lessonIndex + 1];
-          router.push(
-            `/learn/courses/${slug}/modules/${moduleId}/lessons/${nextLesson.id}`,
-          );
-        }
-      },
-    });
+  function goNext() {
+    router.push(nextAfterLesson({ slug, course: course!, mod: mod!, lessonId }));
   }
 
+  // No quiz on this lesson: the button click is the explicit intent, so
+  // completing and navigating together is correct here.
   function handleCompleteWithoutQuiz() {
-    completeLesson(lessonId, {
-      onSuccess: () => {
-        if (isLastLesson) {
-          if (mod!.quiz) {
-            router.push(`/learn/courses/${slug}/modules/${moduleId}/quiz`);
-          } else if (!isLastModule) {
-            router.push(
-              `/learn/courses/${slug}/modules/${modules[moduleIndex + 1].id}`,
-            );
-          } else if (course!.quiz) {
-            router.push(`/learn/courses/${slug}/quiz`);
-          } else {
-            router.push(`/learn/courses/${slug}`);
-          }
-        } else {
-          const nextLesson = lessons[lessonIndex + 1];
-          router.push(
-            `/learn/courses/${slug}/modules/${moduleId}/lessons/${nextLesson.id}`,
-          );
-        }
-      },
-    });
+    completeLesson(lessonId, { onSuccess: goNext });
+  }
+
+  // Passing the quiz and recording the completion are two requests. If the
+  // second one never landed, the lesson is passed but not complete, and the
+  // next lesson is still locked. Record it before moving on.
+  function handleContinueAfterQuiz() {
+    if (isCompleted) {
+      goNext();
+      return;
+    }
+    completeLesson(lessonId, { onSuccess: goNext });
   }
 
   function handlePrev() {
@@ -309,34 +275,47 @@ export default function LessonPage() {
           ))}
         </div>
 
-        {/* Lesson quiz inline */}
-        {hasQuiz && (
-          <div className="mt-8 pt-6 border-t border-border">
-            <QuizSection
-              slug={slug}
-              moduleId={moduleId}
-              quiz={lesson.quiz!}
-              lastAttempt={lesson.lastAttempt}
-              onPass={handleQuizPass}
-              quizType="lesson"
-            />
-          </div>
-        )}
-
-        {/* Complete button when no quiz or quiz already passed */}
-        {!needsQuiz && !isCompleted && (
-          <div className="mt-8 pt-6 border-t border-border">
+        {/* The quiz lives on its own page. Sending the student there is the
+            only thing this page does about it. */}
+        {hasQuiz ? (
+          <div className="mt-8 pt-6 border-t border-border flex flex-wrap items-center gap-3">
             <Button
               size="md"
-              onClick={handleCompleteWithoutQuiz}
-              disabled={completing}
-              loading={completing}
+              variant={quizPassed ? "secondary" : "primary"}
+              onClick={() => router.push(quizHref)}
               className="flex items-center gap-2"
             >
-              {isLastLesson ? "Complete & continue" : "Next lesson"}{" "}
-              <ArrowRight size={16} />
+              {quizPassed ? "Review quiz" : "Take quiz"}{" "}
+              <ClipboardCheck size={16} />
             </Button>
+            {quizPassed && (
+              <Button
+                size="md"
+                onClick={handleContinueAfterQuiz}
+                loading={completing}
+                disabled={completing}
+                className="flex items-center gap-2"
+              >
+                {isLastLesson ? "Continue" : "Next lesson"}{" "}
+                <ArrowRight size={16} />
+              </Button>
+            )}
           </div>
+        ) : (
+          !isCompleted && (
+            <div className="mt-8 pt-6 border-t border-border">
+              <Button
+                size="md"
+                onClick={handleCompleteWithoutQuiz}
+                disabled={completing}
+                loading={completing}
+                className="flex items-center gap-2"
+              >
+                {isLastLesson ? "Complete & continue" : "Next lesson"}{" "}
+                <ArrowRight size={16} />
+              </Button>
+            </div>
+          )
         )}
       </div>
 
@@ -361,21 +340,7 @@ export default function LessonPage() {
             Next lesson <ArrowRight size={16} />
           </Button>
         ) : isCompleted && isLastLesson ? (
-          <Button
-            size="md"
-            onClick={() => {
-              if (mod.quiz) {
-                router.push(`/learn/courses/${slug}/modules/${moduleId}/quiz`);
-              } else if (!isLastModule) {
-                router.push(
-                  `/learn/courses/${slug}/modules/${modules[moduleIndex + 1].id}`,
-                );
-              } else {
-                router.push(`/learn/courses/${slug}`);
-              }
-            }}
-            className="flex items-center gap-2"
-          >
+          <Button size="md" onClick={goNext} className="flex items-center gap-2">
             Continue <ArrowRight size={16} />
           </Button>
         ) : null}
@@ -400,21 +365,7 @@ export default function LessonPage() {
             <ArrowRight size={16} />
           </Button>
         ) : isCompleted && isLastLesson ? (
-          <Button
-            size="md"
-            onClick={() => {
-              if (mod.quiz) {
-                router.push(`/learn/courses/${slug}/modules/${moduleId}/quiz`);
-              } else if (!isLastModule) {
-                router.push(
-                  `/learn/courses/${slug}/modules/${modules[moduleIndex + 1].id}`,
-                );
-              } else {
-                router.push(`/learn/courses/${slug}`);
-              }
-            }}
-            className="px-3"
-          >
+          <Button size="md" onClick={goNext} className="px-3">
             <ArrowRight size={16} />
           </Button>
         ) : null}

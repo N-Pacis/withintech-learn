@@ -21,6 +21,22 @@ export interface EnrollmentProgressModule {
   completedAt: string | null;
 }
 
+/**
+ * An attempt worth a second look. `warningCount` is what the browser reported —
+ * tab switches, lost focus, or leaving the quiz page mid-attempt. It is a
+ * reason to look at a student, never proof on its own.
+ */
+export interface FlaggedQuizAttempt {
+  id: string;
+  quizId: string;
+  quizTitle: string;
+  score: number;
+  status: "pass" | "fail";
+  warningCount: number;
+  timedOut: boolean;
+  createdAt: string;
+}
+
 export interface EnrollmentProgress {
   enrollmentId: string;
   studentName: string;
@@ -34,6 +50,7 @@ export interface EnrollmentProgress {
     passed: boolean;
     passedAt: string | null;
   } | null;
+  flaggedAttempts: FlaggedQuizAttempt[];
 }
 
 // ─── Keys ────────────────────────────────────────────────────────────────────
