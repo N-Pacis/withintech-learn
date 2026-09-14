@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "cd ../../packages/shared && pnpm run build && cd ../../apps/web && next build",
-    "start": "next start",
+    "dev": "node init && next dev",
+    "build": "node init && cd ../../packages/shared && pnpm run build && cd ../../apps/web && next build",
+    "start": "node init && next start",
     "lint": "eslint"
   },
   "dependencies": {

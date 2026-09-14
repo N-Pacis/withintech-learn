@@ -60,7 +60,6 @@
 
 **/.idea/
 
-**/.vscode/
 
 
 
@@ -71,5 +70,5 @@
 # Database backups
 backups/
 /video
-**/.env
-**/.env.*
+.vercel
+config.bat
