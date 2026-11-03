@@ -70,5 +70,4 @@
 # Database backups
 backups/
 /video
-.vercel
 config.bat
