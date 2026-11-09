@@ -60,7 +60,6 @@
 
 **/.idea/
 
-**/.vscode/
 
 
 
@@ -76,3 +75,4 @@ backups/
 .vercel
 
 withintech-learn-database-backup/
+config.bat
