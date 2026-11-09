@@ -12,7 +12,7 @@ import {
 } from "@/hooks/queries/modules";
 import { Button, Card, Input, PageLoader } from "@/components/ui";
 import { CodeEditor, type CodeLanguage } from "@/components/ui/CodeEditor";
-import { TiptapEditor } from "@/components/ui/TiptapEditor";
+import { TiptapEditor, TiptapViewer } from "@/components/ui/TiptapEditor";
 import { cn } from "@/lib/utils";
 import {
   Trash2,
@@ -38,12 +38,9 @@ const IMAGE_ACCEPT = ["image/jpeg", "image/png", "image/webp"];
 
 function BlockDisplay({ block }: { block: LessonBlock }) {
   if (block.type === "text") {
-    return (
-      <div
-        className="prose prose-sm max-w-none font-body text-sm text-foreground-soft"
-        dangerouslySetInnerHTML={{ __html: block.content ?? "" }}
-      />
-    );
+    // Same renderer and styles as the student lesson page, so authors see
+    // lists, headings and spacing exactly as students will.
+    return <TiptapViewer content={block.content ?? ""} />;
   }
   if (block.type === "image") {
     return (

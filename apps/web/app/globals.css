@@ -422,6 +422,17 @@ strong {
   font-style: italic;
 }
 
+/* Inline code (file names, commands, identifiers) */
+.tiptap-editor .ProseMirror code,
+.tiptap-viewer .ProseMirror code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
 .tiptap-editor .ProseMirror u,
 .tiptap-viewer .ProseMirror u {
   text-decoration: underline;
