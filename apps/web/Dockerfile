@@ -16,7 +16,7 @@ ENV NEXT_PUBLIC_SUPPORT_WEBSITE=$NEXT_PUBLIC_SUPPORT_WEBSITE
 ARG NEXT_PUBLIC_SOCIAL_HANDLE
 ENV NEXT_PUBLIC_SOCIAL_HANDLE=$NEXT_PUBLIC_SOCIAL_HANDLE
 
-RUN npm install -g pnpm
+RUN npm install -g pnpm@10.30.3
 WORKDIR /app
 
 # Copy workspace manifests first for layer caching

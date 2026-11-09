@@ -1,6 +1,6 @@
 FROM node:20-alpine
 RUN apk add --no-cache openssl
-RUN npm install -g pnpm
+RUN npm install -g pnpm@10.30.3
 WORKDIR /app
 
 # Copy workspace manifests first for layer caching
