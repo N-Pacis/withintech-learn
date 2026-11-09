@@ -34,6 +34,9 @@ export default function ModuleQuizPage() {
   const moduleIndex = modules.findIndex((m) => m.id === moduleId);
   const isLast = moduleIndex === modules.length - 1;
   const quizPassed = mod.lastAttempt?.status === "pass";
+  // Modules whose content hasn't been written yet have only a quiz; there is
+  // no "content" to go back to (the module page would send us straight here).
+  const hasLessons = mod.lessons.length > 0;
   const isCoursePassed = course.enrollment_status === "PASSED";
   const certHref = `/certificates/${profile?.id}/${course.slug}`;
 
@@ -102,14 +105,18 @@ export default function ModuleQuizPage() {
 
       {/* Desktop nav */}
       <div className="hidden lg:flex flex-row items-center justify-between gap-3 mt-8 pt-6 border-t border-border">
-        <Button
-          variant="secondary"
-          size="md"
-          onClick={goBackToContent}
-          className="flex items-center gap-2"
-        >
-          <ChevronLeft size={16} /> Back to content
-        </Button>
+        {hasLessons ? (
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={goBackToContent}
+            className="flex items-center gap-2"
+          >
+            <ChevronLeft size={16} /> Back to content
+          </Button>
+        ) : (
+          <span />
+        )}
 
         {/* A second way to move on. Progress is already being recorded by
             onPassed, so these only navigate — but stay disabled until that
@@ -162,14 +169,18 @@ export default function ModuleQuizPage() {
 
       {/* Mobile sticky nav */}
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface-shell border-t border-border shadow-[0_-4px_16px_rgba(15,15,15,0.08)] dark:shadow-[0_-4px_16px_rgba(0,0,0,0.36)] px-4 py-3 flex items-center justify-between gap-3">
-        <Button
-          variant="secondary"
-          size="md"
-          onClick={goBackToContent}
-          className="px-3"
-        >
-          <ChevronLeft size={16} />
-        </Button>
+        {hasLessons ? (
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={goBackToContent}
+            className="px-3"
+          >
+            <ChevronLeft size={16} />
+          </Button>
+        ) : (
+          <span className="w-10" />
+        )}
         <p className="font-body text-xs text-muted-contrast truncate flex-1 text-center">
           {mod.title} — Quiz
         </p>
