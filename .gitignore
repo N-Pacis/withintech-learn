@@ -74,3 +74,5 @@ backups/
 **/.env
 **/.env.*
 .vercel
+
+withintech-learn-database-backup/
