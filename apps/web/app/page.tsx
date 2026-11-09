@@ -363,7 +363,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
             <div>
               <div className="mb-4 py-1">
-                <Logo className="h-16" linked={false} />
+                <Logo className="h-14" linked={false} />
               </div>
               <p className="font-body text-sm text-muted mb-4">
                 Learn. Prove it. Move forward.

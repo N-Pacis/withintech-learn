@@ -212,7 +212,7 @@ export function AuthLoader() {
   return (
     <div className="min-h-screen bg-surface-shell flex items-center justify-center">
       <div className="animate-logo-bump">
-        <Logo className="h-20" linked={false} />
+        <Logo className="h-16" linked={false} />
       </div>
     </div>
   );

@@ -174,7 +174,7 @@ function Footer() {
   return (
     <footer className="bg-surface-shell border-t border-border py-10 mt-auto">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <Logo className="h-12" linked />
+        <Logo className="h-11" linked />
         <p
           className="font-body text-xs text-muted-contrast"
           suppressHydrationWarning

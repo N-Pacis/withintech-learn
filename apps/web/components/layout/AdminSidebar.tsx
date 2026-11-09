@@ -228,7 +228,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       >
         {/* Logo */}
         <div className="px-5 py-5 flex items-center justify-between">
-          <Logo className="h-12" linked={false} variant="default" />
+          <Logo className="h-11" linked={false} variant="default" />
           <button
             onClick={onClose}
             className="lg:hidden p-1.5 rounded-lg text-muted-contrast hover:text-foreground-soft hover:bg-surface-muted transition-colors"

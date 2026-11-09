@@ -1,10 +1,18 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import Script, { type ScriptProps } from "next/script";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { PageTitleSync } from "@/components/system/PageTitleSync";
+import {
+  BRAND_COLORS,
+  BRAND_DESCRIPTION,
+  BRAND_NAME,
+  BRAND_SHORT_NAME,
+  BRAND_TAGLINE,
+  SITE_URL,
+} from "@/lib/brand";
 
 const syne = localFont({
   variable: "--font-syne",
@@ -45,28 +53,43 @@ const dmSans = localFont({
   ],
 });
 
+const DEFAULT_TITLE = `${BRAND_NAME}: ${BRAND_TAGLINE}`;
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://learn.withintech.org"),
+  metadataBase: new URL(SITE_URL),
+  applicationName: BRAND_NAME,
   title: {
-    default: "WithinTech Learn: Study at your pace",
-    template: `%s`,
+    default: DEFAULT_TITLE,
+    template: `%s | ${BRAND_NAME}`,
   },
-  description:
-    "A product of WithinTech Rwanda designed to provide a vast array of courses necessary to thrive in this AI-driven technological era.",
+  description: BRAND_DESCRIPTION,
+  appleWebApp: {
+    title: BRAND_SHORT_NAME,
+    statusBarStyle: "default",
+  },
   openGraph: {
     type: "website",
-    url: "https://learn.withintech.org",
-    siteName: "WithinTech Learn",
-    title: "WithinTech Learn: Study at your pace",
-    description:
-      "A product of WithinTech Rwanda designed to provide a vast array of courses necessary to thrive in this AI-driven technological era.",
+    url: SITE_URL,
+    siteName: BRAND_NAME,
+    locale: "en_US",
+    title: DEFAULT_TITLE,
+    description: BRAND_DESCRIPTION,
   },
   twitter: {
-    card: "summary",
-    title: "WithinTech Learn: Study at your pace",
-    description:
-      "A product of WithinTech Rwanda designed to provide a vast array of courses necessary to thrive in this AI-driven technological era.",
+    card: "summary_large_image",
+    title: DEFAULT_TITLE,
+    description: BRAND_DESCRIPTION,
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: BRAND_COLORS.background },
+    {
+      media: "(prefers-color-scheme: dark)",
+      color: BRAND_COLORS.backgroundDark,
+    },
+  ],
 };
 
 export default function RootLayout({

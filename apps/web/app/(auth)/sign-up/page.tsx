@@ -218,7 +218,7 @@ export default function SignUpPage() {
 
         <div className="w-full max-w-md">
           <div className="flex justify-center mb-10">
-            <Logo className="h-20" linked={false} />
+            <Logo className="h-16" linked={false} />
           </div>
           <h1 className="font-heading font-black text-2xl text-foreground mb-1">
             Get Started

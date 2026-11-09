@@ -646,10 +646,10 @@ export default function StudentsPage() {
       if (format === "excel") {
         const { utils, writeFile } = await import("xlsx");
         const ws = utils.aoa_to_sheet([
-          [process.env.NEXT_PUBLIC_BRAND_NAME || "WithinTech Learn"],
+          [BRAND_NAME],
           [`Students Export - ${exportDate}`],
           [
-            `Data extracted from ${process.env.NEXT_PUBLIC_BRAND_NAME || "WithinTech Learn"} platform on ${exportDate}`,
+            `Data extracted from ${BRAND_NAME} platform on ${exportDate}`,
           ],
           [],
           headers,
@@ -734,7 +734,7 @@ export default function StudentsPage() {
           doc.setFontSize(16);
           doc.setTextColor(61, 0, 107);
           doc.text(
-            process.env.NEXT_PUBLIC_BRAND_NAME || "WithinTech Learn",
+            BRAND_NAME,
             38,
             20,
           );

@@ -23,7 +23,7 @@ export default function StudentNavbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
         <div className="flex-shrink-0 py-1">
-          <Logo className="h-14" linked={false} />
+          <Logo className="h-11" linked={false} />
         </div>
 
         {/* Desktop nav */}

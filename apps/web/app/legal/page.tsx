@@ -45,7 +45,7 @@ export default function LegalPage() {
       {/* Header */}
       <header className="border-b border-border py-4 px-6">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Logo className="h-12" />
+          <Logo className="h-11" />
           <Link
             href="/"
             className="font-body text-sm text-muted hover:text-foreground transition-colors"

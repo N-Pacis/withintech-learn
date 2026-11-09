@@ -219,7 +219,7 @@ export default function ForgotPasswordPage() {
 
         <div className="w-full max-w-md">
           <div className="flex justify-center mb-10">
-            <Logo className="h-20" linked={false} />
+            <Logo className="h-16" linked={false} />
           </div>
 
           {/* ── Step 1: Email ── */}

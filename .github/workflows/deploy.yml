@@ -195,8 +195,11 @@ jobs:
             docker rollout -f docker-compose.yml api
             docker rollout -f docker-compose.yml web
 
-            # Reload nginx gracefully after the swap
-            docker compose exec nginx nginx -s reload 2>/dev/null || true
+            # Recreate nginx so it mounts this deploy's nginx.conf. The repo is
+            # re-cloned every deploy, so the old container's bind mount still
+            # points at the deleted file and a reload would re-read stale config.
+            # Upstreams are resolved per request, so this is a ~1s blip.
+            docker compose up -d --no-deps --no-build --force-recreate nginx
 
       # ── 7. Clean up old images ───────────────────────────────────────────────
       - name: Clean up

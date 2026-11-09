@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { BRAND_NAME } from "@/lib/brand";
 
-const APP_NAME = "WithinTech Learn";
+const APP_NAME = BRAND_NAME;
 
 const STATIC_TITLES: Record<string, string> = {
   "/": APP_NAME,
