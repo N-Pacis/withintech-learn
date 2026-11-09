@@ -565,6 +565,23 @@
           },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
+          },
+          "503": {
+            "description": "The verification email could not be sent. No account was created; the client can retry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "message": {
+                      "type": "string",
+                      "example": "We couldn't send the verification email. Please try again in a few minutes."
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

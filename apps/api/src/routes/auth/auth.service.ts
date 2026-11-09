@@ -10,6 +10,8 @@ import {
   conflict,
   badRequest,
   tooManyRequests,
+  serviceUnavailable,
+  AppError,
 } from "../../utils/errors";
 import {
   signAccessToken,
@@ -269,12 +271,23 @@ export const signUp = async ({
     },
   });
 
-  await sendOtp(
-    user,
-    "email_verification",
-    "WithinTech Learn: Verify your email",
-    "Email Verification",
-  );
+  try {
+    await sendOtp(
+      user,
+      "email_verification",
+      "WithinTech Learn: Verify your email",
+      "Email Verification",
+    );
+  } catch (err) {
+    // Without the verification email the account is unusable, and keeping it
+    // would make every retry fail with "Email already in use". Roll it back.
+    await prisma.user.delete({ where: { id: user.id } });
+    if (err instanceof AppError) throw err;
+    console.error("Signup verification email failed:", err);
+    throw serviceUnavailable(
+      "We couldn't send the verification email. Please try again in a few minutes.",
+    );
+  }
   return { requiresEmailVerification: true as const, email: user.email };
 };
 
