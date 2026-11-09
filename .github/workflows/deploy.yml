@@ -7,6 +7,12 @@ on:
 permissions:
   contents: read
 
+# One deploy at a time. Each run re-clones the repo and rolls containers, so
+# overlapping runs delete each other's checkout and clash on container names.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
 jobs:
   semgrep:
     name: SAST (JS)
@@ -185,7 +191,10 @@ jobs:
             docker compose -f docker-compose.judge0.yml up -d --remove-orphans
 
             # Recreate postgres/redis/nginx if their image or config changed
-            docker compose up -d --no-build --remove-orphans postgres redis nginx
+            # --no-deps: nginx depends_on api/web, and without it compose would
+            # recreate them here, racing the rollout below.
+            docker compose up -d --no-build --remove-orphans postgres redis
+            docker compose up -d --no-build --no-deps nginx
 
             # Bring up the executor (code runner bridge).
             docker compose up -d --no-build executor
