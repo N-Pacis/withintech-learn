@@ -208,4 +208,6 @@ jobs:
           port: 222
           script: |
             docker image prune -f
+            # Keep enough build cache for fast rebuilds, drop the rest.
+            docker builder prune -f --keep-storage 2GB
             docker system prune -f --volumes=false

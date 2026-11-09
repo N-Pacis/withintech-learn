@@ -6,6 +6,7 @@ import { config as loadEnv } from "dotenv";
 loadEnv({ path: path.resolve(__dirname, "../../.env") });
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   outputFileTracingRoot: path.join(__dirname, "../../"),
   transpilePackages: ["@withintech-learn/shared"],
   images: {
