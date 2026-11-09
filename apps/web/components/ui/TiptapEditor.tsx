@@ -22,7 +22,8 @@ import React from "react";
 
 export const tiptapExtensions = [
   StarterKit.configure({
-    code: false,
+    // Inline `code` stays on (file names, commands); multi-line code is a
+    // separate lesson block type, so the codeBlock node is off.
     codeBlock: false,
     heading: { levels: [1, 2, 3] },
   }),
