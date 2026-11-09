@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState, CSSProperties } from "react";
 import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
+import { BRAND_NAME } from "@/lib/brand";
 
 export interface CertData {
   id: string;
@@ -161,7 +162,7 @@ export function Certificate({ data, domId }: CertificateProps) {
         <div style={{ marginBottom: em(12) }}>
           <Image
             src="/logo.png"
-            alt="WithinTech Learn"
+            alt={BRAND_NAME}
             width={200}
             height={200}
             style={{ height: em(56), width: "auto" }}

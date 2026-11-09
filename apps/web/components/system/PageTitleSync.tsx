@@ -2,12 +2,12 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { BRAND_NAME } from "@/lib/brand";
+import { BRAND_NAME, BRAND_TAGLINE } from "@/lib/brand";
 
 const APP_NAME = BRAND_NAME;
 
 const STATIC_TITLES: Record<string, string> = {
-  "/": APP_NAME,
+  "/": `${APP_NAME}: ${BRAND_TAGLINE}`,
   "/sign-in": `Sign In | ${APP_NAME}`,
   "/sign-up": `Sign Up | ${APP_NAME}`,
   "/login": `Login | ${APP_NAME}`,
@@ -105,7 +105,21 @@ export function PageTitleSync() {
   const pathname = usePathname();
 
   useEffect(() => {
-    document.title = resolveTitle(pathname);
+    const title = resolveTitle(pathname);
+    const apply = () => {
+      if (document.title !== title) document.title = title;
+    };
+    apply();
+
+    // On a full page load Next re-applies the root metadata <title> after this
+    // effect runs; put ours back whenever the head's title changes.
+    const observer = new MutationObserver(apply);
+    observer.observe(document.head, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+    });
+    return () => observer.disconnect();
   }, [pathname]);
 
   return null;

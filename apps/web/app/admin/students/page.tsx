@@ -33,6 +33,7 @@ import {
 } from "@/hooks/queries/users";
 import { cn } from "@/lib/utils";
 import { useDebounce } from "@/hooks/useDebounce";
+import { BRAND_NAME, LOGO_SIZE } from "@/lib/brand";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -726,18 +727,16 @@ export default function StudentsPage() {
         function addHeader(pageNumber: number) {
           doc.setPage(pageNumber);
           if (logoBase64) {
-            doc.addImage(logoBase64, "PNG", 14, 10, 20, 20);
+            // Keep the logo's aspect ratio: 20mm wide, vertically centred on y=20.
+            const logoHeight = (20 * LOGO_SIZE.height) / LOGO_SIZE.width;
+            doc.addImage(logoBase64, "PNG", 14, 20 - logoHeight / 2, 20, logoHeight);
           }
 
           // Brand name on left
           doc.setFont("helvetica", "bold");
           doc.setFontSize(16);
           doc.setTextColor(61, 0, 107);
-          doc.text(
-            BRAND_NAME,
-            38,
-            20,
-          );
+          doc.text(BRAND_NAME, 38, 20);
 
           // File title on right with larger size
           const titleText = "Students Export";

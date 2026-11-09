@@ -38,19 +38,16 @@ const nextConfig: NextConfig = {
     dangerouslyAllowSVG: true,
   },
   async headers() {
+    // App icons (favicon.ico, icon.svg, apple-icon.png) live in app/ and are
+    // linked with a content-hash query, so they need no override here. The
+    // logo filenames are not hashed: a short TTL lets a future swap show up
+    // within the hour.
     return [
       {
-        source: "/favicon.ico",
+        source: "/:logo(logo|logo-dark-mode).png",
         headers: [
-          {
-            key: "Cache-Control",
-            value: "no-store, max-age=0, must-revalidate",
-          },
+          { key: "Cache-Control", value: "public, max-age=3600, must-revalidate" },
         ],
-      },
-      {
-        source: "/logo.png",
-        headers: [{ key: "Cache-Control", value: "no-cache" }],
       },
     ];
   },
