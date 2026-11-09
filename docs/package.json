@@ -5,7 +5,7 @@
     "dev": "mint dev --port 4000",
     "build": "mint broken-links",
     "start": "mint dev --port 4000",
-    "start:docker": "mint dev --port 4000 --host 0.0.0.0"
+    "start:docker": "mint dev --port 4000 --host"
   },
   "devDependencies": {
     "mint": "^4.2.80",
