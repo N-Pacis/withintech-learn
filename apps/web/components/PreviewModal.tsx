@@ -152,7 +152,7 @@ export function PreviewModal({ html, css, js, onClose }: PreviewModalProps) {
         <div className="flex-1 relative min-h-0">
           <SandpackProvider
             key={sandpackKey}
-            template="vanilla"
+            template="static"
             files={files}
             options={{
               activeFile,

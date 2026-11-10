@@ -94,7 +94,7 @@ export default function CodePlayground({
     <div className="rounded-xl border border-border overflow-hidden bg-[#1e1e2e] shadow-md">
       <SandpackProvider
         key={sandpackKey}
-        template="vanilla"
+        template="static"
         files={{
           "/index.html": { code: html, active: activeTab === "html" },
           "/styles.css": { code: css, active: activeTab === "css" },

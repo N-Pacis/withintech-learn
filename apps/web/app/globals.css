@@ -433,6 +433,64 @@ strong {
   color: var(--primary);
 }
 
+.dark .tiptap-editor .ProseMirror code,
+.dark .tiptap-viewer .ProseMirror code {
+  color: var(--primary-tint);
+}
+
+/* Collapsible sections (Tiptap Details renders div[data-type="details"]
+   with a toggle <button> and a <summary>, not a native <details>). In the
+   viewer the whole summary row toggles it. */
+.tiptap-viewer .ProseMirror [data-type="details"] {
+  position: relative;
+  margin: 0.75rem 0;
+  padding: 0.65rem 0.9rem 0.65rem 2.25rem;
+  border: 1px solid var(--border-default);
+  border-radius: 0.75rem;
+  background: var(--surface-subtle);
+}
+
+.tiptap-viewer .ProseMirror [data-type="details"] > button {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2.75rem;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.tiptap-viewer .ProseMirror [data-type="details"] > button::before {
+  content: "▸";
+  position: absolute;
+  left: 0.85rem;
+  top: 0.7rem;
+  color: var(--primary);
+  transition: transform 0.15s ease;
+}
+
+.dark .tiptap-viewer .ProseMirror [data-type="details"] > button::before {
+  color: var(--primary-tint);
+}
+
+.tiptap-viewer .ProseMirror [data-type="details"].is-open > button::before {
+  transform: rotate(90deg);
+}
+
+.tiptap-viewer .ProseMirror [data-type="details"] summary {
+  display: block;
+  list-style: none;
+  font-weight: 600;
+}
+
+.tiptap-viewer .ProseMirror [data-type="details"] summary::-webkit-details-marker {
+  display: none;
+}
+
+.tiptap-viewer .ProseMirror [data-type="detailsContent"] {
+  margin-top: 0.6rem;
+}
+
 .tiptap-editor .ProseMirror u,
 .tiptap-viewer .ProseMirror u {
   text-decoration: underline;
