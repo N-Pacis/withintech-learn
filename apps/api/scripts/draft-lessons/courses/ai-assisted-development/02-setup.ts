@@ -1,4 +1,5 @@
-import { code, text, type LessonDraft } from "../../types";
+import { code, codeLines, playground, reveal, text, type LessonDraft } from "../../types";
+import { setupChecklist } from "./widgets";
 
 export const lesson: LessonDraft = {
   moduleId: "63fffe22-ca04-4886-8ce8-23d45cab5844",
@@ -59,8 +60,25 @@ pip install pytest
 # "Saved: <amount> RWF for <category>". Reject non-numeric amounts.
 `,
     ),
+    playground(setupChecklist),
     text(`
 <p>Run <code>python main.py</code>, type a valid amount, then try <code>abc</code>. If the error case is handled, your setup works. This file is the start of the <strong>expense tracker</strong> we'll grow through the course.</p>
+${reveal(
+  "Show a sample answer",
+  `<p>Your AI's version may differ, but it should loop until the amount is a number:</p>
+${codeLines(`
+while True:
+    raw = input("Amount (RWF): ")
+    try:
+        amount = float(raw)
+        break
+    except ValueError:
+        print("Please enter a number, e.g. 1500")
+category = input("Category: ")
+print(f"Saved: {amount:,.0f} RWF for {category}")
+`)}
+<p>If nothing appeared when you typed the comment, check you're signed in to Copilot (bottom-right status bar) and that the <code>.venv</code> interpreter is selected.</p>`,
+)}
 <h3>Common mistakes</h3>
 <ul>
 <li>Installing Copilot but never signing in. Nothing happens until you do.</li>

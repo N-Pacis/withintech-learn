@@ -1,4 +1,5 @@
-import { code, text, type LessonDraft } from "../../types";
+import { code, codeLines, image, playground, reveal, text, type LessonDraft } from "../../types";
+import { tracebackExplorer } from "./widgets";
 
 export const lesson: LessonDraft = {
   moduleId: "1969d7cf-2440-48e4-8025-6a97927a4bc7",
@@ -24,6 +25,8 @@ Traceback (most recent call last):
 ValueError: invalid literal for int() with base 10: '1500.50'
 `,
     ),
+    image("ai-assisted-development/traceback-anatomy.png"),
+    playground(tracebackExplorer),
     text(`
 <p>This is a classic: type conversion errors like treating decimal amounts as <code>int</code>.</p>
 <h3>A debugging prompt that works</h3>
@@ -61,6 +64,25 @@ cause, then give the minimal fix and a pytest test for the boundary.
 <p>AI debugging excels at explaining obscure error messages and suggesting precise, context-aware fixes. Use that: read the explanation, not just the patch. The biggest productivity gain is spending less time staring at errors while learning why they occur and how to avoid them. If you can't explain the fix, you're not done.</p>
 <h3>Try it</h3>
 <p>Introduce the <code>int()</code> bug above into your tracker, then use the three-part prompt. Apply the fix, run it with <code>1500.50</code> and <code>abc</code>, and add the test the AI suggests.</p>
+${reveal(
+  "Show a sample answer",
+  `<p><strong>Why it fails:</strong> <code>int()</code> only parses whole numbers, so <code>'1500.50'</code> raises <code>ValueError</code>. <strong>Fix:</strong></p>
+${codeLines(`
+def ask_amount() -> float:
+    while True:
+        raw = input("Amount (RWF): ").replace(",", "")
+        try:
+            amount = float(raw)
+        except ValueError:
+            print("Enter a number, e.g. 1500 or 1500.50")
+            continue
+        if amount <= 0:
+            print("Amount must be positive")
+            continue
+        return amount
+`)}
+<p><strong>Prevent:</strong> one input function with validation, type hints, and a test that feeds <code>"1500.50"</code>, <code>"abc"</code> and <code>"-5"</code>.</p>`,
+)}
 <h3>Key takeaways</h3>
 <ul>
 <li>Paste traceback + code + "explain, fix, prevent".</li>

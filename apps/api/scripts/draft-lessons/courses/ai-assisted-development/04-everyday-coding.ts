@@ -1,4 +1,5 @@
-import { code, text, type LessonDraft } from "../../types";
+import { code, codeLines, image, playground, reveal, text, type LessonDraft } from "../../types";
+import { featureStepper } from "./widgets";
 
 export const lesson: LessonDraft = {
   moduleId: "ec897e52-a1f9-4280-b4bf-936ba80921a1",
@@ -12,6 +13,7 @@ export const lesson: LessonDraft = {
 <h3>Step 1: a data model with type hints</h3>
 <p>Always ask for <strong>type hints everywhere</strong>; they make AI output easier to review and catch mistakes early.</p>
 `),
+    image("ai-assisted-development/feature-loop.png"),
     code(
       "text",
       `
@@ -50,6 +52,7 @@ def load_expenses() -> list["Expense"]:
     return [Expense(**r | {"date": date.fromisoformat(r["date"])}) for r in rows]
 `,
     ),
+    playground(featureStepper),
     text(`
 <h3>Step 3: let comments drive Copilot</h3>
 <p>In comment-driven development, detailed docstrings or descriptive comments right above the code block trigger the best inline suggestions. Write the docstring for <code>add_expense()</code> and let Copilot fill the body.</p>
@@ -71,6 +74,16 @@ when expenses.json has an extra "id" field. Keep unknown fields ignored.
 <p>Incremental prompting (feature by feature) beats one giant prompt because you can verify each piece, catch issues early, and guide the AI better. A 300-line answer to a giant prompt hides its bugs.</p>
 <h3>Try it</h3>
 <p>Add a <code>summary</code> command that prints the total per category for the current month. Use the loop: prompt with constraints → read → run with three sample expenses → follow up until the output is right.</p>
+${reveal(
+  "Show a sample answer",
+  `<p>A prompt that works: <em>"Add summary_by_category(expenses, year, month) that returns a dict of totals for that month. Use type hints, ignore other months, return {} when empty. Then add a 'summary' CLI command that prints one line per category, sorted by amount."</em></p>
+${codeLines(`
+$ python main.py summary
+food        4,000 RWF
+transport   2,300 RWF
+`)}
+<p>Check it with an expense from last month too: it must not be counted.</p>`,
+)}
 <h3>Key takeaways</h3>
 <ul>
 <li>Generate → review → run → iterate, one feature at a time.</li>

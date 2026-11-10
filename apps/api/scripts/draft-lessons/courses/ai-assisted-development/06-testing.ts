@@ -1,4 +1,5 @@
-import { code, text, type LessonDraft } from "../../types";
+import { code, codeLines, image, playground, reveal, text, type LessonDraft } from "../../types";
+import { testRunner } from "./widgets";
 
 export const lesson: LessonDraft = {
   moduleId: "44e042a9-e8ae-42d6-ac93-abc82aacc8c9",
@@ -10,6 +11,7 @@ export const lesson: LessonDraft = {
 <h3>Step 1: generate tests from the code</h3>
 <p>The fastest way to a solid unit test suite for a new function: ask AI to generate <strong>pytest</strong> tests from the function's code.</p>
 `),
+    image("ai-assisted-development/test-pyramid.png"),
     code(
       "text",
       `
@@ -68,6 +70,7 @@ def test_converts_rwf_to_usd(mock_rate):
     assert convert_to_usd(13000) == 10.0
 `,
     ),
+    playground(testRunner),
     text(`
 <h3>Step 4: property-based tests</h3>
 <p>Example tests check cases you thought of. Property-based tests (with the <code>hypothesis</code> library) check general invariants and rules across many generated inputs, e.g. "the total is never negative" or "the sum of category totals equals the sum of all amounts".</p>
@@ -75,6 +78,21 @@ def test_converts_rwf_to_usd(mock_rate):
 <p>To reach high coverage quickly, prompt AI with the existing code plus your current tests and ask for tests that cover what's missing. Run <code>pytest --cov</code> to check.</p>
 <h3>Try it</h3>
 <p>Generate tests for <code>load_expenses()</code> from the last lesson, including a corrupt JSON file. Run them, and fix whatever fails.</p>
+${reveal(
+  "Show a sample answer",
+  `<p>Good tests use pytest's <code>tmp_path</code> fixture so they never touch your real data file:</p>
+${codeLines(`
+def test_returns_empty_list_when_file_missing(tmp_path, monkeypatch):
+    monkeypatch.setattr(storage, "DATA_FILE", tmp_path / "expenses.json")
+    assert storage.load_expenses() == []
+
+def test_returns_empty_list_when_file_is_corrupt(tmp_path, monkeypatch):
+    bad = tmp_path / "expenses.json"
+    bad.write_text("{not json")
+    monkeypatch.setattr(storage, "DATA_FILE", bad)
+    assert storage.load_expenses() == []
+`)}`,
+)}
 <h3>Key takeaways</h3>
 <ul>
 <li>Generate pytest tests from the function; ask for fixtures and descriptive names.</li>

@@ -1,4 +1,5 @@
-import { code, text, type LessonDraft } from "../../types";
+import { code, image, playground, reveal, text, type LessonDraft } from "../../types";
+import { agentSimulator } from "./widgets";
 
 export const lesson: LessonDraft = {
   moduleId: "9418a7dd-1848-4c2d-9811-d2812023e8aa",
@@ -13,6 +14,7 @@ export const lesson: LessonDraft = {
 <h3>Multi-step prompting</h3>
 <p>Agents work best when you break the task into clear, sequenced steps and say how to verify each one:</p>
 `),
+    image("ai-assisted-development/agent-loop.png"),
     code(
       "text",
       `
@@ -46,10 +48,15 @@ Recurring expenses            180 min      60 min        1 (timezone)
 Write tests for storage.py     60 min      15 min        0
 `,
     ),
+    playground(agentSimulator),
     text(`
 <p>Track a few tasks for two weeks. If quality drops (more bugs, more rework), the time saved is fake.</p>
 <h3>Try it</h3>
 <p>Run the recurring-expenses prompt above in Cursor Agent mode on your tracker. Approve the plan at step 1, let it finish, then review the diff line by line before committing. Log how long it took.</p>
+${reveal(
+  "Show a sample answer",
+  `<p>What a healthy run looks like: at step 1 the agent summarises <code>Expense</code> and the JSON storage correctly (if it invents files, stop and correct it). It adds <code>recurrence</code> with a default so old files still load, writes tests for weekly and monthly, hits a month-end edge case (31st), fixes it, and finishes green. Your review should check the default value, the month-end logic, and that no secrets or unrelated files changed.</p>`,
+)}
 <h3>Key takeaways</h3>
 <ul>
 <li>Agents plan, execute and self-correct; Cursor Agent mode and Claude computer use are examples.</li>

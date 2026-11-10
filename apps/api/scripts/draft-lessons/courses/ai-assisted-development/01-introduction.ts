@@ -1,4 +1,5 @@
-import { code, text, type LessonDraft } from "../../types";
+import { code, codeLines, image, playground, reveal, text, type LessonDraft } from "../../types";
+import { toolMap } from "./widgets";
 
 export const lesson: LessonDraft = {
   moduleId: "79f25680-0d83-45ad-ac53-0d69603c76aa",
@@ -11,6 +12,7 @@ export const lesson: LessonDraft = {
 <h3>What it looks like in practice</h3>
 <p>You write a clear comment or prompt. The AI proposes code. You read it, run it, and iterate.</p>
 `),
+    image("ai-assisted-development/human-in-the-loop.png"),
     code(
       "python",
       `
@@ -31,6 +33,7 @@ print(total_by_category([
 # {'transport': 2300, 'food': 3200}
 `,
     ),
+    playground(toolMap),
     text(`
 <h3>The three kinds of AI tools you'll use</h3>
 <ul>
@@ -48,6 +51,19 @@ print(total_by_category([
 <p>Python offers some of the highest productivity gains with AI thanks to its simple syntax and strong AI ecosystem, so the examples stay short and readable. Everything you learn transfers to TypeScript, Java or any other stack.</p>
 <h3>Try it</h3>
 <p>Open any AI chat tool and ask: <em>"Write a Python function that returns the busiest day from a list of (day, count) pairs. Include type hints and one example."</em> Then do three things before trusting it: read every line, run it, and try an edge case (an empty list). Did it handle it?</p>
+${reveal(
+  "Show a sample answer",
+  `<p>A good result looks like this. Notice the empty-list check: many first drafts forget it and crash with <code>ValueError: max() arg is an empty sequence</code>.</p>
+${codeLines(`
+def busiest_day(counts: list[tuple[str, int]]) -> str | None:
+    if not counts:
+        return None
+    return max(counts, key=lambda pair: pair[1])[0]
+
+print(busiest_day([("Mon", 12), ("Tue", 30), ("Wed", 18)]))  # Tue
+`)}
+<p>If yours crashed on <code>[]</code>, reply to the AI: <em>"Handle an empty list by returning None."</em> That's the review → iterate loop in action.</p>`,
+)}
 <h3>Key takeaways</h3>
 <ul>
 <li>AI-assisted development = you and AI collaborating; you stay in charge.</li>

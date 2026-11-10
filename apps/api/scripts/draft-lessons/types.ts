@@ -27,7 +27,25 @@ export interface CodeBlock {
   code: string;
 }
 
-export type Block = TextBlock | CodeBlock;
+/**
+ * An `image` block. `file` is a PNG under scripts/draft-lessons/assets/; the
+ * loader uploads it to S3 (blocks/<uuid>.png) on --apply and stores the key.
+ */
+export interface ImageBlock {
+  type: "image";
+  file: string;
+  caption: string;
+}
+
+/** A `playground` block: Sandpack HTML/CSS/JS editor with a live preview. */
+export interface PlaygroundBlock {
+  type: "playground";
+  html: string;
+  css: string;
+  js: string;
+}
+
+export type Block = TextBlock | CodeBlock | ImageBlock | PlaygroundBlock;
 
 /**
  * One multiple-choice question. `correct` holds 0-based indices into
@@ -68,6 +86,39 @@ export interface CourseDraft {
 }
 
 export const text = (html: string): TextBlock => ({ type: "text", html });
+
+/** Diagrams carry their own title, so the caption (grey text under the image) defaults to empty. */
+export const image = (file: string, caption = ""): ImageBlock => ({
+  type: "image",
+  file,
+  caption,
+});
+
+export const playground = (widget: {
+  html: string;
+  css: string;
+  js: string;
+}): PlaygroundBlock => ({ type: "playground", ...widget });
+
+const escapeHtml = (s: string): string =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/**
+ * A few lines of code inside a text block (e.g. in a reveal). Tiptap's
+ * codeBlock node is off in this app, so each line becomes inline code with a
+ * hard break, and leading spaces become non-breaking to keep indentation.
+ */
+export const codeLines = (source: string): string =>
+  `<p>${source
+    .replace(/^\n/, "")
+    .replace(/\s+$/, "")
+    .split("\n")
+    .map((line) => `<code>${escapeHtml(line).replace(/^ +/, (sp) => " ".repeat(sp.length))}</code>`)
+    .join("<br>")}</p>`;
+
+/** Click-to-expand section in Tiptap's Details markup. */
+export const reveal = (summary: string, bodyHtml: string): string =>
+  `<details><summary>${summary}</summary><div data-type="detailsContent">${bodyHtml}</div></details>`;
 
 export const code = (language: CodeLanguage, source: string): CodeBlock => ({
   type: "code",

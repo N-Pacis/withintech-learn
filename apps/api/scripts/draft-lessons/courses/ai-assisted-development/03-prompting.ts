@@ -1,4 +1,5 @@
-import { code, text, type LessonDraft } from "../../types";
+import { code, codeLines, image, playground, reveal, text, type LessonDraft } from "../../types";
+import { promptBuilder } from "./widgets";
 
 export const lesson: LessonDraft = {
   moduleId: "029e4f51-4399-432d-9235-f2c7eb8e4e60",
@@ -9,6 +10,7 @@ export const lesson: LessonDraft = {
 <p>Same model, same task, wildly different results. The difference is the prompt. The AI only knows what you tell it, so a vague prompt gets generic or incorrect code, and a precise one gets code that fits your project. That's why prompt engineering matters so much for AI-assisted coding: <strong>output quality depends directly on input quality</strong>.</p>
 <h3>Bad vs strong</h3>
 `),
+    image("ai-assisted-development/rtccfer.png"),
     code(
       "text",
       `
@@ -54,6 +56,7 @@ def momo_fee(amount: int) -> int:
     # Copilot now has enough to suggest a correct body
 `,
     ),
+    playground(promptBuilder),
     text(`
 <h3>Common mistakes</h3>
 <ul>
@@ -63,6 +66,22 @@ def momo_fee(amount: int) -> int:
 </ul>
 <h3>Try it</h3>
 <p>The goal is to compare bad vs strong prompts and see the jump in code quality. Send the BAD prompt above to your AI tool, then the STRONG one. Run both results against the five examples. Note which handles <code>"0788 123 456"</code> correctly.</p>
+${reveal(
+  "Show a sample answer",
+  `<p>The BAD prompt usually returns a generic regex for international numbers that rejects <code>"0788 123 456"</code> or doesn't add <code>+250</code>. The STRONG prompt should produce something like:</p>
+${codeLines(`
+def normalize_phone(raw: str) -> str:
+    digits = "".join(ch for ch in raw if ch.isdigit())
+    if digits.startswith("250"):
+        digits = digits[3:]
+    if digits.startswith("0"):
+        digits = digits[1:]
+    if len(digits) != 9 or not digits.startswith("7"):
+        raise ValueError(f"Invalid Rwandan mobile number: {raw!r}")
+    return "+250" + digits
+`)}
+<p>…plus five tests, because the Format line asked for them.</p>`,
+)}
 <h3>Key takeaways</h3>
 <ul>
 <li>Use RTCCFER: Role, Task, Context, Constraints, Format, Examples, Refine.</li>

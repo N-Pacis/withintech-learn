@@ -55,7 +55,15 @@ export async function reportCoverage(draft: CourseDraft): Promise<void> {
     const body = new Set(
       words(
         lesson.blocks
-          .map((b) => (b.type === "text" ? b.html : b.code))
+          .map((b) =>
+            b.type === "text"
+              ? b.html
+              : b.type === "code"
+                ? b.code
+                : b.type === "image"
+                  ? b.caption
+                  : `${b.html} ${b.js}`,
+          )
           .join(" "),
       ),
     );

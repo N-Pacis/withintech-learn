@@ -1,4 +1,5 @@
-import { code, text, type LessonDraft } from "../../types";
+import { code, codeLines, playground, reveal, text, type LessonDraft } from "../../types";
+import { readmeGenerator } from "./widgets";
 
 export const lesson: LessonDraft = {
   moduleId: "eeaec958-089f-4dd1-8137-36d318587cda",
@@ -19,6 +20,7 @@ usage examples (with sample output), running tests, project structure,
 and a License section (MIT). Keep it under 120 lines.
 `,
     ),
+    playground(readmeGenerator),
     text(`
 <h3>Docstrings everywhere</h3>
 <p>For a whole module, start your prompt with <em>"Add a module-level docstring and document every public item."</em> Ask for <strong>Google or NumPy style</strong>, which are modern and widely supported by Python tools (IDEs, Sphinx, mkdocstrings).</p>
@@ -64,6 +66,18 @@ git log --oneline v1.0..HEAD > changes.txt
 <p>For legacy code, ask the AI to "suggest modernization steps": type hints, replacing deprecated APIs, splitting large functions. That's how you keep legacy code maintainable long-term.</p>
 <h3>Try it</h3>
 <p>Generate a README (MIT license) for your expense tracker, then add Google-style docstrings to <code>storage.py</code>. Read both and correct anything the AI got wrong; it's your documentation.</p>
+${reveal(
+  "Show a sample answer",
+  `<p>Check the AI's README against reality: do the install commands actually work on a fresh clone? Is the usage example a real command? A Google-style docstring for <code>save_expenses</code>:</p>
+${codeLines(`
+def save_expenses(expenses: list[Expense]) -> None:
+    """Write all expenses to DATA_FILE as JSON.
+
+    Args:
+        expenses: Expenses to save; replaces the file's contents.
+    """
+`)}`,
+)}
 <h3>Key takeaways</h3>
 <ul>
 <li>Feed files in, get a structured README out.</li>

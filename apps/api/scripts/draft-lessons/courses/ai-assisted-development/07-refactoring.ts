@@ -1,4 +1,5 @@
-import { code, text, type LessonDraft } from "../../types";
+import { code, playground, reveal, text, type LessonDraft } from "../../types";
+import { refactorToggle } from "./widgets";
 
 export const lesson: LessonDraft = {
   moduleId: "df136824-1b19-485c-935d-25cd51a6a77b",
@@ -44,6 +45,7 @@ if amount > LARGE_EXPENSE_RWF:
 expenses = load_expenses(DATA_FILE)   # handles missing/corrupt files
 `,
     ),
+    playground(refactorToggle),
     text(`
 <h3>AI as a code reviewer</h3>
 <p>Before you open a pull request, ask the AI to <strong>rate quality, list issues, and suggest fixes with explanations</strong>:</p>
@@ -69,6 +71,10 @@ and a one-line explanation for each.
 </ul>
 <h3>Try it</h3>
 <p>Run the refactoring prompt on your tracker in Composer/Agent mode, run <code>pytest</code>, then ask for a review of the diff. Fix the top two issues and re-review.</p>
+${reveal(
+  "Show a sample answer",
+  `<p>A typical first review of the tracker flags: magic numbers (<code>500000</code>), vague names (<code>d</code>, <code>e</code>), a file opened without <code>with</code>, input parsing mixed with business logic, and no test for the large-expense warning. Fix the first two, re-run <code>pytest</code>, then ask: <em>"Re-review the updated diff. What's left?"</em></p>`,
+)}
 <h3>Key takeaways</h3>
 <ul>
 <li>Refactor → test → iterate until green.</li>
