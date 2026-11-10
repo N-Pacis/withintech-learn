@@ -46,15 +46,16 @@ function BlockDisplay({ block }: { block: LessonBlock }) {
     return (
       <div className="flex flex-col gap-1">
         {block.url ? (
-          <div className="relative w-full h-48 rounded-lg overflow-hidden bg-surface-muted">
-            <Image
-              src={block.url}
-              alt={block.caption ?? ""}
-              fill
-              className="object-cover"
-              unoptimized
-            />
-          </div>
+          // Same as the student view: full width, natural aspect ratio.
+          <Image
+            src={block.url}
+            alt={block.caption ?? ""}
+            width={0}
+            height={0}
+            sizes="100vw"
+            className="w-full h-auto rounded-lg bg-surface-muted"
+            unoptimized
+          />
         ) : (
           <div className="h-24 bg-surface-muted rounded-lg flex items-center justify-center text-muted-contrast text-xs">
             No image uploaded

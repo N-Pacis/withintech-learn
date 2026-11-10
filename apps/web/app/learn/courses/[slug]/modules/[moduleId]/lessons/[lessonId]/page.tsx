@@ -29,18 +29,16 @@ function ImageBlock({ block }: { block: StudentBlock }) {
   if (!block.url) return null;
   return (
     <figure className="flex flex-col gap-2">
-      <div
-        className="relative w-full rounded-xl overflow-hidden bg-surface-muted"
-        style={{ aspectRatio: "16/9" }}
-      >
-        <Image
-          src={block.url}
-          alt={block.caption ?? ""}
-          fill
-          className="object-cover"
-          unoptimized
-        />
-      </div>
+      {/* Natural aspect ratio: diagrams and screenshots must not be cropped. */}
+      <Image
+        src={block.url}
+        alt={block.caption ?? ""}
+        width={0}
+        height={0}
+        sizes="100vw"
+        className="w-full h-auto rounded-xl bg-surface-muted"
+        unoptimized
+      />
       {block.caption && (
         <figcaption className="font-body text-xs text-muted-contrast text-center">
           {block.caption}
