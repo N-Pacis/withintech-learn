@@ -24,17 +24,17 @@ const STATUS_CONFIG: Record<
     label: "Accepted",
     variant: "success",
     icon: <CheckCircle2 size={18} />,
-    bg: "bg-green-50",
-    border: "border-green-200",
-    textColor: "text-green-700",
+    bg: "bg-success-soft",
+    border: "border-success/30",
+    textColor: "text-success-dark",
   },
   wrong_answer: {
     label: "Wrong Answer",
     variant: "danger",
     icon: <XCircle size={18} />,
-    bg: "bg-red-50",
-    border: "border-red-200",
-    textColor: "text-red-700",
+    bg: "bg-danger-soft",
+    border: "border-danger/30",
+    textColor: "text-danger-dark",
   },
   time_limit_exceeded: {
     label: "Time Limit Exceeded",
@@ -48,17 +48,17 @@ const STATUS_CONFIG: Record<
     label: "Runtime Error",
     variant: "danger",
     icon: <XCircle size={18} />,
-    bg: "bg-red-50",
-    border: "border-red-200",
-    textColor: "text-red-700",
+    bg: "bg-danger-soft",
+    border: "border-danger/30",
+    textColor: "text-danger-dark",
   },
   compile_error: {
     label: "Compile Error",
     variant: "danger",
     icon: <XCircle size={18} />,
-    bg: "bg-red-50",
-    border: "border-red-200",
-    textColor: "text-red-700",
+    bg: "bg-danger-soft",
+    border: "border-danger/30",
+    textColor: "text-danger-dark",
   },
 };
 
@@ -78,7 +78,7 @@ function TestCaseRow({
     <div
       className={cn(
         "rounded-xl border overflow-hidden transition-all",
-        result.passed ? "border-green-200" : "border-red-200",
+        result.passed ? "border-success/30" : "border-danger/30",
       )}
     >
       {/* Header row */}
@@ -86,21 +86,21 @@ function TestCaseRow({
         className={cn(
           "w-full flex items-center gap-2.5 px-4 py-2.5 text-left transition-colors",
           result.passed
-            ? "bg-green-50 hover:bg-green-100/60"
-            : "bg-red-50 hover:bg-red-100/60",
+            ? "bg-success-soft hover:bg-success/10"
+            : "bg-danger-soft hover:bg-danger/10",
         )}
         onClick={() => !hidden && setOpen((v) => !v)}
         disabled={hidden}
       >
         {result.passed ? (
-          <CheckCircle2 size={14} className="text-green-600 shrink-0" />
+          <CheckCircle2 size={14} className="text-success shrink-0" />
         ) : (
-          <XCircle size={14} className="text-red-500 shrink-0" />
+          <XCircle size={14} className="text-danger shrink-0" />
         )}
         <span
           className={cn(
             "font-body text-xs font-medium flex-1",
-            result.passed ? "text-green-800" : "text-red-800",
+            result.passed ? "text-success-dark" : "text-danger-dark",
           )}
         >
           Test Case {index + 1}
@@ -115,7 +115,7 @@ function TestCaseRow({
             size={13}
             className={cn(
               "transition-transform duration-200 shrink-0",
-              result.passed ? "text-green-500" : "text-red-400",
+              result.passed ? "text-success" : "text-danger",
               open ? "rotate-180" : "",
             )}
           />

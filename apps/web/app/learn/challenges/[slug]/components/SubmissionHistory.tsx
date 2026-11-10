@@ -27,31 +27,31 @@ const STATUS_CONFIG: Record<
     label: "Accepted",
     variant: "success",
     icon: <CheckCircle2 size={14} />,
-    color: "text-green-600",
+    color: "text-success",
   },
   wrong_answer: {
     label: "Wrong Answer",
     variant: "danger",
     icon: <XCircle size={14} />,
-    color: "text-red-500",
+    color: "text-danger",
   },
   time_limit_exceeded: {
     label: "TLE",
     variant: "warning",
     icon: <Clock size={14} />,
-    color: "text-amber-500",
+    color: "text-warning",
   },
   runtime_error: {
     label: "Runtime Error",
     variant: "danger",
     icon: <XCircle size={14} />,
-    color: "text-red-500",
+    color: "text-danger",
   },
   compile_error: {
     label: "Compile Error",
     variant: "danger",
     icon: <AlertCircle size={14} />,
-    color: "text-red-500",
+    color: "text-danger",
   },
 };
 

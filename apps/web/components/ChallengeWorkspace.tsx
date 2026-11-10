@@ -90,14 +90,14 @@ function WorkspaceSkeleton({ isInsideLayout }: { isInsideLayout?: boolean }) {
 
 function AcceptedBanner({ onDismiss }: { onDismiss: () => void }) {
   return (
-    <div className="flex items-center gap-3 px-4 py-3 bg-green-50 border-b border-green-200 animate-in slide-in-from-top duration-300">
-      <CheckCircle2 size={18} className="text-green-600 shrink-0" />
-      <span className="font-body text-sm font-medium text-green-800 flex-1">
+    <div className="flex items-center gap-3 px-4 py-3 bg-success-soft border-b border-success/30 animate-in slide-in-from-top duration-300">
+      <CheckCircle2 size={18} className="text-success shrink-0" />
+      <span className="font-body text-sm font-medium text-success-dark flex-1">
         All test cases passed — challenge completed!
       </span>
       <button
         onClick={onDismiss}
-        className="font-body text-xs text-green-600 hover:text-green-800 transition-colors"
+        className="font-body text-xs text-success hover:text-success-dark transition-colors"
       >
         Dismiss
       </button>

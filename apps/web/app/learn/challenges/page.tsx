@@ -133,7 +133,7 @@ function ChallengeRow({ challenge }: { challenge: StudentChallengeListItem }) {
           {challenge.number}.
         </span>
         {challenge.completed ? (
-          <CheckCircle2 size={18} className="text-green-500 shrink-0" />
+          <CheckCircle2 size={18} className="text-success shrink-0" />
         ) : (
           <Circle
             size={18}
