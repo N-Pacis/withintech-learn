@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500" font-family="Helvetica, Arial, sans-serif">
+  <defs><marker id="a" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="15" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#3d006b"/></marker></defs>
+  <rect width="1200" height="500" rx="28" fill="#fff"/>
+  <text x="600" y="62" text-anchor="middle" font-size="34" font-weight="700" fill="#1f2937">Fork → pull request</text>
+  <g text-anchor="middle">
+    <rect x="80" y="110" width="320" height="120" rx="20" fill="#3d006b"/><text x="240" y="160" font-size="22" font-weight="700" fill="#fff">Original repo</text>
+    <rect x="800" y="110" width="320" height="120" rx="20" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="960" y="160" font-size="22" font-weight="700" fill="#3d006b">Your fork</text>
+    <rect x="800" y="360" width="320" height="120" rx="20" fill="#fff4ec" stroke="#ea7a28" stroke-width="3"/><text x="960" y="410" font-size="22" font-weight="700" fill="#ea7a28">Your laptop</text>
+  </g>
+  <g stroke="#3d006b" stroke-width="4" fill="none" marker-end="url(#a)"><line x1="402" y1="150" x2="792" y2="150"/><line x1="940" y1="232" x2="940" y2="352"/><line x1="985" y1="358" x2="985" y2="238"/><path d="M798 205 Q 600 300 402 205"/></g>
+  <g font-size="18" font-weight="700" text-anchor="middle"><text x="597" y="135" fill="#3d006b">1. Fork</text><text x="880" y="300" fill="#3d006b">2. Clone</text><text x="1060" y="300" fill="#ea7a28">3. Push branch</text><text x="600" y="300" fill="#15803d">4. Pull request</text></g>
+</svg>

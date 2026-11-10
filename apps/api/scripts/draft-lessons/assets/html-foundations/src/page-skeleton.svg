@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" font-family="Helvetica, Arial, sans-serif">
+  <rect width="1200" height="520" rx="28" fill="#fff"/>
+  <text x="600" y="62" text-anchor="middle" font-size="34" font-weight="700" fill="#1f2937">Every HTML page</text>
+  <rect x="200" y="100" width="800" height="390" rx="20" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="230" y="140" font-family="Menlo, monospace" font-size="24" font-weight="700" fill="#3d006b">&lt;html&gt;</text>
+  <rect x="240" y="160" width="720" height="120" rx="16" fill="#fff4ec" stroke="#ea7a28" stroke-width="3"/><text x="270" y="198" font-family="Menlo, monospace" font-size="22" font-weight="700" fill="#ea7a28">&lt;head&gt;</text>
+  <g font-family="Menlo, monospace" font-size="19" fill="#1f2937"><text x="300" y="235">&lt;title&gt;  &lt;meta&gt;  &lt;link&gt;</text></g>
+  <rect x="240" y="300" width="720" height="165" rx="16" fill="#fff" stroke="#3d006b" stroke-width="3"/><text x="270" y="338" font-family="Menlo, monospace" font-size="22" font-weight="700" fill="#3d006b">&lt;body&gt;</text>
+  <g font-family="Menlo, monospace" font-size="19" fill="#1f2937"><text x="300" y="380">&lt;h1&gt;  &lt;p&gt;  &lt;a&gt;  &lt;img&gt;  &lt;table&gt;</text></g>
+  <g font-size="20" font-weight="700"><text x="1020" y="225" fill="#ea7a28">hidden</text><text x="1020" y="390" fill="#3d006b">visible</text></g>
+</svg>

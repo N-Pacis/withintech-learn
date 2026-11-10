@@ -1,5 +1,5 @@
 import { code, codeLines, image, playground, reveal, text, type LessonDraft } from "../../types";
-import { testRunner } from "./widgets";
+import { testingExercise } from "./widgets";
 
 export const lesson: LessonDraft = {
   moduleId: "44e042a9-e8ae-42d6-ac93-abc82aacc8c9",
@@ -70,7 +70,19 @@ def test_converts_rwf_to_usd(mock_rate):
     assert convert_to_usd(13000) == 10.0
 `,
     ),
-    playground(testRunner),
+    text(`
+<h3>Your turn: tests that find a bug</h3>
+<p>Add the two tests described in the comments, run, and watch one fail. That failure is the point: the test found a real bug. Fix the function until everything is green.</p>
+${reveal("Show the solution", codeLines(`
+test("empty list returns {}", () => expect(totalByCategory([])).toBe({}));
+test("ignores negative amounts", () =>
+  expect(totalByCategory([{ category: "food", amount: -50 }])).toBe({}));
+
+// fix inside the loop:
+if (e.amount < 0) continue;
+`))}
+`),
+    playground(testingExercise),
     text(`
 <h3>Step 4: property-based tests</h3>
 <p>Example tests check cases you thought of. Property-based tests (with the <code>hypothesis</code> library) check general invariants and rules across many generated inputs, e.g. "the total is never negative" or "the sum of category totals equals the sum of all amounts".</p>

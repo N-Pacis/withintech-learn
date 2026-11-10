@@ -1,5 +1,5 @@
-import { code, image, playground, reveal, text, type LessonDraft } from "../../types";
-import { agentSimulator } from "./widgets";
+import { code, playground, image, reveal, text, type LessonDraft } from "../../types";
+import { knowledgeCheck } from "../../knowledge-check";
 
 export const lesson: LessonDraft = {
   moduleId: "9418a7dd-1848-4c2d-9811-d2812023e8aa",
@@ -48,7 +48,6 @@ Recurring expenses            180 min      60 min        1 (timezone)
 Write tests for storage.py     60 min      15 min        0
 `,
     ),
-    playground(agentSimulator),
     text(`
 <p>Track a few tasks for two weeks. If quality drops (more bugs, more rework), the time saved is fake.</p>
 <h3>Try it</h3>
@@ -66,5 +65,37 @@ ${reveal(
 <li>The goal of the whole course: amplify your capabilities while staying in control.</li>
 </ul>
 `),
+    playground(knowledgeCheck([
+          {
+                "q": "What makes a workflow \"agentic\"?",
+                "options": [
+                      "It autocompletes lines",
+                      "It plans, runs several steps and self-corrects",
+                      "It only answers questions"
+                ],
+                "answer": 1,
+                "why": "Agents plan, act, observe and correct."
+          },
+          {
+                "q": "Best place for a human checkpoint?",
+                "options": [
+                      "After the plan, before edits",
+                      "Never",
+                      "Only after deploying"
+                ],
+                "answer": 0,
+                "why": "Approving the plan catches wrong assumptions early."
+          },
+          {
+                "q": "How do you know AI actually made you faster?",
+                "options": [
+                      "It feels faster",
+                      "Compare time and bugs on the same kind of task with vs without AI",
+                      "Count lines generated"
+                ],
+                "answer": 1,
+                "why": "Measure time and quality, not feelings or line counts."
+          }
+    ])),
   ],
 };

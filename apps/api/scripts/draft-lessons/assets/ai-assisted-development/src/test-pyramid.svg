@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="530" viewBox="0 0 1200 530" font-family="Helvetica, Arial, sans-serif">
   <rect width="1200" height="530" rx="28" fill="#ffffff"/>
-  <text x="600" y="62" text-anchor="middle" font-size="34" font-weight="700" fill="#1f2937">Where AI-generated tests pay off most</text>
-  <text x="600" y="98" text-anchor="middle" font-size="20" fill="#6b7280">Lots of fast unit tests, fewer slow end-to-end ones</text>
-  <polygon points="450,140 750,140 820,250 380,250" fill="#3d006b"/><text x="600" y="190" text-anchor="middle" font-size="24" font-weight="700" fill="#fff">End-to-end</text><text x="600" y="222" text-anchor="middle" font-size="17" fill="#e9d5ff">few · slow · whole app</text>
-  <polygon points="380,260 820,260 890,370 310,370" fill="#6b21a8"/><text x="600" y="310" text-anchor="middle" font-size="24" font-weight="700" fill="#fff">Integration</text><text x="600" y="342" text-anchor="middle" font-size="17" fill="#f3e8ff">some · storage, APIs (mocked)</text>
-  <polygon points="310,380 890,380 960,500 240,500" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="600" y="432" text-anchor="middle" font-size="26" font-weight="700" fill="#3d006b">Unit tests (pytest)</text><text x="600" y="466" text-anchor="middle" font-size="18" fill="#1f2937">many · milliseconds · fixtures + descriptive names</text>
+  <text x="600" y="62" text-anchor="middle" font-size="34" font-weight="700" fill="#1f2937">Test pyramid</text>
+  
+  <polygon points="450,140 750,140 820,250 380,250" fill="#3d006b"/><text x="600" y="190" text-anchor="middle" font-size="24" font-weight="700" fill="#fff">End-to-end</text>
+  <polygon points="380,260 820,260 890,370 310,370" fill="#6b21a8"/><text x="600" y="310" text-anchor="middle" font-size="24" font-weight="700" fill="#fff">Integration</text>
+  <polygon points="310,380 890,380 960,500 240,500" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="600" y="432" text-anchor="middle" font-size="26" font-weight="700" fill="#3d006b">Unit tests (pytest)</text>
   <g font-size="18" fill="#1f2937">
-    <text x="985" y="440" fill="#ea7a28" font-weight="700">← AI writes these</text><text x="985" y="466" fill="#ea7a28">fastest</text>
-    <text x="60" y="320" font-weight="700" fill="#3d006b">Mock</text><text x="60" y="346">external services</text>
+    <text x="985" y="440" fill="#ea7a28" font-weight="700">← AI: start here</text>
+    
   </g>
 </svg>

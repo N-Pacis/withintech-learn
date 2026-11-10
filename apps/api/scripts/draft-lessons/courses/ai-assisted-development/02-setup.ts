@@ -1,5 +1,5 @@
-import { code, codeLines, playground, reveal, text, type LessonDraft } from "../../types";
-import { setupChecklist } from "./widgets";
+import { code, playground, codeLines, reveal, text, type LessonDraft } from "../../types";
+import { knowledgeCheck } from "../../knowledge-check";
 
 export const lesson: LessonDraft = {
   moduleId: "63fffe22-ca04-4886-8ce8-23d45cab5844",
@@ -60,7 +60,6 @@ pip install pytest
 # "Saved: <amount> RWF for <category>". Reject non-numeric amounts.
 `,
     ),
-    playground(setupChecklist),
     text(`
 <p>Run <code>python main.py</code>, type a valid amount, then try <code>abc</code>. If the error case is handled, your setup works. This file is the start of the <strong>expense tracker</strong> we'll grow through the course.</p>
 ${reveal(
@@ -92,5 +91,37 @@ print(f"Saved: {amount:,.0f} RWF for {category}")
 <li>A working Python environment is what lets you run and test AI output.</li>
 </ul>
 `),
+    playground(knowledgeCheck([
+          {
+                "q": "You installed Copilot but nothing is suggested. First thing to check?",
+                "options": [
+                      "Reinstall VS Code",
+                      "That you signed in with GitHub",
+                      "Buy more RAM"
+                ],
+                "answer": 1,
+                "why": "Copilot stays inactive until you sign in."
+          },
+          {
+                "q": "Where do you put project-wide instructions for Cursor?",
+                "options": [
+                      ".cursorrules",
+                      "README.md",
+                      "settings.json"
+                ],
+                "answer": 0,
+                "why": "Cursor reads .cursorrules from the project root."
+          },
+          {
+                "q": "Why set up a virtual environment if the AI writes the code?",
+                "options": [
+                      "AI refuses without it",
+                      "To run and test the code it generates",
+                      "It's only for non-AI projects"
+                ],
+                "answer": 1,
+                "why": "You still have to run and test every suggestion."
+          }
+    ])),
   ],
 };

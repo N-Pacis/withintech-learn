@@ -1,5 +1,5 @@
-import { code, codeLines, image, playground, reveal, text, type LessonDraft } from "../../types";
-import { promptBuilder } from "./widgets";
+import { code, playground, codeLines, image, reveal, text, type LessonDraft } from "../../types";
+import { knowledgeCheck } from "../../knowledge-check";
 
 export const lesson: LessonDraft = {
   moduleId: "029e4f51-4399-432d-9235-f2c7eb8e4e60",
@@ -56,7 +56,6 @@ def momo_fee(amount: int) -> int:
     # Copilot now has enough to suggest a correct body
 `,
     ),
-    playground(promptBuilder),
     text(`
 <h3>Common mistakes</h3>
 <ul>
@@ -90,5 +89,37 @@ def normalize_phone(raw: str) -> str:
 <li>Iterate; don't expect one prompt to be perfect.</li>
 </ul>
 `),
+    playground(knowledgeCheck([
+          {
+                "q": "Which prompt will get the best code?",
+                "options": [
+                      "write a phone validator",
+                      "Role + task + context + constraints + format + examples",
+                      "fix my code"
+                ],
+                "answer": 1,
+                "why": "The more of RTCCFER you fill, the less the AI guesses."
+          },
+          {
+                "q": "Your fee-calculation logic keeps coming out wrong. Add…",
+                "options": [
+                      "\"think step by step\" plus sample inputs",
+                      "more exclamation marks",
+                      "\"be smart\""
+                ],
+                "answer": 0,
+                "why": "Chain-of-thought plus examples improves complex logic."
+          },
+          {
+                "q": "Best way to steer Copilot inline?",
+                "options": [
+                      "A descriptive docstring above the function",
+                      "A long chat message",
+                      "Nothing, it reads your mind"
+                ],
+                "answer": 0,
+                "why": "Copilot reads the file: comments and docstrings drive it."
+          }
+    ])),
   ],
 };

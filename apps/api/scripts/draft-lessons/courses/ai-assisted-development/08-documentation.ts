@@ -1,5 +1,5 @@
-import { code, codeLines, playground, reveal, text, type LessonDraft } from "../../types";
-import { readmeGenerator } from "./widgets";
+import { code, playground, codeLines, reveal, text, type LessonDraft } from "../../types";
+import { knowledgeCheck } from "../../knowledge-check";
 
 export const lesson: LessonDraft = {
   moduleId: "eeaec958-089f-4dd1-8137-36d318587cda",
@@ -20,7 +20,6 @@ usage examples (with sample output), running tests, project structure,
 and a License section (MIT). Keep it under 120 lines.
 `,
     ),
-    playground(readmeGenerator),
     text(`
 <h3>Docstrings everywhere</h3>
 <p>For a whole module, start your prompt with <em>"Add a module-level docstring and document every public item."</em> Ask for <strong>Google or NumPy style</strong>, which are modern and widely supported by Python tools (IDEs, Sphinx, mkdocstrings).</p>
@@ -85,5 +84,37 @@ def save_expenses(expenses: list[Expense]) -> None:
 <li>Commits → changelogs; FastAPI → Swagger docs; legacy → modernization plan.</li>
 </ul>
 `),
+    playground(knowledgeCheck([
+          {
+                "q": "Fastest way to a solid README?",
+                "options": [
+                      "Write it from memory",
+                      "Feed project files to AI and ask for a structured README",
+                      "Copy another project's README"
+                ],
+                "answer": 1,
+                "why": "AI drafts structure from your real files; you correct it."
+          },
+          {
+                "q": "A good inline comment explains…",
+                "options": [
+                      "What each line obviously does",
+                      "Non-obvious logic and design decisions",
+                      "The author's name"
+                ],
+                "answer": 1,
+                "why": "Comments should explain why, not repeat the code."
+          },
+          {
+                "q": "You have 30 commits since v1.0. To get release notes:",
+                "options": [
+                      "git log → ask AI to group into Added / Fixed / Changed",
+                      "Write them weeks later",
+                      "Skip release notes"
+                ],
+                "answer": 0,
+                "why": "AI turns commits and diffs into clear changelogs."
+          }
+    ])),
   ],
 };

@@ -1,5 +1,5 @@
-import { code, playground, reveal, text, type LessonDraft } from "../../types";
-import { refactorToggle } from "./widgets";
+import { code, codeLines, playground, reveal, text, type LessonDraft } from "../../types";
+import { refactorExercise } from "./widgets";
 
 export const lesson: LessonDraft = {
   moduleId: "df136824-1b19-485c-935d-25cd51a6a77b",
@@ -45,7 +45,24 @@ if amount > LARGE_EXPENSE_RWF:
 expenses = load_expenses(DATA_FILE)   # handles missing/corrupt files
 `,
     ),
-    playground(refactorToggle),
+    text(`
+<h3>Your turn: refactor with a safety net</h3>
+<p>Rename <code>f</code>, <code>x</code>, <code>t</code>, <code>a</code>, <code>v</code>, and replace <code>500000</code> with a named constant. Run after each change: the tests must stay green. Try asking your AI tool for the refactor, then check it here.</p>
+${reveal("Show one possible solution", codeLines(`
+const LARGE_EXPENSE_RWF = 500000;
+
+function totalSpent(expenses) {
+  let total = 0;
+  for (const expense of expenses) {
+    if (expense.v > LARGE_EXPENSE_RWF) expense.big = true;
+    total += expense.v;
+  }
+  return total;
+}
+// Tests still call f(...): add  const f = totalSpent;  or update the tests too.
+`))}
+`),
+    playground(refactorExercise),
     text(`
 <h3>AI as a code reviewer</h3>
 <p>Before you open a pull request, ask the AI to <strong>rate quality, list issues, and suggest fixes with explanations</strong>:</p>

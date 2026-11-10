@@ -2,20 +2,20 @@
   <defs><marker id="a" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="15" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#3d006b"/></marker></defs>
   <rect width="1200" height="660" rx="28" fill="#ffffff"/>
   <text x="600" y="62" text-anchor="middle" font-size="34" font-weight="700" fill="#1f2937">One feature at a time</text>
-  <text x="600" y="98" text-anchor="middle" font-size="20" fill="#6b7280">Small loops catch bugs early. Giant prompts hide them.</text>
-  <g><circle cx="600" cy="210" r="88" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="600" y="206" text-anchor="middle" font-size="26" font-weight="700" fill="#3d006b">Generate</text><text x="600" y="236" text-anchor="middle" font-size="16" fill="#3d006b">with constraints</text></g>
-  <g><circle cx="860" cy="380" r="88" fill="#3d006b" stroke="#3d006b" stroke-width="3"/><text x="860" y="376" text-anchor="middle" font-size="26" font-weight="700" fill="#ffffff">Review</text><text x="860" y="406" text-anchor="middle" font-size="16" fill="#ffffff">read every line</text></g>
-  <g><circle cx="600" cy="530" r="88" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="600" y="526" text-anchor="middle" font-size="26" font-weight="700" fill="#3d006b">Run</text><text x="600" y="556" text-anchor="middle" font-size="16" fill="#3d006b">real input, edge cases</text></g>
-  <g><circle cx="340" cy="380" r="88" fill="#fff4ec" stroke="#3d006b" stroke-width="3"/><text x="340" y="376" text-anchor="middle" font-size="26" font-weight="700" fill="#ea7a28">Iterate</text><text x="340" y="406" text-anchor="middle" font-size="16" fill="#ea7a28">"Fix this bug where…"</text></g>
+  
+  <g><circle cx="600" cy="210" r="88" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="600" y="219" text-anchor="middle" font-size="26" font-weight="700" fill="#3d006b">Generate</text></g>
+  <g><circle cx="860" cy="380" r="88" fill="#3d006b" stroke="#3d006b" stroke-width="3"/><text x="860" y="389" text-anchor="middle" font-size="26" font-weight="700" fill="#ffffff">Review</text></g>
+  <g><circle cx="600" cy="530" r="88" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="600" y="539" text-anchor="middle" font-size="26" font-weight="700" fill="#3d006b">Run</text></g>
+  <g><circle cx="340" cy="380" r="88" fill="#fff4ec" stroke="#3d006b" stroke-width="3"/><text x="340" y="389" text-anchor="middle" font-size="26" font-weight="700" fill="#ea7a28">Iterate</text></g>
   <g stroke="#3d006b" stroke-width="4" fill="none" marker-end="url(#a)">
     <path d="M688 230 Q 800 250 830 296"/><path d="M845 466 Q 800 520 690 535"/><path d="M512 535 Q 400 520 360 466"/><path d="M370 296 Q 400 250 512 230"/>
   </g>
   <g font-size="17" fill="#1f2937">
-    <rect x="40" y="150" width="230" height="120" rx="16" fill="#f9fafb" stroke="#e5e7eb"/>
-    <text x="58" y="185" font-weight="700" fill="#3d006b">Always include</text>
-    <text x="58" y="212">• constraints &amp; libraries</text><text x="58" y="236">• error handling</text><text x="58" y="260">• output format, type hints</text>
-    <rect x="930" y="150" width="230" height="120" rx="16" fill="#f9fafb" stroke="#e5e7eb"/>
-    <text x="948" y="185" font-weight="700" fill="#3d006b">Multi-file change?</text>
-    <text x="948" y="212">Cursor Composer /</text><text x="948" y="236">Agent mode, then</text><text x="948" y="260">review the diff</text>
+    
+    
+    
+    
+    
+    
   </g>
 </svg>

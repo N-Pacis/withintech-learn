@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" font-family="Helvetica, Arial, sans-serif">
-  <rect width="1200" height="600" rx="28" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="470" viewBox="0 0 1200 470" font-family="Helvetica, Arial, sans-serif">
+  <rect width="1200" height="470" rx="28" fill="#ffffff"/>
   <text x="600" y="62" text-anchor="middle" font-size="34" font-weight="700" fill="#1f2937">Reading a Python traceback</text>
-  <text x="600" y="98" text-anchor="middle" font-size="20" fill="#6b7280">Read it bottom-up: the last line says what broke</text>
+  
   <rect x="60" y="130" width="680" height="300" rx="18" fill="#141414"/>
   <g font-family="Menlo, monospace" font-size="19" fill="#e5e7eb">
     <text x="85" y="185">Traceback (most recent call last):</text>
@@ -11,13 +11,13 @@
     <text x="85" y="380" fill="#fdba74">  int() with base 10: '1500.50'</text>
   </g>
   <g font-size="18" fill="#1f2937">
-    <circle cx="790" cy="180" r="18" fill="#3d006b"/><text x="790" y="186" text-anchor="middle" fill="#fff" font-weight="700">1</text><text x="822" y="186">Calls listed oldest → newest</text>
-    <circle cx="790" cy="230" r="18" fill="#3d006b"/><text x="790" y="236" text-anchor="middle" fill="#fff" font-weight="700">2</text><text x="822" y="236">Which file and line to open</text>
-    <circle cx="790" cy="280" r="18" fill="#3d006b"/><text x="790" y="286" text-anchor="middle" fill="#fff" font-weight="700">3</text><text x="822" y="286">The exact code that ran</text>
-    <circle cx="790" cy="340" r="18" fill="#dc2626"/><text x="790" y="346" text-anchor="middle" fill="#fff" font-weight="700">4</text><text x="822" y="346">Error type: what kind of failure</text>
-    <circle cx="790" cy="380" r="18" fill="#ea7a28"/><text x="790" y="386" text-anchor="middle" fill="#fff" font-weight="700">5</text><text x="822" y="386">Message: the value that broke it</text>
+    <circle cx="790" cy="180" r="18" fill="#3d006b"/><text x="790" y="186" text-anchor="middle" fill="#fff" font-weight="700">1</text><text x="822" y="186">Call order</text>
+    <circle cx="790" cy="230" r="18" fill="#3d006b"/><text x="790" y="236" text-anchor="middle" fill="#fff" font-weight="700">2</text><text x="822" y="236">File &amp; line</text>
+    <circle cx="790" cy="280" r="18" fill="#3d006b"/><text x="790" y="286" text-anchor="middle" fill="#fff" font-weight="700">3</text><text x="822" y="286">Code</text>
+    <circle cx="790" cy="340" r="18" fill="#dc2626"/><text x="790" y="346" text-anchor="middle" fill="#fff" font-weight="700">4</text><text x="822" y="346">Error type</text>
+    <circle cx="790" cy="380" r="18" fill="#ea7a28"/><text x="790" y="386" text-anchor="middle" fill="#fff" font-weight="700">5</text><text x="822" y="386">Bad value</text>
   </g>
-  <rect x="60" y="460" width="1080" height="100" rx="18" fill="#f3e8ff"/>
-  <text x="90" y="500" font-size="20" font-weight="700" fill="#3d006b">Paste all of it to the AI, plus the code around line 14:</text>
-  <text x="90" y="534" font-size="19" fill="#1f2937">"Explain why this fails, fix it, and suggest how to prevent this class of bug."</text>
+  
+  
+  
 </svg>

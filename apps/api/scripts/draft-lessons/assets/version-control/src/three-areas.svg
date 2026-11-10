@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" font-family="Helvetica, Arial, sans-serif">
+  <defs><marker id="a" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="15" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#3d006b"/></marker></defs>
+  <rect width="1200" height="440" rx="28" fill="#fff"/>
+  <text x="600" y="62" text-anchor="middle" font-size="34" font-weight="700" fill="#1f2937">Where your changes live</text>
+  
+  <g text-anchor="middle">
+    <rect x="60" y="150" width="270" height="210" rx="22" fill="#fff4ec" stroke="#ea7a28" stroke-width="3"/><text x="195" y="200" font-size="26" font-weight="700" fill="#ea7a28">Working directory</text>
+    <rect x="465" y="150" width="270" height="210" rx="22" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="600" y="200" font-size="26" font-weight="700" fill="#3d006b">Staging area</text>
+    <rect x="870" y="150" width="270" height="210" rx="22" fill="#3d006b"/><text x="1005" y="200" font-size="26" font-weight="700" fill="#fff">Repository (.git)</text>
+  </g>
+  <g stroke="#3d006b" stroke-width="4" fill="none" marker-end="url(#a)"><line x1="335" y1="250" x2="457" y2="250"/><line x1="740" y1="250" x2="862" y2="250"/><path d="M465 320 L 343 320"/><path d="M870 320 L 748 320"/></g>
+  <g font-family="Menlo, monospace" font-size="18" text-anchor="middle" font-weight="700">
+    <text x="400" y="235" fill="#3d006b" font-size="16">git add</text><text x="805" y="235" fill="#3d006b" font-size="16">git commit</text>
+    <text x="400" y="395" fill="#ea7a28" font-size="15">git restore --staged</text><text x="805" y="395" fill="#ea7a28" font-size="15">git reset --soft</text>
+  </g>
+</svg>

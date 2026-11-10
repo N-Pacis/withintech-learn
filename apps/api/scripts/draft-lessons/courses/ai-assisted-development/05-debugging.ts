@@ -1,5 +1,5 @@
 import { code, codeLines, image, playground, reveal, text, type LessonDraft } from "../../types";
-import { tracebackExplorer } from "./widgets";
+import { debugExercise } from "./widgets";
 
 export const lesson: LessonDraft = {
   moduleId: "1969d7cf-2440-48e4-8025-6a97927a4bc7",
@@ -26,7 +26,17 @@ ValueError: invalid literal for int() with base 10: '1500.50'
 `,
     ),
     image("ai-assisted-development/traceback-anatomy.png"),
-    playground(tracebackExplorer),
+    text(`
+<h3>Your turn: fix a real bug</h3>
+<p>The same bug in JavaScript. Press <strong>Run</strong>: two tests fail. Read the failure, fix <code>parseAmount</code>, run again until all four are green. Stuck? Paste the failing test and the function into your AI tool with "explain, fix, prevent".</p>
+${reveal("Show the solution", codeLines(`
+function parseAmount(raw) {
+  const n = Number(String(raw).replace(/,/g, ""));
+  return Number.isFinite(n) ? n : null;
+}
+`))}
+`),
+    playground(debugExercise),
     text(`
 <p>This is a classic: type conversion errors like treating decimal amounts as <code>int</code>.</p>
 <h3>A debugging prompt that works</h3>

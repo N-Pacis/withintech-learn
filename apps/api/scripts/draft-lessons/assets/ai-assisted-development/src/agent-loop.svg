@@ -2,15 +2,15 @@
   <defs><marker id="a" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="15" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#3d006b"/></marker></defs>
   <rect width="1200" height="570" rx="28" fill="#ffffff"/>
   <text x="600" y="62" text-anchor="middle" font-size="34" font-weight="700" fill="#1f2937">How a coding agent works</text>
-  <text x="600" y="98" text-anchor="middle" font-size="20" fill="#6b7280">Plan, act, observe, correct, with checkpoints where you approve</text>
-  <rect x="60" y="270" width="170" height="90" rx="18" fill="#fff4ec" stroke="#ea7a28" stroke-width="3"/><text x="145" y="310" text-anchor="middle" font-size="22" font-weight="700" fill="#ea7a28">Goal</text><text x="145" y="338" text-anchor="middle" font-size="16" fill="#1f2937">from you</text>
-  <g><circle cx="470" cy="215" r="88" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="470" y="211" text-anchor="middle" font-size="26" font-weight="700" fill="#3d006b">Plan</text><text x="470" y="241" text-anchor="middle" font-size="16" fill="#3d006b">read code, list steps</text></g>
-  <g><circle cx="760" cy="215" r="88" fill="#3d006b" stroke="#3d006b" stroke-width="3"/><text x="760" y="211" text-anchor="middle" font-size="26" font-weight="700" fill="#ffffff">Act</text><text x="760" y="241" text-anchor="middle" font-size="16" fill="#ffffff">edit files, run cmds</text></g>
-  <g><circle cx="760" cy="455" r="88" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="760" y="451" text-anchor="middle" font-size="26" font-weight="700" fill="#3d006b">Observe</text><text x="760" y="481" text-anchor="middle" font-size="16" fill="#3d006b">test output, errors</text></g>
-  <g><circle cx="470" cy="455" r="88" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="470" y="451" text-anchor="middle" font-size="26" font-weight="700" fill="#3d006b">Correct</text><text x="470" y="481" text-anchor="middle" font-size="16" fill="#3d006b">fix and retry</text></g>
+  
+  <rect x="60" y="285" width="170" height="60" rx="18" fill="#fff4ec" stroke="#ea7a28" stroke-width="3"/><text x="145" y="323" text-anchor="middle" font-size="22" font-weight="700" fill="#ea7a28">Goal</text>
+  <g><circle cx="470" cy="215" r="88" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="470" y="224" text-anchor="middle" font-size="26" font-weight="700" fill="#3d006b">Plan</text></g>
+  <g><circle cx="760" cy="215" r="88" fill="#3d006b" stroke="#3d006b" stroke-width="3"/><text x="760" y="224" text-anchor="middle" font-size="26" font-weight="700" fill="#ffffff">Act</text></g>
+  <g><circle cx="760" cy="455" r="88" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="760" y="464" text-anchor="middle" font-size="26" font-weight="700" fill="#3d006b">Observe</text></g>
+  <g><circle cx="470" cy="455" r="88" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="470" y="464" text-anchor="middle" font-size="26" font-weight="700" fill="#3d006b">Correct</text></g>
   <g stroke="#3d006b" stroke-width="4" fill="none" marker-end="url(#a)">
     <path d="M232 300 L 382 240"/><path d="M560 215 L 666 215"/><path d="M760 305 L 760 361"/><path d="M670 455 L 562 455"/><path d="M470 365 L 470 309"/>
   </g>
-  <rect x="930" y="170" width="220" height="110" rx="16" fill="#e8f7ee" stroke="#15803d" stroke-width="3"/><text x="1040" y="212" text-anchor="middle" font-size="20" font-weight="700" fill="#15803d">Checkpoint</text><text x="1040" y="240" text-anchor="middle" font-size="16" fill="#1f2937">approve the plan</text><text x="1040" y="262" text-anchor="middle" font-size="16" fill="#1f2937">before it edits</text>
-  <rect x="930" y="400" width="220" height="110" rx="16" fill="#fef2f2" stroke="#dc2626" stroke-width="3"/><text x="1040" y="442" text-anchor="middle" font-size="20" font-weight="700" fill="#dc2626">Watch for</text><text x="1040" y="470" text-anchor="middle" font-size="16" fill="#1f2937">hallucinated files/APIs,</text><text x="1040" y="492" text-anchor="middle" font-size="16" fill="#1f2937">code leaks, skill atrophy</text>
+  <rect x="545" y="104" width="140" height="40" rx="16" fill="#e8f7ee" stroke="#15803d" stroke-width="3"/><text x="615" y="130" text-anchor="middle" font-size="17" font-weight="700" fill="#15803d">✓ approve</text>
+  
 </svg>

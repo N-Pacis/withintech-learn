@@ -1,5 +1,5 @@
-import { code, codeLines, image, playground, reveal, text, type LessonDraft } from "../../types";
-import { featureStepper } from "./widgets";
+import { code, playground, codeLines, image, reveal, text, type LessonDraft } from "../../types";
+import { knowledgeCheck } from "../../knowledge-check";
 
 export const lesson: LessonDraft = {
   moduleId: "ec897e52-a1f9-4280-b4bf-936ba80921a1",
@@ -52,7 +52,6 @@ def load_expenses() -> list["Expense"]:
     return [Expense(**r | {"date": date.fromisoformat(r["date"])}) for r in rows]
 `,
     ),
-    playground(featureStepper),
     text(`
 <h3>Step 3: let comments drive Copilot</h3>
 <p>In comment-driven development, detailed docstrings or descriptive comments right above the code block trigger the best inline suggestions. Write the docstring for <code>add_expense()</code> and let Copilot fill the body.</p>
@@ -92,5 +91,37 @@ transport   2,300 RWF
 <li>AI handles implementation speed so you can focus on high-level design, logic and validation.</li>
 </ul>
 `),
+    playground(knowledgeCheck([
+          {
+                "q": "AI code almost works but crashes on one input. Next step?",
+                "options": [
+                      "Start a new chat from scratch",
+                      "Paste the error + code: \"Fix this bug where…\"",
+                      "Rewrite it all by hand"
+                ],
+                "answer": 1,
+                "why": "Give the AI the exact failure and iterate."
+          },
+          {
+                "q": "Why build feature by feature instead of one giant prompt?",
+                "options": [
+                      "It uses fewer tokens",
+                      "You can verify each piece and catch issues early",
+                      "AI can't write long code"
+                ],
+                "answer": 1,
+                "why": "Small steps are easy to review and debug."
+          },
+          {
+                "q": "A change touches storage.py, main.py and tests. Best tool?",
+                "options": [
+                      "Inline completion",
+                      "Cursor Composer / Agent mode",
+                      "Copy-paste between chats"
+                ],
+                "answer": 1,
+                "why": "Composer/Agent mode edits several files from one prompt."
+          }
+    ])),
   ],
 };

@@ -1,5 +1,5 @@
-import { code, codeLines, image, playground, reveal, text, type LessonDraft } from "../../types";
-import { toolMap } from "./widgets";
+import { code, playground, codeLines, image, reveal, text, type LessonDraft } from "../../types";
+import { knowledgeCheck } from "../../knowledge-check";
 
 export const lesson: LessonDraft = {
   moduleId: "79f25680-0d83-45ad-ac53-0d69603c76aa",
@@ -33,7 +33,6 @@ print(total_by_category([
 # {'transport': 2300, 'food': 3200}
 `,
     ),
-    playground(toolMap),
     text(`
 <h3>The three kinds of AI tools you'll use</h3>
 <ul>
@@ -72,5 +71,37 @@ print(busiest_day([("Mon", 12), ("Tue", 30), ("Wed", 18)]))  # Tue
 <li>This course teaches you to use AI as a collaborative partner across the full dev lifecycle: planning, coding, debugging, testing, refactoring and docs.</li>
 </ul>
 `),
+    playground(knowledgeCheck([
+          {
+                "q": "Copilot suggests a 20-line function. It looks right. What do you do?",
+                "options": [
+                      "Accept and push",
+                      "Read it, run it, test an edge case",
+                      "Ask for a longer version"
+                ],
+                "answer": 1,
+                "why": "You own the code: review and test before shipping."
+          },
+          {
+                "q": "You need to explain a confusing error. Which tool type fits best?",
+                "options": [
+                      "Inline completion",
+                      "Chat (Claude.ai / editor chat)",
+                      "None, search only"
+                ],
+                "answer": 1,
+                "why": "Chat is built for explaining, designing and debugging."
+          },
+          {
+                "q": "Which is NOT a real benefit of AI-assisted development?",
+                "options": [
+                      "Shipping faster",
+                      "Learning new frameworks quicker",
+                      "Never needing to understand code"
+                ],
+                "answer": 2,
+                "why": "Understanding stays your job; skipping it is the classic pitfall."
+          }
+    ])),
   ],
 };

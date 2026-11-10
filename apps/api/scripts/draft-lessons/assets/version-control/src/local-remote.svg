@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="470" viewBox="0 0 1200 470" font-family="Helvetica, Arial, sans-serif">
+  <defs><marker id="a" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="15" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#3d006b"/></marker></defs>
+  <rect width="1200" height="470" rx="28" fill="#fff"/>
+  <text x="600" y="62" text-anchor="middle" font-size="34" font-weight="700" fill="#1f2937">Your laptop ↔ GitHub</text>
+  <g text-anchor="middle">
+    <rect x="70" y="120" width="380" height="330" rx="24" fill="#f3e8ff" stroke="#3d006b" stroke-width="3"/><text x="260" y="170" font-size="26" font-weight="700" fill="#3d006b">Local repository</text>
+    <rect x="120" y="250" width="280" height="56" rx="14" fill="#fff" stroke="#e9d5ff"/><text x="260" y="286" font-size="18" fill="#1f2937" font-family="Menlo, monospace">main</text>
+    <rect x="120" y="330" width="280" height="56" rx="14" fill="#fff4ec" stroke="#ea7a28"/><text x="260" y="366" font-size="18" fill="#ea7a28" font-family="Menlo, monospace">origin/main</text>
+    <rect x="750" y="120" width="380" height="330" rx="24" fill="#3d006b"/><text x="940" y="170" font-size="26" font-weight="700" fill="#fff">Remote: origin</text>
+    <rect x="800" y="250" width="280" height="56" rx="14" fill="#fff"/><text x="940" y="286" font-size="18" fill="#3d006b" font-family="Menlo, monospace">main</text>
+  </g>
+  <g stroke="#3d006b" stroke-width="4" fill="none" marker-end="url(#a)"><line x1="452" y1="260" x2="742" y2="260"/><line x1="748" y1="320" x2="460" y2="345"/><line x1="748" y1="400" x2="460" y2="400"/></g>
+  <g font-family="Menlo, monospace" font-size="19" font-weight="700" text-anchor="middle">
+    <text x="597" y="245" fill="#3d006b">git push</text><text x="597" y="322" fill="#ea7a28">git fetch</text><text x="597" y="430" fill="#15803d">git pull</text>
+  </g>
+</svg>
