@@ -19,6 +19,8 @@ import {
   lessonQuizHref,
 } from "../../../../lib/lesson-navigation";
 import CodePlayground from "@/components/playground/CodePlayground";
+import KnowledgeCheck from "@/components/KnowledgeCheck";
+import { parseKnowledgeCheck } from "@/lib/knowledge-check";
 import { CodeBlockPreviewButton } from "@/components/CodeBlockPreviewButton";
 
 function TextBlock({ block }: { block: StudentBlock }) {
@@ -142,6 +144,8 @@ function BlockRenderer({
   if (block.type === "text") return <TextBlock block={block} />;
   if (block.type === "image") return <ImageBlock block={block} />;
   if (block.type === "playground") {
+    const questions = parseKnowledgeCheck(block.playgroundData?.js);
+    if (questions) return <KnowledgeCheck questions={questions} />;
     return (
       <CodePlayground
         initialHTML={block.playgroundData?.html}

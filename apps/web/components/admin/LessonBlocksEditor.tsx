@@ -14,6 +14,7 @@ import { Button, Card, Input, PageLoader } from "@/components/ui";
 import { CodeEditor, type CodeLanguage } from "@/components/ui/CodeEditor";
 import { TiptapEditor, TiptapViewer } from "@/components/ui/TiptapEditor";
 import { cn } from "@/lib/utils";
+import { parseKnowledgeCheck } from "@/lib/knowledge-check";
 import {
   Trash2,
   Pencil,
@@ -71,12 +72,15 @@ function BlockDisplay({ block }: { block: LessonBlock }) {
   }
   if (block.type === "playground") {
     const { html, css, js } = block.playgroundData ?? {};
+    const checkQuestions = parseKnowledgeCheck(js);
     return (
       <div className="rounded-lg overflow-hidden border border-border">
         <div className="bg-surface-muted px-3 py-1.5 flex items-center gap-1.5">
           <LayoutTemplate size={12} className="text-primary" />
           <span className="text-xs font-mono text-muted font-semibold">
-            Code Playground
+            {checkQuestions
+              ? `Knowledge check · ${checkQuestions.length} questions (edit QUESTIONS in JS)`
+              : "Code Playground"}
           </span>
         </div>
         <div className="p-3 flex flex-col gap-1">
