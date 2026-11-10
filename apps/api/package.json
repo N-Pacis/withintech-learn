@@ -7,11 +7,7 @@
     "build": "tsc && shx cp swagger.json dist/swagger.json",
     "start": "node dist/src/index.js",
     "lint": "eslint src",
-    "seed": "node dist/scripts/seed.js",
-    "migrate": "ts-node-dev --transpile-only scripts/migrate.ts",
-    "backfill:module-blocks": "ts-node-dev --transpile-only scripts/backfill-module-blocks-to-lessons.ts",
-    "cache:rebuild": "ts-node-dev --transpile-only scripts/rebuild-course-cache.ts",
-    "seed:python": "ts-node-dev --transpile-only scripts/seed-python-course/index.ts"
+    "seed": "node dist/scripts/seed.js"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.4",
